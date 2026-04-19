@@ -1,0 +1,27 @@
+# 환경 변수 (API 키 포함 — 절대 커밋하지 말 것)
+.env
+
+# 가상환경
+.venv/
+venv/
+
+# 생성된 포스팅 출력물
+output/
+
+# ChromaDB 벡터 저장소
+chroma_db/
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

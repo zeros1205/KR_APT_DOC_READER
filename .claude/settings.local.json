@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe test_pipeline.py --step 1)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "WebFetch(domain:getdesign.md)",
+      "Bash(npx --yes getdesign@latest add notion)",
+      "Bash(npx --yes getdesign@latest add linear)",
+      "Bash(npx --yes getdesign@latest add stripe)",
+      "Bash(npx --yes getdesign@latest add airbnb)",
+      "Bash(npx --yes getdesign@latest add linear.app)",
+      "Bash(python test_pipeline.py --step 1)",
+      "Bash(pip install *)",
+      "Bash(python test_pipeline.py --step 3)",
+      "Bash(start \"\" \"D:\\\\Downloads\\\\재혁\\\\★PROJECT_BALI\\\\아파트분양공고 읽어주기\\\\output\\\\posts\\\\2026-04-19_힐스테이트_판교역__샘플_\\\\post.html\")",
+      "WebFetch(domain:claude.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(python -c \"import anthropic; print\\(anthropic.__version__\\)\")",
+      "Bash(start \"\" \"D:\\\\Downloads\\\\재혁\\\\★PROJECT_BALI\\\\아파트분양공고 읽어주기\\\\output\\\\posts\\\\2026-04-20_힐스테이트_판교역__샘플_\\\\post.html\")",
+      "Bash(.venv/Scripts/python -c \"import google.generativeai; print\\('OK'\\)\")",
+      "Bash(.venv/Scripts/pip install *)",
+      "Bash(.venv/Scripts/python test_pipeline.py --step 3)",
+      "Bash(.venv/Scripts/python -c \"import anthropic; print\\('anthropic', anthropic.__version__\\)\")",
+      "Bash(.venv/Scripts/pip freeze *)"
+    ]
+  }
+}
