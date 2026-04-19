@@ -9,10 +9,13 @@ on:
     inputs:
       days:
         description: '최근 N일 공고 수집'
-        default: '1'
+        default: '7'
       limit:
         description: '최대 처리 건수'
         default: '5'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   generate-posts:
@@ -38,14 +41,12 @@ jobs:
           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-          UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
-          PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}
           PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
           EOF
 
       - name: 파이프라인 실행
         run: |
-          DAYS=${{ github.event.inputs.days || '1' }}
+          DAYS=${{ github.event.inputs.days || '7' }}
           LIMIT=${{ github.event.inputs.limit || '5' }}
           python run.py --days $DAYS --limit $LIMIT
 
@@ -56,4 +57,4 @@ jobs:
           name: posts-${{ github.run_id }}
           path: output/posts/
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: ignore
