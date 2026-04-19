@@ -7,8 +7,7 @@ collector.py
   - 데이터셋 ID: 15098547
   - REST JSON, 영문 필드명
   - 엔드포인트:
-      목록: getAPTLttotPblancList
-      상세: getAPTLttotPblancDetail
+      목록/상세: getAPTLttotPblancDetail
       주택형별: getAPTLttotPblancMdl
 
 [소스 B] 공공데이터포털 파일 데이터 (연간 CSV)
@@ -182,22 +181,22 @@ def _from_openapi(d: dict) -> dict:
         "notice_date":         d.get("RCRIT_PBLANC_DE", ""),
         "special_supply_start":d.get("SPSPLY_RCEPT_BGNDE", ""),
         "special_supply_end":  d.get("SPSPLY_RCEPT_ENDDE", ""),
-        "rank1_local_start":   d.get("GNRL_RNK1_CRSPAREA_RCEPT_BGNDE", ""),
+        "rank1_local_start":   d.get("GNRL_RNK1_CRSPAREA_RCPTDE", ""),
         "rank1_local_end":     d.get("GNRL_RNK1_CRSPAREA_ENDDE", ""),
-        "rank1_near_start":    d.get("GNRL_RNK1_ETC_GG_RCEPT_BGNDE", ""),
+        "rank1_near_start":    d.get("GNRL_RNK1_ETC_GG_RCPTDE", ""),
         "rank1_near_end":      d.get("GNRL_RNK1_ETC_GG_ENDDE", ""),
-        "rank1_etc_start":     d.get("GNRL_RNK1_ETC_AREA_RCEPT_BGNDE", ""),
+        "rank1_etc_start":     d.get("GNRL_RNK1_ETC_AREA_RCPTDE", ""),
         "rank1_etc_end":       d.get("GNRL_RNK1_ETC_AREA_ENDDE", ""),
-        "rank2_local_start":   d.get("GNRL_RNK2_CRSPAREA_RCEPT_BGNDE", ""),
+        "rank2_local_start":   d.get("GNRL_RNK2_CRSPAREA_RCPTDE", ""),
         "rank2_local_end":     d.get("GNRL_RNK2_CRSPAREA_ENDDE", ""),
-        "rank2_near_start":    d.get("GNRL_RNK2_ETC_GG_RCEPT_BGNDE", ""),
+        "rank2_near_start":    d.get("GNRL_RNK2_ETC_GG_RCPTDE", ""),
         "rank2_near_end":      d.get("GNRL_RNK2_ETC_GG_ENDDE", ""),
-        "rank2_etc_start":     d.get("GNRL_RNK2_ETC_AREA_RCEPT_BGNDE", ""),
+        "rank2_etc_start":     d.get("GNRL_RNK2_ETC_AREA_RCPTDE", ""),
         "rank2_etc_end":       d.get("GNRL_RNK2_ETC_AREA_ENDDE", ""),
         "winner_date":         d.get("PRZWNER_PRESNATN_DE", ""),
         "contract_start":      d.get("CNTRCT_CNCLS_BGNDE", ""),
         "contract_end":        d.get("CNTRCT_CNCLS_ENDDE", ""),
-        "move_in_month":       d.get("MVIN_PREARNGE_YM", ""),
+        "move_in_month":       d.get("MVN_PREARNGE_YM", ""),
         "constructor":         d.get("CNSTRCT_ENTRPS_NM", ""),
         "developer":           d.get("BSNS_MBY_NM", ""),
         "contact":             d.get("MDHS_TELNO", ""),
@@ -209,7 +208,7 @@ def _from_openapi(d: dict) -> dict:
         "is_redevelop":        d.get("IMPRMN_BSNS_AT", "N"),
         "is_public_dist":      d.get("PUBLIC_HOUSE_EARTH_AT", "N"),
         "is_large_dev":        d.get("LRSCL_BLDLND_AT", "N"),
-        "is_metro_private":    d.get("MTPLYN_RNKTYE_AT", "N"),
+        "is_metro_private":    d.get("NPLN_PRVOPR_PUBLIC_HOUSE_AT", "N"),
     }
 
 
@@ -301,15 +300,15 @@ class CheongYakAPI:
         page: int = 1,
         per_page: int = 20,
         region_code: str | None = None,
-        start_date: str | None = None,  # YYYYMMDD
+        start_date: str | None = None,  # YYYY-MM-DD
     ) -> list[dict]:
         """
-        APT 분양정보 목록 조회 (getAPTLttotPblancList)
+        APT 분양정보 상세 목록 조회 (getAPTLttotPblancDetail)
 
         파라미터 (기술문서 260129 기준):
           page, perPage: 페이지
           SUBSCRPT_AREA_CODE: 공급지역코드 (예: 41=경기)
-          RCRIT_PBLANC_DE: 모집공고일 (YYYYMMDD)
+          RCRIT_PBLANC_DE: 모집공고일 (YYYY-MM-DD)
         """
         params: dict = {
             "serviceKey": self.api_key,
@@ -321,7 +320,7 @@ class CheongYakAPI:
         if start_date:
             params["cond[RCRIT_PBLANC_DE::GTE]"] = start_date
 
-        return await self._get(f"{API_BASE}/getAPTLttotPblancList", params)
+        return await self._get(f"{API_BASE}/getAPTLttotPblancDetail", params)
 
     async def get_detail(self, house_manage_no: str) -> dict:
         """
@@ -455,7 +454,7 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     """OpenAPI로 최근 N일 공고 수집"""
     api = CheongYakAPI()
     today = datetime.now()
-    start = (today - timedelta(days=days_back)).strftime("%Y%m%d")
+    start = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
 
     raw_list = await api.get_list(per_page=50, start_date=start)
     if not raw_list:
@@ -499,8 +498,8 @@ def _units_to_text(units: list[dict]) -> str:
         house_type = u.get("HOUSE_TY", "")
         excl_ar    = u.get("EXCLUSE_AR", "")
         suply_ar   = u.get("SUPLY_AR", "")
-        gnrl_cnt   = u.get("GNRL_HOSP_CO", "")
-        spsply_cnt = u.get("SPSPLY_HOSP_CO", "")
+        gnrl_cnt   = u.get("SUPLY_HSHLDCO", "")
+        spsply_cnt = u.get("SPSPLY_HSHLDCO", "")
         top_price  = u.get("LTTOT_TOP_AMOUNT", "")
         lines.append(
             f"{house_type}타입 | 전용 {excl_ar}㎡ | 공급 {suply_ar}㎡ "
