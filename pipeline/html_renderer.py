@@ -462,15 +462,21 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
 
+    from regions import region_name_to_category
+    region_category = region_name_to_category(data.location)
+
     meta = {
-        "apt_name":    data.apt_name,
-        "title":       data.post_title,
-        "subtitle":    data.post_subtitle,
-        "theme":       data.theme,
-        "tags":        data.seo_tags,
-        "location":    data.location,
-        "rank1_date":  data.rank1_date,
-        "generated_at": datetime.now().isoformat(),
+        "apt_name":        data.apt_name,
+        "title":           data.post_title,
+        "subtitle":        data.post_subtitle,
+        "theme":           data.theme,
+        "tags":            data.seo_tags,
+        "location":        data.location,
+        "region_category": region_category,
+        "price_range":     data.price_range,
+        "rank1_date":      data.rank1_date,
+        "move_in_date":    data.move_in_date,
+        "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
             "step1": "네이버 블로그 → 글쓰기",
             "step2": "스마트에디터 ONE → [HTML] 버튼",
