@@ -67,7 +67,9 @@ FACT_EXTRACTION_PROMPT = """
 - loan_info: 중도금 대출 가능 여부 및 조건 요약
 - resale_restriction: 전매제한 기간
 - contract_ratio: 계약금 비율 (숫자만, 예: 10)
+- contract_amount: 최저 분양가 기준 계약금 금액 (예: "약 3,000만원"), 공고에 없으면 null
 - midterm_ratio: 중도금 비율 (숫자만, 예: 60)
+- midterm_count: 중도금 납부 횟수 (숫자만, 예: 6), 공고에 없으면 6
 - balance_ratio: 잔금 비율 (숫자만, 예: 30)
 - acquisition_tax_rate: 취득세율 (예: "1~3%")
 - is_hot_zone: 투기과열지구 여부 (Y/N)
@@ -503,11 +505,13 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         rank2_date=facts.get("rank2_date", "-"),
         winner_date=facts.get("winner_date", "-"),
         move_in_date=facts.get("move_in_date", "-"),
-        loan_info=facts.get("loan_info", "-"),
-        resale_restriction=facts.get("resale_restriction", "-"),
-        contract_ratio=str(facts.get("contract_ratio", "10")),
-        midterm_ratio=str(facts.get("midterm_ratio", "60")),
-        balance_ratio=str(facts.get("balance_ratio", "30")),
+        loan_info=facts.get("loan_info") or "-",
+        resale_restriction=facts.get("resale_restriction") or "-",
+        contract_ratio=str(facts.get("contract_ratio") or "10"),
+        contract_amount=facts.get("contract_amount") or "",
+        midterm_ratio=str(facts.get("midterm_ratio") or "60"),
+        midterm_count=str(facts.get("midterm_count") or "6"),
+        balance_ratio=str(facts.get("balance_ratio") or "30"),
         acquisition_tax_rate=facts.get("acquisition_tax_rate", "1~3%"),
         acquisition_tax_amount="-",
         property_tax_rate="과세표준 × 0.1~0.4%",

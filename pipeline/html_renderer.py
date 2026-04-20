@@ -488,7 +488,7 @@ class BlogHTMLRenderer:
             # 금융
             "{{LOAN_INFO}}":      data.loan_info,
             "{{CONTRACT_RATIO}}": data.contract_ratio,
-            "{{CONTRACT_AMOUNT}}":data.contract_amount,
+            "{{CONTRACT_AMOUNT}}":data.contract_amount or "-",
             "{{MIDTERM_RATIO}}":  data.midterm_ratio,
             "{{MIDTERM_COUNT}}":  data.midterm_count,
             "{{BALANCE_RATIO}}":  data.balance_ratio,
