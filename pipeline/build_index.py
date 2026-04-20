@@ -19,29 +19,19 @@ OUT_FILE   = OUTPUT_DIR / "index.html"
 
 # ── Anthropic 공식 브랜드 팔레트 ────────────────────
 C = {
-    # 기본 4색
-    "dark":       "#141413",   # 주 텍스트 / 진한 요소
-    "light":      "#faf9f5",   # 배경 (따뜻한 크림)
-    "mid_gray":   "#b0aea5",   # 보조 텍스트
-    "light_gray": "#e8e6dc",   # 테두리 / 구분선
-
-    # 액센트 3색
-    "orange":     "#d97757",   # PRIMARY 액센트
-    "blue":       "#6a9bcc",   # SECONDARY 액센트
-    "green":      "#788c5d",   # TERTIARY 액센트 (재공급)
-
-    # 파생값
+    "dark":       "#141413",
+    "light":      "#faf9f5",
+    "mid_gray":   "#b0aea5",
+    "light_gray": "#e8e6dc",
+    "orange":     "#d97757",
+    "blue":       "#6a9bcc",
+    "green":      "#788c5d",
     "orange_dark":  "#b85c38",
     "orange_light": "#fdf0ea",
     "green_dark":   "#57673f",
     "green_light":  "#edf2e6",
-    "blue_light":   "#e8f0f8",
-
-    # 네비·푸터: 블랙 대신 따뜻한 다크 브라운
     "nav_bg":     "#2a2721",
     "footer_bg":  "#2a2721",
-
-    # 히어로: 크림에서 살짝 짙은 샌드 베이지
     "hero_bg":    "#f2efe6",
     "surface":    "#ffffff",
 }
@@ -59,24 +49,27 @@ def load_posts() -> list[dict]:
                 meta["region_category"] = region_name_to_category(meta.get("location", ""))
             if not meta.get("price_range"):
                 meta["price_range"] = ""
+            if "special_supply_date" not in meta:
+                meta["special_supply_date"] = ""
             posts.append(meta)
         except Exception as e:
             print(f"  [경고] {meta_path} 파싱 실패: {e}")
     return posts
 
 
-def _fmt_rank1(date_str: str) -> tuple[str, str]:
-    if not date_str or date_str == "-":
+def _fmt_date(date_str: str) -> tuple[str, str]:
+    """(월, 일) — 없으면 ('', '')"""
+    if not date_str or date_str in ("-", "null", "None"):
         return ("", "")
     try:
         d = datetime.fromisoformat(date_str[:10])
         return (f"{d.month}월", f"{d.day}일")
     except Exception:
-        return (date_str, "")
+        return ("", "")
 
 
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str, str]:
-    """(label, header_grad, tag_bg, tag_color)"""
+    """(label, header_grad, tag_bg, accent_color)"""
     combined = title + apt_name
     resupply = [
         ("무순위",   "무순위"),
@@ -93,91 +86,116 @@ def _supply_info(title: str, apt_name: str) -> tuple[str, str, str, str]:
     return "신규분양", grad, C["orange_light"], C["orange_dark"]
 
 
+def _date_cell(label: str, month: str, day: str, accent: str) -> str:
+    """날짜 셀 — 월/일 숫자 크기 동일"""
+    if not month:
+        return (
+            f'<div style="flex:1;padding:14px 16px;text-align:center;">'
+            f'<p style="font-size:10px;font-weight:600;color:{C["mid_gray"]};'
+            f'letter-spacing:1px;margin-bottom:8px;">{label}</p>'
+            f'<p style="font-size:13px;color:{C["mid_gray"]};">미정</p>'
+            f'</div>'
+        )
+    return (
+        f'<div style="flex:1;padding:14px 16px;text-align:center;">'
+        f'<p style="font-size:10px;font-weight:600;color:{C["mid_gray"]};'
+        f'letter-spacing:1px;margin-bottom:8px;">{label}</p>'
+        f'<p style="font-size:22px;font-weight:900;color:{accent};'
+        f'line-height:1;letter-spacing:-0.5px;">'
+        f'<span style="font-size:22px;">{month}</span>'
+        f'<span style="font-size:22px;margin-left:3px;">{day}</span>'
+        f'</p>'
+        f'</div>'
+    )
+
+
 def _render_card(p: dict, serial: int) -> str:
-    title    = p.get("title", "(제목 없음)")
-    apt_name = p.get("apt_name", "")
+    apt_name = p.get("apt_name", "(단지명 없음)")
+    title    = p.get("title", apt_name)
     location = p.get("location", "")
     region   = p.get("region_category", "기타")
-    price    = p.get("price_range", "")
     url      = p["post_url"]
-    tags     = (p.get("tags") or [])[:4]
+    tags     = (p.get("tags") or [])[:5]
 
-    supply_label, header_grad, tag_bg, tag_color = _supply_info(title, apt_name)
-    month, day = _fmt_rank1(p.get("rank1_date", ""))
+    supply_label, header_grad, tag_bg, accent = _supply_info(title, apt_name)
 
-    date_block = (
-        f'<div style="margin-top:auto;padding-top:14px;">'
-        f'<p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.52);'
-        f'letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p>'
-        f'<p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">'
-        f'{month} <span style="font-size:34px;">{day}</span></p>'
-        f'</div>'
-        if month and day else ""
-    )
+    sp_month, sp_day   = _fmt_date(p.get("special_supply_date", ""))
+    r1_month, r1_day   = _fmt_date(p.get("rank1_date", ""))
 
-    price_block = (
-        f'<p style="font-size:14px;font-weight:800;color:{tag_color};'
-        f'margin:0 0 14px 0;letter-spacing:-0.2px;">💰 {price}</p>'
-        if price else
-        '<div style="margin-bottom:14px;"></div>'
-    )
+    serial_str = f"No.{serial:03d}"
 
     tag_items = "".join(
-        f'<span style="display:inline-block;background:{tag_bg};color:{tag_color};'
+        f'<span style="display:inline-block;background:{tag_bg};color:{accent};'
         f'font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;'
         f'margin:0 5px 5px 0;letter-spacing:0.2px;">#{t}</span>'
         for t in tags
     )
 
-    serial_str = f"No.{serial:03d}"
+    sp_cell = _date_cell("특별공급", sp_month, sp_day, accent)
+    r1_cell = _date_cell("1순위", r1_month, r1_day, accent)
 
     return f"""<article
   class="post-card"
   data-region="{region}"
   onclick="location.href='{url}'"
 >
-  <!-- 카드 헤더 컬러 블록 -->
+  <!-- ── 카드 상단 헤더 ── -->
   <div class="card-header" style="background:{header_grad};">
+    <!-- 도트 패턴 -->
     <div style="position:absolute;inset:0;
       background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
       background-size:18px 18px;pointer-events:none;"></div>
 
-    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
-      <div>
-        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.48);
-                  letter-spacing:2px;margin-bottom:5px;">공급 유형</p>
-        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;line-height:1;">
-          {supply_label}
-        </p>
-      </div>
-      <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);
+    <!-- ① 공급유형 + 시리얼 -->
+    <div style="position:relative;display:flex;justify-content:space-between;
+                align-items:center;margin-bottom:10px;">
+      <span style="font-size:12px;font-weight:900;color:#fff;letter-spacing:0.3px;">
+        {supply_label}
+      </span>
+      <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.35);
                    letter-spacing:1px;">{serial_str}</span>
     </div>
 
-    <div style="position:relative;margin-top:10px;">
+    <!-- ② 지역 뱃지 -->
+    <div style="position:relative;margin-bottom:12px;">
       <span style="display:inline-block;background:rgba(255,255,255,0.16);
                    border:1px solid rgba(255,255,255,0.26);border-radius:4px;
-                   font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);
+                   font-size:11px;font-weight:600;color:rgba(255,255,255,0.92);
                    padding:3px 10px;letter-spacing:0.3px;">📍 {region}</span>
     </div>
 
-    {date_block}
+    <!-- ③ 단지명 (2줄 클램프) -->
+    <p style="position:relative;font-size:15px;font-weight:800;color:#fff;
+              line-height:1.4;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      {apt_name}
+    </p>
   </div>
 
-  <!-- 카드 본문 -->
-  <div class="card-body">
-    <p style="font-size:10px;font-weight:700;color:{C['mid_gray']};
-              letter-spacing:1.5px;margin-bottom:5px;">단지 분석</p>
-    <h3 class="card-title">{title}</h3>
-    <p style="font-size:13px;color:{C['mid_gray']};margin:0 0 12px 0;line-height:1.5;">
-      {location}
+  <!-- ── 카드 하단 ── -->
+
+  <!-- ① 날짜 바 (특별공급 | 1순위) -->
+  <div style="display:flex;border-bottom:1px solid {C['light_gray']};">
+    {sp_cell}
+    <div style="width:1px;background:{C['light_gray']};flex-shrink:0;margin:10px 0;"></div>
+    {r1_cell}
+  </div>
+
+  <!-- ② 행정구역 -->
+  <div style="padding:12px 16px;border-bottom:1px solid {C['light_gray']};">
+    <p style="font-size:12px;color:{C['mid_gray']};margin:0;line-height:1.4;">
+      📌 {location if location else "위치 정보 없음"}
     </p>
-    {price_block}
-    <div style="flex:1;min-height:26px;">{tag_items}</div>
+  </div>
+
+  <!-- ③ 태그 -->
+  <div style="padding:12px 16px 10px;flex:1;">
+    {tag_items}
   </div>
 
   <!-- CTA -->
-  <a href="{url}" class="card-cta" style="background:{tag_color};"
+  <a href="{url}" class="card-cta" style="background:{accent};"
      onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
@@ -194,12 +212,6 @@ def build() -> None:
     regions      = ["전체"] + sorted({p.get("region_category", "기타") for p in posts if p.get("region_category")})
     total        = len(posts)
     region_count = len(regions) - 1
-    latest_raw   = posts[0].get("generated_at", "") if posts else ""
-    try:
-        ld = datetime.fromisoformat(latest_raw[:10])
-        latest = f"{ld.year}.{ld.month:02d}.{ld.day:02d}"
-    except Exception:
-        latest = latest_raw[:10] if latest_raw else "-"
 
     region_tabs = "".join(
         f'<button class="tab-btn" data-region="{r}" '
@@ -225,7 +237,7 @@ body {{
   -webkit-text-size-adjust: 100%;
 }}
 
-/* ── 탭 버튼 ── */
+/* ── 탭 ── */
 .tab-btn {{
   flex-shrink: 0;
   padding: 7px 18px;
@@ -247,7 +259,7 @@ body {{
   font-weight: 700;
 }}
 
-/* ── 카드 그리드 ── */
+/* ── 그리드 ── */
 .cards-grid {{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -273,70 +285,40 @@ body {{
 }}
 .post-card.hidden {{ display: none !important; }}
 
+/* ── 카드 헤더 ── */
 .card-header {{
   position: relative;
-  padding: 20px 20px 18px;
-  min-height: 158px;
+  padding: 16px 16px 18px;
+  min-height: 130px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }}
-.card-body {{
-  padding: 18px 20px 14px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid {C['light_gray']};
-}}
-.card-title {{
-  font-size: 15px;
-  font-weight: 800;
-  color: {C['dark']};
-  line-height: 1.45;
-  margin: 0 0 8px 0;
-  word-break: keep-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}}
+
+/* ── CTA ── */
 .card-cta {{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 13px 20px;
+  padding: 12px 16px;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
   letter-spacing: 0.2px;
   transition: opacity 150ms;
+  flex-shrink: 0;
 }}
 .card-cta:hover {{ opacity: 0.88; }}
 
 /* ── 히어로 ── */
 .hero-stripe {{
-  position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(
-      -55deg,
-      transparent,
-      transparent 28px,
-      rgba(217,119,87,0.045) 28px,
-      rgba(217,119,87,0.045) 29px
-    );
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -55deg, transparent, transparent 28px,
+    rgba(217,119,87,0.045) 28px, rgba(217,119,87,0.045) 29px
+  );
   pointer-events: none;
-}}
-
-/* ── 통계 카드 ── */
-.stat-card {{
-  background: {C['surface']};
-  border: 1px solid {C['light_gray']};
-  border-radius: 10px;
-  padding: 18px 24px;
-  min-width: 110px;
-  text-align: center;
 }}
 
 /* ── 빈 결과 ── */
@@ -346,9 +328,8 @@ body {{
 </head>
 <body>
 
-<!-- ══ 네비게이션 ══ -->
-<header style="background:{C['nav_bg']};padding:0 24px;
-               position:sticky;top:0;z-index:50;
+<!-- ══ 네비 ══ -->
+<header style="background:{C['nav_bg']};padding:0 24px;position:sticky;top:0;z-index:50;
                border-bottom:2px solid {C['orange']};">
   <div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;
               justify-content:space-between;height:54px;">
@@ -375,35 +356,25 @@ body {{
 <section style="background:{C['hero_bg']};padding:72px 24px 68px;
                 position:relative;overflow:hidden;">
   <div class="hero-stripe"></div>
-
-  <!-- 오렌지 포인트 원 (우측 장식) -->
-  <div style="position:absolute;right:-60px;top:-60px;
-              width:320px;height:320px;border-radius:50%;
-              border:1px solid rgba(217,119,87,0.18);
-              pointer-events:none;"></div>
-  <div style="position:absolute;right:20px;top:20px;
-              width:160px;height:160px;border-radius:50%;
-              border:1px solid rgba(217,119,87,0.12);
-              pointer-events:none;"></div>
+  <div style="position:absolute;right:-60px;top:-60px;width:320px;height:320px;
+              border-radius:50%;border:1px solid rgba(217,119,87,0.18);pointer-events:none;"></div>
+  <div style="position:absolute;right:20px;top:20px;width:160px;height:160px;
+              border-radius:50%;border:1px solid rgba(217,119,87,0.12);pointer-events:none;"></div>
 
   <div style="max-width:1160px;margin:0 auto;position:relative;">
 
-    <!-- 상단 뱃지 -->
     <div style="display:inline-flex;align-items:center;gap:8px;
-                background:{C['orange_light']};
-                border:1px solid rgba(217,119,87,0.3);
+                background:{C['orange_light']};border:1px solid rgba(217,119,87,0.3);
                 border-radius:6px;padding:5px 14px;margin-bottom:24px;">
-      <span style="width:7px;height:7px;background:{C['orange']};
-                   border-radius:50%;display:inline-block;flex-shrink:0;"></span>
+      <span style="width:7px;height:7px;background:{C['orange']};border-radius:50%;
+                   display:inline-block;flex-shrink:0;"></span>
       <span style="font-size:11px;font-weight:700;color:{C['orange']};letter-spacing:1.5px;">
         청약 공고 분석 서비스
       </span>
     </div>
 
-    <!-- 메인 헤드라인 -->
     <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:{C['dark']};
-               line-height:1.18;margin-bottom:18px;word-break:keep-all;
-               letter-spacing:-1.5px;">
+               line-height:1.18;margin-bottom:18px;word-break:keep-all;letter-spacing:-1.5px;">
       복잡한 청약 공고문,<br>
       <span style="color:{C['orange']};">정과장이 쉽게</span> 정리해 드립니다
     </h1>
@@ -414,9 +385,10 @@ body {{
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
-    <!-- 통계 카드 3개 -->
+    <!-- 통계 (분석공고 + 커버지역 — 최근 업데이트 제거) -->
     <div style="display:flex;flex-wrap:wrap;gap:12px;">
-      <div class="stat-card">
+      <div style="background:{C['surface']};border:1px solid {C['light_gray']};
+                  border-radius:10px;padding:18px 32px;text-align:center;">
         <div style="font-size:32px;font-weight:900;color:{C['orange']};letter-spacing:-1px;">
           {total}
         </div>
@@ -424,7 +396,8 @@ body {{
           분석 공고
         </div>
       </div>
-      <div class="stat-card">
+      <div style="background:{C['surface']};border:1px solid {C['light_gray']};
+                  border-radius:10px;padding:18px 32px;text-align:center;">
         <div style="font-size:32px;font-weight:900;color:{C['blue']};letter-spacing:-1px;">
           {region_count}
         </div>
@@ -432,26 +405,16 @@ body {{
           커버 지역
         </div>
       </div>
-      <div class="stat-card">
-        <div style="font-size:16px;font-weight:800;color:{C['dark']};
-                    margin-top:4px;letter-spacing:-0.3px;">{latest}</div>
-        <div style="font-size:12px;color:{C['mid_gray']};margin-top:4px;letter-spacing:0.3px;">
-          최근 업데이트
-        </div>
-      </div>
     </div>
-
   </div>
 </section>
 
-<!-- 히어로 하단 오렌지 라인 -->
 <div style="height:3px;background:linear-gradient(90deg,{C['orange']},{C['blue']},transparent);"></div>
 
 
-<!-- ══ 메인 콘텐츠 ══ -->
+<!-- ══ 메인 ══ -->
 <main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
 
-  <!-- 섹션 헤더 -->
   <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
               justify-content:space-between;gap:16px;margin-bottom:22px;">
     <div>
@@ -461,19 +424,16 @@ body {{
         분양 공고 분석 모음
       </h2>
     </div>
-    <p id="result-count"
-       style="font-size:13px;color:{C['mid_gray']};">
+    <p id="result-count" style="font-size:13px;color:{C['mid_gray']};">
       총 <strong style="color:{C['dark']};">{total}</strong>건
     </p>
   </div>
 
-  <!-- 지역 필터 탭 -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
               padding-bottom:24px;border-bottom:1px solid {C['light_gray']};">
     {region_tabs}
   </div>
 
-  <!-- 카드 그리드 -->
   <div class="cards-grid" id="cards-grid">
     {cards_html}
   </div>
@@ -493,9 +453,7 @@ body {{
           <span style="display:inline-flex;align-items:center;justify-content:center;
                        width:28px;height:28px;background:{C['orange']};border-radius:6px;
                        font-size:14px;flex-shrink:0;">📝</span>
-          <span style="color:{C['light']};font-size:14px;font-weight:800;">
-            정과장의 청약노트
-          </span>
+          <span style="color:{C['light']};font-size:14px;font-weight:800;">정과장의 청약노트</span>
         </div>
         <p style="font-size:13px;color:{C['mid_gray']};line-height:1.7;max-width:300px;">
           한국부동산원 청약홈 공개 정보를 바탕으로<br>AI가 분석한 분양 공고 리포트입니다.

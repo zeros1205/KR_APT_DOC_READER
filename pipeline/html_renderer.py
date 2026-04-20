@@ -506,9 +506,10 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         "tags":            data.seo_tags,
         "location":        data.location,
         "region_category": region_category,
-        "price_range":     data.price_range,
-        "rank1_date":      data.rank1_date,
-        "move_in_date":    data.move_in_date,
+        "price_range":          data.price_range,
+        "special_supply_date":  data.special_supply_date,
+        "rank1_date":           data.rank1_date,
+        "move_in_date":         data.move_in_date,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
             "step1": "네이버 블로그 → 글쓰기",
