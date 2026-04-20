@@ -190,7 +190,14 @@ def build() -> None:
         r = p.get("region_category", "기타")
         region_counts[r] = region_counts.get(r, 0) + 1
 
-    regions = ["전체"] + sorted(region_counts.keys())
+    _REGION_ORDER = [
+        "서울", "경기도", "인천", "부산", "대전", "대구", "광주",
+        "세종", "울산", "강원도", "충청북도", "충청남도",
+        "전라북도", "전라남도", "경상북도", "경상남도", "제주도",
+    ]
+    known    = [r for r in _REGION_ORDER if r in region_counts]
+    unknown  = sorted(r for r in region_counts if r not in _REGION_ORDER)
+    regions  = ["전체"] + known + unknown
     total        = len(posts)
     region_count = len(region_counts)
 
@@ -347,14 +354,11 @@ body {{
 
   <div style="max-width:1160px;margin:0 auto;position:relative;">
 
-    <div style="display:inline-flex;align-items:center;gap:8px;
-                background:var(--c-primary-light);border:1px solid var(--c-primary-stripe);
-                border-radius:6px;padding:5px 14px;margin-bottom:24px;
-                border-color:rgba(0,0,0,0.08);">
-      <span style="width:7px;height:7px;background:var(--c-primary);border-radius:50%;
-                   display:inline-block;flex-shrink:0;"></span>
-      <span style="font-size:11px;font-weight:700;color:var(--c-primary);letter-spacing:1.5px;">
-        청약 공고 분석 서비스
+    <div style="display:inline-flex;align-items:center;
+                background:var(--c-primary-light);border:1px solid rgba(0,0,0,0.08);
+                border-radius:6px;padding:6px 16px;margin-bottom:24px;">
+      <span style="font-size:16px;font-weight:700;color:var(--c-primary);letter-spacing:0.5px;">
+        아파트 청약 공고문 분석 서비스
       </span>
     </div>
 
@@ -431,17 +435,17 @@ body {{
                        font-size:14px;flex-shrink:0;">📝</span>
           <span style="color:#fff;font-size:14px;font-weight:800;">정과장의 청약노트</span>
         </div>
-        <p style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;max-width:300px;">
+        <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.7;max-width:300px;">
           한국부동산원 청약홈 공개 정보를 바탕으로<br>AI가 분석한 분양 공고 리포트입니다.
         </p>
       </div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);line-height:2.2;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:2.2;">
         <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
         <p>📌 국토교통부 실거래가 공개시스템</p>
         <p>⚠️ 투자 권유가 아닌 정보 제공 목적입니다.</p>
       </div>
     </div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:20px;">
+    <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:20px;">
       © 2026 정과장의 청약노트. 실제 청약은 반드시 공식 기관에서 확인하세요.
     </p>
   </div>
