@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://apt-note.com/sitemap.xml

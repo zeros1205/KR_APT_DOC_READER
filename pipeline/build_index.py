@@ -9,13 +9,16 @@ output/index.html 프론트페이지를 생성한다.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = ROOT / "output"
 POSTS_DIR  = OUTPUT_DIR / "posts"
 OUT_FILE   = OUTPUT_DIR / "index.html"
+
+SITE_URL = "https://apt-note.com"
+SITE_NAME = "정과장의 청약노트"
 
 # ── Anthropic 공식 브랜드 팔레트 ────────────────────
 C = {
@@ -227,6 +230,22 @@ def build() -> None:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>정과장의 청약노트 — 분양 공고 분석 모음</title>
 <meta name="description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
+<link rel="canonical" href="{SITE_URL}/">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="정과장의 청약노트">
+<meta property="og:title" content="정과장의 청약노트 — 분양 공고 분석 모음">
+<meta property="og:description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
+<meta property="og:url" content="{SITE_URL}/">
+<meta property="og:image" content="{SITE_URL}/og-image.png">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="정과장의 청약노트 — 분양 공고 분석 모음">
+<meta name="twitter:description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트.">
+<meta name="twitter:image" content="{SITE_URL}/og-image.png">
+<!-- 크롤 제어 -->
+<meta name="robots" content="index, follow">
+<link rel="sitemap" type="application/xml" href="{SITE_URL}/sitemap.xml">
 <style>
 *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 body {{
@@ -496,6 +515,30 @@ document.querySelector('.tab-btn[data-region="전체"]').classList.add('active')
     OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"✅ index.html 생성 완료: {OUT_FILE}  ({len(posts)}건)")
+
+    _build_sitemap(posts)
+    _build_robots()
+
+
+def _build_sitemap(posts: list[dict]) -> None:
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    urls = [f'  <url><loc>{SITE_URL}/</loc><changefreq>daily</changefreq><priority>1.0</priority><lastmod>{now}</lastmod></url>']
+    for p in posts:
+        loc = f"{SITE_URL}/{p['post_url']}"
+        lastmod = p.get("generated_at", now)[:10]
+        urls.append(f'  <url><loc>{loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority><lastmod>{lastmod}</lastmod></url>')
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    sitemap += "\n".join(urls) + "\n</urlset>"
+    out = OUTPUT_DIR / "sitemap.xml"
+    out.write_text(sitemap, encoding="utf-8")
+    print(f"✅ sitemap.xml 생성 완료: {out}  ({len(posts) + 1}개 URL)")
+
+
+def _build_robots() -> None:
+    content = f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n"
+    out = OUTPUT_DIR / "robots.txt"
+    out.write_text(content, encoding="utf-8")
+    print(f"✅ robots.txt 생성 완료: {out}")
 
 
 if __name__ == "__main__":

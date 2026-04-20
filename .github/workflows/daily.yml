@@ -59,7 +59,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/posts/ output/index.html output/processed_notices.json 2>/dev/null || true
+          git add output/posts/ output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json 2>/dev/null || true
           git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
           git push origin ${{ github.ref_name }}

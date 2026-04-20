@@ -49,6 +49,9 @@ MIN_QUALITY_SCORE = 70       # 이하 시 재생성
 MAX_CTA_PER_POST = 3         # 저품질 방어: 외부 링크 최대 3개
 MIN_CHAR_COUNT = 6000        # 최소 글자 수
 
+# ── 사이트 도메인 ──
+SITE_URL = "https://apt-note.com"
+
 # ── 블로그 테마 ──
 # 선택지: claude / notion / airbnb / intercom / stripe / apple / mintlify
 BLOG_THEME = os.getenv("BLOG_THEME", "claude")
