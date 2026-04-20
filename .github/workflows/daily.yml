@@ -21,6 +21,8 @@ jobs:
   generate-posts:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: write
 
     steps:
       - name: 코드 체크아웃
@@ -50,11 +52,20 @@ jobs:
           LIMIT=${{ github.event.inputs.limit || '3' }}
           python run.py --days $DAYS --limit $LIMIT
 
-      - name: 생성된 포스팅 업로드 (아티팩트)
+      - name: 생성된 포스팅 repo에 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/posts/ output/processed_notices.json 2>/dev/null || true
+          git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
+            git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
+          git push origin ${{ github.ref_name }}
+
+      - name: 생성된 포스팅 업로드 (아티팩트 백업)
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: posts-${{ github.run_id }}
           path: output/posts/
-          retention-days: 30
+          retention-days: 7
           if-no-files-found: ignore

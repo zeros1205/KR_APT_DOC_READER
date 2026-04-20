@@ -13,6 +13,7 @@ run.py
 """
 
 import sys
+import json
 import asyncio
 import argparse
 from pathlib import Path
@@ -27,11 +28,26 @@ load_dotenv(BASE_DIR / ".env")
 from agents.collector import collect_from_api, get_sample_document
 from orchestrator import run_pipeline_from_doc
 
+PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
+
+
+def _load_processed() -> set[str]:
+    if PROCESSED_FILE.exists():
+        return set(json.loads(PROCESSED_FILE.read_text(encoding="utf-8")))
+    return set()
+
+
+def _save_processed(ids: set[str]) -> None:
+    PROCESSED_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PROCESSED_FILE.write_text(
+        json.dumps(sorted(ids), ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 def _open_html(path: Path) -> None:
     html = path / "post.html"
     if html.exists():
-        import sys as _sys, webbrowser
+        import webbrowser
         webbrowser.open(html.as_uri())
 
 
@@ -60,7 +76,20 @@ async def main() -> None:
         print("최근 공고 없음. 잠시 후 다시 시도하세요.")
         return
 
+    # 중복 방지: 이미 처리된 공고 제외 (--sample 모드는 항상 실행)
+    processed_ids = _load_processed()
+    if not args.sample:
+        before = len(docs)
+        docs = [d for d in docs if d.notice_id not in processed_ids]
+        skipped = before - len(docs)
+        if skipped:
+            print(f"[중복 제외] {skipped}건 이미 처리됨 → {len(docs)}건 신규 처리")
+
     docs = docs[:args.limit]
+    if not docs:
+        print("신규 공고 없음. 모두 이미 처리된 공고입니다.")
+        return
+
     print(f"\n처리 대상: {len(docs)}건")
 
     # 공고별 파이프라인 실행
@@ -73,6 +102,7 @@ async def main() -> None:
             path = await run_pipeline_from_doc(doc)
             if path:
                 results.append(path)
+                processed_ids.add(doc.notice_id)
                 print(f"  → 저장: {path}")
                 if args.open:
                     _open_html(path)
@@ -81,6 +111,11 @@ async def main() -> None:
         except Exception as e:
             print(f"  오류: {e}")
             failed.append(doc.apt_name)
+
+    # 처리 완료 목록 저장 (중복 방지용)
+    if not args.sample and results:
+        _save_processed(processed_ids)
+        print(f"\n[중복 방지] processed_notices.json 업데이트 ({len(processed_ids)}건 누적)")
 
     # 결과 요약
     print("\n" + "=" * 55)
