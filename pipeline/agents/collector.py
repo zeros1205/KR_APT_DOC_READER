@@ -450,6 +450,16 @@ def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
 # 7. 통합 수집 함수
 # ══════════════════════════════════════════════════
 
+_RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위")
+
+
+def _supply_category(supply_type: str) -> str:
+    """공급 유형 → '신규' | '무순위/재공급' 구분"""
+    if any(kw in supply_type for kw in _RESUPPLY_KEYWORDS):
+        return "무순위/재공급"
+    return "신규"
+
+
 async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     """OpenAPI로 최근 N일 공고 수집"""
     api = CheongYakAPI()
@@ -465,15 +475,27 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     for item in raw_list:
         normalized = _from_openapi(item)
         doc = _build_document(normalized)
+        category = _supply_category(doc.supply_type)
+        print(f"  [수집] {doc.apt_name} — 공급유형: {doc.supply_type or '미확인'} ({category})")
 
-        # 주택형별 데이터 추가 텍스트
+        # 주택형별 데이터 추가
         if doc.house_manage_no:
             units = await api.get_unit_types(doc.house_manage_no)
             if units:
                 unit_text = _units_to_text(units)
                 doc.raw_text += f"\n\n[주택형별 정보]\n{unit_text}"
+            else:
+                # 무순위/재공급: 주택형 API 미지원 → 총 세대수 기반 텍스트 생성
+                print(f"  ⚠️  {doc.apt_name}: 주택형별 API 데이터 없음 ({category})")
+                if category == "무순위/재공급" and doc.total_units:
+                    doc.raw_text += (
+                        f"\n\n[공급 정보]\n"
+                        f"공급유형: {doc.supply_type}\n"
+                        f"잔여/공급 세대수: {doc.total_units}세대\n"
+                        f"※ 분양가는 공고문 원문을 직접 확인하세요."
+                    )
 
-        # PDF 공고문 (URL 있을 때)
+        # PDF 공고문 (URL 있을 때) — 무순위/재공급의 경우 분양가 정보가 PDF에만 있을 수 있음
         if doc.notice_url:
             safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
             pdf_file = await download_pdf(
@@ -482,7 +504,9 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                 f"{safe}_{doc.notice_id}.pdf",
             )
             if pdf_file:
-                doc.raw_text, doc.tables = parse_pdf(pdf_file)
+                pdf_text, pdf_tables = parse_pdf(pdf_file)
+                doc.raw_text = pdf_text or doc.raw_text
+                doc.tables   = pdf_tables or doc.tables
                 doc.pdf_path = str(pdf_file)
 
         docs.append(doc)
@@ -498,13 +522,17 @@ def _units_to_text(units: list[dict]) -> str:
         house_type = u.get("HOUSE_TY", "")
         excl_ar    = u.get("EXCLUSE_AR", "")
         suply_ar   = u.get("SUPLY_AR", "")
-        gnrl_cnt   = u.get("SUPLY_HSHLDCO", "")
-        spsply_cnt = u.get("SPSPLY_HSHLDCO", "")
+        # GNRL_HOSP_CO / SPSPLY_HOSP_CO: API 문서 기준 필드명
+        # SUPLY_HSHLDCO / SPSPLY_HSHLDCO: 일부 응답 변형 대비 폴백
+        gnrl_cnt   = u.get("GNRL_HOSP_CO") or u.get("SUPLY_HSHLDCO", "")
+        spsply_cnt = u.get("SPSPLY_HOSP_CO") or u.get("SPSPLY_HSHLDCO", "")
         top_price  = u.get("LTTOT_TOP_AMOUNT", "")
+        low_price  = u.get("LTTOT_LOWPR_AMOUNT", "")
+        price_str  = f"{low_price}~{top_price}" if low_price and top_price and low_price != top_price else (top_price or "-")
         lines.append(
             f"{house_type}타입 | 전용 {excl_ar}㎡ | 공급 {suply_ar}㎡ "
             f"| 일반 {gnrl_cnt}세대 | 특별 {spsply_cnt}세대 "
-            f"| 분양가상한 {top_price}만원"
+            f"| 분양가 {price_str}만원"
         )
     return "\n".join(lines)
 
