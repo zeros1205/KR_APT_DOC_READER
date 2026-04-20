@@ -37,15 +37,10 @@
     pointer-events: none;
   "></div>
 
-  <div style="
-    display: inline-block;
-    background: rgba(255,255,255,0.18);
-    color: {{T_HEADER_TEXT}};
-    font-size: 12px; font-weight: 700; letter-spacing: 1.2px;
-    padding: 5px 14px; border-radius: {{T_RADIUS_PILL}};
-    border: 1px solid rgba(255,255,255,0.28);
-    margin-bottom: 16px;
-  ">📋 분양 공고 분석 리포트</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+    {{SUPPLY_TYPE_TAG}}
+    {{REGION_TAG}}
+  </div>
 
   <h1 style="
     color: {{T_HEADER_TEXT}};

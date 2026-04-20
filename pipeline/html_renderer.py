@@ -143,6 +143,7 @@ class PostData:
     # 메타
     source_date: str = ""
     read_time: int = 7
+    supply_type: str = ""       # API SUBSCRPT_TYCD_NM 원본값
 
     # 테마
     theme: str = "intercom"
@@ -153,6 +154,30 @@ class PostData:
 # ──────────────────────────────────────────────────
 
 TEMPLATE_PATH = Path(__file__).parent.parent / "templates" / "blog_template.html"
+
+_SUPPLY_LABEL_MAP = [
+    ("무순위",    "무순위"),
+    ("불법행위",  "불법행위재공급"),
+    ("임의",      "임의공급"),
+    ("취소후",    "취소후재공급"),
+    ("잔여",      "잔여세대"),
+    ("특별",      "특별공급"),
+    ("일반",      "일반공급"),
+]
+
+def _supply_label(supply_type: str) -> str:
+    for kw, label in _SUPPLY_LABEL_MAP:
+        if kw in supply_type:
+            return label
+    return "신규분양"
+
+def _render_header_tag(label: str, radius: str) -> str:
+    return (
+        f'<span style="display:inline-block; background:rgba(255,255,255,0.18);'
+        f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
+        f' padding:5px 14px; border-radius:{radius};'
+        f' border:1px solid rgba(255,255,255,0.28);">{label}</span>'
+    )
 
 
 def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
@@ -338,7 +363,15 @@ class BlogHTMLRenderer:
         total_special = sum(u.special_units for u in data.unit_types)
         total_units   = total_general + total_special
 
+        from regions import region_name_to_category
+        supply_label   = _supply_label(data.supply_type)
+        region_label   = region_name_to_category(data.location)
+        pill_r         = t["radius_pill"]
+
         replacements = {
+            # 헤더 태그
+            "{{SUPPLY_TYPE_TAG}}": _render_header_tag(supply_label, pill_r),
+            "{{REGION_TAG}}":      _render_header_tag(f"📍 {region_label}", pill_r),
             # 포스팅 메타
             "{{POST_TITLE}}":     data.post_title,
             "{{POST_SUBTITLE}}":  data.post_subtitle,
