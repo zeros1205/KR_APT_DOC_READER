@@ -185,6 +185,11 @@ def _render_header_tag(label: str, radius: str) -> str:
     )
 
 
+def _naver_map_url(address: str) -> str:
+    from urllib.parse import quote
+    return f"https://map.naver.com/v5/search/{quote(address)}" if address else "https://map.naver.com/"
+
+
 def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
     """최소 분양가(타입명) 줄바꿈 ~ 최대 분양가(타입명) 형식 반환"""
     valid = [ut for ut in unit_types if ut.price_min > 0]
@@ -475,6 +480,7 @@ class BlogHTMLRenderer:
             # 단지 기본
             "{{APT_NAME}}":         data.apt_name,
             "{{SUPPLY_LOCATION}}":  data.supply_location,
+            "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_location or data.location),
             "{{SUPPLY_SCALE}}":     data.supply_scale,
             "{{PRICE_RANGE}}":      data.price_range,
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
@@ -527,14 +533,6 @@ class BlogHTMLRenderer:
             _render_unit_rows_intro(data.unit_types),
         )
 
-        # Step 4: 조감도 이미지 (플레이스홀더)
-        hero_img = data.images.get("hero")
-        html = html.replace(
-            "{{HERO_IMAGE_HTML}}",
-            render_image_html(hero_img, "margin-bottom:16px; border-radius:10px; overflow:hidden;")
-            if hero_img else "",
-        )
-
         # Step 5: Q&A 블록
         qa_html = "\n".join(
             _render_qa_block(qa, i, t)
@@ -572,12 +570,18 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     post_dir.mkdir(parents=True, exist_ok=True)
 
     from config import SITE_URL
+    from shared_ui import (
+        FONT_LINK, FONT_FAMILY, PALETTE_CSS,
+        PALETTE_INIT_JS, PALETTE_SWITCH_JS, shared_nav,
+    )
+
     post_slug = f"{date_str}_{safe}"
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
+    nav_html = shared_nav("../../")
 
     full_html = f"""<!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-palette="A">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -593,9 +597,21 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="robots" content="index, follow">
+{FONT_LINK}
+{PALETTE_INIT_JS}
+<style>
+{PALETTE_CSS}
+body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-bg); }}
+</style>
 </head>
-<body style="margin:0;padding:0;">
+<body>
+{nav_html}
+<div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
 {html}
+</div>
+<script>
+{PALETTE_SWITCH_JS}
+</script>
 </body>
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
@@ -611,6 +627,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         "tags":            data.seo_tags,
         "location":        data.location,
         "region_category": region_category,
+        "supply_type":          data.supply_type,
         "price_range":          data.price_range,
         "special_supply_date":  data.special_supply_date,
         "rank1_date":           data.rank1_date,

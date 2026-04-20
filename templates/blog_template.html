@@ -7,7 +7,7 @@
 <!-- ══ 전체 래퍼 ══ -->
 <div style="
   background: {{T_BG}};
-  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
   color: {{T_TEXT}};
   max-width: 680px;
@@ -96,9 +96,6 @@
     margin-bottom: 28px;
   ">{{APT_INTRO}}</div>
 
-  <!-- 단지 조감도 -->
-  {{HERO_IMAGE_HTML}}
-
   <!-- 핵심 지표 카드 -->
   <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
 
@@ -110,7 +107,7 @@
       box-shadow: {{T_SHADOW_MD}};
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
-      <div style="font-size: 22px; font-weight: 800; line-height: 1.4;">{{PRICE_RANGE_TYPED}}</div>
+      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">{{PRICE_RANGE_TYPED}}</div>
     </div>
 
     <!-- 총 공급 -->
@@ -146,7 +143,15 @@
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 6px;">📍 공급 위치</div>
       <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 4px;">{{SUPPLY_LOCATION}}</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}};">{{SUPPLY_SCALE}}</div>
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 10px;">{{SUPPLY_SCALE}}</div>
+      <a href="{{NAVER_MAP_URL}}" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;
+                background:{{T_SURFACE}};border:1px solid {{T_ACCENT}};
+                color:{{T_ACCENT}};border-radius:6px;padding:7px 14px;
+                font-size:13px;font-weight:700;text-decoration:none;
+                letter-spacing:0.2px;">
+        🗺️ 네이버 지도에서 보기 →
+      </a>
     </div>
 
   </div>
