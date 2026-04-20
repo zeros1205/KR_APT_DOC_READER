@@ -449,7 +449,18 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     post_dir = output_root / "posts" / f"{date_str}_{safe}"
     post_dir.mkdir(parents=True, exist_ok=True)
 
-    (post_dir / "post.html").write_text(html, encoding="utf-8")
+    full_html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{data.post_title}</title>
+</head>
+<body style="margin:0;padding:0;">
+{html}
+</body>
+</html>"""
+    (post_dir / "post.html").write_text(full_html, encoding="utf-8")
 
     meta = {
         "apt_name":    data.apt_name,
