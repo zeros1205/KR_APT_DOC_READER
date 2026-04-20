@@ -395,7 +395,20 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # 메인 오케스트레이터
 # ──────────────────────────────────────────────────
 
-async def run_pipeline(notice_text: str, max_retries: int = 2) -> Path | None:
+_RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위", "임의공급")
+
+
+def _select_theme(supply_type: str) -> str:
+    """공급 유형에 따라 테마 자동 선택.
+    신규분양(특별/일반 1·2순위) → config BLOG_THEME (기본 claude)
+    무순위·임의공급·불법행위재공급 → resupply (연두 팔레트)
+    """
+    if any(kw in supply_type for kw in _RESUPPLY_KEYWORDS):
+        return "resupply"
+    return BLOG_THEME
+
+
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -517,7 +530,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2) -> Path | None:
         images=images,
         source_date=facts.get("rank1_date", ""),
         read_time=max(6, len(str(content)) // 450),
-        theme=BLOG_THEME,
+        theme=theme or BLOG_THEME,
     )
 
     # Step 6: HTML 렌더링
@@ -541,7 +554,8 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
     RAG 초기화 실패 시 doc.to_rag_text()로 자동 폴백하여
     ChromaDB 없이도 동작 보장.
     """
-    print(f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작...")
+    theme = _select_theme(doc.supply_type)
+    print(f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작... (공급유형: {doc.supply_type or '신규'} → 테마: {theme})")
 
     try:
         from agents.rag_store import ApartmentRAGStore
@@ -555,7 +569,7 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries)
+    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme)
 
 
 # ──────────────────────────────────────────────────

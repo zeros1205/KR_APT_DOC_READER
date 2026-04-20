@@ -387,6 +387,67 @@ THEMES: dict[str, dict[str, str]] = {
         "disclaimer_bg": "#F4FBF6",
         "disclaimer_border": "#C6E8CF",
     },
+
+    # ──────────────────────────────────────────────
+    # RESUPPLY — 연두 크림, 무순위·임의공급·불법행위재공급 전용
+    # claude 테마와 동일한 따뜻한 크림 톤 베이스, 포인트만 연두색으로 전환
+    # ──────────────────────────────────────────────
+    "resupply": {
+        "name": "재공급",
+        "description": "연두 크림, 무순위·임의공급·불법행위재공급 전용",
+        # 배경 — claude와 동일한 따뜻한 오프화이트
+        "bg":           "#F8FAF5",
+        "surface":      "#EFF6E8",
+        "surface2":     "#E3EDD9",
+        "border":       "#C8DEBC",
+        # 텍스트 — claude와 동일한 따뜻한 차콜 계열
+        "text":         "#252E1E",
+        "text2":        "#556647",
+        "muted":        "#8FA47B",
+        # 강조 — 연두색 (lime green)
+        "accent":       "#6BAF2E",
+        "accent_dark":  "#507F21",
+        "accent_light": "#E8FAD0",
+        # 헤더
+        "header_bg":    "linear-gradient(135deg, #6BAF2E 0%, #507F21 60%, #395C17 100%)",
+        "header_text":  "#FFFFFF",
+        "header_sub":   "rgba(255,255,255,0.78)",
+        # Q&A
+        "q_bg":         "#252E1E",
+        "q_text":       "#FFFFFF",
+        "q_badge_bg":   "#6BAF2E",
+        "q_badge_text": "#FFFFFF",
+        "a_badge_bg":   "#4A7C5F",
+        "a_badge_text": "#FFFFFF",
+        # 테이블
+        "table_head":   "#252E1E",
+        "table_head_t": "#FFFFFF",
+        "table_stripe": "#EFF6E8",
+        # 태그
+        "tag_bg":       "#E8FAD0",
+        "tag_text":     "#395C17",
+        # 구분선/타임라인
+        "divider":      "#6BAF2E",
+        "timeline":     "#C8DEBC",
+        # 카드 (입지 점수)
+        "card1_bg":     "#E8FAD0", "card1_text": "#395C17",
+        "card2_bg":     "#EBF5EE", "card2_text": "#2D6349",
+        "card3_bg":     "#FEFBEC", "card3_text": "#7A6200",
+        "card4_bg":     "#FDEEF0", "card4_text": "#8B1A2A",
+        # 납부 단계 색상
+        "step1": "#395C17", "step2": "#A07A1A", "step3": "#6BAF2E",
+        # 반응형 & 여백 — claude와 동일
+        "radius_sm":    "6px",
+        "radius_md":    "10px",
+        "radius_lg":    "16px",
+        "radius_pill":  "24px",
+        "shadow_sm":    "0 1px 4px rgba(37,46,30,0.07)",
+        "shadow_md":    "0 4px 14px rgba(37,46,30,0.10)",
+        "shadow_lg":    "0 8px 28px rgba(37,46,30,0.13)",
+        # 면책 고지
+        "disclaimer_bg":     "#EFF6E8",
+        "disclaimer_border": "#C8DEBC",
+    },
 }
 
 
