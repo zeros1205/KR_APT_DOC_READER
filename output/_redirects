@@ -1,5 +1,1 @@
-# www → apex 301 (Cloudflare Transform Rules로도 설정 필요)
-https://www.apt-note.com/* https://apt-note.com/:splat 301
-
-# /index → /
 /index /index.html 301
