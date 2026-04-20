@@ -93,7 +93,7 @@ def _date_cell(label: str, month: str, day: str, accent: str) -> str:
             f'<div style="flex:1;padding:14px 16px;text-align:center;">'
             f'<p style="font-size:10px;font-weight:600;color:{C["mid_gray"]};'
             f'letter-spacing:1px;margin-bottom:8px;">{label}</p>'
-            f'<p style="font-size:13px;color:{C["mid_gray"]};">미정</p>'
+            f'<p style="font-size:13px;color:{C["mid_gray"]};">-</p>'
             f'</div>'
         )
     return (
