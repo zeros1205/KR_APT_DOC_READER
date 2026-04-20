@@ -72,6 +72,12 @@ FACT_EXTRACTION_PROMPT = """
 - acquisition_tax_rate: 취득세율 (예: "1~3%")
 - is_hot_zone: 투기과열지구 여부 (Y/N)
 - is_price_cap: 분양가상한제 여부 (Y/N)
+- eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
+  각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
+           quota(예: "20호" — 없으면 null),
+           requirements(핵심 자격 요건 문장 목록, 최대 4개, 공고 원문 기준)
+- eligibility_rank1: 배열 — 1순위 신청자격 핵심 요건 문장 목록 (최대 5개, 공고 원문 기준)
+- eligibility_rank2: 배열 — 2순위 신청자격 핵심 요건 문장 목록 (최대 3개, 공고 원문 기준)
 
 [공고 원문]:
 {notice_text}
@@ -532,6 +538,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         read_time=max(6, len(str(content)) // 450),
         theme=theme or BLOG_THEME,
         supply_type=supply_type,
+        eligibility_special=facts.get("eligibility_special") or [],
+        eligibility_rank1=facts.get("eligibility_rank1") or [],
+        eligibility_rank2=facts.get("eligibility_rank2") or [],
     )
 
     # Step 6: HTML 렌더링

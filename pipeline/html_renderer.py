@@ -131,6 +131,11 @@ class PostData:
     schedule_desc: str = ""      # 청약 일정 타임라인 앞 설명
     tax_desc: str = ""           # 세금 표 앞 설명
 
+    # 청약 신청자격
+    eligibility_special: list = field(default_factory=list)  # [{type_name, quota, requirements:[str]}]
+    eligibility_rank1: list[str] = field(default_factory=list)
+    eligibility_rank2: list[str] = field(default_factory=list)
+
     # Q&A
     qa_blocks: list[QABlock] = field(default_factory=list)
 
@@ -284,6 +289,87 @@ def _render_seo_tags(tags: list[str], t: dict) -> str:
             f'font-weight:600; display:inline-block;">#{clean}</span>'
         )
     return "\n  ".join(spans)
+
+
+def _render_eligibility(data: "PostData", t: dict) -> str:
+    """04 · 청약 신청자격 섹션 HTML 렌더링"""
+
+    # ── 특별공급 카드들 ──
+    sp_cards = ""
+    for sp in data.eligibility_special:
+        type_name = sp.get("type_name", "")
+        quota     = sp.get("quota", "")
+        reqs      = sp.get("requirements", [])
+        quota_html = (
+            f'<span style="font-size:11px;font-weight:600;background:{t["accent_light"]};'
+            f'color:{t["accent"]};padding:2px 8px;border-radius:{t["radius_pill"]};'
+            f'margin-left:6px;">{quota}</span>'
+            if quota else ""
+        )
+        req_items = "".join(
+            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.7;'
+            f'padding:2px 0;">{r}</li>'
+            for r in reqs
+        )
+        sp_cards += (
+            f'<div style="flex:1 1 calc(50% - 8px);min-width:200px;'
+            f'background:{t["surface"]};border:1px solid {t["border"]};'
+            f'border-radius:{t["radius_md"]};padding:16px 18px;">'
+            f'<div style="font-size:14px;font-weight:800;color:{t["text"]};'
+            f'margin-bottom:10px;">{type_name}{quota_html}</div>'
+            f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
+            f'</div>'
+        )
+
+    if sp_cards:
+        special_block = (
+            f'<div style="font-size:13px;font-weight:700;color:{t["accent"]};'
+            f'letter-spacing:0.5px;margin-bottom:12px;">특별공급</div>'
+            f'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;">'
+            f'{sp_cards}</div>'
+        )
+    else:
+        special_block = (
+            f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
+            f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
+            f'font-size:14px;color:{t["muted"]};">특별공급 자격 정보가 없습니다.</div>'
+        )
+
+    # ── 1순위 / 2순위 ──
+    def _rank_block(label: str, items: list[str], color: str) -> str:
+        if not items:
+            items = ["-"]
+        li_html = "".join(
+            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
+            f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
+            f'<span style="color:{color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
+            for r in items
+        )
+        return (
+            f'<div style="flex:1 1 calc(50% - 8px);min-width:200px;'
+            f'background:{t["surface"]};border:1px solid {t["border"]};'
+            f'border-top:3px solid {color};border-radius:{t["radius_md"]};'
+            f'padding:16px 18px;">'
+            f'<div style="font-size:14px;font-weight:800;color:{color};'
+            f'margin-bottom:12px;">{label}</div>'
+            f'<ul style="list-style:none;padding:0;margin:0;">{li_html}</ul>'
+            f'</div>'
+        )
+
+    rank_blocks = (
+        f'<div style="display:flex;flex-wrap:wrap;gap:10px;">'
+        f'{_rank_block("1순위 자격", data.eligibility_rank1, t["accent"])}'
+        f'{_rank_block("2순위 자격", data.eligibility_rank2, t["text2"])}'
+        f'</div>'
+    )
+
+    notice = (
+        f'<p style="font-size:13px;color:{t["muted"]};margin-top:16px;line-height:1.6;">'
+        f'※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. '
+        f'반드시 공식 분양사 및 청약홈에서 최종 확인하세요.</p>'
+    )
+
+    return special_block + rank_blocks + notice
 
 
 def _apply_theme(html: str, t: dict) -> str:
@@ -455,6 +541,9 @@ class BlogHTMLRenderer:
             for i, qa in enumerate(data.qa_blocks)
         )
         html = html.replace("{{QA_BLOCKS}}", qa_html)
+
+        # Step 5b: 청약 신청자격 섹션
+        html = html.replace("{{ELIGIBILITY_SECTION}}", _render_eligibility(data, t))
 
         # Step 6: SEO 태그
         html = html.replace(
