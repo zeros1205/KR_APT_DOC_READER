@@ -341,7 +341,7 @@ body {{
         정과장의 청약노트
       </span>
     </div>
-    <a href="https://apply.lh.or.kr" target="_blank" rel="noopener"
+    <a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener"
        style="font-size:12px;color:{C['mid_gray']};text-decoration:none;
               border:1px solid #3d3a34;border-radius:6px;padding:5px 12px;
               transition:color 150ms;white-space:nowrap;"
