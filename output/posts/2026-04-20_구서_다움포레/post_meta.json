@@ -1,0 +1,38 @@
+{
+  "apt_name": "구서 다움포레",
+  "title": "구서 다움포레 청약 총정리 | 부산 금정구 분양가 4.3억~5.4억",
+  "subtitle": "일정·자격·자금까지 한 번에 확인하세요",
+  "theme": "claude",
+  "tags": [
+    "구서다움포레",
+    "금정구청약",
+    "구서동분양",
+    "부산청약2026",
+    "부산아파트분양",
+    "생애최초청약",
+    "신혼부부청약",
+    "청약가점",
+    "부산신축아파트",
+    "금정구아파트"
+  ],
+  "location": "부산광역시 금정구 구서동",
+  "region_category": "부산",
+  "supply_type": "",
+  "price_range": "약 4.3억~5.4억원",
+  "special_supply_date": "2026-04-09",
+  "rank1_date": "2026-04-10",
+  "rank2_date": "2026-04-13",
+  "notice_date": "",
+  "move_in_date": "2026년 05월",
+  "supply_location": "부산광역시 금정구 구서동 203-14번지 일원",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000040&pblancNo=2026000040",
+  "generated_at": "2026-04-20T16:56:07.960387",
+  "naver_blog_guide": {
+    "step1": "네이버 블로그 → 글쓰기",
+    "step2": "스마트에디터 ONE → [HTML] 버튼",
+    "step3": "post.html 전체 붙여넣기",
+    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
+    "step5": "태그 입력: 구서다움포레, 금정구청약, 구서동분양, 부산청약2026, 부산아파트분양, 생애최초청약, 신혼부부청약, 청약가점, 부산신축아파트, 금정구아파트",
+    "step6": "카테고리 설정 후 발행"
+  }
+}

@@ -282,12 +282,12 @@ body {
     <div style="display:flex;flex-wrap:wrap;gap:12px;">
       <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
                   border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-primary);letter-spacing:-1px;">11</div>
+        <div style="font-size:32px;font-weight:900;color:var(--c-primary);letter-spacing:-1px;">45</div>
         <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">분석 공고</div>
       </div>
       <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
                   border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-accent);letter-spacing:-1px;">8</div>
+        <div style="font-size:32px;font-weight:900;color:var(--c-accent);letter-spacing:-1px;">15</div>
         <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">커버 지역</div>
       </div>
     </div>
@@ -310,7 +310,7 @@ body {
       </h2>
     </div>
     <p id="result-count" style="font-size:13px;color:var(--c-mid);">
-      총 <strong style="color:var(--c-dark);">11</strong>건
+      총 <strong style="color:var(--c-dark);">45</strong>건
     </p>
   </div>
 
@@ -326,11 +326,347 @@ body {
       <input id="search-input" type="text" placeholder="단지명 검색"
              oninput="filterSearch(this.value)" autocomplete="off">
     </div>
-    <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체<span class="tab-count"> (11)</span></button><button class="tab-btn" data-region="서울" onclick="filterRegion(this,'서울')">서울<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도<span class="tab-count"> (4)</span></button><button class="tab-btn" data-region="인천" onclick="filterRegion(this,'인천')">인천<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="대전" onclick="filterRegion(this,'대전')">대전<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="울산" onclick="filterRegion(this,'울산')">울산<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="강원도" onclick="filterRegion(this,'강원도')">강원도<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경상남도" onclick="filterRegion(this,'경상남도')">경상남도<span class="tab-count"> (1)</span></button>
+    <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체<span class="tab-count"> (45)</span></button><button class="tab-btn" data-region="서울" onclick="filterRegion(this,'서울')">서울<span class="tab-count"> (5)</span></button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도<span class="tab-count"> (10)</span></button><button class="tab-btn" data-region="인천" onclick="filterRegion(this,'인천')">인천<span class="tab-count"> (4)</span></button><button class="tab-btn" data-region="부산" onclick="filterRegion(this,'부산')">부산<span class="tab-count"> (6)</span></button><button class="tab-btn" data-region="대전" onclick="filterRegion(this,'대전')">대전<span class="tab-count"> (4)</span></button><button class="tab-btn" data-region="대구" onclick="filterRegion(this,'대구')">대구<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="광주" onclick="filterRegion(this,'광주')">광주<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="울산" onclick="filterRegion(this,'울산')">울산<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="강원도" onclick="filterRegion(this,'강원도')">강원도<span class="tab-count"> (2)</span></button><button class="tab-btn" data-region="충청북도" onclick="filterRegion(this,'충청북도')">충청북도<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="충청남도" onclick="filterRegion(this,'충청남도')">충청남도<span class="tab-count"> (3)</span></button><button class="tab-btn" data-region="전라북도" onclick="filterRegion(this,'전라북도')">전라북도<span class="tab-count"> (2)</span></button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도<span class="tab-count"> (2)</span></button><button class="tab-btn" data-region="경상남도" onclick="filterRegion(this,'경상남도')">경상남도<span class="tab-count"> (2)</span></button><button class="tab-btn" data-region="제주도" onclick="filterRegion(this,'제주도')">제주도<span class="tab-count"> (1)</span></button>
   </div>
 
   <div class="cards-grid" id="cards-grid">
-    <article class="post-card" data-region="인천" data-name="인천가정2지구 B2블록 공공분양주택(후속사업)" onclick="location.href='posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html'">
+    <article class="post-card" data-region="경상남도" data-name="힐스테이트 평거 센트럴" onclick="location.href='posts/2026-04-20_힐스테이트_평거_센트럴/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      힐스테이트 평거 센트럴
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 20일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 21일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경상남도 진주시 평거동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#힐스테이트평거센트럴</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#진주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#평거동아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#진주분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_힐스테이트_평거_센트럴/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="힐스테이트 안양펠루스" onclick="location.href='posts/2026-04-20_힐스테이트_안양펠루스/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      힐스테이트 안양펠루스
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 안양시 만안구 안양동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#힐스테이트안양펠루스</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#안양청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#안양분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#만안구아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_힐스테이트_안양펠루스/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="대전" data-name="해링턴플레이스 오룡역" onclick="location.href='posts/2026-04-20_해링턴플레이스_오룡역/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      해링턴플레이스 오룡역
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 23일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 24일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 대전시 중구 용두동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#해링턴플레이스오룡역</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대전청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대전중구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용두동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_해링턴플레이스_오룡역/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="부산" data-name="한화포레나 부산당리" onclick="location.href='posts/2026-04-20_한화포레나_부산당리/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      한화포레나 부산당리
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 30일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 31일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 사하구 당리동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#한화포레나부산당리</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산당리청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#사하구아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_한화포레나_부산당리/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="충청북도" data-name="청주 푸르지오 씨엘리체" onclick="location.href='posts/2026-04-20_청주_푸르지오_씨엘리체/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      청주 푸르지오 씨엘리체
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 20일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 21일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 충청북도 청주시 서원구 미평동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#청주푸르지오씨엘리체</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#청주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서원구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#미평동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_청주_푸르지오_씨엘리체/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="충청남도" data-name="천안 동일하이빌 파크레인" onclick="location.href='posts/2026-04-20_천안_동일하이빌_파크레인/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      천안 동일하이빌 파크레인
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 1일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 2일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 충청남도 천안시 서북구 직산읍 삼은리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#천안동일하이빌파크레인</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#천안청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#직산읍아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#천안서북구분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_천안_동일하이빌_파크레인/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="인천" data-name="중앙하이츠 갈산역 센트럴" onclick="location.href='posts/2026-04-20_중앙하이츠_갈산역_센트럴/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      중앙하이츠 갈산역 센트럴
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 인천광역시 부평구 갈산동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#중앙하이츠갈산역센트럴</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#갈산역아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부평구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#인천청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_중앙하이츠_갈산역_센트럴/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="인천" data-name="인천가정2지구 B2블록 공공분양주택(후속사업)" onclick="location.href='posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -376,6 +712,150 @@ body {
 
   <!-- CTA -->
   <a href="posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="의정부역 센트럴 아이파크" onclick="location.href='posts/2026-04-20_의정부역_센트럴_아이파크/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      의정부역 센트럴 아이파크
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 8일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 의정부시 의정부동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#의정부역센트럴아이파크</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#의정부분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#의정부청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#의정부아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_의정부역_센트럴_아이파크/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="용인 플랫폼시티 라온프라이빗 아르디에" onclick="location.href='posts/2026-04-20_용인_플랫폼시티_라온프라이빗_아르디에/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      용인 플랫폼시티 라온프라이빗 아르디에
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 23일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 24일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 용인시 기흥구 영덕동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인플랫폼시티라온프라이빗아르디에</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#기흥구영덕동분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인청약2026</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#경기도청약</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_용인_플랫폼시티_라온프라이빗_아르디에/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="용인 양지 서희스타힐스 하이뷰" onclick="location.href='posts/2026-04-20_용인_양지_서희스타힐스_하이뷰/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      용인 양지 서희스타힐스 하이뷰
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">5월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">5월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 용인시 처인구 양지읍 양지리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인양지서희스타힐스하이뷰</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#양지서희스타힐스</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#처인구분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_용인_양지_서희스타힐스_하이뷰/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
 </article><article class="post-card" data-region="경기도" data-name="용인 고림 동문 디 이스트" onclick="location.href='posts/2026-04-20_용인_고림_동문_디_이스트/post.html'">
@@ -426,6 +906,150 @@ body {
   <a href="posts/2026-04-20_용인_고림_동문_디_이스트/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
+</article><article class="post-card" data-region="부산" data-name="온천장 하늘채 엘리시움" onclick="location.href='posts/2026-04-20_온천장_하늘채_엘리시움/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      온천장 하늘채 엘리시움
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 14일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 동래구 온천동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#온천장하늘채엘리시움</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#동래구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약2026</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#온천동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_온천장_하늘채_엘리시움/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="서울" data-name="오티에르 반포" onclick="location.href='posts/2026-04-20_오티에르_반포/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      오티에르 반포
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 10일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 서울특별시 서초구 잠원동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#오티에르반포</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#잠원동청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서초구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#반포청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_오티에르_반포/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="인천" data-name="오션포레베네스트하우스(미단시티 공동8BL)" onclick="location.href='posts/2026-04-20_오션포레베네스트하우스_미단시티_공동8BL_/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      오션포레베네스트하우스(미단시티 공동8BL)
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 30일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 31일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 인천광역시 중구 자연대로
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#오션포레베네스트하우스</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#인천중구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#미단시티분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#인천청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_오션포레베네스트하우스_미단시티_공동8BL_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
 </article><article class="post-card" data-region="경상남도" data-name="엘리프 창원" onclick="location.href='posts/2026-04-20_엘리프_창원/post.html'">
 
   <!-- ── 카드 헤더 ── -->
@@ -474,6 +1098,486 @@ body {
   <a href="posts/2026-04-20_엘리프_창원/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
+</article><article class="post-card" data-region="부산" data-name="에코델타시티 엘가 로제비앙" onclick="location.href='posts/2026-04-20_에코델타시티_엘가_로제비앙/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      에코델타시티 엘가 로제비앙
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 26일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 27일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 강서구 강동동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#에코델타시티엘가로제비앙</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#강서구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#에코델타시티분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_에코델타시티_엘가_로제비앙/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="충청남도" data-name="업성 푸르지오 레이크시티" onclick="location.href='posts/2026-04-20_업성_푸르지오_레이크시티/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      업성 푸르지오 레이크시티
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 14일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 충청남도 천안시 서북구 업성동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#업성푸르지오레이크시티</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#천안청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#천안서북구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#업성동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_업성_푸르지오_레이크시티/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="부산" data-name="엄궁역 트라비스 하늘채" onclick="location.href='posts/2026-04-20_엄궁역_트라비스_하늘채/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      엄궁역 트라비스 하늘채
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 사상구 엄궁동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#엄궁역트라비스하늘채</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#사상구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#엄궁동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_엄궁역_트라비스_하늘채/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="야목역 서희스타힐스 그랜드힐" onclick="location.href='posts/2026-04-20_야목역_서희스타힐스_그랜드힐/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      야목역 서희스타힐스 그랜드힐
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 16일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 17일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 화성시 효행구 비봉면 구포리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#야목역서희스타힐스그랜드힐</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#화성시청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#비봉면아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#야목역아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_야목역_서희스타힐스_그랜드힐/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="서울" data-name="아크로 드 서초" onclick="location.href='posts/2026-04-20_아크로_드_서초/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      아크로 드 서초
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 31일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 1일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 서울시 서초구 서초동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#아크로드서초</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서초구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서초동분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서울청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_아크로_드_서초/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="충청남도" data-name="아산탕정자이 메트로시티(A3BL)" onclick="location.href='posts/2026-04-20_아산탕정자이_메트로시티_A3BL_/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      아산탕정자이 메트로시티(A3BL)
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 31일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 1일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 충청남도 아산시 탕정면 호산리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#아산탕정자이메트로시티</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#아산신도시청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#탕정자이</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#아산분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_아산탕정자이_메트로시티_A3BL_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경기도" data-name="시흥거모B1 호반써밋" onclick="location.href='posts/2026-04-20_시흥거모B1_호반써밋/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      시흥거모B1 호반써밋
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 23일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 24일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경기도 시흥시 거모동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#시흥거모호반써밋</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#시흥청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#거모지구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#호반써밋청약</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_시흥거모B1_호반써밋/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="광주" data-name="선운지구다사로움" onclick="location.href='posts/2026-04-20_선운지구다사로움/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      선운지구다사로움
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:13px;color:var(--c-mid);">-</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 3일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 광주광역시 광산구 선운동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#선운지구다사로움</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#광주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#광산구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#선운동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_선운지구다사로움/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="전라북도" data-name="북전주 광신프로그레스" onclick="location.href='posts/2026-04-20_북전주_광신프로그레스/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      북전주 광신프로그레스
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 14일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 전북특별자치도 전주시 덕진구 고랑동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#북전주광신프로그레스</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#전주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#덕진구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#전주아파트분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_북전주_광신프로그레스/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="대구" data-name="범어역 파크드림 디아르" onclick="location.href='posts/2026-04-20_범어역_파크드림_디아르/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      범어역 파크드림 디아르
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 대구광역시 수성구 수성동 4가
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#범어역파크드림디아르</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#수성구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#수성동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_범어역_파크드림_디아르/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
 </article><article class="post-card" data-region="울산" data-name="문수로 라티에르 673" onclick="location.href='posts/2026-04-20_문수로_라티에르_673/post.html'">
 
   <!-- ── 카드 헤더 ── -->
@@ -520,6 +1624,102 @@ body {
 
   <!-- CTA -->
   <a href="posts/2026-04-20_문수로_라티에르_673/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="강원도" data-name="르네오션 고성 퍼스트뷰" onclick="location.href='posts/2026-04-20_르네오션_고성_퍼스트뷰/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      르네오션 고성 퍼스트뷰
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 14일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 강원특별자치도 고성군 토성면 청간리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#르네오션고성퍼스트뷰</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#고성분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#강원청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#고성청약</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_르네오션_고성_퍼스트뷰/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="서울" data-name="라클라체자이드파인" onclick="location.href='posts/2026-04-20_라클라체자이드파인/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      라클라체자이드파인
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 13일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 14일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 서울시 동작구 노량진동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#라클라체자이드파인</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#노량진청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#동작구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서울청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_라클라체자이드파인/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
 </article><article class="post-card" data-region="경상북도" data-name="두산위브더제니스 구미(조합원취소분)" onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'">
@@ -666,6 +1866,246 @@ body {
   <a href="posts/2026-04-20_도안자이_센텀리체_2단지/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
+</article><article class="post-card" data-region="대전" data-name="도안자이 센텀리체 1단지" onclick="location.href='posts/2026-04-20_도안자이_센텀리체_1단지/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      도안자이 센텀리체 1단지
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 20일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 21일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 대전광역시 유성구 용계동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#도안자이센텀리체1단지</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대전청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#유성구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#도안신도시</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_도안자이_센텀리체_1단지/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="경상북도" data-name="더샵 안동더퍼스트" onclick="location.href='posts/2026-04-20_더샵_안동더퍼스트/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      더샵 안동더퍼스트
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 20일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 21일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 경상북도 안동시 옥동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#더샵안동더퍼스트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#안동청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#안동분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#옥동아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_더샵_안동더퍼스트/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="서울" data-name="더샵 신길센트럴시티" onclick="location.href='posts/2026-04-20_더샵_신길센트럴시티/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      더샵 신길센트럴시티
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 30일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 31일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 서울특별시 영등포구 신길동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#더샵신길센트럴시티</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#신길동청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#영등포청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#더샵청약</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_더샵_신길센트럴시티/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="대전" data-name="대전 롯데캐슬 더퍼스트(조합원 취소분)" onclick="location.href='posts/2026-04-20_대전_롯데캐슬_더퍼스트_조합원_취소분_/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      대전 롯데캐슬 더퍼스트(조합원 취소분)
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 25일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">3월 26일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 대전광역시 동구 가오동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대전롯데캐슬더퍼스트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#가오동분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대전청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#동구아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_대전_롯데캐슬_더퍼스트_조합원_취소분_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="부산" data-name="구서 다움포레" onclick="location.href='posts/2026-04-20_구서_다움포레/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      구서 다움포레
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 9일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 10일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 금정구 구서동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#구서다움포레</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#금정구청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#구서동분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약2026</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_구서_다움포레/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
 </article><article class="post-card" data-region="서울" data-name="공덕역자이르네" onclick="location.href='posts/2026-04-20_공덕역자이르네/post.html'">
 
   <!-- ── 카드 헤더 ── -->
@@ -712,6 +2152,54 @@ body {
 
   <!-- CTA -->
   <a href="posts/2026-04-20_공덕역자이르네/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="전라북도" data-name="골드클래스 시그니처" onclick="location.href='posts/2026-04-20_골드클래스_시그니처/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      골드클래스 시그니처
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 20일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 21일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 전북특별자치도 전주시 덕진구 진북동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#골드클래스시그니처</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#전주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#덕진구아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#진북동분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_골드클래스_시그니처/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
 </article><article class="post-card" data-region="경기도" data-name="고덕신도시 아테라 A-63블록 공공분양주택" onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'">
@@ -762,6 +2250,54 @@ body {
   <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
+</article><article class="post-card" data-region="부산" data-name="경성대부경대역 비스타동원 더 프리미엄" onclick="location.href='posts/2026-04-20_경성대부경대역_비스타동원_더_프리미엄/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      경성대부경대역 비스타동원 더 프리미엄
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 부산광역시 남구 대연동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#경성대부경대역비스타동원더프리미엄</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#대연동아파트</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#부산남구분양</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_경성대부경대역_비스타동원_더_프리미엄/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
 </article><article class="post-card" data-region="경기도" data-name="경기광주역 롯데캐슬 시그니처 1단지" onclick="location.href='posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html'">
 
   <!-- ── 카드 헤더 ── -->
@@ -810,6 +2346,54 @@ body {
   <a href="posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
+</article><article class="post-card" data-region="인천" data-name="검단호수공원역 파라곤(AA36BL)" onclick="location.href='posts/2026-04-20_검단호수공원역_파라곤_AA36BL_/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      검단호수공원역 파라곤(AA36BL)
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 7일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 인천광역시 서구 불로동
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#검단호수공원역파라곤</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#검단신도시청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#인천청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#검단파라곤AA36BL</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_검단호수공원역_파라곤_AA36BL_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
 </article><article class="post-card" data-region="강원도" data-name="강릉 우미 린 더 프리미어" onclick="location.href='posts/2026-04-20_강릉_우미_린_더_프리미어/post.html'">
 
   <!-- ── 카드 헤더 ── -->
@@ -856,6 +2440,54 @@ body {
 
   <!-- CTA -->
   <a href="posts/2026-04-20_강릉_우미_린_더_프리미어/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기 →
+  </a>
+</article><article class="post-card" data-region="제주도" data-name="PH159" onclick="location.href='posts/2026-04-20_PH159/post.html'">
+
+  <!-- ── 카드 헤더 ── -->
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <!-- 공급유형 -->
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;
+                   letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+
+    <!-- 단지명 -->
+    <p style="position:relative;font-size:22px;font-weight:800;color:#fff;
+              line-height:1.3;word-break:keep-all;
+              display:-webkit-box;-webkit-line-clamp:2;
+              -webkit-box-orient:vertical;overflow:hidden;margin:0;">
+      PH159
+    </p>
+  </div>
+
+  <!-- ── 카드 하단 ── -->
+
+  <!-- 날짜 바 -->
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:13px;color:var(--c-mid);">-</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 30일</p></div>
+  </div>
+
+  <!-- 행정구역 -->
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
+      📌 제주특별자치도 제주시 조천읍 북촌리
+    </p>
+  </div>
+
+  <!-- 태그 -->
+  <div style="padding:11px 16px 9px;flex:1;">
+    <span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#PH159</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#제주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#북촌리분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#제주분양아파트</span>
+  </div>
+
+  <!-- CTA -->
+  <a href="posts/2026-04-20_PH159/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
 </article>
