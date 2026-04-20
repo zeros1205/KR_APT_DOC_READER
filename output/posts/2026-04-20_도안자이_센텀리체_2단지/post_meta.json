@@ -29,5 +29,6 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 도안자이센텀리체2단지, 대전청약, 유성구분양, 도안동아파트, 대전아파트분양, 자이아파트, 생애최초청약, 신혼부부청약, 대전유성구청약, 2026청약일정",
     "step6": "카테고리 설정 후 발행"
-  }
+  },
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000105&pblancNo=2026000105&atchmnflSeqNo=1788068&atchmnflSn=1"
 }

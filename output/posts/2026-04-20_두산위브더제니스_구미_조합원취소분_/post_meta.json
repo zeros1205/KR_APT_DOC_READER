@@ -26,5 +26,6 @@
     "step5": "태그 입력: 두산위브더제니스구미, 구미청약, 광평동아파트, 조합원취소분, 구미분양, 두산위브더제니스, 경상북도청약, 구미아파트청약, 2026청약일정, 실수요자청약",
     "step6": "카테고리 설정 후 발행"
   },
-  "special_supply_date": ""
+  "special_supply_date": "",
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000115&pblancNo=2026000115&atchmnflSeqNo=1794028&atchmnflSn=4"
 }

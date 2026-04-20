@@ -416,7 +416,7 @@ def _select_theme(supply_type: str) -> str:
     return BLOG_THEME
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "") -> Path | None:
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -545,6 +545,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         eligibility_special=facts.get("eligibility_special") or [],
         eligibility_rank1=facts.get("eligibility_rank1") or [],
         eligibility_rank2=facts.get("eligibility_rank2") or [],
+        notice_url=notice_url,
     )
 
     # Step 6: HTML 렌더링
@@ -583,7 +584,7 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type)
+    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url)
 
 
 # ──────────────────────────────────────────────────

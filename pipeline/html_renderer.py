@@ -153,6 +153,9 @@ class PostData:
     # 테마
     theme: str = "intercom"
 
+    # 공고문 URL
+    notice_url: str = ""
+
 
 # ──────────────────────────────────────────────────
 # 렌더링 헬퍼
@@ -182,6 +185,32 @@ def _render_header_tag(label: str, radius: str) -> str:
         f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
         f' padding:5px 14px; border-radius:{radius};'
         f' border:1px solid rgba(255,255,255,0.28);">{label}</span>'
+    )
+
+
+def _notice_doc_btn(notice_url: str, is_lh: bool = False) -> str:
+    if not notice_url:
+        return ""
+    if is_lh:
+        label = "LH청약플러스 바로가기 →"
+        icon = "🏠"
+    else:
+        label = "📄 모집공고문 다운로드"
+        icon = ""
+    return (
+        f'<div style="margin-top:24px;text-align:center;">'
+        f'<a href="{notice_url}" target="_blank" rel="noopener noreferrer" '
+        f'style="display:inline-flex;align-items:center;gap:8px;'
+        f'background:var(--c-primary);color:#fff;'
+        f'font-size:15px;font-weight:700;'
+        f'padding:14px 28px;border-radius:8px;'
+        f'text-decoration:none;letter-spacing:-0.2px;'
+        f'box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" '
+        f'onmouseover="this.style.background=\'var(--c-primary-dark)\'" '
+        f'onmouseout="this.style.background=\'var(--c-primary)\'">'
+        f'{label}'
+        f'</a>'
+        f'</div>'
     )
 
 
@@ -519,6 +548,11 @@ class BlogHTMLRenderer:
             "{{TOTAL_SPECIAL}}":  f"{total_special:,}",
             # 메타
             "{{SOURCE_DATE}}":    data.source_date,
+            # 공고문 버튼
+            "{{NOTICE_DOC_BTN}}": _notice_doc_btn(
+                data.notice_url,
+                is_lh="apply.lh.or.kr" in data.notice_url,
+            ),
         }
         for k, v in replacements.items():
             html = html.replace(k, str(v) if v is not None else "")
@@ -632,6 +666,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "special_supply_date":  data.special_supply_date,
         "rank1_date":           data.rank1_date,
         "move_in_date":         data.move_in_date,
+        "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
             "step1": "네이버 블로그 → 글쓰기",
