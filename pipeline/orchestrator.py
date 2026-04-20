@@ -265,17 +265,20 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
         return content
 
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel(
-            model_name=LLM_FACTCHECK_MODEL,
-            system_instruction=FACTCHECK_SYSTEM,
-        )
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
         user_msg = FACTCHECK_USER_TPL.format(
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
             qa_json=json.dumps(content.get("qa_blocks", []), ensure_ascii=False, indent=2),
         )
-        resp = model.generate_content(user_msg)
+        resp = client.models.generate_content(
+            model=LLM_FACTCHECK_MODEL,
+            contents=user_msg,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=FACTCHECK_SYSTEM,
+            ),
+        )
         raw = resp.text.strip()
 
         # JSON 추출
