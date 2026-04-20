@@ -122,7 +122,7 @@ def _render_card(p: dict, _serial: int) -> str:
     sp_cell = _date_cell("특별공급", sp_month, sp_day)
     r1_cell = _date_cell("1순위",    r1_month, r1_day)
 
-    return f"""<article class="post-card" data-region="{region}" onclick="location.href='{url}'">
+    return f"""<article class="post-card" data-region="{region}" data-name="{apt_name}" onclick="location.href='{url}'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:{header_grad};">
@@ -336,6 +336,46 @@ body {{
   pointer-events: none;
 }}
 
+/* ── 검색 ── */
+.search-wrap {{
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 4px;
+}}
+.search-wrap::after {{
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--c-light-gray);
+}}
+#search-input {{
+  padding: 7px 12px 7px 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--c-light-gray);
+  background: var(--c-surface);
+  color: var(--c-dark);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  width: 160px;
+  transition: border-color 150ms, width 200ms;
+}}
+#search-input:focus {{ border-color: var(--c-primary); width: 200px; }}
+#search-input::placeholder {{ color: var(--c-mid); }}
+.search-icon {{
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--c-mid);
+  display: flex;
+}}
+
 /* ── 빈 결과 ── */
 #no-result {{ display:none; text-align:center; padding:80px 20px; color:var(--c-mid); font-size:15px; }}
 #no-result.show {{ display:block; }}
@@ -410,8 +450,18 @@ body {{
     </p>
   </div>
 
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;
               padding-bottom:24px;border-bottom:1px solid var(--c-light-gray);">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input id="search-input" type="text" placeholder="단지명 검색"
+             oninput="filterSearch(this.value)" autocomplete="off">
+    </div>
     {region_tabs}
   </div>
 
@@ -455,20 +505,34 @@ body {{
 <script>
 {PALETTE_SWITCH_JS}
 
-function filterRegion(btn, region) {{
-  document.querySelectorAll('.tab-btn').forEach(function(b) {{ b.classList.remove('active'); }});
-  btn.classList.add('active');
+function _applyFilters() {{
+  var activeBtn = document.querySelector('.tab-btn.active');
+  var region = activeBtn ? activeBtn.dataset.region : '전체';
+  var q = ((document.getElementById('search-input') || {{}}).value || '').toLowerCase().trim();
   var cards = document.querySelectorAll('.post-card');
   var visible = 0;
   cards.forEach(function(card) {{
-    var match = region === '전체' || card.dataset.region === region;
-    card.classList.toggle('hidden', !match);
-    if (match) visible++;
+    var regionMatch = region === '전체' || card.dataset.region === region;
+    var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
+    var show = regionMatch && nameMatch;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
   }});
   document.getElementById('result-count').innerHTML =
     '총 <strong style="color:var(--c-dark);">' + visible + '</strong>건';
   document.getElementById('no-result').classList.toggle('show', visible === 0);
 }}
+
+function filterRegion(btn, region) {{
+  document.querySelectorAll('.tab-btn').forEach(function(b) {{ b.classList.remove('active'); }});
+  btn.classList.add('active');
+  _applyFilters();
+}}
+
+function filterSearch(val) {{
+  _applyFilters();
+}}
+
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
 </script>
 

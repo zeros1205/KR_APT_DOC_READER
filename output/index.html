@@ -200,6 +200,46 @@ body {
   pointer-events: none;
 }
 
+/* ── 검색 ── */
+.search-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+.search-wrap::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--c-light-gray);
+}
+#search-input {
+  padding: 7px 12px 7px 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--c-light-gray);
+  background: var(--c-surface);
+  color: var(--c-dark);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  width: 160px;
+  transition: border-color 150ms, width 200ms;
+}
+#search-input:focus { border-color: var(--c-primary); width: 200px; }
+#search-input::placeholder { color: var(--c-mid); }
+.search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--c-mid);
+  display: flex;
+}
+
 /* ── 빈 결과 ── */
 #no-result { display:none; text-align:center; padding:80px 20px; color:var(--c-mid); font-size:15px; }
 #no-result.show { display:block; }
@@ -274,13 +314,23 @@ body {
     </p>
   </div>
 
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;
               padding-bottom:24px;border-bottom:1px solid var(--c-light-gray);">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input id="search-input" type="text" placeholder="단지명 검색"
+             oninput="filterSearch(this.value)" autocomplete="off">
+    </div>
     <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체<span class="tab-count"> (11)</span></button><button class="tab-btn" data-region="서울" onclick="filterRegion(this,'서울')">서울<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도<span class="tab-count"> (4)</span></button><button class="tab-btn" data-region="인천" onclick="filterRegion(this,'인천')">인천<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="대전" onclick="filterRegion(this,'대전')">대전<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="울산" onclick="filterRegion(this,'울산')">울산<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="강원도" onclick="filterRegion(this,'강원도')">강원도<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도<span class="tab-count"> (1)</span></button><button class="tab-btn" data-region="경상남도" onclick="filterRegion(this,'경상남도')">경상남도<span class="tab-count"> (1)</span></button>
   </div>
 
   <div class="cards-grid" id="cards-grid">
-    <article class="post-card" data-region="인천" onclick="location.href='posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html'">
+    <article class="post-card" data-region="인천" data-name="인천가정2지구 B2블록 공공분양주택(후속사업)" onclick="location.href='posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -328,7 +378,7 @@ body {
   <a href="posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경기도" onclick="location.href='posts/2026-04-20_용인_고림_동문_디_이스트/post.html'">
+</article><article class="post-card" data-region="경기도" data-name="용인 고림 동문 디 이스트" onclick="location.href='posts/2026-04-20_용인_고림_동문_디_이스트/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -376,7 +426,7 @@ body {
   <a href="posts/2026-04-20_용인_고림_동문_디_이스트/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경상남도" onclick="location.href='posts/2026-04-20_엘리프_창원/post.html'">
+</article><article class="post-card" data-region="경상남도" data-name="엘리프 창원" onclick="location.href='posts/2026-04-20_엘리프_창원/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -424,7 +474,7 @@ body {
   <a href="posts/2026-04-20_엘리프_창원/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="울산" onclick="location.href='posts/2026-04-20_문수로_라티에르_673/post.html'">
+</article><article class="post-card" data-region="울산" data-name="문수로 라티에르 673" onclick="location.href='posts/2026-04-20_문수로_라티에르_673/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -472,7 +522,7 @@ body {
   <a href="posts/2026-04-20_문수로_라티에르_673/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경상북도" onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'">
+</article><article class="post-card" data-region="경상북도" data-name="두산위브더제니스 구미(조합원취소분)" onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -520,7 +570,7 @@ body {
   <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경기도" onclick="location.href='posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html'">
+</article><article class="post-card" data-region="경기도" data-name="동탄 그웬 160 (동탄2 B11BL)" onclick="location.href='posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -568,7 +618,7 @@ body {
   <a href="posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="대전" onclick="location.href='posts/2026-04-20_도안자이_센텀리체_2단지/post.html'">
+</article><article class="post-card" data-region="대전" data-name="도안자이 센텀리체 2단지" onclick="location.href='posts/2026-04-20_도안자이_센텀리체_2단지/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -616,7 +666,7 @@ body {
   <a href="posts/2026-04-20_도안자이_센텀리체_2단지/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="서울" onclick="location.href='posts/2026-04-20_공덕역자이르네/post.html'">
+</article><article class="post-card" data-region="서울" data-name="공덕역자이르네" onclick="location.href='posts/2026-04-20_공덕역자이르네/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -664,7 +714,7 @@ body {
   <a href="posts/2026-04-20_공덕역자이르네/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경기도" onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'">
+</article><article class="post-card" data-region="경기도" data-name="고덕신도시 아테라 A-63블록 공공분양주택" onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -712,7 +762,7 @@ body {
   <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="경기도" onclick="location.href='posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html'">
+</article><article class="post-card" data-region="경기도" data-name="경기광주역 롯데캐슬 시그니처 1단지" onclick="location.href='posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -760,7 +810,7 @@ body {
   <a href="posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
-</article><article class="post-card" data-region="강원도" onclick="location.href='posts/2026-04-20_강릉_우미_린_더_프리미어/post.html'">
+</article><article class="post-card" data-region="강원도" data-name="강릉 우미 린 더 프리미어" onclick="location.href='posts/2026-04-20_강릉_우미_린_더_프리미어/post.html'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:var(--c-card-grad-new);">
@@ -859,20 +909,34 @@ document.addEventListener('DOMContentLoaded', function() {
   if (lbl) lbl.textContent = document.documentElement.getAttribute('data-palette') || 'A';
 });
 
-function filterRegion(btn, region) {
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-  btn.classList.add('active');
+function _applyFilters() {
+  var activeBtn = document.querySelector('.tab-btn.active');
+  var region = activeBtn ? activeBtn.dataset.region : '전체';
+  var q = ((document.getElementById('search-input') || {}).value || '').toLowerCase().trim();
   var cards = document.querySelectorAll('.post-card');
   var visible = 0;
   cards.forEach(function(card) {
-    var match = region === '전체' || card.dataset.region === region;
-    card.classList.toggle('hidden', !match);
-    if (match) visible++;
+    var regionMatch = region === '전체' || card.dataset.region === region;
+    var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
+    var show = regionMatch && nameMatch;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
   });
   document.getElementById('result-count').innerHTML =
     '총 <strong style="color:var(--c-dark);">' + visible + '</strong>건';
   document.getElementById('no-result').classList.toggle('show', visible === 0);
 }
+
+function filterRegion(btn, region) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  _applyFilters();
+}
+
+function filterSearch(val) {
+  _applyFilters();
+}
+
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
 </script>
 
