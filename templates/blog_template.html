@@ -37,10 +37,6 @@
     pointer-events: none;
   "></div>
 
-  <div style="font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; margin-bottom: 12px;">
-    📝 정과장의 청약노트
-  </div>
-
   <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
     {{SUPPLY_TYPE_TAG}}
     {{REGION_TAG}}
@@ -57,17 +53,7 @@
     font-size: 16px; margin: 0 0 22px 0; line-height: 1.5;
   ">{{POST_SUBTITLE}}</p>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 14px;">
-    <span style="color: {{T_HEADER_SUB}}; font-size: 15px;">
-      📅 특별공급: <strong style="color: {{T_HEADER_TEXT}};">{{SPECIAL_SUPPLY_DATE}}</strong>
-    </span>
-    <span style="color: {{T_HEADER_SUB}}; font-size: 15px;">
-      📅 1순위: <strong style="color: {{T_HEADER_TEXT}};">{{RANK1_DATE}}</strong>
-    </span>
-    <span style="color: {{T_HEADER_SUB}}; font-size: 15px;">
-      📍 <strong style="color: {{T_HEADER_TEXT}};">{{LOCATION}}</strong>
-    </span>
-  </div>
+  {{HEADER_META_ROWS}}
 </div>
 
 <div style="height: 4px; background: linear-gradient(90deg, {{T_ACCENT}}, {{T_ACCENT_DARK}}, transparent); margin-bottom: 40px;"></div>
@@ -107,7 +93,7 @@
       box-shadow: {{T_SHADOW_MD}};
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
-      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">{{PRICE_RANGE_TYPED}}</div>
+      <div style="font-weight: 700; line-height: 1.6;">{{PRICE_RANGE_TYPED}}</div>
     </div>
 
     <!-- 총 공급 -->

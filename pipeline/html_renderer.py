@@ -37,9 +37,15 @@ class UnitType:
     price_max: int   # 만원
 
     @staticmethod
+    def _to_manwon(v: int) -> int:
+        """원(won) 단위 값을 만원으로 변환. 1000만 만원(1조) 초과 시 원으로 간주."""
+        return v // 10000 if v > 10_000_000 else v
+
+    @staticmethod
     def _fmt(won_man: int) -> str:
         if won_man <= 0:
             return "-"
+        won_man = UnitType._to_manwon(won_man)
         uk = won_man // 10000
         man = won_man % 10000
         if uk > 0 and man > 0:
@@ -57,7 +63,9 @@ class UnitType:
     def price_per_3_3(self) -> str:
         if self.area_sqm <= 0:
             return "-"
-        avg = (self.price_min + self.price_max) / 2
+        p_min = self._to_manwon(self.price_min)
+        p_max = self._to_manwon(self.price_max)
+        avg = (p_min + p_max) / 2
         val = int(avg / (self.area_sqm / 3.3))
         return f"{val:,}만원"
 
@@ -147,6 +155,7 @@ class PostData:
 
     # 메타
     source_date: str = ""
+    notice_date: str = ""       # 모집공고일
     read_time: int = 7
     supply_type: str = ""       # API SUBSCRPT_TYCD_NM 원본값
 
@@ -173,11 +182,18 @@ _SUPPLY_LABEL_MAP = [
     ("일반",      "일반공급"),
 ]
 
-def _supply_label(supply_type: str) -> str:
+_PUBLIC_APT_KW = ("공공분양", "공공임대", "행복주택", "국민임대", "lh", "sh공사",
+                  "경기주택", "인천도시공사", "주공", "공공지원")
+
+
+def _supply_label(supply_type: str, apt_name: str = "") -> str:
     for kw, label in _SUPPLY_LABEL_MAP:
         if kw in supply_type:
             return label
-    return "신규분양"
+    combined = (supply_type + " " + apt_name).lower()
+    if any(kw in combined for kw in _PUBLIC_APT_KW):
+        return "공공분양"
+    return "민간분양"
 
 def _render_header_tag(label: str, radius: str) -> str:
     return (
@@ -191,23 +207,19 @@ def _render_header_tag(label: str, radius: str) -> str:
 def _notice_doc_btn(notice_url: str, is_lh: bool = False) -> str:
     if not notice_url:
         return ""
-    if is_lh:
-        label = "LH청약플러스 바로가기 →"
-        icon = "🏠"
-    else:
-        label = "📄 모집공고문 다운로드"
-        icon = ""
+    label = "LH청약플러스 바로가기 →" if is_lh else "📄 모집공고문 다운로드"
     return (
         f'<div style="margin-top:24px;text-align:center;">'
         f'<a href="{notice_url}" target="_blank" rel="noopener noreferrer" '
         f'style="display:inline-flex;align-items:center;gap:8px;'
-        f'background:var(--c-primary);color:#fff;'
+        f'background:var(--c-surface);color:var(--c-dark);'
         f'font-size:15px;font-weight:700;'
         f'padding:14px 28px;border-radius:8px;'
+        f'border:2px solid var(--c-primary);'
         f'text-decoration:none;letter-spacing:-0.2px;'
-        f'box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" '
-        f'onmouseover="this.style.background=\'var(--c-primary-dark)\'" '
-        f'onmouseout="this.style.background=\'var(--c-primary)\'">'
+        f'box-shadow:0 2px 6px rgba(0,0,0,0.08);transition:all 200ms;" '
+        f'onmouseover="this.style.background=\'var(--c-primary-light)\';this.style.borderColor=\'var(--c-primary-dark)\'" '
+        f'onmouseout="this.style.background=\'var(--c-surface)\';this.style.borderColor=\'var(--c-primary)\'">'
         f'{label}'
         f'</a>'
         f'</div>'
@@ -220,16 +232,23 @@ def _naver_map_url(address: str) -> str:
 
 
 def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
-    """최소 분양가(타입명) 줄바꿈 ~ 최대 분양가(타입명) 형식 반환"""
+    """최소~최대 분양가 — 금액 큰 글씨, 타입명 16px"""
     valid = [ut for ut in unit_types if ut.price_min > 0]
     if not valid:
         return fallback
     cheapest = min(valid, key=lambda u: u.price_min)
     priciest = max(valid, key=lambda u: u.price_max)
-    lo = f"{cheapest._fmt(cheapest.price_min)}({cheapest.type_name})"
+
+    def _row(price_str: str, type_name: str, prefix: str = "") -> str:
+        return (
+            f'{prefix}<span style="font-size:22px;font-weight:800;">{price_str}</span>'
+            f'<span style="font-size:16px;font-weight:600;opacity:0.85;">({type_name})</span>'
+        )
+
+    lo = _row(cheapest._fmt(cheapest.price_min), cheapest.type_name)
     if cheapest is priciest and cheapest.price_min == cheapest.price_max:
         return lo
-    hi = f"~ {priciest._fmt(priciest.price_max)}({priciest.type_name})"
+    hi = _row(priciest._fmt(priciest.price_max), priciest.type_name, prefix="~ ")
     return f"{lo}<br>{hi}"
 
 
@@ -241,7 +260,7 @@ def _render_unit_rows_intro(unit_types: list[UnitType]) -> str:
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.15);">
         <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.type_name}</td>
-        <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{ut.area_sqm:.2f}</td>
+        <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{round(ut.area_sqm, 1):.1f}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{total:,}세대</td>
         <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.price_range_str}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{ut.price_per_3_3}</td>
@@ -256,7 +275,7 @@ def _render_unit_rows(unit_types: list[UnitType], t: dict) -> str:
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid {t['border']}; {stripe}">
         <td style="padding: 10px 8px; font-weight: 700; color: {t['accent']};">{ut.type_name}</td>
-        <td style="padding: 10px 8px; color: {t['text2']};">{ut.area_sqm:.2f}</td>
+        <td style="padding: 10px 8px; color: {t['text2']};">{round(ut.area_sqm, 1):.1f}</td>
         <td style="padding: 10px 8px; color: {t['text']};">{ut.general_units:,}</td>
         <td style="padding: 10px 8px; color: {t['text']};">{ut.special_units:,}</td>
         <td style="padding: 10px 8px; color: {t['step1']}; font-weight: 700;">{ut.price_range_str}</td>
@@ -406,6 +425,28 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     return special_block + rank_blocks + notice
 
 
+def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
+    """헤더 하단 메타 정보 세로 배치. 빈 값 행 자동 숨김."""
+    fields = [
+        ("모집공고일", data.notice_date),
+        ("특별공급", data.special_supply_date),
+        ("일반공급(1순위)", data.rank1_date),
+        ("일반공급(2순위)", data.rank2_date),
+        ("주소", data.supply_location or data.location),
+    ]
+    rows = []
+    for label, value in fields:
+        if not value or value in ("-", "", "None", "null"):
+            continue
+        rows.append(
+            f'<div style="margin-bottom:5px;">'
+            f'<span style="color:{sub_color};font-size:13px;">{label}: </span>'
+            f'<strong style="color:{text_color};font-size:14px;">{value}</strong>'
+            f'</div>'
+        )
+    return "\n    ".join(rows)
+
+
 def _apply_theme(html: str, t: dict) -> str:
     """{{T_*}} 토큰을 테마 딕셔너리 값으로 치환"""
     mapping = {
@@ -484,14 +525,15 @@ class BlogHTMLRenderer:
         total_units   = total_general + total_special
 
         from regions import region_name_to_category
-        supply_label   = _supply_label(data.supply_type)
+        supply_label   = _supply_label(data.supply_type, data.apt_name)
         region_label   = region_name_to_category(data.location)
         pill_r         = t["radius_pill"]
 
         replacements = {
             # 헤더 태그
             "{{SUPPLY_TYPE_TAG}}": _render_header_tag(supply_label, pill_r),
-            "{{REGION_TAG}}":      _render_header_tag(f"📍 {region_label}", pill_r),
+            "{{REGION_TAG}}":      _render_header_tag(region_label, pill_r),
+            "{{HEADER_META_ROWS}}": _header_meta_rows(data, t["header_text"], t["header_sub"]),
             # 포스팅 메타
             "{{POST_TITLE}}":     data.post_title,
             "{{POST_SUBTITLE}}":  data.post_subtitle,
@@ -619,7 +661,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{data.post_title}</title>
+<title>정과장의 청약노트</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{post_canonical}">
 <meta property="og:type" content="article">
@@ -665,7 +707,10 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "price_range":          data.price_range,
         "special_supply_date":  data.special_supply_date,
         "rank1_date":           data.rank1_date,
+        "rank2_date":           data.rank2_date,
+        "notice_date":          data.notice_date,
         "move_in_date":         data.move_in_date,
+        "supply_location":      data.supply_location,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
