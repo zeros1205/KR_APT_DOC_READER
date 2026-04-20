@@ -12,7 +12,7 @@ on:
         default: '7'
       limit:
         description: '최대 처리 건수'
-        default: '5'
+        default: '3'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -20,7 +20,7 @@ env:
 jobs:
   generate-posts:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: 코드 체크아웃
@@ -47,7 +47,7 @@ jobs:
       - name: 파이프라인 실행
         run: |
           DAYS=${{ github.event.inputs.days || '7' }}
-          LIMIT=${{ github.event.inputs.limit || '5' }}
+          LIMIT=${{ github.event.inputs.limit || '3' }}
           python run.py --days $DAYS --limit $LIMIT
 
       - name: 생성된 포스팅 업로드 (아티팩트)

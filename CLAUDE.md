@@ -21,8 +21,8 @@
 
 ## 테마 시스템
 `config.py`의 `BLOG_THEME` 값으로 디자인을 전환한다.
-지원 테마: `notion` | `stripe` | `airbnb` | `linear`
-각 테마의 CSS 토큰은 `html_renderer.py`의 `THEMES` 딕셔너리에 정의.
+지원 테마: `claude` | `notion` | `intercom` | `airbnb` | `stripe` | `apple` | `mintlify`
+각 테마의 CSS 토큰은 `pipeline/themes.py`의 `THEMES` 딕셔너리에 정의.
 
 ## 디자인 가이드라인
 
@@ -63,15 +63,36 @@
 
 ## API 키 관리
 `.env` 파일에 보관. 코드에 직접 입력 금지.
-필요 키: `OPENAI_API_KEY`, `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`, `PUBLIC_DATA_API_KEY`
+필요 키:
+- `ANTHROPIC_API_KEY` — Claude (팩트 추출 + 콘텐츠 생성 메인 LLM)
+- `OPENAI_API_KEY` — OpenAI Embeddings (ChromaDB RAG용)
+- `GEMINI_API_KEY` — Gemini Flash (Q&A 팩트체크)
+- `UNSPLASH_ACCESS_KEY` / `PEXELS_API_KEY` — 이미지 자동 수집
+- `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI
+
+## 파이프라인 구조
+```
+pipeline/
+  config.py          ← API 키·경로·품질기준 설정
+  orchestrator.py    ← 5-에이전트 파이프라인 (Haiku→Sonnet→Gemini→CTA→품질)
+  html_renderer.py   ← PostData → HTML 렌더링
+  themes.py          ← 테마 토큰 딕셔너리 (THEMES)
+  image_finder.py    ← 이미지 수집 (PLACEHOLDER + Unsplash)
+  agents/
+    collector.py     ← 청약홈 API 수집 + 샘플 데이터
+    rag_store.py     ← ChromaDB Vector DB
+```
 
 ## 실행 명령어 요약
-```powershell
-cd "D:\Downloads\재혁\★PROJECT_BALI\아파트분양공고 읽어주기"
+```bash
+# 로컬 (Windows)
 .venv\Scripts\Activate.ps1
-
 python run.py --sample            # 샘플 테스트
 python run.py --days 7 --limit 3  # 실제 공고 수집
 python test_pipeline.py --step 3  # HTML 렌더링 테스트 (API 불필요)
 python test_pipeline.py --step 6  # RAG 연동 전체 테스트
+
+# GitHub Actions: .github/workflows/daily.yml
+# 매일 UTC 00:00 (KST 09:00) 자동 실행 / workflow_dispatch 수동 실행
+# 기본값: --days 7 --limit 3 / timeout 60분
 ```

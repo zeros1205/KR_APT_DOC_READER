@@ -15,7 +15,6 @@ run.py
 import sys
 import asyncio
 import argparse
-import subprocess
 from pathlib import Path
 from datetime import datetime
 
@@ -32,7 +31,8 @@ from orchestrator import run_pipeline_from_doc
 def _open_html(path: Path) -> None:
     html = path / "post.html"
     if html.exists():
-        subprocess.Popen(["cmd", "/c", "start", "", str(html)])
+        import sys as _sys, webbrowser
+        webbrowser.open(html.as_uri())
 
 
 async def main() -> None:
