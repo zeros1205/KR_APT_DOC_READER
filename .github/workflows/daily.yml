@@ -52,11 +52,14 @@ jobs:
           LIMIT=${{ github.event.inputs.limit || '3' }}
           python run.py --days $DAYS --limit $LIMIT
 
+      - name: 프론트페이지(index.html) 재생성
+        run: python pipeline/build_index.py
+
       - name: 생성된 포스팅 repo에 커밋
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/posts/ output/processed_notices.json 2>/dev/null || true
+          git add output/posts/ output/index.html output/processed_notices.json 2>/dev/null || true
           git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
           git push origin ${{ github.ref_name }}
