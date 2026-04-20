@@ -10,34 +10,34 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
-  background: #FAF9F7;
-  color: #1A1A1A;
+  background: #faf9f5;
+  color: #141413;
   -webkit-text-size-adjust: 100%;
 }
 
-/* ── 탭 ── */
+/* ── 탭 버튼 ── */
 .tab-btn {
   flex-shrink: 0;
   padding: 7px 18px;
   border-radius: 6px;
-  border: 1.5px solid #EAE8E4;
-  background: #FFFFFF;
-  color: #8A8A8A;
+  border: 1.5px solid #e8e6dc;
+  background: #ffffff;
+  color: #b0aea5;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 150ms;
   font-family: inherit;
 }
-.tab-btn:hover  { border-color: #DA7756; color: #DA7756; }
+.tab-btn:hover  { border-color: #d97757; color: #d97757; }
 .tab-btn.active {
-  background: #DA7756;
+  background: #d97757;
   color: #fff;
-  border-color: #DA7756;
+  border-color: #d97757;
   font-weight: 700;
 }
 
-/* ── 그리드 ── */
+/* ── 카드 그리드 ── */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -48,18 +48,18 @@ body {
 
 /* ── 카드 ── */
 .post-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  border: 1px solid #EAE8E4;
+  border: 1px solid #e8e6dc;
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 .post-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(0,0,0,0.11);
+  box-shadow: 0 12px 32px rgba(20,20,19,0.10);
 }
 .post-card.hidden { display: none !important; }
 
@@ -76,12 +76,12 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #EAE8E4;
+  border-bottom: 1px solid #e8e6dc;
 }
 .card-title {
   font-size: 15px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: #141413;
   line-height: 1.45;
   margin: 0 0 8px 0;
   word-break: keep-all;
@@ -105,122 +105,161 @@ body {
 .card-cta:hover { opacity: 0.88; }
 
 /* ── 히어로 ── */
-.hero-dots {
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
+.hero-stripe {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      -55deg,
+      transparent,
+      transparent 28px,
+      rgba(217,119,87,0.045) 28px,
+      rgba(217,119,87,0.045) 29px
+    );
   pointer-events: none;
 }
 
+/* ── 통계 카드 ── */
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e8e6dc;
+  border-radius: 10px;
+  padding: 18px 24px;
+  min-width: 110px;
+  text-align: center;
+}
+
 /* ── 빈 결과 ── */
-#no-result { display:none; text-align:center; padding:80px 20px; color:#8A8A8A; font-size:15px; }
+#no-result { display:none; text-align:center; padding:80px 20px; color:#b0aea5; font-size:15px; }
 #no-result.show { display:block; }
 </style>
 </head>
 <body>
 
-<!-- ══ 네비 ══ -->
-<header style="background:#0D0E12;padding:0 24px;position:sticky;top:0;z-index:50;
-               border-bottom:1px solid #1E2028;">
+<!-- ══ 네비게이션 ══ -->
+<header style="background:#2a2721;padding:0 24px;
+               position:sticky;top:0;z-index:50;
+               border-bottom:2px solid #d97757;">
   <div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;
               justify-content:space-between;height:54px;">
     <div style="display:flex;align-items:center;gap:10px;">
       <span style="display:inline-flex;align-items:center;justify-content:center;
-                   width:30px;height:30px;background:#DA7756;border-radius:6px;
+                   width:30px;height:30px;background:#d97757;border-radius:6px;
                    font-size:15px;flex-shrink:0;">📝</span>
-      <span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">
+      <span style="color:#faf9f5;font-size:15px;font-weight:800;letter-spacing:-0.3px;">
         정과장의 청약노트
       </span>
     </div>
     <a href="https://apply.lh.or.kr" target="_blank" rel="noopener"
-       style="font-size:12px;color:#64748B;text-decoration:none;
-              border:1px solid #2A2D36;border-radius:6px;padding:5px 12px;
+       style="font-size:12px;color:#b0aea5;text-decoration:none;
+              border:1px solid #3d3a34;border-radius:6px;padding:5px 12px;
               transition:color 150ms;white-space:nowrap;"
-       onmouseover="this.style.color='#DA7756'" onmouseout="this.style.color='#64748B'">
-      청약홈 바로가기 ↗
+       onmouseover="this.style.color='#d97757'" onmouseout="this.style.color='#b0aea5'">
+      청약홈 ↗
     </a>
   </div>
 </header>
 
 
 <!-- ══ 히어로 ══ -->
-<section style="background:#0D0E12;padding:64px 24px 60px;
+<section style="background:#f2efe6;padding:72px 24px 68px;
                 position:relative;overflow:hidden;">
-  <div class="hero-dots"></div>
+  <div class="hero-stripe"></div>
 
-  <!-- 배경 장식 원 -->
-  <div style="position:absolute;right:-80px;top:-80px;width:360px;height:360px;
-              border-radius:50%;background:radial-gradient(circle,rgba(218,119,86,0.12) 0%,transparent 70%);
+  <!-- 오렌지 포인트 원 (우측 장식) -->
+  <div style="position:absolute;right:-60px;top:-60px;
+              width:320px;height:320px;border-radius:50%;
+              border:1px solid rgba(217,119,87,0.18);
+              pointer-events:none;"></div>
+  <div style="position:absolute;right:20px;top:20px;
+              width:160px;height:160px;border-radius:50%;
+              border:1px solid rgba(217,119,87,0.12);
               pointer-events:none;"></div>
 
   <div style="max-width:1160px;margin:0 auto;position:relative;">
 
-    <!-- 뱃지 -->
+    <!-- 상단 뱃지 -->
     <div style="display:inline-flex;align-items:center;gap:8px;
-                background:rgba(218,119,86,0.15);
-                border:1px solid rgba(218,119,86,0.35);
-                border-radius:6px;padding:5px 14px;margin-bottom:22px;">
-      <span style="width:6px;height:6px;background:#DA7756;border-radius:50%;
-                   display:inline-block;flex-shrink:0;"></span>
-      <span style="font-size:11px;font-weight:700;color:#DA7756;letter-spacing:1.5px;">
+                background:#fdf0ea;
+                border:1px solid rgba(217,119,87,0.3);
+                border-radius:6px;padding:5px 14px;margin-bottom:24px;">
+      <span style="width:7px;height:7px;background:#d97757;
+                   border-radius:50%;display:inline-block;flex-shrink:0;"></span>
+      <span style="font-size:11px;font-weight:700;color:#d97757;letter-spacing:1.5px;">
         청약 공고 분석 서비스
       </span>
     </div>
 
-    <h1 style="font-size:clamp(28px,4.5vw,48px);font-weight:900;color:#fff;
-               line-height:1.2;margin-bottom:16px;word-break:keep-all;letter-spacing:-1px;">
+    <!-- 메인 헤드라인 -->
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#141413;
+               line-height:1.18;margin-bottom:18px;word-break:keep-all;
+               letter-spacing:-1.5px;">
       복잡한 청약 공고문,<br>
-      <span style="color:#DA7756;">정과장이 쉽게 정리</span>해 드립니다
+      <span style="color:#d97757;">정과장이 쉽게</span> 정리해 드립니다
     </h1>
 
-    <p style="font-size:15px;color:#8A8EA0;line-height:1.75;
+    <p style="font-size:16px;color:#b0aea5;line-height:1.75;
               max-width:460px;margin-bottom:44px;word-break:keep-all;">
       한국부동산원 청약홈 공개 데이터를 AI로 분석하여<br>
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
-    <!-- 통계 바 -->
-    <div style="display:inline-flex;border:1px solid #23262F;border-radius:10px;
-                overflow:hidden;background:#13151A;">
-      <div style="padding:16px 28px;border-right:1px solid #23262F;text-align:center;">
-        <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">2</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">분석 공고</div>
+    <!-- 통계 카드 3개 -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+      <div class="stat-card">
+        <div style="font-size:32px;font-weight:900;color:#d97757;letter-spacing:-1px;">
+          2
+        </div>
+        <div style="font-size:12px;color:#b0aea5;margin-top:4px;letter-spacing:0.3px;">
+          분석 공고
+        </div>
       </div>
-      <div style="padding:16px 28px;border-right:1px solid #23262F;text-align:center;">
-        <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">2</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">커버 지역</div>
+      <div class="stat-card">
+        <div style="font-size:32px;font-weight:900;color:#6a9bcc;letter-spacing:-1px;">
+          2
+        </div>
+        <div style="font-size:12px;color:#b0aea5;margin-top:4px;letter-spacing:0.3px;">
+          커버 지역
+        </div>
       </div>
-      <div style="padding:16px 28px;text-align:center;">
-        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:5px;">2026.04.20</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">최근 업데이트</div>
+      <div class="stat-card">
+        <div style="font-size:16px;font-weight:800;color:#141413;
+                    margin-top:4px;letter-spacing:-0.3px;">2026.04.20</div>
+        <div style="font-size:12px;color:#b0aea5;margin-top:4px;letter-spacing:0.3px;">
+          최근 업데이트
+        </div>
       </div>
     </div>
 
   </div>
 </section>
 
+<!-- 히어로 하단 오렌지 라인 -->
+<div style="height:3px;background:linear-gradient(90deg,#d97757,#6a9bcc,transparent);"></div>
 
-<!-- ══ 메인 ══ -->
+
+<!-- ══ 메인 콘텐츠 ══ -->
 <main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
 
   <!-- 섹션 헤더 -->
   <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
               justify-content:space-between;gap:16px;margin-bottom:22px;">
     <div>
-      <p style="font-size:10px;font-weight:700;color:#8A8A8A;
+      <p style="font-size:10px;font-weight:700;color:#b0aea5;
                 letter-spacing:2px;margin-bottom:5px;">ANALYSIS REPORTS</p>
-      <h2 style="font-size:20px;font-weight:800;color:#1A1A1A;letter-spacing:-0.3px;">
+      <h2 style="font-size:22px;font-weight:800;color:#141413;letter-spacing:-0.5px;">
         분양 공고 분석 모음
       </h2>
     </div>
-    <p id="result-count" style="font-size:13px;color:#8A8A8A;">
-      총 <strong style="color:#4A4A4A;">2</strong>건
+    <p id="result-count"
+       style="font-size:13px;color:#b0aea5;">
+      총 <strong style="color:#141413;">2</strong>건
     </p>
   </div>
 
   <!-- 지역 필터 탭 -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
-              padding-bottom:24px;border-bottom:1px solid #EAE8E4;">
+              padding-bottom:24px;border-bottom:1px solid #e8e6dc;">
     <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체</button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도</button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도</button>
   </div>
 
@@ -231,16 +270,17 @@ body {
   data-region="경상북도"
   onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'"
 >
-  <div class="card-header" style="background:linear-gradient(140deg,#DA7756 0%,#B85C38 100%);">
+  <!-- 카드 헤더 컬러 블록 -->
+  <div class="card-header" style="background:linear-gradient(145deg,#d97757 0%,#b85c38 100%);">
     <div style="position:absolute;inset:0;
-      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
-      background-size:20px 20px;pointer-events:none;"></div>
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
 
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
-        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.45);
-                  letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;">공급 유형</p>
-        <p style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.2px;line-height:1;">
+        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.48);
+                  letter-spacing:2px;margin-bottom:5px;">공급 유형</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;line-height:1;">
           신규분양
         </p>
       </div>
@@ -249,27 +289,29 @@ body {
     </div>
 
     <div style="position:relative;margin-top:10px;">
-      <span style="display:inline-block;
-                   background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);
-                   border-radius:4px;font-size:11px;font-weight:600;
-                   color:rgba(255,255,255,0.88);padding:3px 10px;">📍 경상북도</span>
+      <span style="display:inline-block;background:rgba(255,255,255,0.16);
+                   border:1px solid rgba(255,255,255,0.26);border-radius:4px;
+                   font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.3px;">📍 경상북도</span>
     </div>
 
-    <div style="margin-top:auto;padding-top:14px;"><p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:34px;">28일</span></p></div>
+    <div style="margin-top:auto;padding-top:14px;"><p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.52);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:34px;">28일</span></p></div>
   </div>
 
+  <!-- 카드 본문 -->
   <div class="card-body">
-    <p style="font-size:10px;font-weight:700;color:#8A8A8A;letter-spacing:1.5px;
-              margin-bottom:5px;text-transform:uppercase;">단지 분석</p>
+    <p style="font-size:10px;font-weight:700;color:#b0aea5;
+              letter-spacing:1.5px;margin-bottom:5px;">단지 분석</p>
     <h3 class="card-title">두산위브더제니스 구미 조합원취소분 청약 완벽 정리 | 광평동 63세대</h3>
-    <p style="font-size:13px;color:#8A8A8A;margin:0 0 14px 0;line-height:1.5;">
+    <p style="font-size:13px;color:#b0aea5;margin:0 0 12px 0;line-height:1.5;">
       경상북도 구미시 광평동
     </p>
-    <div style="margin-bottom:16px;"></div>
-    <div style="flex:1;min-height:26px;"><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#두산위브더제니스구미</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#구미청약</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#광평동아파트</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#조합원취소분</span></div>
+    <div style="margin-bottom:14px;"></div>
+    <div style="flex:1;min-height:26px;"><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#두산위브더제니스구미</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#구미청약</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#광평동아파트</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#조합원취소분</span></div>
   </div>
 
-  <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="card-cta" style="background:#DA7756;"
+  <!-- CTA -->
+  <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="card-cta" style="background:#b85c38;"
      onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
@@ -278,16 +320,17 @@ body {
   data-region="경기도"
   onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'"
 >
-  <div class="card-header" style="background:linear-gradient(140deg,#DA7756 0%,#B85C38 100%);">
+  <!-- 카드 헤더 컬러 블록 -->
+  <div class="card-header" style="background:linear-gradient(145deg,#d97757 0%,#b85c38 100%);">
     <div style="position:absolute;inset:0;
-      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
-      background-size:20px 20px;pointer-events:none;"></div>
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
 
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
-        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.45);
-                  letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;">공급 유형</p>
-        <p style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.2px;line-height:1;">
+        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.48);
+                  letter-spacing:2px;margin-bottom:5px;">공급 유형</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;line-height:1;">
           신규분양
         </p>
       </div>
@@ -296,27 +339,29 @@ body {
     </div>
 
     <div style="position:relative;margin-top:10px;">
-      <span style="display:inline-block;
-                   background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);
-                   border-radius:4px;font-size:11px;font-weight:600;
-                   color:rgba(255,255,255,0.88);padding:3px 10px;">📍 경기도</span>
+      <span style="display:inline-block;background:rgba(255,255,255,0.16);
+                   border:1px solid rgba(255,255,255,0.26);border-radius:4px;
+                   font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.3px;">📍 경기도</span>
     </div>
 
-    <div style="margin-top:auto;padding-top:14px;"><p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:34px;">28일</span></p></div>
+    <div style="margin-top:auto;padding-top:14px;"><p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.52);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:34px;">28일</span></p></div>
   </div>
 
+  <!-- 카드 본문 -->
   <div class="card-body">
-    <p style="font-size:10px;font-weight:700;color:#8A8A8A;letter-spacing:1.5px;
-              margin-bottom:5px;text-transform:uppercase;">단지 분석</p>
+    <p style="font-size:10px;font-weight:700;color:#b0aea5;
+              letter-spacing:1.5px;margin-bottom:5px;">단지 분석</p>
     <h3 class="card-title">고덕신도시 아테라 A-63블록 공공분양 청약 완전정복 가이드</h3>
-    <p style="font-size:13px;color:#8A8A8A;margin:0 0 14px 0;line-height:1.5;">
+    <p style="font-size:13px;color:#b0aea5;margin:0 0 12px 0;line-height:1.5;">
       경기도 평택시 고덕동
     </p>
-    <div style="margin-bottom:16px;"></div>
-    <div style="flex:1;min-height:26px;"><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#고덕신도시아테라</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#평택고덕공공분양</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#고덕신도시청약</span><span style="display:inline-block;background:#FCEEE8;color:#B85C38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#평택청약2026</span></div>
+    <div style="margin-bottom:14px;"></div>
+    <div style="flex:1;min-height:26px;"><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#고덕신도시아테라</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#평택고덕공공분양</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#고덕신도시청약</span><span style="display:inline-block;background:#fdf0ea;color:#b85c38;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.2px;">#평택청약2026</span></div>
   </div>
 
-  <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" style="background:#DA7756;"
+  <!-- CTA -->
+  <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" style="background:#b85c38;"
      onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
@@ -328,28 +373,31 @@ body {
 
 
 <!-- ══ 푸터 ══ -->
-<footer style="background:#0D0E12;padding:40px 24px;">
+<footer style="background:#2a2721;padding:40px 24px;">
   <div style="max-width:1160px;margin:0 auto;">
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;
-                gap:32px;padding-bottom:28px;border-bottom:1px solid #1E2028;">
+                gap:32px;padding-bottom:28px;
+                border-bottom:1px solid rgba(255,255,255,0.07);">
       <div>
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;">
           <span style="display:inline-flex;align-items:center;justify-content:center;
-                       width:28px;height:28px;background:#DA7756;border-radius:6px;
+                       width:28px;height:28px;background:#d97757;border-radius:6px;
                        font-size:14px;flex-shrink:0;">📝</span>
-          <span style="color:#fff;font-size:14px;font-weight:800;">정과장의 청약노트</span>
+          <span style="color:#faf9f5;font-size:14px;font-weight:800;">
+            정과장의 청약노트
+          </span>
         </div>
-        <p style="font-size:13px;color:#4A5060;line-height:1.7;max-width:300px;">
+        <p style="font-size:13px;color:#b0aea5;line-height:1.7;max-width:300px;">
           한국부동산원 청약홈 공개 정보를 바탕으로<br>AI가 분석한 분양 공고 리포트입니다.
         </p>
       </div>
-      <div style="font-size:12px;color:#3A3E4A;line-height:2.2;">
+      <div style="font-size:12px;color:#5a5750;line-height:2.2;">
         <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
         <p>📌 국토교통부 실거래가 공개시스템</p>
         <p>⚠️ 투자 권유가 아닌 정보 제공 목적입니다.</p>
       </div>
     </div>
-    <p style="font-size:12px;color:#3A3E4A;margin-top:20px;">
+    <p style="font-size:12px;color:#5a5750;margin-top:20px;">
       © 2026 정과장의 청약노트. 실제 청약은 반드시 공식 기관에서 확인하세요.
     </p>
   </div>
@@ -368,7 +416,7 @@ function filterRegion(btn, region) {
     if (match) visible++;
   });
   document.getElementById('result-count').innerHTML =
-    `총 <strong style="color:#4A4A4A;">${visible}</strong>건`;
+    `총 <strong style="color:#141413;">${visible}</strong>건`;
   document.getElementById('no-result').classList.toggle('show', visible === 0);
 }
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');

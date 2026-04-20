@@ -17,23 +17,33 @@ OUTPUT_DIR = ROOT / "output"
 POSTS_DIR  = OUTPUT_DIR / "posts"
 OUT_FILE   = OUTPUT_DIR / "index.html"
 
-# ── Claude 디자인 컬러 팔레트 ──────────────────────
+# ── Anthropic 공식 브랜드 팔레트 ────────────────────
 C = {
-    "bg":          "#FAF9F7",   # 본문 배경 (따뜻한 크림)
-    "hero_bg":     "#0D0E12",   # 히어로 배경 (거의 블랙)
-    "nav_bg":      "#0D0E12",
-    "orange":      "#DA7756",   # Claude 코랄 오렌지 (메인 액센트)
-    "orange_dark": "#B85C38",
-    "orange_light":"#FCEEE8",   # 오렌지 연한 배경
-    "green":       "#3D7A1E",   # 재공급 계열
-    "green_dark":  "#2D5E14",
-    "green_light": "#EDF7E6",
-    "card_bg":     "#FFFFFF",
-    "border":      "#EAE8E4",
-    "text":        "#1A1A1A",
-    "text2":       "#4A4A4A",
-    "muted":       "#8A8A8A",
-    "footer_bg":   "#0D0E12",
+    # 기본 4색
+    "dark":       "#141413",   # 주 텍스트 / 진한 요소
+    "light":      "#faf9f5",   # 배경 (따뜻한 크림)
+    "mid_gray":   "#b0aea5",   # 보조 텍스트
+    "light_gray": "#e8e6dc",   # 테두리 / 구분선
+
+    # 액센트 3색
+    "orange":     "#d97757",   # PRIMARY 액센트
+    "blue":       "#6a9bcc",   # SECONDARY 액센트
+    "green":      "#788c5d",   # TERTIARY 액센트 (재공급)
+
+    # 파생값
+    "orange_dark":  "#b85c38",
+    "orange_light": "#fdf0ea",
+    "green_dark":   "#57673f",
+    "green_light":  "#edf2e6",
+    "blue_light":   "#e8f0f8",
+
+    # 네비·푸터: 블랙 대신 따뜻한 다크 브라운
+    "nav_bg":     "#2a2721",
+    "footer_bg":  "#2a2721",
+
+    # 히어로: 크림에서 살짝 짙은 샌드 베이지
+    "hero_bg":    "#f2efe6",
+    "surface":    "#ffffff",
 }
 
 
@@ -65,22 +75,22 @@ def _fmt_rank1(date_str: str) -> tuple[str, str]:
         return (date_str, "")
 
 
-def _supply_info(title: str, apt_name: str) -> tuple[str, str, str, str, str]:
-    """(label, header_grad, tag_bg, tag_color, cta_color)"""
+def _supply_info(title: str, apt_name: str) -> tuple[str, str, str, str]:
+    """(label, header_grad, tag_bg, tag_color)"""
     combined = title + apt_name
-    resupply_keywords = [
+    resupply = [
         ("무순위",   "무순위"),
         ("불법행위", "불법행위재공급"),
         ("임의",     "임의공급"),
         ("취소후",   "취소후재공급"),
         ("잔여",     "잔여세대"),
     ]
-    for kw, label in resupply_keywords:
+    for kw, label in resupply:
         if kw in combined:
-            grad = f"linear-gradient(140deg,{C['green']} 0%,{C['green_dark']} 100%)"
-            return label, grad, C["green_light"], C["green"], C["green"]
-    grad = f"linear-gradient(140deg,{C['orange']} 0%,{C['orange_dark']} 100%)"
-    return "신규분양", grad, C["orange_light"], C["orange_dark"], C["orange"]
+            grad = f"linear-gradient(145deg,{C['green']} 0%,{C['green_dark']} 100%)"
+            return label, grad, C["green_light"], C["green_dark"]
+    grad = f"linear-gradient(145deg,{C['orange']} 0%,{C['orange_dark']} 100%)"
+    return "신규분양", grad, C["orange_light"], C["orange_dark"]
 
 
 def _render_card(p: dict, serial: int) -> str:
@@ -92,12 +102,12 @@ def _render_card(p: dict, serial: int) -> str:
     url      = p["post_url"]
     tags     = (p.get("tags") or [])[:4]
 
-    supply_label, header_grad, tag_bg, tag_color, cta_color = _supply_info(title, apt_name)
+    supply_label, header_grad, tag_bg, tag_color = _supply_info(title, apt_name)
     month, day = _fmt_rank1(p.get("rank1_date", ""))
 
     date_block = (
         f'<div style="margin-top:auto;padding-top:14px;">'
-        f'<p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);'
+        f'<p style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.52);'
         f'letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p>'
         f'<p style="font-size:26px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">'
         f'{month} <span style="font-size:34px;">{day}</span></p>'
@@ -106,10 +116,10 @@ def _render_card(p: dict, serial: int) -> str:
     )
 
     price_block = (
-        f'<p style="font-size:14px;font-weight:800;color:{cta_color};'
-        f'margin:0 0 16px 0;letter-spacing:-0.2px;">💰 {price}</p>'
+        f'<p style="font-size:14px;font-weight:800;color:{tag_color};'
+        f'margin:0 0 14px 0;letter-spacing:-0.2px;">💰 {price}</p>'
         if price else
-        '<div style="margin-bottom:16px;"></div>'
+        '<div style="margin-bottom:14px;"></div>'
     )
 
     tag_items = "".join(
@@ -126,16 +136,17 @@ def _render_card(p: dict, serial: int) -> str:
   data-region="{region}"
   onclick="location.href='{url}'"
 >
+  <!-- 카드 헤더 컬러 블록 -->
   <div class="card-header" style="background:{header_grad};">
     <div style="position:absolute;inset:0;
-      background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);
-      background-size:20px 20px;pointer-events:none;"></div>
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
 
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
-        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.45);
-                  letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;">공급 유형</p>
-        <p style="font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.2px;line-height:1;">
+        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.48);
+                  letter-spacing:2px;margin-bottom:5px;">공급 유형</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;line-height:1;">
           {supply_label}
         </p>
       </div>
@@ -144,27 +155,29 @@ def _render_card(p: dict, serial: int) -> str:
     </div>
 
     <div style="position:relative;margin-top:10px;">
-      <span style="display:inline-block;
-                   background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);
-                   border-radius:4px;font-size:11px;font-weight:600;
-                   color:rgba(255,255,255,0.88);padding:3px 10px;">📍 {region}</span>
+      <span style="display:inline-block;background:rgba(255,255,255,0.16);
+                   border:1px solid rgba(255,255,255,0.26);border-radius:4px;
+                   font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.3px;">📍 {region}</span>
     </div>
 
     {date_block}
   </div>
 
+  <!-- 카드 본문 -->
   <div class="card-body">
-    <p style="font-size:10px;font-weight:700;color:{C['muted']};letter-spacing:1.5px;
-              margin-bottom:5px;text-transform:uppercase;">단지 분석</p>
+    <p style="font-size:10px;font-weight:700;color:{C['mid_gray']};
+              letter-spacing:1.5px;margin-bottom:5px;">단지 분석</p>
     <h3 class="card-title">{title}</h3>
-    <p style="font-size:13px;color:{C['muted']};margin:0 0 14px 0;line-height:1.5;">
+    <p style="font-size:13px;color:{C['mid_gray']};margin:0 0 12px 0;line-height:1.5;">
       {location}
     </p>
     {price_block}
     <div style="flex:1;min-height:26px;">{tag_items}</div>
   </div>
 
-  <a href="{url}" class="card-cta" style="background:{cta_color};"
+  <!-- CTA -->
+  <a href="{url}" class="card-cta" style="background:{tag_color};"
      onclick="event.stopPropagation()">
     공고 분석 전문 보기 →
   </a>
@@ -207,19 +220,19 @@ def build() -> None:
 body {{
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
-  background: {C['bg']};
-  color: {C['text']};
+  background: {C['light']};
+  color: {C['dark']};
   -webkit-text-size-adjust: 100%;
 }}
 
-/* ── 탭 ── */
+/* ── 탭 버튼 ── */
 .tab-btn {{
   flex-shrink: 0;
   padding: 7px 18px;
   border-radius: 6px;
-  border: 1.5px solid {C['border']};
-  background: {C['card_bg']};
-  color: {C['muted']};
+  border: 1.5px solid {C['light_gray']};
+  background: {C['surface']};
+  color: {C['mid_gray']};
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -234,7 +247,7 @@ body {{
   font-weight: 700;
 }}
 
-/* ── 그리드 ── */
+/* ── 카드 그리드 ── */
 .cards-grid {{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -245,18 +258,18 @@ body {{
 
 /* ── 카드 ── */
 .post-card {{
-  background: {C['card_bg']};
+  background: {C['surface']};
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  border: 1px solid {C['border']};
+  border: 1px solid {C['light_gray']};
   transition: transform 200ms ease, box-shadow 200ms ease;
 }}
 .post-card:hover {{
   transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(0,0,0,0.11);
+  box-shadow: 0 12px 32px rgba(20,20,19,0.10);
 }}
 .post-card.hidden {{ display: none !important; }}
 
@@ -273,12 +286,12 @@ body {{
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid {C['border']};
+  border-bottom: 1px solid {C['light_gray']};
 }}
 .card-title {{
   font-size: 15px;
   font-weight: 800;
-  color: {C['text']};
+  color: {C['dark']};
   line-height: 1.45;
   margin: 0 0 8px 0;
   word-break: keep-all;
@@ -302,122 +315,161 @@ body {{
 .card-cta:hover {{ opacity: 0.88; }}
 
 /* ── 히어로 ── */
-.hero-dots {{
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
+.hero-stripe {{
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      -55deg,
+      transparent,
+      transparent 28px,
+      rgba(217,119,87,0.045) 28px,
+      rgba(217,119,87,0.045) 29px
+    );
   pointer-events: none;
 }}
 
+/* ── 통계 카드 ── */
+.stat-card {{
+  background: {C['surface']};
+  border: 1px solid {C['light_gray']};
+  border-radius: 10px;
+  padding: 18px 24px;
+  min-width: 110px;
+  text-align: center;
+}}
+
 /* ── 빈 결과 ── */
-#no-result {{ display:none; text-align:center; padding:80px 20px; color:{C['muted']}; font-size:15px; }}
+#no-result {{ display:none; text-align:center; padding:80px 20px; color:{C['mid_gray']}; font-size:15px; }}
 #no-result.show {{ display:block; }}
 </style>
 </head>
 <body>
 
-<!-- ══ 네비 ══ -->
-<header style="background:{C['nav_bg']};padding:0 24px;position:sticky;top:0;z-index:50;
-               border-bottom:1px solid #1E2028;">
+<!-- ══ 네비게이션 ══ -->
+<header style="background:{C['nav_bg']};padding:0 24px;
+               position:sticky;top:0;z-index:50;
+               border-bottom:2px solid {C['orange']};">
   <div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;
               justify-content:space-between;height:54px;">
     <div style="display:flex;align-items:center;gap:10px;">
       <span style="display:inline-flex;align-items:center;justify-content:center;
                    width:30px;height:30px;background:{C['orange']};border-radius:6px;
                    font-size:15px;flex-shrink:0;">📝</span>
-      <span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">
+      <span style="color:{C['light']};font-size:15px;font-weight:800;letter-spacing:-0.3px;">
         정과장의 청약노트
       </span>
     </div>
     <a href="https://apply.lh.or.kr" target="_blank" rel="noopener"
-       style="font-size:12px;color:#64748B;text-decoration:none;
-              border:1px solid #2A2D36;border-radius:6px;padding:5px 12px;
+       style="font-size:12px;color:{C['mid_gray']};text-decoration:none;
+              border:1px solid #3d3a34;border-radius:6px;padding:5px 12px;
               transition:color 150ms;white-space:nowrap;"
-       onmouseover="this.style.color='#DA7756'" onmouseout="this.style.color='#64748B'">
-      청약홈 바로가기 ↗
+       onmouseover="this.style.color='{C['orange']}'" onmouseout="this.style.color='{C['mid_gray']}'">
+      청약홈 ↗
     </a>
   </div>
 </header>
 
 
 <!-- ══ 히어로 ══ -->
-<section style="background:{C['hero_bg']};padding:64px 24px 60px;
+<section style="background:{C['hero_bg']};padding:72px 24px 68px;
                 position:relative;overflow:hidden;">
-  <div class="hero-dots"></div>
+  <div class="hero-stripe"></div>
 
-  <!-- 배경 장식 원 -->
-  <div style="position:absolute;right:-80px;top:-80px;width:360px;height:360px;
-              border-radius:50%;background:radial-gradient(circle,rgba(218,119,86,0.12) 0%,transparent 70%);
+  <!-- 오렌지 포인트 원 (우측 장식) -->
+  <div style="position:absolute;right:-60px;top:-60px;
+              width:320px;height:320px;border-radius:50%;
+              border:1px solid rgba(217,119,87,0.18);
+              pointer-events:none;"></div>
+  <div style="position:absolute;right:20px;top:20px;
+              width:160px;height:160px;border-radius:50%;
+              border:1px solid rgba(217,119,87,0.12);
               pointer-events:none;"></div>
 
   <div style="max-width:1160px;margin:0 auto;position:relative;">
 
-    <!-- 뱃지 -->
+    <!-- 상단 뱃지 -->
     <div style="display:inline-flex;align-items:center;gap:8px;
-                background:rgba(218,119,86,0.15);
-                border:1px solid rgba(218,119,86,0.35);
-                border-radius:6px;padding:5px 14px;margin-bottom:22px;">
-      <span style="width:6px;height:6px;background:{C['orange']};border-radius:50%;
-                   display:inline-block;flex-shrink:0;"></span>
+                background:{C['orange_light']};
+                border:1px solid rgba(217,119,87,0.3);
+                border-radius:6px;padding:5px 14px;margin-bottom:24px;">
+      <span style="width:7px;height:7px;background:{C['orange']};
+                   border-radius:50%;display:inline-block;flex-shrink:0;"></span>
       <span style="font-size:11px;font-weight:700;color:{C['orange']};letter-spacing:1.5px;">
         청약 공고 분석 서비스
       </span>
     </div>
 
-    <h1 style="font-size:clamp(28px,4.5vw,48px);font-weight:900;color:#fff;
-               line-height:1.2;margin-bottom:16px;word-break:keep-all;letter-spacing:-1px;">
+    <!-- 메인 헤드라인 -->
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:{C['dark']};
+               line-height:1.18;margin-bottom:18px;word-break:keep-all;
+               letter-spacing:-1.5px;">
       복잡한 청약 공고문,<br>
-      <span style="color:{C['orange']};">정과장이 쉽게 정리</span>해 드립니다
+      <span style="color:{C['orange']};">정과장이 쉽게</span> 정리해 드립니다
     </h1>
 
-    <p style="font-size:15px;color:#8A8EA0;line-height:1.75;
+    <p style="font-size:16px;color:{C['mid_gray']};line-height:1.75;
               max-width:460px;margin-bottom:44px;word-break:keep-all;">
       한국부동산원 청약홈 공개 데이터를 AI로 분석하여<br>
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
-    <!-- 통계 바 -->
-    <div style="display:inline-flex;border:1px solid #23262F;border-radius:10px;
-                overflow:hidden;background:#13151A;">
-      <div style="padding:16px 28px;border-right:1px solid #23262F;text-align:center;">
-        <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">{total}</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">분석 공고</div>
+    <!-- 통계 카드 3개 -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+      <div class="stat-card">
+        <div style="font-size:32px;font-weight:900;color:{C['orange']};letter-spacing:-1px;">
+          {total}
+        </div>
+        <div style="font-size:12px;color:{C['mid_gray']};margin-top:4px;letter-spacing:0.3px;">
+          분석 공고
+        </div>
       </div>
-      <div style="padding:16px 28px;border-right:1px solid #23262F;text-align:center;">
-        <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">{region_count}</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">커버 지역</div>
+      <div class="stat-card">
+        <div style="font-size:32px;font-weight:900;color:{C['blue']};letter-spacing:-1px;">
+          {region_count}
+        </div>
+        <div style="font-size:12px;color:{C['mid_gray']};margin-top:4px;letter-spacing:0.3px;">
+          커버 지역
+        </div>
       </div>
-      <div style="padding:16px 28px;text-align:center;">
-        <div style="font-size:15px;font-weight:800;color:#fff;margin-top:5px;">{latest}</div>
-        <div style="font-size:11px;color:#4A5060;margin-top:3px;letter-spacing:0.5px;">최근 업데이트</div>
+      <div class="stat-card">
+        <div style="font-size:16px;font-weight:800;color:{C['dark']};
+                    margin-top:4px;letter-spacing:-0.3px;">{latest}</div>
+        <div style="font-size:12px;color:{C['mid_gray']};margin-top:4px;letter-spacing:0.3px;">
+          최근 업데이트
+        </div>
       </div>
     </div>
 
   </div>
 </section>
 
+<!-- 히어로 하단 오렌지 라인 -->
+<div style="height:3px;background:linear-gradient(90deg,{C['orange']},{C['blue']},transparent);"></div>
 
-<!-- ══ 메인 ══ -->
+
+<!-- ══ 메인 콘텐츠 ══ -->
 <main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
 
   <!-- 섹션 헤더 -->
   <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
               justify-content:space-between;gap:16px;margin-bottom:22px;">
     <div>
-      <p style="font-size:10px;font-weight:700;color:{C['muted']};
+      <p style="font-size:10px;font-weight:700;color:{C['mid_gray']};
                 letter-spacing:2px;margin-bottom:5px;">ANALYSIS REPORTS</p>
-      <h2 style="font-size:20px;font-weight:800;color:{C['text']};letter-spacing:-0.3px;">
+      <h2 style="font-size:22px;font-weight:800;color:{C['dark']};letter-spacing:-0.5px;">
         분양 공고 분석 모음
       </h2>
     </div>
-    <p id="result-count" style="font-size:13px;color:{C['muted']};">
-      총 <strong style="color:{C['text2']};">{total}</strong>건
+    <p id="result-count"
+       style="font-size:13px;color:{C['mid_gray']};">
+      총 <strong style="color:{C['dark']};">{total}</strong>건
     </p>
   </div>
 
   <!-- 지역 필터 탭 -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
-              padding-bottom:24px;border-bottom:1px solid {C['border']};">
+              padding-bottom:24px;border-bottom:1px solid {C['light_gray']};">
     {region_tabs}
   </div>
 
@@ -434,25 +486,28 @@ body {{
 <footer style="background:{C['footer_bg']};padding:40px 24px;">
   <div style="max-width:1160px;margin:0 auto;">
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;
-                gap:32px;padding-bottom:28px;border-bottom:1px solid #1E2028;">
+                gap:32px;padding-bottom:28px;
+                border-bottom:1px solid rgba(255,255,255,0.07);">
       <div>
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;">
           <span style="display:inline-flex;align-items:center;justify-content:center;
                        width:28px;height:28px;background:{C['orange']};border-radius:6px;
                        font-size:14px;flex-shrink:0;">📝</span>
-          <span style="color:#fff;font-size:14px;font-weight:800;">정과장의 청약노트</span>
+          <span style="color:{C['light']};font-size:14px;font-weight:800;">
+            정과장의 청약노트
+          </span>
         </div>
-        <p style="font-size:13px;color:#4A5060;line-height:1.7;max-width:300px;">
+        <p style="font-size:13px;color:{C['mid_gray']};line-height:1.7;max-width:300px;">
           한국부동산원 청약홈 공개 정보를 바탕으로<br>AI가 분석한 분양 공고 리포트입니다.
         </p>
       </div>
-      <div style="font-size:12px;color:#3A3E4A;line-height:2.2;">
+      <div style="font-size:12px;color:#5a5750;line-height:2.2;">
         <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
         <p>📌 국토교통부 실거래가 공개시스템</p>
         <p>⚠️ 투자 권유가 아닌 정보 제공 목적입니다.</p>
       </div>
     </div>
-    <p style="font-size:12px;color:#3A3E4A;margin-top:20px;">
+    <p style="font-size:12px;color:#5a5750;margin-top:20px;">
       © 2026 정과장의 청약노트. 실제 청약은 반드시 공식 기관에서 확인하세요.
     </p>
   </div>
@@ -471,7 +526,7 @@ function filterRegion(btn, region) {{
     if (match) visible++;
   }});
   document.getElementById('result-count').innerHTML =
-    `총 <strong style="color:{C['text2']};">${{visible}}</strong>건`;
+    `총 <strong style="color:{C['dark']};">${{visible}}</strong>건`;
   document.getElementById('no-result').classList.toggle('show', visible === 0);
 }}
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
