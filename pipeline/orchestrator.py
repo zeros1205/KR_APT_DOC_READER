@@ -59,6 +59,8 @@ FACT_EXTRACTION_PROMPT = """
 - supply_scale: 공급규모 요약
 - unit_types: 배열 (type_name, area_sqm, general_units, special_units, price_min, price_max 키를 가진 객체 목록)
 - price_range: "X억~Y억원" 형식 문자열
+- total_households: 단지 전체 세대수 정수 (분양 공급 물량과 다를 수 있음. 공고에 명시된 경우만. 없으면 null)
+- notice_date: 모집공고일 YYYY-MM-DD (없으면 null)
 - special_supply_date: YYYY-MM-DD
 - rank1_date: YYYY-MM-DD
 - rank2_date: YYYY-MM-DD
@@ -107,7 +109,131 @@ async def agent_fact_extraction(notice_text: str) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 2: 블로그 콘텐츠 생성
+# Agent 2: 입지 분석 (Gemini)
+# ──────────────────────────────────────────────────
+
+LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
+아래 단지 정보를 바탕으로 입지 분석을 정확하게 작성하세요.
+
+【필수 준수 원칙】
+- 실제로 존재하는 역명·학교명·병원명·상업시설명만 기재. 모르면 "확인 필요" 기재
+- 비수도권(강원·충청·전라·경상·제주 등) 지역에서는 지하철/도시철도 언급 절대 금지.
+  대신 KTX·버스·도로 접근성·생활권 중심으로 서술
+- 지하철 가능 도시: 서울·경기·인천·대전·대구·부산·광주·울산(일부)
+- 도보 5분 ≈ 400m, 도보 10분 ≈ 800m, 도보 15분 ≈ 1.2km 기준 준수
+- 별점 기준:
+  subway: ★★★★★ 도보5분이내 / ★★★★☆ 도보10분 / ★★★☆☆ 도보15분 / ★★☆☆☆ 버스환승 / ★☆☆☆☆ 지하철없음·비수도권
+  school: ★★★★★ 학원가+명문중고 / ★★★★☆ 초등+중학군양호 / ★★★☆☆ 보통 / ★★☆☆☆ 원거리 / ★☆☆☆☆ 정보없음
+  life:   ★★★★★ 대형마트+백화점 도보권 / ★★★★☆ 대형마트10분 / ★★★☆☆ 슈퍼+편의점 / ★★☆☆☆ 차량필요 / ★☆☆☆☆ 편의시설없음
+  medical:★★★★★ 대학병원 도보권 / ★★★★☆ 종합병원 차량5분 / ★★★☆☆ 차량10분 / ★★☆☆☆ 의원급만 / ★☆☆☆☆ 의료기관없음
+
+[단지 정보]:
+{facts_json}
+
+JSON만 출력:
+{{
+  "location_intro": "100~150자. 해당 지역 분위기·생활 환경을 독자에게 친근하게 설명",
+  "subway_score":   "★★★☆☆",
+  "subway_detail":  "역명과 도보 분수 명시. 비수도권은 KTX/버스/도로 접근성. 지하철 없는 도시에서 지하철 절대 금지",
+  "school_score":   "★★★★☆",
+  "school_detail":  "배정 초등학교명 + 학군 평가",
+  "life_score":     "★★★☆☆",
+  "life_detail":    "가장 가까운 대형마트·백화점·상업시설 명칭과 거리",
+  "medical_score":  "★★★☆☆",
+  "medical_detail": "가장 가까운 종합병원 명칭과 거리"
+}}"""
+
+LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
+사실 정확성을 검증하고 오류가 있으면 수정하세요.
+
+검증 기준:
+1. 역명·학교명·병원명·상업시설명이 실제 위치 근처에 존재하는가?
+2. 비수도권에서 지하철을 언급하는 오류가 없는가?
+3. 도보·차량 거리 수치가 현실적인가?
+4. 별점이 설명 내용과 일치하는가?
+
+[단지명]: {apt_name}
+[위치]: {location}
+
+[Gemini 생성 입지 분석]:
+{location_json}
+
+수정 필요 시 수정된 JSON 반환. 수정 없으면 원본 그대로 반환. JSON만 출력."""
+
+_LOCATION_KEYS = (
+    "location_intro", "subway_score", "subway_detail",
+    "school_score", "school_detail", "life_score", "life_detail",
+    "medical_score", "medical_detail",
+)
+
+
+async def agent_location_analysis_gemini(facts: dict) -> dict:
+    """Agent 2: Gemini로 입지 분석 생성"""
+    print("  [Agent 2] 입지 분석 시작 (Gemini)...")
+    if not GEMINI_API_KEY:
+        print("  [Agent 2] GEMINI_API_KEY 미설정 → 건너뜀")
+        return {}
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
+            model=LLM_FACTCHECK_MODEL,
+            contents=LOCATION_ANALYSIS_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+            ),
+        )
+        raw = resp.text.strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    except Exception as e:
+        print(f"  [Agent 2] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
+        return {}
+
+
+async def agent_location_verify_claude(location_data: dict, facts: dict) -> dict:
+    """Agent 3: Claude Sonnet으로 입지 분석 검증·교정"""
+    print("  [Agent 3] 입지 분석 검증 시작 (Claude)...")
+    if not location_data:
+        return location_data
+    try:
+        raw = await _call_claude(
+            system=(
+                "당신은 한국 지리·부동산 전문가입니다.\n"
+                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
+            ),
+            user=LOCATION_VERIFY_PROMPT.format(
+                apt_name=facts.get("apt_name", ""),
+                location=facts.get("location", ""),
+                location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
+            ),
+            model=LLM_CONTENT_MODEL,
+            max_tokens=2000,
+        )
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else location_data
+        print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    except Exception as e:
+        print(f"  [Agent 3] Claude 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        return location_data
+
+
+# ──────────────────────────────────────────────────
+# Agent 4: 블로그 콘텐츠 생성
 # ──────────────────────────────────────────────────
 CONTENT_GEN_PROMPT = """
 당신은 네이버 블로그 콘텐츠 전문가이자 분양 담당 마케터입니다.
@@ -115,6 +241,11 @@ CONTENT_GEN_PROMPT = """
 
 글쓰기 방식: 마케팅 담당자가 고객을 처음 만나 대화하듯 자연스럽고 친근한 스토리텔링으로 작성하세요.
 딱딱한 공문서 스타일이 아닌, 독자가 술술 읽히는 산문체로 작성해야 합니다.
+
+【공급세대수 vs 총세대수 구분 원칙 — 반드시 준수】
+- apt_intro에서 "이번 청약 공급 물량(공급세대수)"과 "단지 전체 세대수(total_households)"를 절대 혼용하지 마세요.
+- total_households(단지 전체 세대수)가 있는 경우: "총 X세대 규모 단지"라고 언급하되, 이번 공급 물량(공급세대수)은 별도로 "이번 청약 Y세대 모집"처럼 명확히 구분하여 서술.
+- total_households가 null인 경우: 단지 규모(총세대수) 추측·언급 절대 금지. 이번 공급세대수만 언급.
 
 【Q&A 작성 절대 원칙 — 반드시 준수】
 아래 금지 원칙을 단 하나라도 위반하면 답변 전체가 무효입니다.
@@ -199,8 +330,8 @@ CONTENT_GEN_PROMPT = """
 
 
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 2: 서술형 콘텐츠 + Q&A 생성 (Claude Sonnet — 따뜻한 문체)"""
-    print("  [Agent 2] 콘텐츠 생성 시작 (Claude Sonnet)...")
+    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (Claude Sonnet — 따뜻한 문체)"""
+    print("  [Agent 4] 콘텐츠 생성 시작 (Claude Sonnet)...")
     raw = await _call_claude(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
@@ -219,12 +350,12 @@ async def agent_content_generation(facts: dict) -> dict:
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         content = json.loads(m.group()) if m else {}
-    print(f"  [Agent 2] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
+    print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
 
 # ──────────────────────────────────────────────────
-# Agent 3: Q&A 팩트체크 (Gemini)
+# Agent 5: Q&A 팩트체크 (Gemini)
 # ──────────────────────────────────────────────────
 
 FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니다.
@@ -265,11 +396,11 @@ FACTCHECK_USER_TPL = """[단지 팩트]
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 3: Gemini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
-    print("  [Agent 3] Q&A 팩트체크 시작 (Gemini)...")
+    """Agent 5: Gemini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    print("  [Agent 5] Q&A 팩트체크 시작 (Gemini)...")
 
     if not GEMINI_API_KEY:
-        print("  [Agent 3] GEMINI_API_KEY 미설정 → 팩트체크 건너뜀")
+        print("  [Agent 5] GEMINI_API_KEY 미설정 → 팩트체크 건너뜀")
         return content
 
     try:
@@ -298,12 +429,12 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
             result = json.loads(m.group()) if m else None
 
         if not result:
-            print("  [Agent 3] 팩트체크 JSON 파싱 실패 → 원본 유지")
+            print("  [Agent 5] 팩트체크 JSON 파싱 실패 → 원본 유지")
             return content
 
         corrected = result.get("qa_blocks", [])
         corrected_count = sum(1 for qa in corrected if qa.get("status") == "corrected")
-        print(f"  [Agent 3] 팩트체크 완료: {corrected_count}개 답변 수정 / {result.get('overall','?')} — {result.get('summary','')}")
+        print(f"  [Agent 5] 팩트체크 완료: {corrected_count}개 답변 수정 / {result.get('overall','?')} — {result.get('summary','')}")
 
         # 수정된 답변으로 교체
         content["qa_blocks"] = [
@@ -312,7 +443,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
         ]
 
     except Exception as e:
-        print(f"  [Agent 3] 팩트체크 오류 ({e}) → 원본 유지")
+        print(f"  [Agent 5] 팩트체크 오류 ({e}) → 원본 유지")
 
     return content
 
@@ -323,16 +454,16 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
 
 def agent_cta_optimization(content: dict, facts: dict) -> dict:
     """
-    Agent 4: 콘텐츠 검수
+    Agent 6: 콘텐츠 검수
     (CTA 링크는 추후 활성화 예정, 현재는 데이터 패스스루)
     """
-    print("  [Agent 4] 콘텐츠 검수 시작...")
-    print(f"  [Agent 4] Q&A {len(content.get('qa_blocks', []))}개 확인 (CTA 링크 비활성)")
+    print("  [Agent 6] 콘텐츠 검수 시작...")
+    print(f"  [Agent 6] Q&A {len(content.get('qa_blocks', []))}개 확인 (CTA 링크 비활성)")
     return content
 
 
 # ──────────────────────────────────────────────────
-# Agent 5: 품질 검수
+# Agent 7: 품질 검수
 # ──────────────────────────────────────────────────
 
 def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
@@ -378,10 +509,10 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
 
 
 async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str]]:
-    """Agent 5: 품질 검수"""
-    print("  [Agent 5] 품질 검수 시작...")
+    """Agent 7: 품질 검수"""
+    print("  [Agent 7] 품질 검수 시작...")
     score, issues = compute_quality_score(content, facts)
-    print(f"  [Agent 4] 품질 점수: {score}점 / 이슈: {len(issues)}개")
+    print(f"  [Agent 7] 품질 점수: {score}점 / 이슈: {len(issues)}개")
     for issue in issues:
         print(f"    ⚠️  {issue}")
     return score, issues
@@ -392,10 +523,12 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # ──────────────────────────────────────────────────
 # 파이프라인 흐름:
 #   [Agent 1] 팩트 추출 (Haiku)
-#   [Agent 2] 콘텐츠 생성 (Sonnet)
-#   [Agent 3] Q&A 팩트체크 (Gemini)
-#   [Agent 4] CTA 최적화
-#   [Agent 5] 품질 검수
+#   [Agent 2] 입지 분석 (Gemini) — subway/school/life/medical 별점+설명
+#   [Agent 3] 입지 검증 (Claude Sonnet) — 역명·학교명·비수도권 지하철 오류 교정
+#   [Agent 4] 콘텐츠 생성 (Claude Sonnet)
+#   [Agent 5] Q&A 팩트체크 (Gemini)
+#   [Agent 6] CTA 최적화
+#   [Agent 7] 품질 검수
 #   [렌더링] HTML 생성 → 저장
 
 
@@ -452,10 +585,17 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         del images["floor_plan_84"]
         print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
 
+    # Step 2: 입지 분석 (Gemini → Claude 검증)
+    location_data = await agent_location_analysis_gemini(facts)
+    location_data = await agent_location_verify_claude(location_data, facts)
+
     # Step 3~4: 콘텐츠 생성 + 품질 검수 루프
     for attempt in range(1, max_retries + 2):
         print(f"\n  📝 콘텐츠 생성 시도 {attempt}회...")
         content = await agent_content_generation(facts)
+        # Gemini 검증된 입지 데이터로 location 필드 덮어쓰기
+        if location_data:
+            content.update({k: location_data[k] for k in _LOCATION_KEYS if location_data.get(k)})
         content = await agent_factcheck_qa(content, facts)
         content = agent_cta_optimization(content, facts)
         score, issues = await agent_quality_check(content, facts)
@@ -498,6 +638,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         location=facts.get("location", ""),
         supply_location=facts.get("supply_location", ""),
         supply_scale=facts.get("supply_scale", ""),
+        total_households=str(facts.get("total_households") or ""),
         price_range=facts.get("price_range", ""),
         unit_types=unit_types,
         special_supply_date=facts.get("special_supply_date", "-"),
@@ -539,6 +680,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
         images=images,
         source_date=facts.get("rank1_date", ""),
+        notice_date=facts.get("notice_date", ""),
         read_time=max(6, len(str(content)) // 450),
         theme=theme or BLOG_THEME,
         supply_type=supply_type,

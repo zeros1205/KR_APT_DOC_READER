@@ -89,6 +89,7 @@ class PostData:
     location: str
     supply_location: str
     supply_scale: str
+    total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
     price_range: str
 
     # 유닛 타입
@@ -711,6 +712,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "notice_date":          data.notice_date,
         "move_in_date":         data.move_in_date,
         "supply_location":      data.supply_location,
+        "total_households":     data.total_households,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
