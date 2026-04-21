@@ -96,7 +96,7 @@ class PostData:
     live_requirement: str = ""   # 거주의무기간 (있음/없음/공고문 확인 필요)
     price_cap: str = ""          # 분양가 상한제 (적용/미적용)
     land_type: str = ""          # 택지 유형 (민간택지/공공택지)
-    price_range: str
+    price_range: str = ""
 
     # 유닛 타입
     unit_types: list[UnitType] = field(default_factory=list)
@@ -392,13 +392,14 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         special_block = (
             f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
-            f'font-size:14px;color:{t["muted"]};">특별공급 자격 정보가 없습니다.</div>'
+            f'font-size:14px;color:{t["muted"]};">특별공급 자격 정보를 공고문에서 찾지 못했습니다. '
+            f'공식 모집공고문을 다시 확인하세요.</div>'
         )
 
     # ── 1순위 / 2순위 ──
     def _rank_block(label: str, items: list[str], color: str) -> str:
         if not items:
-            items = ["-"]
+            items = ["공고문에서 해당 자격 항목을 찾지 못했습니다."]
         li_html = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
@@ -731,6 +732,15 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "price_cap":            data.price_cap,
         "land_type":            data.land_type,
         "resale_restriction":   data.resale_restriction,
+        "eligibility_special":   data.eligibility_special,
+        "eligibility_rank1":     data.eligibility_rank1,
+        "eligibility_rank2":     data.eligibility_rank2,
+        "contract_ratio":        data.contract_ratio,
+        "contract_amount":       data.contract_amount,
+        "midterm_ratio":         data.midterm_ratio,
+        "midterm_count":         data.midterm_count,
+        "balance_ratio":         data.balance_ratio,
+        "loan_info":             data.loan_info,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {

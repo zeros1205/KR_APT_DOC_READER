@@ -22,11 +22,12 @@ jobs:
           cache: 'pip'
 
       - name: 의존성 설치
-        run: pip install anthropic google-genai python-dotenv
+        run: pip install openai anthropic google-genai python-dotenv
 
       - name: .env 생성
         run: |
           cat <<EOF > .env
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           EOF

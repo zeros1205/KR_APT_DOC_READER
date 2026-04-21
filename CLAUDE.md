@@ -64,8 +64,8 @@
 ## API 키 관리
 `.env` 파일에 보관. 코드에 직접 입력 금지.
 필요 키:
-- `ANTHROPIC_API_KEY` — Claude (팩트 추출 + 콘텐츠 생성 메인 LLM)
-- `OPENAI_API_KEY` — OpenAI Embeddings (ChromaDB RAG용)
+- `ANTHROPIC_API_KEY` — Claude Haiku (팩트 추출 보조 LLM)
+- `OPENAI_API_KEY` — GPT-5.4 콘텐츠 생성/검증 + OpenAI Embeddings (ChromaDB RAG용)
 - `GEMINI_API_KEY` — Gemini Flash (Q&A 팩트체크)
 - `UNSPLASH_ACCESS_KEY` / `PEXELS_API_KEY` — 이미지 자동 수집
 - `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI
@@ -74,7 +74,7 @@
 ```
 pipeline/
   config.py          ← API 키·경로·품질기준 설정
-  orchestrator.py    ← 5-에이전트 파이프라인 (Haiku→Sonnet→Gemini→CTA→품질)
+  orchestrator.py    ← 5-에이전트 파이프라인 (Haiku→GPT-5.4→Gemini→CTA→품질)
   html_renderer.py   ← PostData → HTML 렌더링
   themes.py          ← 테마 토큰 딕셔너리 (THEMES)
   image_finder.py    ← 이미지 수집 (PLACEHOLDER + Unsplash)

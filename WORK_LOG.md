@@ -63,17 +63,17 @@
 |-------|------|------|
 | 1 | 팩트 추출 | Claude Haiku |
 | **2** | **입지 분석 생성** | **Gemini Flash** |
-| **3** | **입지 분석 검증** | **Claude Sonnet** |
-| 4 | 콘텐츠 생성 | Claude Sonnet |
+| **3** | **입지 분석 검증** | **GPT-5.4** |
+| 4 | 콘텐츠 생성 | GPT-5.4 |
 | 5 | Q&A 팩트체크 | Gemini Flash |
 | 6 | CTA 최적화 | — |
 | 7 | 품질 검수 | — |
 
 - `LOCATION_ANALYSIS_PROMPT`: 비수도권 지하철 언급 금지, 도보 거리 기준(5분≈400m), 별점 기준 명시
-- `LOCATION_VERIFY_PROMPT`: Claude가 역명·학교명·비수도권 오류 교정
-- `agent_location_analysis_gemini()` / `agent_location_verify_claude()` 함수 추가
-- `run_pipeline()`: location_data 생성 후 Claude content에 병합(overwrite)
-- Gemini 실패 시 Claude 생성값으로 자동 폴백
+- `LOCATION_VERIFY_PROMPT`: GPT-5.4가 역명·학교명·비수도권 오류 교정
+- `agent_location_analysis_gemini()` / `agent_location_verify_gpt()` 함수 추가
+- `run_pipeline()`: location_data 생성 후 GPT-5.4 content에 병합(overwrite)
+- Gemini 실패 시 GPT-5.4 생성값으로 자동 폴백
 
 ---
 

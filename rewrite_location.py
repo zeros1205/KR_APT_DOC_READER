@@ -4,7 +4,7 @@ rewrite_location.py — 기존 11개 포스트 입지 분석 재작성
 흐름:
   1. 각 post.html에서 apt_name·location·supply_location 추출
   2. Gemini → 입지 분석 생성 (교통·학군·생활·의료)
-  3. Claude Sonnet → 검증·교정
+  3. GPT-5.4 → 검증·교정
   4. post.html 패치 (location_intro + 4개 카드 텍스트 교체)
 
 실행:
@@ -19,10 +19,10 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT / "pipeline"))
 
-from config import ANTHROPIC_API_KEY, GEMINI_API_KEY, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL
-from anthropic import AsyncAnthropic
+from config import OPENAI_API_KEY, GEMINI_API_KEY, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL
+from openai import AsyncOpenAI
 
-claude_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 POSTS_DIR = ROOT / "output" / "posts"
 
@@ -109,7 +109,7 @@ def call_gemini_location(facts: dict) -> dict:
         from google.genai import types as genai_types
         client = google_genai.Client(api_key=GEMINI_API_KEY)
         resp = client.models.generate_content(
-            model=LLM_FACTCHECK_MODEL,
+            model=LLM_LOCATION_MODEL,
             contents=LOCATION_ANALYSIS_PROMPT.format(
                 facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
             ),
@@ -128,35 +128,33 @@ def call_gemini_location(facts: dict) -> dict:
         return {}
 
 
-# ── Claude 검증 ────────────────────────────────────────
-async def call_claude_verify(location_data: dict, facts: dict) -> dict:
+# ── GPT-5.4 검증 ───────────────────────────────────────
+async def call_gpt_verify(location_data: dict, facts: dict) -> dict:
     if not location_data:
         return location_data
     try:
-        resp = await claude_client.messages.create(
+        resp = await openai_client.responses.create(
             model=LLM_CONTENT_MODEL,
-            max_tokens=2000,
-            system=(
+            max_output_tokens=2000,
+            instructions=(
                 "당신은 한국 지리·부동산 전문가입니다.\n"
                 "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
             ),
-            messages=[{
-                "role": "user",
-                "content": LOCATION_VERIFY_PROMPT.format(
-                    apt_name=facts.get("apt_name", ""),
-                    location=facts.get("location", ""),
-                    location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
-                ),
-            }],
+            input=LOCATION_VERIFY_PROMPT.format(
+                apt_name=facts.get("apt_name", ""),
+                location=facts.get("location", ""),
+                location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
+            ),
+            text={"format": {"type": "json_object"}},
         )
-        raw = resp.content[0].text.strip()
+        raw = (resp.output_text or "").strip()
         try:
             return json.loads(raw)
         except json.JSONDecodeError:
             m = re.search(r'\{.*\}', raw, re.DOTALL)
             return json.loads(m.group()) if m else location_data
     except Exception as e:
-        print(f"  Claude 검증 오류: {e}")
+        print(f"  GPT-5.4 검증 오류: {e}")
         return location_data
 
 
@@ -227,9 +225,9 @@ async def main(dry_run: bool = False):
             continue
         print(f"  Gemini subway_detail: {loc.get('subway_detail', '')[:60]}")
 
-        # Claude 검증
-        loc = await call_claude_verify(loc, facts)
-        print(f"  Claude verified subway_detail: {loc.get('subway_detail', '')[:60]}")
+        # GPT-5.4 검증
+        loc = await call_gpt_verify(loc, facts)
+        print(f"  GPT-5.4 verified subway_detail: {loc.get('subway_detail', '')[:60]}")
 
         # HTML 패치
         updated = patch_location_html(html, loc)

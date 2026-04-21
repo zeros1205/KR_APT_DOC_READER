@@ -56,6 +56,15 @@ def _fmt_date(date_str: str) -> tuple[str, str]:
         return ("", "")
 
 
+def _parse_date(date_str: str) -> datetime | None:
+    if not date_str or date_str in ("-", "null", "None"):
+        return None
+    try:
+        return datetime.fromisoformat(date_str[:10])
+    except Exception:
+        return None
+
+
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:
     """(label, card_grad_cssvar, tag_type)
     tag_type: 'new' | 'resupply'
@@ -75,6 +84,11 @@ def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:
     lo = combined.lower()
     label = "공공분양" if any(kw in lo for kw in _PUBLIC_KW) else "민간분양"
     return label, "var(--c-card-grad-new)", "new"
+
+
+def _supply_filter_key(title: str, apt_name: str) -> str:
+    label, _, tag_type = _supply_info(title, apt_name)
+    return "재공급" if tag_type == "resupply" else label
 
 
 def _date_cell(label: str, month: str, day: str) -> str:
@@ -97,6 +111,65 @@ def _date_cell(label: str, month: str, day: str) -> str:
     )
 
 
+def _render_filter_btn(label: str, count: int, js_value: str, group: str) -> str:
+    return (
+        f'<button class="tab-btn" data-group="{group}" data-value="{js_value}" '
+        f'onclick="filterGroup(this,\'{group}\',\'{js_value}\')">'
+        f'{label}<span class="tab-count"> ({count})</span>'
+        f'</button>'
+    )
+
+
+def _render_featured(posts: list[dict]) -> str:
+    featured = posts[:3]
+    if not featured:
+        return ""
+
+    items: list[str] = []
+    for idx, post in enumerate(featured, start=1):
+        apt_name = post.get("apt_name", "(단지명 없음)")
+        location = post.get("location", "위치 정보 없음")
+        price = post.get("price_range") or "분양가 확인 필요"
+        url = post["post_url"]
+        label, _, _ = _supply_info(post.get("title", apt_name), apt_name)
+        rank1_dt = _parse_date(post.get("rank1_date", ""))
+        rank1_label = (
+            f"{rank1_dt.month}월 {rank1_dt.day}일 1순위"
+            if rank1_dt else "일정 확인 필요"
+        )
+        items.append(
+            f"""
+            <a href="{url}" style="display:flex;gap:16px;align-items:flex-start;
+               padding:18px 0;text-decoration:none;border-top:{'0' if idx == 1 else '1px'} solid var(--c-light-gray);">
+              <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+                          flex-shrink:0;background:var(--c-primary-light);color:var(--c-primary);font-size:16px;font-weight:900;">
+                {idx}
+              </div>
+              <div style="min-width:0;flex:1;">
+                <p style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--c-primary);margin-bottom:7px;">{label}</p>
+                <p style="font-size:18px;font-weight:800;line-height:1.45;color:var(--c-dark);word-break:keep-all;margin-bottom:6px;">
+                  {apt_name}
+                </p>
+                <p style="font-size:13px;color:var(--c-mid);line-height:1.6;margin-bottom:9px;">
+                  {location}
+                </p>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
+                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
+                    {price}
+                  </span>
+                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
+                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
+                    {rank1_label}
+                  </span>
+                </div>
+              </div>
+            </a>
+            """
+        )
+    return "".join(items)
+
+
 def _render_card(p: dict, _serial: int) -> str:
     apt_name = p.get("apt_name", "(단지명 없음)")
     title    = p.get("title", apt_name)
@@ -106,6 +179,9 @@ def _render_card(p: dict, _serial: int) -> str:
     tags     = (p.get("tags") or [])[:4]
 
     supply_label, header_grad, tag_type = _supply_info(title, apt_name)
+    supply_key = _supply_filter_key(title, apt_name)
+    price_range = p.get("price_range") or "분양가 확인 필요"
+    move_in = p.get("move_in_date") or "입주 시기 확인 필요"
 
     sp_month, sp_day = _fmt_date(p.get("special_supply_date", ""))
     r1_month, r1_day = _fmt_date(p.get("rank1_date", ""))
@@ -122,7 +198,7 @@ def _render_card(p: dict, _serial: int) -> str:
     sp_cell = _date_cell("특별공급", sp_month, sp_day)
     r1_cell = _date_cell("1순위",    r1_month, r1_day)
 
-    return f"""<article class="post-card" data-region="{region}" data-name="{apt_name}" onclick="location.href='{url}'">
+    return f"""<article class="post-card" data-region="{region}" data-supply="{supply_key}" data-name="{apt_name}" onclick="location.href='{url}'">
 
   <!-- ── 카드 헤더 ── -->
   <div class="card-header" style="background:{header_grad};">
@@ -143,6 +219,15 @@ def _render_card(p: dict, _serial: int) -> str:
               -webkit-box-orient:vertical;overflow:hidden;margin:0;">
       {apt_name}
     </p>
+
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;
+                   border-radius:999px;background:rgba(255,255,255,0.14);
+                   border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;
+                   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        {price_range}
+      </span>
+    </div>
   </div>
 
   <!-- ── 카드 하단 ── -->
@@ -159,6 +244,17 @@ def _render_card(p: dict, _serial: int) -> str:
     <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">
       📌 {location if location else "위치 정보 없음"}
     </p>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 0;">
+    <span style="display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
+                 background:var(--c-primary-light);color:var(--c-primary-dark);font-size:11px;font-weight:700;">
+      {supply_key}
+    </span>
+    <span style="display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
+                 background:var(--c-bg);color:var(--c-dark);font-size:11px;font-weight:600;">
+      입주 {move_in}
+    </span>
   </div>
 
   <!-- 태그 -->
@@ -184,11 +280,14 @@ def build() -> None:
     posts = load_posts()
     print(f"  포스트 {len(posts)}건 로드")
 
-    # 지역 집계
+    # 지역/공급유형 집계
     region_counts: dict[str, int] = {}
+    supply_counts: dict[str, int] = {}
     for p in posts:
         r = p.get("region_category", "기타")
         region_counts[r] = region_counts.get(r, 0) + 1
+        supply_key = _supply_filter_key(p.get("title", p.get("apt_name", "")), p.get("apt_name", ""))
+        supply_counts[supply_key] = supply_counts.get(supply_key, 0) + 1
 
     _REGION_ORDER = [
         "서울", "경기도", "인천", "부산", "대전", "대구", "광주",
@@ -201,18 +300,42 @@ def build() -> None:
     total        = len(posts)
     region_count = len(region_counts)
 
-    def _tab(r: str) -> str:
-        cnt = total if r == "전체" else region_counts.get(r, 0)
-        return (
-            f'<button class="tab-btn" data-region="{r}" '
-            f'onclick="filterRegion(this,\'{r}\')">'
-            f'{r}<span class="tab-count"> ({cnt})</span>'
-            f'</button>'
+    region_tabs = "".join(
+        _render_filter_btn(r, total if r == "전체" else region_counts.get(r, 0), r, "region")
+        for r in regions
+    )
+    supply_order = ["전체", "민간분양", "공공분양", "재공급"]
+    supply_tabs = "".join(
+        _render_filter_btn(
+            label,
+            total if label == "전체" else supply_counts.get(label, 0),
+            label,
+            "supply",
         )
-
-    region_tabs = "".join(_tab(r) for r in regions)
+        for label in supply_order
+        if label == "전체" or supply_counts.get(label, 0) > 0
+    )
     cards_html  = "".join(_render_card(p, i + 1) for i, p in enumerate(posts))
     nav_html    = shared_nav("/")
+    featured_html = _render_featured(posts)
+    latest_generated = max((p.get("generated_at", "") for p in posts), default="")
+    latest_dt = None
+    if latest_generated:
+        try:
+            latest_dt = datetime.fromisoformat(latest_generated)
+        except Exception:
+            latest_dt = None
+    latest_label = (
+        f"{latest_dt.year}.{latest_dt.month:02d}.{latest_dt.day:02d} 업데이트"
+        if latest_dt else "최근 업데이트 정보 없음"
+    )
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    upcoming_rank1 = sum(
+        1 for p in posts
+        if (dt := _parse_date(p.get("rank1_date", ""))) and dt >= today
+    )
+    seoul_gyeonggi = region_counts.get("서울", 0) + region_counts.get("경기도", 0)
+    supply_count = len([k for k, v in supply_counts.items() if v > 0])
 
     html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
@@ -279,7 +402,13 @@ body {{
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }}
+.intro-grid {{
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+  gap: 22px;
+}}
 @media (max-width: 960px) {{ .cards-grid {{ grid-template-columns: repeat(2, 1fr); }} }}
+@media (max-width: 960px) {{ .intro-grid {{ grid-template-columns: 1fr; }} }}
 @media (max-width: 580px) {{ .cards-grid {{ grid-template-columns: 1fr; }} }}
 
 /* ── 카드 ── */
@@ -379,6 +508,13 @@ body {{
 /* ── 빈 결과 ── */
 #no-result {{ display:none; text-align:center; padding:80px 20px; color:var(--c-mid); font-size:15px; }}
 #no-result.show {{ display:block; }}
+
+.section-card {{
+  background: var(--c-surface);
+  border: 1px solid var(--c-light-gray);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(36, 32, 28, 0.06);
+}}
 </style>
 </head>
 <body>
@@ -414,6 +550,19 @@ body {{
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
+                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
+                   font-size:13px;font-weight:700;color:var(--c-dark);">
+        {latest_label}
+      </span>
+      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
+                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
+                   font-size:13px;font-weight:700;color:var(--c-dark);">
+        곧 1순위 접수 {upcoming_rank1}건
+      </span>
+    </div>
+
     <!-- 통계 카드 -->
     <div style="display:flex;flex-wrap:wrap;gap:12px;">
       <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
@@ -426,6 +575,11 @@ body {{
         <div style="font-size:32px;font-weight:900;color:var(--c-accent);letter-spacing:-1px;">{region_count}</div>
         <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">커버 지역</div>
       </div>
+      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
+                  border-radius:10px;padding:18px 32px;text-align:center;">
+        <div style="font-size:32px;font-weight:900;color:var(--c-green-dark);letter-spacing:-1px;">{seoul_gyeonggi}</div>
+        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">서울·경기 공고</div>
+      </div>
     </div>
   </div>
 </section>
@@ -435,6 +589,40 @@ body {{
 
 <!-- ══ 메인 ══ -->
 <main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
+
+  <section class="intro-grid" style="margin-bottom:36px;">
+    <div class="section-card" style="padding:28px;">
+      <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:10px;">START HERE</p>
+      <h2 style="font-size:28px;font-weight:900;line-height:1.28;letter-spacing:-0.9px;color:var(--c-dark);margin-bottom:12px;word-break:keep-all;">
+        이번 주 청약 흐름을 빠르게 훑고<br>원하는 단지로 바로 들어가세요
+      </h2>
+      <p style="font-size:15px;line-height:1.8;color:var(--c-mid);margin-bottom:20px;max-width:560px;word-break:keep-all;">
+        지역 탭과 공급 유형 필터를 같이 쓰면 재공급 공고, 공공분양 공고, 서울권 신규 공고만 빠르게 압축해서 볼 수 있습니다.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
+          지역 탐색 {region_count}개 권역
+        </span>
+        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
+          공급 유형 {supply_count}개
+        </span>
+        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
+          검색으로 단지명 바로 찾기
+        </span>
+      </div>
+    </div>
+
+    <aside class="section-card" style="padding:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+        <div>
+          <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:8px;">LATEST PICKS</p>
+          <h3 style="font-size:22px;font-weight:900;letter-spacing:-0.6px;color:var(--c-dark);">최근 분석 공고</h3>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--c-mid);">TOP 3</span>
+      </div>
+      {featured_html}
+    </aside>
+  </section>
 
   <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
               justify-content:space-between;gap:16px;margin-bottom:22px;">
@@ -450,7 +638,7 @@ body {{
     </p>
   </div>
 
-  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;
               padding-bottom:24px;border-bottom:1px solid var(--c-light-gray);">
     <div class="search-wrap">
       <span class="search-icon">
@@ -463,6 +651,11 @@ body {{
              oninput="filterSearch(this.value)" autocomplete="off">
     </div>
     {region_tabs}
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;">
+    <span style="font-size:12px;font-weight:800;letter-spacing:1px;color:var(--c-mid);margin-right:4px;">공급유형</span>
+    {supply_tabs}
   </div>
 
   <div class="cards-grid" id="cards-grid">
@@ -510,16 +703,19 @@ body {{
 
 var POSTS_PER_PAGE = 12;
 var _currentPage = 1;
+var _activeFilters = {{
+  region: '전체',
+  supply: '전체'
+}};
 
 function _getMatchedCards() {{
-  var activeBtn = document.querySelector('.tab-btn.active');
-  var region = activeBtn ? activeBtn.dataset.region : '전체';
   var q = ((document.getElementById('search-input') || {{}}).value || '').toLowerCase().trim();
   var all = Array.from(document.querySelectorAll('.post-card'));
   return all.filter(function(card) {{
-    var regionMatch = region === '전체' || card.dataset.region === region;
+    var regionMatch = _activeFilters.region === '전체' || card.dataset.region === _activeFilters.region;
+    var supplyMatch = _activeFilters.supply === '전체' || card.dataset.supply === _activeFilters.supply;
     var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
-    return regionMatch && nameMatch;
+    return regionMatch && supplyMatch && nameMatch;
   }});
 }}
 
@@ -569,12 +765,17 @@ function goPage(page) {{
   var matched = _getMatchedCards();
   _renderPage(matched, _currentPage);
   _renderPagination(matched);
-  window.scrollTo({{top: document.getElementById('cards-grid').offsetTop - 80, behavior: 'smooth'}});
+  if (window.scrollY > document.getElementById('cards-grid').offsetTop - 120) {{
+    window.scrollTo({{top: document.getElementById('cards-grid').offsetTop - 80, behavior: 'smooth'}});
+  }}
 }}
 
-function filterRegion(btn, region) {{
-  document.querySelectorAll('.tab-btn').forEach(function(b) {{ b.classList.remove('active'); }});
+function filterGroup(btn, group, value) {{
+  document.querySelectorAll('.tab-btn[data-group="' + group + '"]').forEach(function(b) {{
+    b.classList.remove('active');
+  }});
   btn.classList.add('active');
+  _activeFilters[group] = value;
   _applyFilters();
 }}
 
@@ -582,7 +783,8 @@ function filterSearch(val) {{
   _applyFilters();
 }}
 
-document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
+document.querySelector('.tab-btn[data-group="region"][data-value="전체"]').classList.add('active');
+document.querySelector('.tab-btn[data-group="supply"][data-value="전체"]').classList.add('active');
 _applyFilters();
 </script>
 

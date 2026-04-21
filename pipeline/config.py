@@ -15,18 +15,18 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 
-# ── Anthropic (Claude) ──
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-LLM_CONTENT_MODEL  = "claude-sonnet-4-6"   # 서술형 콘텐츠 생성 (따뜻한 문체)
-LLM_EXTRACT_MODEL  = "claude-haiku-4-5-20251001"  # 팩트 추출 (비용 절감)
-
-# ── OpenAI (임베딩 전용) ──
+# ── OpenAI ──
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+LLM_EXTRACT_MODEL = "gpt-5.4"      # 팩트 추출
+LLM_CONTENT_MODEL = "gpt-5.4"  # 서술형 콘텐츠 생성·검증
 LLM_EMBED_MODEL = "text-embedding-3-small"
 
-# ── Google Gemini (Q&A 팩트체크 전용) ──
+# ── Google Gemini (입지 분석 전용) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_FACTCHECK_MODEL = "gemini-2.0-flash"
+LLM_LOCATION_MODEL = "gemini-2.0-flash"
+
+# ── OpenAI 팩트체크 ──
+LLM_FACTCHECK_MODEL = "gpt-5.4-mini"
 
 # ── 이미지 API ──
 UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")

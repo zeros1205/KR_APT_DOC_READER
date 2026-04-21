@@ -5,9 +5,9 @@ PDF를 pdfplumber로 텍스트 추출하지 않고,
 각 모델 API에 PDF를 직접(base64) 전달해 모델이 원문 레이아웃 그대로 읽게 함.
 
 대상 모델:
-  A) Claude Sonnet 4.6   (claude-sonnet-4-6)
-  B) Claude Opus 4.7     (claude-opus-4-7)
-  C) Gemini 2.5 Pro      (gemini-2.5-pro-preview-05-06)
+  A) GPT-5.4            (gpt-5.4)
+  B) Claude Opus 4.7    (claude-opus-4-7)
+  C) Gemini 3.1 Pro     (gemini-3.1-pro-preview)
 
 추출 항목:
   1. 규제지역 여부   2. 재당첨 제한   3. 전매제한
@@ -22,10 +22,12 @@ import time
 from pathlib import Path
 
 from dotenv import load_dotenv
+from openai import AsyncOpenAI
 
 load_dotenv()
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+OPENAI_API_KEY    = os.getenv("OPENAI_API_KEY", "")
 GEMINI_API_KEY    = os.getenv("GEMINI_API_KEY", "")
 
 ROOT = Path(__file__).parent
@@ -63,10 +65,41 @@ FIELD_LABELS = {"regulated_zone": "규제지역 여부", "readmission_limit": "�
                 "price_cap": "분양가 상한제"}
 
 MODELS = [
-    ("Sonnet 4.6", "claude", "claude-sonnet-4-6"),
+    ("GPT-5.4", "openai", "gpt-5.4"),
     ("Opus 4.7",   "claude", "claude-opus-4-7"),
     ("Gemini 3.1 Pro", "gemini", "gemini-3.1-pro-preview"),
 ]
+
+
+# ── OpenAI — PDF input_file 직접 전달 ───────────────────────────────────────
+async def call_openai(model_id: str, pdf_b64: str) -> dict:
+    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+    t0 = time.time()
+    try:
+        resp = await client.responses.create(
+            model=model_id,
+            max_output_tokens=512,
+            text={"format": {"type": "json_object"}},
+            input=[{
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_file",
+                        "filename": "notice.pdf",
+                        "file_data": f"data:application/pdf;base64,{pdf_b64}",
+                    },
+                    {"type": "input_text", "text": PROMPT},
+                ],
+            }],
+        )
+        raw = (resp.output_text or "").strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        result = json.loads(raw)
+        result["_elapsed"] = round(time.time() - t0, 1)
+        return result
+    except Exception as e:
+        return {"error": str(e), "_elapsed": round(time.time() - t0, 1)}
 
 
 # ── Claude — PDF document block 직접 전달 ─────────────────────────────────────
@@ -186,7 +219,9 @@ async def main():
         results = {}
         for label, kind, model_id in MODELS:
             print(f"  → {label} ...", end="", flush=True)
-            if kind == "claude":
+            if kind == "openai":
+                res = await call_openai(model_id, pdf_b64)
+            elif kind == "claude":
                 res = await call_claude(model_id, pdf_b64)
             else:
                 res = await call_gemini(model_id, pdf_bytes)

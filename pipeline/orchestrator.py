@@ -13,14 +13,14 @@ orchestrator.py
 import sys
 import asyncio
 import json
+import re
 from pathlib import Path
-from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
-    ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY,
-    LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL,
+    OPENAI_API_KEY, GEMINI_API_KEY,
+    LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
     OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
     CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
     PREFERRED_IMAGE_SOURCE, BLOG_THEME,
@@ -29,19 +29,19 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-claude  = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 
-async def _call_claude(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
-    """Claude API 호출 헬퍼 — JSON 순수 출력 전용"""
-    resp = await claude.messages.create(
+async def _call_openai_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
+    """OpenAI Responses API 호출 헬퍼 — JSON 객체 출력 전용"""
+    resp = await openai_client.responses.create(
         model=model,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}],
+        instructions=system,
+        input=user,
+        max_output_tokens=max_tokens,
+        text={"format": {"type": "json_object"}},
     )
-    return resp.content[0].text
+    return (resp.output_text or "").strip()
 
 
 # ──────────────────────────────────────────────────
@@ -99,11 +99,69 @@ FACT_EXTRACTION_PROMPT = """
 {notice_text}
 """
 
+ELIGIBILITY_EXTRACTION_PROMPT = """
+당신은 한국 청약제도 자격 요건 추출 전문가입니다.
+아래 [공고 원문]에서 신청자격만 추출하여 JSON으로만 답하세요.
+
+추출 규칙:
+- 공고문에 실제로 적힌 문장만 사용하고, 추측은 금지합니다.
+- 특별공급은 타입명(type_name), 세대수(quota, 없으면 null), requirements 배열로 정리하세요.
+- 1순위/2순위는 공고문 문장을 최대한 그대로 3~5개씩 정리하세요.
+- 정보가 없으면 빈 배열을 반환하세요.
+
+반드시 추출할 키:
+- eligibility_special
+- eligibility_rank1
+- eligibility_rank2
+
+[공고 원문]:
+{notice_text}
+"""
+
+FINANCIAL_EXTRACTION_PROMPT = """
+당신은 한국 부동산 분양 공고문에서 자금계획을 추출하는 전문가입니다.
+아래 [공고 원문]에서 자금계획만 추출하여 JSON으로만 답하세요.
+
+추출 규칙:
+- 공고문에 실제로 적힌 내용만 사용하고, 추측은 금지합니다.
+- 비율은 숫자만 반환하세요. 예: 10, 60, 30
+- 계약금 금액은 공고문에 있는 표현을 최대한 그대로 반환하세요.
+- 중도금 대출이 없거나 조건이 불명확하면 loan_info에 "공고문 확인 필요"를 반환하세요.
+- 정보가 없으면 null 또는 기본값을 사용하지 말고 빈 값으로 두세요.
+
+반드시 추출할 키:
+- contract_ratio
+- contract_amount
+- midterm_ratio
+- midterm_count
+- balance_ratio
+- loan_info
+
+[공고 원문]:
+{notice_text}
+"""
+
+
+def _has_eligibility_data(facts: dict) -> bool:
+    """청약 신청자격 정보가 하나라도 채워졌는지 확인."""
+    return any(
+        facts.get(key)
+        for key in ("eligibility_special", "eligibility_rank1", "eligibility_rank2")
+    )
+
+
+def _has_financial_data(facts: dict) -> bool:
+    """자금 계획 정보가 하나라도 채워졌는지 확인."""
+    return any(
+        facts.get(key)
+        for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info")
+    )
+
 
 async def agent_fact_extraction(notice_text: str) -> dict:
-    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (Claude Haiku)"""
+    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
-    raw = await _call_claude(
+    raw = await _call_openai_json(
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
         model=LLM_EXTRACT_MODEL,
@@ -116,6 +174,70 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         facts = json.loads(m.group()) if m else {}
         if not facts:
             print("  [Agent 1] JSON 파싱 실패")
+
+    # 자격 정보가 비어 있으면 전용 재추출을 한 번 더 수행한다.
+    if facts and not _has_eligibility_data(facts):
+        print("  [Agent 1] 신청자격 누락 감지 → 전용 재추출...")
+        try:
+            raw_eligibility = await _call_openai_json(
+                system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
+                user=ELIGIBILITY_EXTRACTION_PROMPT.format(notice_text=notice_text),
+                model=LLM_EXTRACT_MODEL,
+                max_tokens=2500,
+            )
+            try:
+                eligibility = json.loads(raw_eligibility)
+            except json.JSONDecodeError:
+                import re as _re
+                m = _re.search(r'\{.*\}', raw_eligibility, _re.DOTALL)
+                eligibility = json.loads(m.group()) if m else {}
+
+            for key in ("eligibility_special", "eligibility_rank1", "eligibility_rank2"):
+                if eligibility.get(key):
+                    facts[key] = eligibility.get(key)
+            if _has_eligibility_data(facts):
+                print("  [Agent 1] 신청자격 재추출 완료")
+        except Exception as e:
+            print(f"  [Agent 1] 신청자격 재추출 실패 ({e})")
+
+    if facts and not _has_eligibility_data(facts):
+        print("  [Agent 1] 신청자격 폴백 적용 (기존 보강 데이터)...")
+        try:
+            from patch_posts4_eligibility import get_eligibility as _get_eligibility
+
+            fallback = _get_eligibility(facts.get("apt_name", ""))
+            for key in ("eligibility_special", "eligibility_rank1", "eligibility_rank2"):
+                if fallback.get(key):
+                    facts[key] = fallback.get(key)
+            if _has_eligibility_data(facts):
+                print("  [Agent 1] 신청자격 폴백 적용 완료")
+        except Exception as e:
+            print(f"  [Agent 1] 신청자격 폴백 실패 ({e})")
+
+    if facts and not _has_financial_data(facts):
+        print("  [Agent 1] 자금계획 누락 감지 → 전용 재추출...")
+        try:
+            raw_financial = await _call_openai_json(
+                system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
+                user=FINANCIAL_EXTRACTION_PROMPT.format(notice_text=notice_text),
+                model=LLM_EXTRACT_MODEL,
+                max_tokens=2000,
+            )
+            try:
+                financial = json.loads(raw_financial)
+            except json.JSONDecodeError:
+                import re as _re
+                m = _re.search(r'\{.*\}', raw_financial, _re.DOTALL)
+                financial = json.loads(m.group()) if m else {}
+
+            for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info"):
+                if financial.get(key) not in (None, "", []):
+                    facts[key] = financial.get(key)
+            if _has_financial_data(facts):
+                print("  [Agent 1] 자금계획 재추출 완료")
+        except Exception as e:
+            print(f"  [Agent 1] 자금계획 재추출 실패 ({e})")
+
     print(f"  [Agent 1] 완료: {facts.get('apt_name', '미확인')} 추출")
     return facts
 
@@ -190,7 +312,7 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
         from google.genai import types as genai_types
         client = google_genai.Client(api_key=GEMINI_API_KEY)
         resp = client.models.generate_content(
-            model=LLM_FACTCHECK_MODEL,
+            model=LLM_LOCATION_MODEL,
             contents=LOCATION_ANALYSIS_PROMPT.format(
                 facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
             ),
@@ -212,13 +334,13 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
         return {}
 
 
-async def agent_location_verify_claude(location_data: dict, facts: dict) -> dict:
-    """Agent 3: Claude Sonnet으로 입지 분석 검증·교정"""
-    print("  [Agent 3] 입지 분석 검증 시작 (Claude)...")
+async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
+    """Agent 3: GPT-5.4로 입지 분석 검증·교정"""
+    print("  [Agent 3] 입지 분석 검증 시작 (GPT-5.4)...")
     if not location_data:
         return location_data
     try:
-        raw = await _call_claude(
+        raw = await _call_openai_json(
             system=(
                 "당신은 한국 지리·부동산 전문가입니다.\n"
                 "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
@@ -240,7 +362,7 @@ async def agent_location_verify_claude(location_data: dict, facts: dict) -> dict
         print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 3] Claude 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        print(f"  [Agent 3] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
         return location_data
 
 
@@ -342,9 +464,9 @@ CONTENT_GEN_PROMPT = """
 
 
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (Claude Sonnet — 따뜻한 문체)"""
-    print("  [Agent 4] 콘텐츠 생성 시작 (Claude Sonnet)...")
-    raw = await _call_claude(
+    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
+    print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
+    raw = await _call_openai_json(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
             "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
@@ -367,7 +489,7 @@ async def agent_content_generation(facts: dict) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 5: Q&A 팩트체크 (Gemini)
+# Agent 5: Q&A 팩트체크 (GPT-5.4 mini)
 # ──────────────────────────────────────────────────
 
 FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니다.
@@ -408,29 +530,24 @@ FACTCHECK_USER_TPL = """[단지 팩트]
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 5: Gemini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
-    print("  [Agent 5] Q&A 팩트체크 시작 (Gemini)...")
+    """Agent 5: GPT-5.4 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    print("  [Agent 5] Q&A 팩트체크 시작 (GPT-5.4 mini)...")
 
-    if not GEMINI_API_KEY:
-        print("  [Agent 5] GEMINI_API_KEY 미설정 → 팩트체크 건너뜀")
+    if not OPENAI_API_KEY:
+        print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
         return content
 
     try:
-        from google import genai as google_genai
-        from google.genai import types as genai_types
-        client = google_genai.Client(api_key=GEMINI_API_KEY)
         user_msg = FACTCHECK_USER_TPL.format(
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
             qa_json=json.dumps(content.get("qa_blocks", []), ensure_ascii=False, indent=2),
         )
-        resp = client.models.generate_content(
+        raw = await _call_openai_json(
+            system=FACTCHECK_SYSTEM,
+            user=user_msg,
             model=LLM_FACTCHECK_MODEL,
-            contents=user_msg,
-            config=genai_types.GenerateContentConfig(
-                system_instruction=FACTCHECK_SYSTEM,
-            ),
+            max_tokens=3000,
         )
-        raw = resp.text.strip()
 
         # JSON 추출
         try:
@@ -497,6 +614,16 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
             score -= 20
             issues.append(f"필수 팩트 누락: {fact_key}")
 
+    # 2-1. 청약 신청자격 정보 여부
+    if not _has_eligibility_data(facts):
+        score -= 12
+        issues.append("청약 신청자격 데이터 누락")
+
+    # 2-2. 자금 계획 정보 여부
+    if not _has_financial_data(facts):
+        score -= 10
+        issues.append("자금 계획 데이터 누락")
+
     # 3. SEO 태그 수
     tags = content.get("seo_tags", [])
     if len(tags) < 5:
@@ -536,9 +663,9 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # 파이프라인 흐름:
 #   [Agent 1] 팩트 추출 (Haiku)
 #   [Agent 2] 입지 분석 (Gemini) — subway/school/life/medical 별점+설명
-#   [Agent 3] 입지 검증 (Claude Sonnet) — 역명·학교명·비수도권 지하철 오류 교정
-#   [Agent 4] 콘텐츠 생성 (Claude Sonnet)
-#   [Agent 5] Q&A 팩트체크 (Gemini)
+#   [Agent 3] 입지 검증 (GPT-5.4) — 역명·학교명·비수도권 지하철 오류 교정
+#   [Agent 4] 콘텐츠 생성 (GPT-5.4)
+#   [Agent 5] Q&A 팩트체크 (GPT-5.4 mini)
 #   [Agent 6] CTA 최적화
 #   [Agent 7] 품질 검수
 #   [렌더링] HTML 생성 → 저장
@@ -568,6 +695,41 @@ def _fmt_hot_zone(v: str) -> str:
     if v in ("N", "n", "해당없음", "아니오", "비해당"):
         return "비해당"
     return v  # 그 외 텍스트 값 그대로 사용
+
+
+def _parse_price_manwon(value) -> int:
+    """분양가 값을 만원 단위 정수로 정규화."""
+    if value is None:
+        return 0
+    if isinstance(value, (int, float)):
+        return int(value)
+
+    text = str(value).strip().replace(",", "")
+    if not text or text in {"-", "null", "None"}:
+        return 0
+    if text.isdigit():
+        return int(text)
+
+    total = 0
+    m = re.search(r"(\d+(?:\.\d+)?)\s*억", text)
+    if m:
+        total += int(float(m.group(1)) * 10000)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*천\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 1000)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*백\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 100)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*십\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 10)
+
+    if "만원" in text and total == 0:
+        m = re.search(r"(\d+(?:\.\d+)?)\s*만원", text)
+        if m:
+            total += int(float(m.group(1)))
+
+    return total
 
 
 async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "") -> Path | None:
@@ -606,11 +768,11 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         del images["floor_plan_84"]
         print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
 
-    # Step 2: 입지 분석 (Gemini → Claude 검증)
+    # Step 2: 입지 분석 (Gemini → GPT-5.4 검증)
     location_data = await agent_location_analysis_gemini(facts)
-    location_data = await agent_location_verify_claude(location_data, facts)
+    location_data = await agent_location_verify_gpt(location_data, facts)
 
-    # Step 3~4: 콘텐츠 생성 + 품질 검수 루프
+    # Step 3~5: 콘텐츠 생성 + 팩트체크 + 품질 검수 루프
     for attempt in range(1, max_retries + 2):
         print(f"\n  📝 콘텐츠 생성 시도 {attempt}회...")
         content = await agent_content_generation(facts)
@@ -638,8 +800,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
             area_sqm=float(ut.get("area_sqm", 0)),
             general_units=int(ut.get("general_units", 0)),
             special_units=int(ut.get("special_units", 0)),
-            price_min=int(ut.get("price_min", 0)),
-            price_max=int(ut.get("price_max", 0)),
+            price_min=_parse_price_manwon(ut.get("price_min", 0)),
+            price_max=_parse_price_manwon(ut.get("price_max", 0)),
         )
         for ut in facts.get("unit_types", [])
     ]
@@ -651,6 +813,19 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         )
         for qa in content.get("qa_blocks", [])
     ]
+
+    contract_ratio = str(facts.get("contract_ratio") or "10")
+    midterm_ratio = str(facts.get("midterm_ratio") or "60")
+    midterm_count = str(facts.get("midterm_count") or "6")
+    balance_ratio = str(facts.get("balance_ratio") or "30")
+    loan_info = facts.get("loan_info") or "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요."
+    contract_amount = facts.get("contract_amount") or ""
+    if not contract_amount and unit_types:
+        min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
+        if min_price > 0:
+            contract_amount = f"약 {int(min_price * int(contract_ratio) / 100):,}만원"
+    if not contract_amount:
+        contract_amount = "공고문 확인 필요"
 
     post_data = PostData(
         apt_name=apt_name,
@@ -673,13 +848,13 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         rank2_date=facts.get("rank2_date", "-"),
         winner_date=facts.get("winner_date", "-"),
         move_in_date=facts.get("move_in_date", "-"),
-        loan_info=facts.get("loan_info") or "-",
+        loan_info=loan_info,
         resale_restriction=facts.get("resale_restriction") or "-",
-        contract_ratio=str(facts.get("contract_ratio") or "10"),
-        contract_amount=facts.get("contract_amount") or "",
-        midterm_ratio=str(facts.get("midterm_ratio") or "60"),
-        midterm_count=str(facts.get("midterm_count") or "6"),
-        balance_ratio=str(facts.get("balance_ratio") or "30"),
+        contract_ratio=contract_ratio,
+        contract_amount=contract_amount,
+        midterm_ratio=midterm_ratio,
+        midterm_count=midterm_count,
+        balance_ratio=balance_ratio,
         acquisition_tax_rate=facts.get("acquisition_tax_rate", "1~3%"),
         acquisition_tax_amount="-",
         property_tax_rate="과세표준 × 0.1~0.4%",
