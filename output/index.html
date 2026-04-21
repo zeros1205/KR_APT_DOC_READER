@@ -6,7 +6,6 @@
 <title>정과장의 청약노트 — 분양 공고 분석 모음</title>
 <meta name="description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
 <style>
-/* ── 리셋 ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
@@ -16,7 +15,6 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* ── 탭 버튼 ── */
 .tab-btn {
   flex-shrink: 0;
   padding: 7px 18px;
@@ -33,7 +31,24 @@ body {
 .tab-btn:hover  { border-color: #1D4ED8; color: #1D4ED8; background: #EFF6FF; }
 .tab-btn.active { background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 700; }
 
-/* ── 카드 그리드 ── */
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 16px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #0F172A;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.search-input:focus {
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.12);
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -42,7 +57,6 @@ body {
 @media (max-width: 960px)  { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 580px)  { .cards-grid { grid-template-columns: 1fr; } }
 
-/* ── 카드 ── */
 .post-card {
   background: #fff;
   border-radius: 12px;
@@ -59,7 +73,6 @@ body {
 }
 .post-card.hidden { display: none !important; }
 
-/* ── 카드 헤더 ── */
 .card-header {
   position: relative;
   padding: 20px 20px 18px;
@@ -68,17 +81,12 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
-
-/* ── 카드 본문 ── */
 .card-body {
   padding: 20px 20px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-top: none;
 }
-
-/* ── 카드 제목 ── */
 .card-title {
   font-size: 15px;
   font-weight: 800;
@@ -91,8 +99,6 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* ── CTA ── */
 .card-cta {
   display: flex;
   align-items: center;
@@ -104,12 +110,10 @@ body {
   font-weight: 700;
   text-decoration: none;
   letter-spacing: 0.3px;
-  border-top: none;
   transition: background 150ms;
 }
 .card-cta:hover { background: #1D4ED8; }
 
-/* ── 히어로 패턴 ── */
 .hero-pattern {
   position: absolute; inset: 0;
   background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
@@ -117,14 +121,29 @@ body {
   pointer-events: none;
 }
 
-/* ── 빈 결과 ── */
 #no-result { display:none; text-align:center; padding:80px 20px; color:#94A3B8; font-size:15px; }
 #no-result.show { display:block; }
+
+/* 페이지네이션 */
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1.5px solid #CBD5E1;
+  background: #fff;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 150ms;
+}
+.page-btn:hover  { border-color: #1D4ED8; color: #1D4ED8; }
+.page-btn.active { background: #1D4ED8; color: #fff; border-color: #1D4ED8; font-weight: 700; }
 </style>
 </head>
 <body>
 
-<!-- ══ 상단 네비 ══ -->
 <header style="background:#0F172A;padding:0 24px;position:sticky;top:0;z-index:50;
                border-bottom:1px solid #1E293B;">
   <div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;
@@ -148,12 +167,9 @@ body {
 </header>
 
 
-<!-- ══ 히어로 ══ -->
 <section style="background:linear-gradient(140deg,#0F172A 0%,#1E293B 50%,#0F172A 100%);
                 padding:64px 24px 60px;position:relative;overflow:hidden;">
   <div class="hero-pattern"></div>
-
-  <!-- 배경 대형 텍스트 장식 -->
   <div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);
               font-size:180px;font-weight:900;color:rgba(255,255,255,0.02);
               letter-spacing:-8px;pointer-events:none;line-height:1;user-select:none;">
@@ -183,40 +199,26 @@ body {
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
-    <!-- 통계 바 -->
     <div style="display:flex;flex-wrap:wrap;gap:0;
                 background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
                 border-radius:10px;overflow:hidden;max-width:480px;">
       <div style="flex:1;padding:16px 24px;border-right:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;">
-          2
-        </div>
-        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">
-          분석 공고
-        </div>
+        <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;">11</div>
+        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">분석 공고</div>
       </div>
       <div style="flex:1;padding:16px 24px;border-right:1px solid rgba(255,255,255,0.08);">
-        <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;">
-          2
-        </div>
-        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">
-          커버 지역
-        </div>
+        <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;">8</div>
+        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">커버 지역</div>
       </div>
       <div style="flex:1;padding:16px 24px;">
-        <div style="font-size:16px;font-weight:800;color:#fff;margin-top:4px;">
-          2026.04.20
-        </div>
-        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">
-          최근 업데이트
-        </div>
+        <div style="font-size:16px;font-weight:800;color:#fff;margin-top:4px;">-</div>
+        <div style="font-size:11px;color:#64748B;margin-top:2px;letter-spacing:0.5px;">최근 업데이트</div>
       </div>
     </div>
   </div>
 </section>
 
 
-<!-- ══ 메인 ══ -->
 <main style="max-width:1160px;margin:0 auto;padding:40px 24px 100px;">
 
   <!-- 섹션 헤더 -->
@@ -230,31 +232,40 @@ body {
       </h2>
     </div>
     <p id="result-count" style="font-size:13px;color:#94A3B8;">
-      총 <strong style="color:#334155;">2</strong>건
+      총 <strong style="color:#334155;">11</strong>건
     </p>
   </div>
 
   <!-- 지역 필터 탭 -->
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;
-              padding-bottom:24px;border-bottom:1px solid #E2E8F0;">
-    <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체</button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도</button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도</button>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+    <button class="tab-btn" data-region="전체" onclick="filterRegion(this,'전체')">전체</button><button class="tab-btn" data-region="강원도" onclick="filterRegion(this,'강원도')">강원도</button><button class="tab-btn" data-region="경기도" onclick="filterRegion(this,'경기도')">경기도</button><button class="tab-btn" data-region="경상남도" onclick="filterRegion(this,'경상남도')">경상남도</button><button class="tab-btn" data-region="경상북도" onclick="filterRegion(this,'경상북도')">경상북도</button><button class="tab-btn" data-region="대전" onclick="filterRegion(this,'대전')">대전</button><button class="tab-btn" data-region="서울" onclick="filterRegion(this,'서울')">서울</button><button class="tab-btn" data-region="울산" onclick="filterRegion(this,'울산')">울산</button><button class="tab-btn" data-region="인천" onclick="filterRegion(this,'인천')">인천</button>
+  </div>
+
+  <!-- 단지명 검색 (탭 메뉴 하단) -->
+  <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #E2E8F0;">
+    <input
+      type="text"
+      id="search-input"
+      class="search-input"
+      placeholder="🔍 단지명 검색..."
+      oninput="onSearch(event)"
+      autocomplete="off"
+    >
   </div>
 
   <!-- 카드 그리드 -->
   <div class="cards-grid" id="cards-grid">
     <article
   class="post-card"
-  data-region="경상북도"
-  onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'"
+  data-region="강원도"
+  data-apt-name="강릉 우미 린 더 프리미어"
+  onclick="location.href='posts/2026-04-20_강릉_우미_린_더_프리미어/post.html'"
 >
-  <!-- ── 컬러 헤더 블록 ── -->
   <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
-    <!-- 도트 패턴 -->
     <div style="position:absolute;inset:0;
       background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
       background-size:18px 18px;pointer-events:none;"></div>
 
-    <!-- 상단 행: 공급유형 레이블 + 시리얼 -->
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
         <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
@@ -266,55 +277,40 @@ body {
                    letter-spacing:1px;">No.001</span>
     </div>
 
-    <!-- 지역 뱃지 -->
     <div style="position:relative;margin-top:10px;">
       <span style="display:inline-block;background:rgba(255,255,255,0.15);
                    border:1px solid rgba(255,255,255,0.25);border-radius:4px;
                    font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
-                   padding:3px 10px;letter-spacing:0.5px;">📍 경상북도</span>
+                   padding:3px 10px;letter-spacing:0.5px;">📍 강원도</span>
     </div>
 
-    <!-- 날짜 -->
     <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
   </div>
 
-  <!-- ── 본문 ── -->
   <div class="card-body">
-    <!-- 단지명 -->
     <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
               margin-bottom:6px;">COMPLEX</p>
-    <h3 class="card-title">두산위브더제니스 구미 조합원취소분 청약 완벽 정리 | 광평동 63세대</h3>
-
-    <!-- 위치 -->
-    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">
-      경상북도 구미시 광평동
-    </p>
-
-    <!-- 분양가 -->
+    <h3 class="card-title">강릉 우미 린 더 프리미어</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">강원특별자치도 강릉시 송정동 1048번지 일원</p>
     <div style="margin-bottom:16px;"></div>
-
-    <!-- 태그 -->
-    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#두산위브더제니스구미</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#구미청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#광평동아파트</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#조합원취소분</span></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#강릉우미린더프리미어</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#강릉청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#강릉분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#송정동아파트</span></div>
   </div>
 
-  <!-- ── CTA ── -->
-  <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="card-cta" onclick="event.stopPropagation()">
+  <a href="posts/2026-04-20_강릉_우미_린_더_프리미어/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기
     <span style="margin-left:6px;font-size:16px;">→</span>
   </a>
 </article><article
   class="post-card"
-  data-region="경기도"
-  onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'"
+  data-region="경상북도"
+  data-apt-name="두산위브더제니스 구미(조합원취소분)"
+  onclick="location.href='posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html'"
 >
-  <!-- ── 컬러 헤더 블록 ── -->
   <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
-    <!-- 도트 패턴 -->
     <div style="position:absolute;inset:0;
       background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
       background-size:18px 18px;pointer-events:none;"></div>
 
-    <!-- 상단 행: 공급유형 레이블 + 시리얼 -->
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
         <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
@@ -326,7 +322,96 @@ body {
                    letter-spacing:1px;">No.002</span>
     </div>
 
-    <!-- 지역 뱃지 -->
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 경상북도</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">두산위브더제니스 구미 조합원취소분 청약 완벽 정리 | 광평동 63세대</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경상북도 구미시 광평동</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#두산위브더제니스구미</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#구미청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#광평동아파트</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#조합원취소분</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="서울"
+  data-apt-name="공덕역자이르네"
+  onclick="location.href='posts/2026-04-20_공덕역자이르네/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.003</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 서울</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">공덕역자이르네</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">서울특별시 마포구 도화동 16-1번지 일원</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#공덕역자이르네</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#마포구청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#공덕역분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#서울청약2026</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_공덕역자이르네/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="경기도"
+  data-apt-name="경기광주역 롯데캐슬 시그니처 1단지"
+  onclick="location.href='posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.004</span>
+    </div>
+
     <div style="position:relative;margin-top:10px;">
       <span style="display:inline-block;background:rgba(255,255,255,0.15);
                    border:1px solid rgba(255,255,255,0.25);border-radius:4px;
@@ -334,45 +419,350 @@ body {
                    padding:3px 10px;letter-spacing:0.5px;">📍 경기도</span>
     </div>
 
-    <!-- 날짜 -->
     <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
   </div>
 
-  <!-- ── 본문 ── -->
   <div class="card-body">
-    <!-- 단지명 -->
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">경기광주역 롯데캐슬 시그니처 1단지</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경기도 광주시 양벌동 산54-3번지</p>
+    <p style="font-size:15px;font-weight:800;color:#1D4ED8;margin:0 0 16px 0;letter-spacing:-0.3px;">💰 6억~9억</p>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#경기광주역롯데캐슬시그니처</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#경기광주청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#광주시양벌동분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#롯데캐슬시그니처1단지</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_경기광주역_롯데캐슬_시그니처_1단지/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="경기도"
+  data-apt-name="동탄 그웬 160 (동탄2 B11BL)"
+  onclick="location.href='posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.005</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 경기도</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">동탄 그웬 160 (동탄2 B11BL)</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경기도 화성특례시 동탄2 택지개발지구 B11BL (신동720)</p>
+    <p style="font-size:15px;font-weight:800;color:#1D4ED8;margin:0 0 16px 0;letter-spacing:-0.3px;">💰 7억~12억</p>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#동탄그웬160</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#동탄2청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#화성특례시분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#동탄2B11BL</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="경기도"
+  data-apt-name="고덕신도시 아테라 A-63블록 공공분양주택"
+  onclick="location.href='posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.006</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 경기도</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">28일</span></p></div>
+  </div>
+
+  <div class="card-body">
     <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
               margin-bottom:6px;">COMPLEX</p>
     <h3 class="card-title">고덕신도시 아테라 A-63블록 공공분양 청약 완전정복 가이드</h3>
-
-    <!-- 위치 -->
-    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">
-      경기도 평택시 고덕동
-    </p>
-
-    <!-- 분양가 -->
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경기도 평택시 고덕동</p>
     <div style="margin-bottom:16px;"></div>
-
-    <!-- 태그 -->
     <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#고덕신도시아테라</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#평택고덕공공분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#고덕신도시청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#평택청약2026</span></div>
   </div>
 
-  <!-- ── CTA ── -->
   <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="인천"
+  data-apt-name="인천가정2지구 B2블록 공공분양주택(후속사업)"
+  onclick="location.href='posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.007</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 인천</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">27일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">인천가정2지구 B2블록 공공분양주택(후속사업)</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">인천광역시 서구 가정동, 청라동 일원 인천가정2 공공주택지구내 B2블록</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#인천가정2지구B2블록</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#인천서구공공분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#인천청약2026</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#가정동아파트</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="울산"
+  data-apt-name="문수로 라티에르 673"
+  onclick="location.href='posts/2026-04-20_문수로_라티에르_673/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.008</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 울산</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">21일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">문수로 라티에르 673</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">울산광역시 남구 신정동 673-1번지 외 14필지</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#문수로라티에르673</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#울산청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#울산남구분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#신정동아파트</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_문수로_라티에르_673/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="대전"
+  data-apt-name="도안자이 센텀리체 2단지"
+  onclick="location.href='posts/2026-04-20_도안자이_센텀리체_2단지/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.009</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 대전</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">21일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">도안자이 센텀리체 2단지</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">대전광역시 유성구 도안 2-6지구 30블록(유성구 용계동 299-7번지 일원)</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#도안자이센텀리체2단지</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#대전청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#유성구분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#도안동아파트</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_도안자이_센텀리체_2단지/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="경상남도"
+  data-apt-name="엘리프 창원"
+  onclick="location.href='posts/2026-04-20_엘리프_창원/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.010</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 경상남도</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">21일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">엘리프 창원</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경상남도 창원시 의창구 창원명곡 공공주택지구 B-1BL</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#엘리프창원</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#창원청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#의창구분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#창원명곡동아파트</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_엘리프_창원/post.html" class="card-cta" onclick="event.stopPropagation()">
+    공고 분석 전문 보기
+    <span style="margin-left:6px;font-size:16px;">→</span>
+  </a>
+</article><article
+  class="post-card"
+  data-region="경기도"
+  data-apt-name="용인 고림 동문 디 이스트"
+  onclick="location.href='posts/2026-04-20_용인_고림_동문_디_이스트/post.html'"
+>
+  <div class="card-header" style="background:linear-gradient(140deg,#1D4ED8 0%,#1E40AF 60%,#1E3A8A 100%);">
+    <div style="position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.08) 1.5px,transparent 1.5px);
+      background-size:18px 18px;pointer-events:none;"></div>
+
+    <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <p style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);
+                  letter-spacing:2px;margin-bottom:5px;">SUPPLY TYPE</p>
+        <p style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.3px;
+                  line-height:1;">신규분양</p>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);
+                   letter-spacing:1px;">No.011</span>
+    </div>
+
+    <div style="position:relative;margin-top:10px;">
+      <span style="display:inline-block;background:rgba(255,255,255,0.15);
+                   border:1px solid rgba(255,255,255,0.25);border-radius:4px;
+                   font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);
+                   padding:3px 10px;letter-spacing:0.5px;">📍 경기도</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;"><p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px;">1순위 청약</p><p style="font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-0.5px;">4월 <span style="font-size:36px;">20일</span></p></div>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1px;
+              margin-bottom:6px;">COMPLEX</p>
+    <h3 class="card-title">용인 고림 동문 디 이스트</h3>
+    <p style="font-size:13px;color:#6B7280;margin:0 0 14px 0;">경기도 용인시 처인구 고림동 620번지 일원</p>
+    <div style="margin-bottom:16px;"></div>
+    <div style="flex:1;min-height:28px;"><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#용인고림동문디이스트</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#용인처인구청약</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#고림동분양</span><span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 5px 5px 0;letter-spacing:0.3px;">#경기도청약</span></div>
+  </div>
+
+  <a href="posts/2026-04-20_용인_고림_동문_디_이스트/post.html" class="card-cta" onclick="event.stopPropagation()">
     공고 분석 전문 보기
     <span style="margin-left:6px;font-size:16px;">→</span>
   </a>
 </article>
   </div>
-  <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
+  <p id="no-result">해당 조건의 분석 공고가 없습니다.</p>
+
+  <!-- 페이지네이션 -->
+  <div id="pagination" style="display:flex;justify-content:center;gap:8px;
+                               margin-top:40px;flex-wrap:wrap;"></div>
 
 </main>
 
 
-<!-- ══ 푸터 ══ -->
 <footer style="background:#0F172A;padding:40px 24px;">
   <div style="max-width:1160px;margin:0 auto;">
-
     <div style="display:flex;flex-wrap:wrap;justify-content:space-between;
                 gap:32px;padding-bottom:28px;border-bottom:1px solid #1E293B;">
       <div>
@@ -386,14 +776,12 @@ body {
           한국부동산원 청약홈 공개 정보를 바탕으로<br>AI가 분석한 분양 공고 리포트입니다.
         </p>
       </div>
-
       <div style="font-size:12px;color:#334155;line-height:2;">
         <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
         <p>📌 국토교통부 실거래가 공개시스템</p>
         <p>⚠️ 본 콘텐츠는 투자 권유가 아닌 정보 제공 목적입니다.</p>
       </div>
     </div>
-
     <p style="font-size:12px;color:#334155;margin-top:20px;">
       © 2026 정과장의 청약노트. 실제 청약은 반드시 공식 기관에서 확인하세요.
     </p>
@@ -402,24 +790,74 @@ body {
 
 
 <script>
+const POSTS_PER_PAGE = 12;
+let currentRegion = '전체';
+let currentSearch = '';
+let currentPage   = 1;
+
+function getVisibleCards() {
+  const q = currentSearch.trim().replace(/\s+/g, '');
+  return Array.from(document.querySelectorAll('.post-card')).filter(card => {
+    const regionOk = currentRegion === '전체' || card.dataset.region === currentRegion;
+    if (!regionOk) return false;
+    if (!q) return true;
+    const name = (card.dataset.aptName || '').replace(/\s+/g, '');
+    const title = (card.querySelector('.card-title')?.textContent || '').replace(/\s+/g, '');
+    return name.includes(q) || title.includes(q);
+  });
+}
+
+function applyFilters() {
+  const allCards = document.querySelectorAll('.post-card');
+  const visible  = getVisibleCards();
+  const start    = (currentPage - 1) * POSTS_PER_PAGE;
+  const end      = start + POSTS_PER_PAGE;
+
+  allCards.forEach(c => c.classList.add('hidden'));
+  visible.slice(start, end).forEach(c => c.classList.remove('hidden'));
+
+  document.getElementById('result-count').innerHTML =
+    `총 <strong style="color:#334155;">${visible.length}</strong>건`;
+  document.getElementById('no-result').classList.toggle('show', visible.length === 0);
+
+  renderPagination(visible.length);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / POSTS_PER_PAGE);
+  const nav   = document.getElementById('pagination');
+  if (pages <= 1) { nav.innerHTML = ''; return; }
+
+  let out = '';
+  for (let i = 1; i <= pages; i++) {
+    const active = i === currentPage;
+    out += `<button class="page-btn${active ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  nav.innerHTML = out;
+}
+
+function goPage(n) {
+  currentPage = n;
+  applyFilters();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function filterRegion(btn, region) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  currentRegion = region;
+  currentPage   = 1;
+  applyFilters();
+}
 
-  const cards  = document.querySelectorAll('.post-card');
-  let   visible = 0;
-  cards.forEach(card => {
-    const match = region === '전체' || card.dataset.region === region;
-    card.classList.toggle('hidden', !match);
-    if (match) visible++;
-  });
-
-  document.getElementById('result-count').innerHTML =
-    `총 <strong style="color:#334155;">${visible}</strong>건`;
-  document.getElementById('no-result').classList.toggle('show', visible === 0);
+function onSearch(e) {
+  currentSearch = e.target.value;
+  currentPage   = 1;
+  applyFilters();
 }
 
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
+applyFilters();
 </script>
 
 </body>

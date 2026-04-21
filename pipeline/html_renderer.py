@@ -135,6 +135,12 @@ class PostData:
     # 모집공고문 URL (청약홈 공고 상세 페이지)
     notice_url: str = ""
 
+    # 단지 총 세대수 (공급 세대수와 구별; API TOT_SUPLY_HSHLDCO)
+    total_households: str = ""
+
+    # 모집공고일 (YYYY-MM-DD)
+    notice_date: str = ""
+
     # Q&A
     qa_blocks: list[QABlock] = field(default_factory=list)
 
@@ -538,9 +544,11 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         "location":        data.location,
         "region_category": region_category,
         "price_range":     data.price_range,
-        "rank1_date":      data.rank1_date,
-        "move_in_date":    data.move_in_date,
-        "generated_at":    datetime.now().isoformat(),
+        "rank1_date":        data.rank1_date,
+        "notice_date":       data.notice_date,
+        "move_in_date":      data.move_in_date,
+        "total_households":  data.total_households,
+        "generated_at":      datetime.now().isoformat(),
         "naver_blog_guide": {
             "step1": "네이버 블로그 → 글쓰기",
             "step2": "스마트에디터 ONE → [HTML] 버튼",
