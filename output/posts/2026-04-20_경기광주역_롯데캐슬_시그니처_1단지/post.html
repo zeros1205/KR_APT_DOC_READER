@@ -35,60 +35,62 @@ html {
   --c-tag-resupply-text:    #57673f;
 }
 
-/* ─── 팔레트 B : Neutral Elegance ─── */
+/* ─── 팔레트 B : Deep Crimson × Navy ─── */
 html[data-palette="B"] {
-  --c-primary:        #e0afa0;
-  --c-primary-dark:   #c49080;
-  --c-primary-light:  #f9f1ef;
-  --c-primary-stripe: rgba(224,175,160,0.07);
-  --c-accent:         #8a817c;
-  --c-bg:             #f4f3ee;
+  --c-primary:        #c1121f;
+  --c-primary-dark:   #780000;
+  --c-primary-light:  #fde8e0;
+  --c-primary-stripe: rgba(193,18,31,0.06);
+  --c-accent:         #669bbc;
+  --c-bg:             #fdf5ec;
   --c-surface:        #ffffff;
-  --c-dark:           #2e2924;
-  --c-mid:            #7a7370;
-  --c-light-gray:     #bcb8b1;
-  --c-hero-bg:        #eeebe4;
-  --c-nav-bg:         #463f3a;
-  --c-green:          #8a817c;
-  --c-green-dark:     #635d59;
-  --c-green-light:    #f0eeea;
-  --c-card-grad-new:        linear-gradient(145deg,#e0afa0 0%,#c49080 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#8a817c 0%,#635d59 100%);
-  --c-cta-bg:               #635d59;
-  --c-cta-hover:            #52504c;
-  --c-tag-new-bg:           #f9f1ef;
-  --c-tag-new-text:         #c49080;
-  --c-tag-resupply-bg:      #f0eeea;
-  --c-tag-resupply-text:    #635d59;
+  --c-dark:           #003049;
+  --c-mid:            #4e6e80;
+  --c-light-gray:     #c8dbe8;
+  --c-hero-bg:        #f5e8d5;
+  --c-nav-bg:         #003049;
+  --c-green:          #669bbc;
+  --c-green-dark:     #3d7299;
+  --c-green-light:    #e0eff7;
+  --c-card-grad-new:        linear-gradient(145deg,#c1121f 0%,#780000 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#669bbc 0%,#3d7299 100%);
+  --c-cta-bg:               #003049;
+  --c-cta-hover:            #001e30;
+  --c-tag-new-bg:           #fde8e0;
+  --c-tag-new-text:         #780000;
+  --c-tag-resupply-bg:      #e0eff7;
+  --c-tag-resupply-text:    #3d7299;
 }
 
-/* ─── 팔레트 C : Pastel Dreamland ─── */
+/* ─── 팔레트 C : Punch Red × Oxford Navy ─── */
 html[data-palette="C"] {
-  --c-primary:        #ffafcc;
-  --c-primary-dark:   #cc7fa0;
-  --c-primary-light:  #fff5f8;
-  --c-primary-stripe: rgba(255,175,204,0.08);
-  --c-accent:         #a2d2ff;
-  --c-bg:             #fdf8ff;
+  --c-primary:        #e63946;
+  --c-primary-dark:   #c22030;
+  --c-primary-light:  #fce8ea;
+  --c-primary-stripe: rgba(230,57,70,0.07);
+  --c-accent:         #457b9d;
+  --c-bg:             #f0f8fb;
   --c-surface:        #ffffff;
-  --c-dark:           #2d1f3d;
-  --c-mid:            #8070a0;
-  --c-light-gray:     #ddd0f0;
-  --c-hero-bg:        #f5eefc;
-  --c-nav-bg:         #3d2952;
-  --c-green:          #bde0fe;
-  --c-green-dark:     #6ab0e0;
-  --c-green-light:    #eef6ff;
-  --c-card-grad-new:        linear-gradient(145deg,#ffafcc 0%,#cdb4db 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#bde0fe 0%,#a2d2ff 100%);
-  --c-cta-bg:               #7060a8;
-  --c-cta-hover:            #5a4c8a;
-  --c-tag-new-bg:           #fff5f8;
-  --c-tag-new-text:         #cc7fa0;
-  --c-tag-resupply-bg:      #eef6ff;
-  --c-tag-resupply-text:    #6ab0e0;
+  --c-dark:           #1d3557;
+  --c-mid:            #4a6a8a;
+  --c-light-gray:     #a8dadc;
+  --c-hero-bg:        #e4f3f8;
+  --c-nav-bg:         #1d3557;
+  --c-green:          #a8dadc;
+  --c-green-dark:     #457b9d;
+  --c-green-light:    #eaf6f8;
+  --c-card-grad-new:        linear-gradient(145deg,#e63946 0%,#c22030 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a8dadc 0%,#457b9d 100%);
+  --c-cta-bg:               #1d3557;
+  --c-cta-hover:            #0f2035;
+  --c-tag-new-bg:           #fce8ea;
+  --c-tag-new-text:         #c22030;
+  --c-tag-resupply-bg:      #eaf6f8;
+  --c-tag-resupply-text:    #457b9d;
 }
 body { margin: 0; padding: 0; background: var(--c-bg); }
+/* ─── 팔레트 콘텐츠 반영 ─── */
+#post-wrap { background: var(--c-bg) !important; }
 </style>
 </head>
 <body>
@@ -101,7 +103,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 -->
 
 <!-- ══ 전체 래퍼 ══ -->
-<div style="
+<div id="post-wrap" style="
   background: #FAF9F7;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
@@ -192,7 +194,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 4px 14px rgba(44,40,37,0.10);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
-      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">6억 1,900만원(059.9281C타입)<br>~ 24억 9,000만원(170.5257A타입)</div>
+      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">6억 1,900만원(60.01C타입)<br>~ 24억 9,000만원(170.67A타입)</div>
     </div>
 
     <!-- 총 공급 -->
@@ -227,16 +229,22 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 1px 4px rgba(44,40,37,0.07);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 6px;">공급 위치</div>
-      <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">경기도 광주시 양벌동 산54-3번지</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">1077세대
-      <a href="https://map.naver.com/v5/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B4%91%EC%A3%BC%EC%8B%9C%20%EC%96%91%EB%B2%8C%EB%8F%99%20%EC%82%B054-3%EB%B2%88%EC%A7%80" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;
-                background:#ffffff;border:1px solid var(--c-primary);
-                color:var(--c-primary);border-radius:6px;padding:7px 14px;
-                font-size:13px;font-weight:700;text-decoration:none;
-                letter-spacing:0.2px;">
-        🗺️ 네이버 지도에서 보기 →
-      </a></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">경기도 광주시 양벌동 산54-3번지</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">1077세대</div>
+        </div>
+        <a href="https://map.naver.com/v5/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EA%B4%91%EC%A3%BC%EC%8B%9C%20%EC%96%91%EB%B2%8C%EB%8F%99%20%EC%82%B054-3%EB%B2%88%EC%A7%80" target="_blank" rel="noopener"
+   title="네이버 지도에서 보기"
+   style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+          width:38px;height:38px;border-radius:8px;text-decoration:none;transition:opacity 150ms;"
+   onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="38" height="38" rx="8" fill="#03C75A"/>
+    <path d="M9 9v20h5.6l10.2-13.7V29H30V9h-5.6L14.2 22.7V9z" fill="white"/>
+  </svg>
+</a>
+      </div>
     </div>
 
   </div>
@@ -269,28 +277,24 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEE8; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">교통</div>
-      <div style="font-size: 20px; font-weight: 800; color: #A84830; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">경강선 경기광주역 이용 가능. 단지에서 역까지 도보 약 15분 내외 예상(정확한 거리는 단지 배치 확인 필요). 판교역 환승 후 신분당선 접근 가능.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #EBF5EE; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">학군</div>
-      <div style="font-size: 20px; font-weight: 800; color: #2D6349; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">인근 초등학교 배정 예정. 광주시 내 중·고등학교 통학 가능권. 학군 수준은 학교알리미 및 지역 커뮤니티 추가 확인 권장.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FEF8EC; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">생활편의</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B6200; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">광주시 시내권 편의시설 이용 가능. 대형마트·백화점은 차량 이용 권장. 단지 주변 슈퍼·편의점 등 근린상업시설 갖춰질 예정.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEF0; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">의료</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B1A2A; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">광주시 내 종합병원(차량 약 10분 내외) 이용 가능. 대학병원급은 성남·분당 방향으로 이동 필요.</div>
     </div>
 
@@ -395,6 +399,9 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     </div>
 
   </div><!-- end timeline -->
+
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000107&pblancNo=2026000107" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
 
   <!-- 타입별 서술 -->
   <p style="font-size: 16px; color: #6A635C; line-height: 1.6; margin: 0 0 16px 0;">
@@ -571,7 +578,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     </table>
   </div>
 
-    <div style="margin-top:24px;text-align:center;"><a href="https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000107&pblancNo=2026000107&atchmnflSeqNo=1776053&atchmnflSn=4" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-primary);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" onmouseover="this.style.background='var(--c-primary-dark)'" onmouseout="this.style.background='var(--c-primary)'">📄 모집공고문 다운로드</a></div>
+    <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000107&pblancNo=2026000107" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
 
 </div>
 
@@ -580,13 +587,36 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
 
 
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 — 청약 신청자격
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: #CC5F3F; letter-spacing: 1.5px; margin-bottom: 10px;">
+    04 · 청약 신청자격
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: #2C2825; margin: 0 0 20px 0; line-height: 1.4;">
+    나는 청약할 수 있을까요?
+  </h2>
+
+  <div style="font-size:13px;font-weight:700;color:#CC5F3F;letter-spacing:0.5px;margin-bottom:12px;">특별공급</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;"><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#2C2825;margin-bottom:10px;">신혼부부특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">무주택 세대구성원</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">혼인 기간 7년 이내</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균 140% 이하 (맞벌이 160%)</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#2C2825;margin-bottom:10px;">생애최초특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">세대원 전원 생애 주택 미소유</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">5년 이상 소득세 납부 이력</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균 160% 이하</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#2C2825;margin-bottom:10px;">다자녀가구특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">미성년 자녀 3명 이상</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">무주택 세대구성원</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균 120% 이하</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#2C2825;margin-bottom:10px;">노부모부양특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">만 65세 이상 직계존속 3년 이상 부양</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">무주택 세대구성원</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">청약통장 1순위 해당자</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#2C2825;margin-bottom:10px;">장애인기관추천특별공급<span style="font-size:11px;font-weight:600;background:#FDEEE8;color:#CC5F3F;padding:2px 8px;border-radius:24px;margin-left:6px;">7세대</span></div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">장애인등록증 소지자</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">해당 지자체(서울·인천 등) 추천 명단 등재</li><li style="font-size:14px;color:#6A635C;line-height:1.7;padding:2px 0;">무주택 세대구성원</li></ul></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;"><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-top:3px solid #CC5F3F;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#CC5F3F;margin-bottom:12px;">1순위 자격</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#CC5F3F;font-weight:700;margin-right:6px;">·</span>수도권(서울·인천·경기) 거주자, 경쟁 시 광주시 1년 이상 거주자 우선</li><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#CC5F3F;font-weight:700;margin-right:6px;">·</span>청약통장 가입 12개월 이상 + 면적별 예치금 충족</li><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#CC5F3F;font-weight:700;margin-right:6px;">·</span>유주택자(다주택자)도 1순위 가능 (비규제지역)</li><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#CC5F3F;font-weight:700;margin-right:6px;">·</span>85㎡ 이하: 가점 40% / 추첨 60% · 85㎡ 초과: 추첨 100%</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-top:3px solid #6A635C;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:#6A635C;margin-bottom:12px;">2순위 자격</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#6A635C;font-weight:700;margin-right:6px;">·</span>1순위 미달 시 수도권 거주자</li><li style="font-size:14px;color:#6A635C;line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:#6A635C;font-weight:700;margin-right:6px;">·</span>청약통장 12개월 미만 또는 예치금 미달자</li></ul></div></div>
+  <p style="font-size:13px;color:#6A635C;margin-top:16px;line-height:1.6;">※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. 반드시 청약홈 및 분양사 공식 자료를 통해 최종 확인하세요.</p>
+
+</div>
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
 <!-- ══════════════════════════════════════════
      SECTION 4 — 자금 계획
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
   <div style="font-size: 12px; font-weight: 700; color: #CC5F3F; letter-spacing: 1.5px; margin-bottom: 10px;">
-    04 · 자금 계획
+    05 · 자금 계획
   </div>
   <h2 style="font-size: 22px; font-weight: 800; color: #2C2825; margin: 0 0 20px 0; line-height: 1.4;">
     얼마를, 언제 준비해야 할까요?
@@ -644,10 +674,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       ">1</div>
       <div style="font-size: 18px; font-weight: 800; color: #B83C1E; margin-bottom: 10px;">계약금 — 10%</div>
       <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
-        <p style="font-size: 16px; color: #6A635C; margin: 0 0 8px 0; line-height: 1.6;">
-          분양가의 <strong style="color: #2C2825;">10%</strong>를 계약 즉시 자기자본으로 납부해요.
-        </p>
-        <p style="font-size: 17px; font-weight: 800; color: #2C2825; margin: 0;">약 최저 분양가 기준 약 6,190만원 내외</p>
+        <p style="font-size: 16px; color: #6A635C; margin: 0 0 8px 0; line-height: 1.6;">계약 체결 시 자기자본으로 납부합니다. 정확한 납부 시기와 방법은 공고문 및 계약서를 기준으로 합니다.</p>
       </div>
     </div>
 
@@ -662,7 +689,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       ">2</div>
       <div style="font-size: 18px; font-weight: 800; color: #D4820A; margin-bottom: 10px;">중도금 — 60% (6회 분납)</div>
       <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
-        <p style="font-size: 16px; color: #6A635C; margin: 0; line-height: 1.6;">중도금대출과 주택담보대출(주담대)은 청약 준비할 때 가장 먼저 챙겨야 할 부분이죠</p>
+        <p style="font-size: 16px; color: #6A635C; margin: 0; line-height: 1.6;">공사 기간 중 분납합니다. 각 회차별 납부 일정과 금액은 공고문 및 계약서를 기준으로 합니다.</p>
       </div>
     </div>
 
@@ -677,9 +704,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       ">3</div>
       <div style="font-size: 18px; font-weight: 800; color: #CC5F3F; margin-bottom: 10px;">잔금 — 30% (입주 시)</div>
       <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
-        <p style="font-size: 16px; color: #6A635C; margin: 0; line-height: 1.6;">
-          입주 시 주택담보대출(주담대)로 전환해요. <strong style="color: #2C2825;">DSR 40%</strong> 규제 대상이므로 사전에 한도를 꼭 확인해두세요.
-        </p>
+        <p style="font-size: 16px; color: #6A635C; margin: 0; line-height: 1.6;">입주 지정기간 내 납부합니다. 납부 방법 및 세부 조건은 입주안내문 및 계약서를 기준으로 합니다.</p>
       </div>
     </div>
   </div>
@@ -714,7 +739,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
   <div style="font-size: 12px; font-weight: 700; color: #CC5F3F; letter-spacing: 1.5px; margin-bottom: 10px;">
-    05 · 자주 묻는 질문
+    06 · 자주 묻는 질문
   </div>
   <h2 style="font-size: 22px; font-weight: 800; color: #2C2825; margin: 0 0 12px 0; line-height: 1.4;">
     청약 준비자들이 가장 많이 묻는 질문 모음
