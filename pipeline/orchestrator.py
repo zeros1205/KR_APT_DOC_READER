@@ -76,12 +76,18 @@ FACT_EXTRACTION_PROMPT = """
 - midterm_count: 중도금 납부 횟수 (숫자만, 예: 6), 공고에 없으면 6
 - balance_ratio: 잔금 비율 (숫자만, 예: 30)
 - acquisition_tax_rate: 취득세율 (예: "1~3%")
-- is_hot_zone: 투기과열지구 해당 여부 — 공고문의 "규제지역", "적용지역", "분양조건" 섹션 참조.
-  반드시 "Y", "N", "해당없음" 중 하나로만 답할 것. 투기과열지구 또는 청약조정대상지역 여부 기준.
-  명시 없으면 null.
-- live_requirement: 거주 의무 여부 — "거주의무", "실거주 의무", "실거주기간" 항목에 기재.
-  예: "2년 이상 실거주", "없음", "해당 없음". 공고에 없으면 null.
-- is_price_cap: 분양가상한제 여부 (Y/N)
+- is_hot_zone: 투기과열지구 해당 여부 — 반드시 "Y", "N", "해당없음" 중 하나. 명시 없으면 null.
+- regulated_zone: 규제지역 여부 — 해당하는 모든 지역 구분을 쉼표로 나열.
+  예: "투기과열지구, 청약과열지역", "청약과열지역", "비규제지역", "해당없음". 공고에 없으면 null.
+- readmission_limit: 재당첨 제한 기간 — "재당첨 제한", "재청약 제한" 항목.
+  예: "10년", "7년", "없음". 공고에 없으면 null.
+- live_requirement: 거주의무기간 — "거주의무", "실거주 의무", "실거주기간" 항목.
+  예: "2년", "없음", "해당 없음". 공고에 없으면 null.
+- price_cap: 분양가 상한제 적용 여부 — "분양가상한제" 항목.
+  반드시 "적용" 또는 "미적용" 중 하나. 공고에 없으면 null.
+- land_type: 택지 유형 — "택지유형", "토지 구분" 항목.
+  예: "민간택지", "공공택지", "공공주택지구". 공고에 없으면 null.
+- is_price_cap: 분양가상한제 여부 (Y/N) — legacy, price_cap과 중복 추출
 - eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
   각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
            quota(예: "20호" — 없으면 null),
@@ -655,7 +661,11 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         supply_scale=facts.get("supply_scale", ""),
         total_households=str(facts.get("total_households") or ""),
         is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or api_is_hot_zone or ""),
+        regulated_zone=facts.get("regulated_zone") or "",
+        readmission_limit=facts.get("readmission_limit") or "",
         live_requirement=facts.get("live_requirement") or "",
+        price_cap=facts.get("price_cap") or "",
+        land_type=facts.get("land_type") or "",
         price_range=facts.get("price_range", ""),
         unit_types=unit_types,
         special_supply_date=facts.get("special_supply_date", "-"),

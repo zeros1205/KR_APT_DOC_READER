@@ -90,8 +90,12 @@ class PostData:
     supply_location: str
     supply_scale: str
     total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
-    is_hot_zone: str = ""        # 투기과열지구 여부 (Y/N/공고문 확인 필요)
-    live_requirement: str = ""   # 실거주 의무 (있음/없음/공고문 확인 필요)
+    is_hot_zone: str = ""        # 투기과열지구 여부 (legacy, IS_HOT_ZONE 토큰으로도 사용)
+    regulated_zone: str = ""     # 규제지역 여부 (e.g. "투기과열지구, 청약과열지역", "비규제지역")
+    readmission_limit: str = ""  # 재당첨 제한 (e.g. "10년", "없음")
+    live_requirement: str = ""   # 거주의무기간 (있음/없음/공고문 확인 필요)
+    price_cap: str = ""          # 분양가 상한제 (적용/미적용)
+    land_type: str = ""          # 택지 유형 (민간택지/공공택지)
     price_range: str
 
     # 유닛 타입
@@ -564,7 +568,11 @@ class BlogHTMLRenderer:
             "{{NOTICE_URL}}":        data.notice_url or "#",
             # 청약 규제 정보
             "{{IS_HOT_ZONE}}":       data.is_hot_zone or "공고문 확인 필요",
+            "{{REGULATED_ZONE}}":    data.regulated_zone or data.is_hot_zone or "공고문 확인 필요",
+            "{{READMISSION_LIMIT}}": data.readmission_limit or "공고문 확인 필요",
             "{{LIVE_REQUIREMENT}}":  data.live_requirement or "공고문 확인 필요",
+            "{{PRICE_CAP}}":         data.price_cap or "공고문 확인 필요",
+            "{{LAND_TYPE}}":         data.land_type or "공고문 확인 필요",
             "{{RESALE_RESTRICTION_BADGE}}": data.resale_restriction or "공고문 확인 필요",
             "{{RESALE_RESTRICTION}}": data.resale_restriction or "공고문을 통해 전매제한 기간을 반드시 확인하세요.",
             # 청약 일정
@@ -717,7 +725,11 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "supply_location":      data.supply_location,
         "total_households":     data.total_households,
         "is_hot_zone":          data.is_hot_zone,
+        "regulated_zone":       data.regulated_zone,
+        "readmission_limit":    data.readmission_limit,
         "live_requirement":     data.live_requirement,
+        "price_cap":            data.price_cap,
+        "land_type":            data.land_type,
         "resale_restriction":   data.resale_restriction,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
