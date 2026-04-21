@@ -2494,6 +2494,9 @@ body {
   </div>
   <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
 
+  <div id="pagination" style="display:flex;justify-content:center;align-items:center;
+       gap:6px;margin-top:48px;flex-wrap:wrap;"></div>
+
 </main>
 
 
@@ -2541,22 +2544,68 @@ document.addEventListener('DOMContentLoaded', function() {
   if (lbl) lbl.textContent = document.documentElement.getAttribute('data-palette') || 'A';
 });
 
-function _applyFilters() {
+var POSTS_PER_PAGE = 12;
+var _currentPage = 1;
+
+function _getMatchedCards() {
   var activeBtn = document.querySelector('.tab-btn.active');
   var region = activeBtn ? activeBtn.dataset.region : '전체';
   var q = ((document.getElementById('search-input') || {}).value || '').toLowerCase().trim();
-  var cards = document.querySelectorAll('.post-card');
-  var visible = 0;
-  cards.forEach(function(card) {
+  var all = Array.from(document.querySelectorAll('.post-card'));
+  return all.filter(function(card) {
     var regionMatch = region === '전체' || card.dataset.region === region;
     var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
-    var show = regionMatch && nameMatch;
-    card.classList.toggle('hidden', !show);
-    if (show) visible++;
+    return regionMatch && nameMatch;
   });
+}
+
+function _renderPage(matched, page) {
+  var start = (page - 1) * POSTS_PER_PAGE;
+  var end   = start + POSTS_PER_PAGE;
+  var all   = document.querySelectorAll('.post-card');
+  all.forEach(function(c) { c.style.display = 'none'; });
+  matched.slice(start, end).forEach(function(c) { c.style.display = ''; });
+}
+
+function _renderPagination(matched) {
+  var box = document.getElementById('pagination');
+  if (!box) return;
+  var total = matched.length;
+  var pages = Math.ceil(total / POSTS_PER_PAGE);
+  if (pages <= 1) { box.innerHTML = ''; return; }
+  var html = '';
+  var btnBase = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-light-gray);'
+    + 'background:var(--c-surface);color:var(--c-dark);font-size:13px;font-weight:600;'
+    + 'cursor:pointer;font-family:inherit;transition:all 150ms;padding:0 10px;"';
+  var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
+    + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
+    + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
+  for (var i = 1; i <= pages; i++) {
+    if (i === _currentPage) {
+      html += '<button ' + btnActive + '>' + i + '</button>';
+    } else {
+      html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
+    }
+  }
+  box.innerHTML = html;
+}
+
+function _applyFilters() {
+  _currentPage = 1;
+  var matched = _getMatchedCards();
+  _renderPage(matched, _currentPage);
+  _renderPagination(matched);
   document.getElementById('result-count').innerHTML =
-    '총 <strong style="color:var(--c-dark);">' + visible + '</strong>건';
-  document.getElementById('no-result').classList.toggle('show', visible === 0);
+    '총 <strong style="color:var(--c-dark);">' + matched.length + '</strong>건';
+  document.getElementById('no-result').classList.toggle('show', matched.length === 0);
+}
+
+function goPage(page) {
+  _currentPage = page;
+  var matched = _getMatchedCards();
+  _renderPage(matched, _currentPage);
+  _renderPagination(matched);
+  window.scrollTo({top: document.getElementById('cards-grid').offsetTop - 80, behavior: 'smooth'});
 }
 
 function filterRegion(btn, region) {
@@ -2570,6 +2619,7 @@ function filterSearch(val) {
 }
 
 document.querySelector('.tab-btn[data-region="전체"]').classList.add('active');
+_applyFilters();
 </script>
 
 </body>
