@@ -5,7 +5,7 @@
 -->
 
 <!-- ══ 전체 래퍼 ══ -->
-<div style="
+<div id="post-wrap" style="
   background: #FAF9F7;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
@@ -151,8 +151,22 @@
       box-shadow: 0 1px 4px rgba(44,40,37,0.07);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 6px;">📍 공급 위치</div>
-      <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">경기도 평택시 고덕동, 고덕면 일원(평택고덕국제화계획지구 내 A-63BL)</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">총 630세대</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">경기도 평택시 고덕동, 고덕면 일원(평택고덕국제화계획지구 내 A-63BL)</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">총 630세대</div>
+        </div>
+        <a href="https://map.naver.com" target="_blank" rel="noopener"
+   title="네이버 지도에서 보기"
+   style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+          width:38px;height:38px;border-radius:8px;text-decoration:none;transition:opacity 150ms;"
+   onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="38" height="38" rx="8" fill="#03C75A"/>
+    <path d="M9 9v20h5.6l10.2-13.7V29H30V9h-5.6L14.2 22.7V9z" fill="white"/>
+  </svg>
+</a>
+      </div>
     </div>
 
   </div>
@@ -185,28 +199,24 @@
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEE8; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">교통</div>
-      <div style="font-size: 20px; font-weight: 800; color: #A84830; margin-bottom: 8px; line-height: 1;">★★☆☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">수도권 전철 1호선 서정리역이 인근에 있으나, 도보보다는 버스나 차량 환승이 현실적인 거리예요. 고덕국제화지구 내 BRT 등 대중교통 인프라가 순차 확충 중이에요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #EBF5EE; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">학군</div>
-      <div style="font-size: 20px; font-weight: 800; color: #2D6349; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">고덕국제화계획지구 내 초·중·고등학교가 계획적으로 배치 중인 신도시 지역이에요. 정확한 학교 배정은 평택시 교육청 및 공고문을 통해 확인 필요해요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FEF8EC; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">생활편의</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B6200; margin-bottom: 8px; line-height: 1;">★★☆☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">신도시 개발 진행 중으로 생활편의시설이 단계적으로 확충되고 있어요. 현재는 대형마트·백화점 이용 시 차량 이동이 필요한 편이며, 향후 상업시설 입점이 예정되어 있어요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEF0; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">의료</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B1A2A; margin-bottom: 8px; line-height: 1;">★★☆☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">평택시내 의료기관 이용 시 차량으로 이동이 필요한 편이에요. 지구 내 의료 인프라는 순차적으로 확충될 예정이므로, 현재 인근 의원급 중심의 이용이 현실적이에요.</div>
     </div>
 
@@ -311,6 +321,15 @@
     </div>
 
   </div><!-- end timeline -->
+
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000124&pblancNo=2026000124" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
+
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000124&pblancNo=2026000124" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
+
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000124&pblancNo=2026000124" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
 
   <!-- 타입별 서술 -->
   <p style="font-size: 16px; color: #6A635C; line-height: 1.6; margin: 0 0 16px 0;">

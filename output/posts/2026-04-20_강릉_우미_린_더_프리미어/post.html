@@ -35,60 +35,62 @@ html {
   --c-tag-resupply-text:    #57673f;
 }
 
-/* ─── 팔레트 B : Neutral Elegance ─── */
+/* ─── 팔레트 B : Deep Crimson × Navy ─── */
 html[data-palette="B"] {
-  --c-primary:        #e0afa0;
-  --c-primary-dark:   #c49080;
-  --c-primary-light:  #f9f1ef;
-  --c-primary-stripe: rgba(224,175,160,0.07);
-  --c-accent:         #8a817c;
-  --c-bg:             #f4f3ee;
+  --c-primary:        #c1121f;
+  --c-primary-dark:   #780000;
+  --c-primary-light:  #fde8e0;
+  --c-primary-stripe: rgba(193,18,31,0.06);
+  --c-accent:         #669bbc;
+  --c-bg:             #fdf5ec;
   --c-surface:        #ffffff;
-  --c-dark:           #2e2924;
-  --c-mid:            #7a7370;
-  --c-light-gray:     #bcb8b1;
-  --c-hero-bg:        #eeebe4;
-  --c-nav-bg:         #463f3a;
-  --c-green:          #8a817c;
-  --c-green-dark:     #635d59;
-  --c-green-light:    #f0eeea;
-  --c-card-grad-new:        linear-gradient(145deg,#e0afa0 0%,#c49080 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#8a817c 0%,#635d59 100%);
-  --c-cta-bg:               #635d59;
-  --c-cta-hover:            #52504c;
-  --c-tag-new-bg:           #f9f1ef;
-  --c-tag-new-text:         #c49080;
-  --c-tag-resupply-bg:      #f0eeea;
-  --c-tag-resupply-text:    #635d59;
+  --c-dark:           #003049;
+  --c-mid:            #4e6e80;
+  --c-light-gray:     #c8dbe8;
+  --c-hero-bg:        #f5e8d5;
+  --c-nav-bg:         #003049;
+  --c-green:          #669bbc;
+  --c-green-dark:     #3d7299;
+  --c-green-light:    #e0eff7;
+  --c-card-grad-new:        linear-gradient(145deg,#c1121f 0%,#780000 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#669bbc 0%,#3d7299 100%);
+  --c-cta-bg:               #003049;
+  --c-cta-hover:            #001e30;
+  --c-tag-new-bg:           #fde8e0;
+  --c-tag-new-text:         #780000;
+  --c-tag-resupply-bg:      #e0eff7;
+  --c-tag-resupply-text:    #3d7299;
 }
 
-/* ─── 팔레트 C : Pastel Dreamland ─── */
+/* ─── 팔레트 C : Punch Red × Oxford Navy ─── */
 html[data-palette="C"] {
-  --c-primary:        #ffafcc;
-  --c-primary-dark:   #cc7fa0;
-  --c-primary-light:  #fff5f8;
-  --c-primary-stripe: rgba(255,175,204,0.08);
-  --c-accent:         #a2d2ff;
-  --c-bg:             #fdf8ff;
+  --c-primary:        #e63946;
+  --c-primary-dark:   #c22030;
+  --c-primary-light:  #fce8ea;
+  --c-primary-stripe: rgba(230,57,70,0.07);
+  --c-accent:         #457b9d;
+  --c-bg:             #f0f8fb;
   --c-surface:        #ffffff;
-  --c-dark:           #2d1f3d;
-  --c-mid:            #8070a0;
-  --c-light-gray:     #ddd0f0;
-  --c-hero-bg:        #f5eefc;
-  --c-nav-bg:         #3d2952;
-  --c-green:          #bde0fe;
-  --c-green-dark:     #6ab0e0;
-  --c-green-light:    #eef6ff;
-  --c-card-grad-new:        linear-gradient(145deg,#ffafcc 0%,#cdb4db 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#bde0fe 0%,#a2d2ff 100%);
-  --c-cta-bg:               #7060a8;
-  --c-cta-hover:            #5a4c8a;
-  --c-tag-new-bg:           #fff5f8;
-  --c-tag-new-text:         #cc7fa0;
-  --c-tag-resupply-bg:      #eef6ff;
-  --c-tag-resupply-text:    #6ab0e0;
+  --c-dark:           #1d3557;
+  --c-mid:            #4a6a8a;
+  --c-light-gray:     #a8dadc;
+  --c-hero-bg:        #e4f3f8;
+  --c-nav-bg:         #1d3557;
+  --c-green:          #a8dadc;
+  --c-green-dark:     #457b9d;
+  --c-green-light:    #eaf6f8;
+  --c-card-grad-new:        linear-gradient(145deg,#e63946 0%,#c22030 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a8dadc 0%,#457b9d 100%);
+  --c-cta-bg:               #1d3557;
+  --c-cta-hover:            #0f2035;
+  --c-tag-new-bg:           #fce8ea;
+  --c-tag-new-text:         #c22030;
+  --c-tag-resupply-bg:      #eaf6f8;
+  --c-tag-resupply-text:    #457b9d;
 }
 body { margin: 0; padding: 0; background: var(--c-bg); }
+/* ─── 팔레트 콘텐츠 반영 ─── */
+#post-wrap { background: var(--c-bg) !important; }
 </style>
 </head>
 <body>
@@ -101,7 +103,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 -->
 
 <!-- ══ 전체 래퍼 ══ -->
-<div style="
+<div id="post-wrap" style="
   background: #FAF9F7;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
@@ -192,7 +194,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 4px 14px rgba(44,40,37,0.10);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
-      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">5억 3,260만원(084.9271C타입)<br>~ 7억 9,550만원(125.9243A타입)</div>
+      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">5억 3,260만원(85.01C타입)<br>~ 7억 9,550만원(125.93A타입)</div>
     </div>
 
     <!-- 총 공급 -->
@@ -227,16 +229,22 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 1px 4px rgba(44,40,37,0.07);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 6px;">공급 위치</div>
-      <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">강원특별자치도 강릉시 송정동 1048번지 일원</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 10px;">총 772세대</div>
-      <a href="https://map.naver.com/v5/search/%EA%B0%95%EC%9B%90%ED%8A%B9%EB%B3%84%EC%9E%90%EC%B9%98%EB%8F%84%20%EA%B0%95%EB%A6%89%EC%8B%9C%20%EC%86%A1%EC%A0%95%EB%8F%99%201048%EB%B2%88%EC%A7%80%20%EC%9D%BC%EC%9B%90" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:6px;
-                background:#ffffff;border:1px solid var(--c-primary);
-                color:var(--c-primary);border-radius:6px;padding:7px 14px;
-                font-size:13px;font-weight:700;text-decoration:none;
-                letter-spacing:0.2px;">
-        🗺️ 네이버 지도에서 보기 →
-      </a>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">강원특별자치도 강릉시 송정동 1048번지 일원</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 10px;">총 772세대</div>
+        </div>
+        <a href="https://map.naver.com/v5/search/%EA%B0%95%EC%9B%90%ED%8A%B9%EB%B3%84%EC%9E%90%EC%B9%98%EB%8F%84%20%EA%B0%95%EB%A6%89%EC%8B%9C%20%EC%86%A1%EC%A0%95%EB%8F%99%201048%EB%B2%88%EC%A7%80%20%EC%9D%BC%EC%9B%90" target="_blank" rel="noopener"
+   title="네이버 지도에서 보기"
+   style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+          width:38px;height:38px;border-radius:8px;text-decoration:none;transition:opacity 150ms;"
+   onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="38" height="38" rx="8" fill="#03C75A"/>
+    <path d="M9 9v20h5.6l10.2-13.7V29H30V9h-5.6L14.2 22.7V9z" fill="white"/>
+  </svg>
+</a>
+      </div>
     </div>
 
   </div>
@@ -269,28 +277,24 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEE8; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">교통</div>
-      <div style="font-size: 20px; font-weight: 800; color: #A84830; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">강릉은 지하철 노선이 없는 도시예요. KTX 강릉역이 송정동 인근에서 차량 10~15분 거리에 위치해 있으며, 시내버스를 통한 도심 이동이 주요 대중교통 수단이에요. 자가용 이용이 기본인 지역 특성을 감안하시는 것이 좋아요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #EBF5EE; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">학군</div>
-      <div style="font-size: 20px; font-weight: 800; color: #2D6349; margin-bottom: 8px; line-height: 1;">★★★★☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">송정동 인근에 초등학교가 배정되어 있으며, 강릉 시내 중학교·고등학교로의 통학도 가능한 환경이에요. 강릉 지역 내 학원가와 연계한 교육 환경이 비교적 양호한 편으로 파악돼요. 정확한 배정 학교는 강릉시 교육지원청을 통해 확인하세요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FEF8EC; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">생활편의</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B6200; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">강릉 시내 이마트·롯데마트 등 대형마트를 차량으로 이용 가능하며, 인근에 편의점과 근린 상업시설이 갖춰져 있어요. 도보 범위 내 대형 쇼핑시설 이용은 제한적이며 차량 이동이 필요한 수준이에요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEF0; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">의료</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B1A2A; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">강릉 아산병원 등 종합병원이 강릉 시내에 위치해 차량 10분 내외로 이용 가능해요. 대학병원급 의료 인프라는 강릉 시내권에 집중되어 있으며, 인근 의원·약국 등 1차 의료기관도 접근 가능한 환경이에요.</div>
     </div>
 
@@ -396,6 +400,9 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 
   </div><!-- end timeline -->
 
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000089&pblancNo=2026000089" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
+
   <!-- 타입별 서술 -->
   <p style="font-size: 16px; color: #6A635C; line-height: 1.6; margin: 0 0 16px 0;">
     이 단지는 <strong>84㎡대 5개 타입(A~E)과 117㎡, 125㎡대 대형 타입</strong>으로 구성돼요. 특히 가장 공급 물량이 많은 <strong>84C타입은 237세대</strong>로 경쟁률의 기준이 될 수 있고, 대형 타입은 상대적으로 공급 수가 적어 눈여겨볼 만해요.
@@ -499,7 +506,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     </table>
   </div>
 
-    <div style="margin-top:24px;text-align:center;"><a href="https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000089&pblancNo=2026000089&atchmnflSeqNo=1794997&atchmnflSn=2" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-primary);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" onmouseover="this.style.background='var(--c-primary-dark)'" onmouseout="this.style.background='var(--c-primary)'">📄 모집공고문 다운로드</a></div>
+    <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000089&pblancNo=2026000089" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
 
 </div>
 

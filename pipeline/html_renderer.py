@@ -13,6 +13,7 @@ html_renderer.py v2.0
 import sys
 import re
 import json
+from urllib.parse import quote
 from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass, field
@@ -131,6 +132,9 @@ class PostData:
     schedule_desc: str = ""      # 청약 일정 타임라인 앞 설명
     tax_desc: str = ""           # 세금 표 앞 설명
 
+    # 모집공고문 URL (청약홈 공고 상세 페이지)
+    notice_url: str = ""
+
     # Q&A
     qa_blocks: list[QABlock] = field(default_factory=list)
 
@@ -180,6 +184,15 @@ def _render_header_tag(label: str, radius: str) -> str:
     )
 
 
+def _normalize_type_name(name: str) -> str:
+    """'059.9880A타입' → '60.0A타입', '048.6543' → '48.7' (1자리 반올림, 선행 0 제거)"""
+    def _repl(m):
+        area = round(float(m.group(1)), 1)
+        suffix = m.group(2) or ""
+        return f"{area:.1f}{suffix}"
+    return re.sub(r'0*(\d+\.\d{2,}?)([A-Za-z타입]*)', _repl, name)
+
+
 def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
     """최소 분양가(타입명) 줄바꿈 ~ 최대 분양가(타입명) 형식 반환"""
     valid = [ut for ut in unit_types if ut.price_min > 0]
@@ -187,10 +200,12 @@ def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
         return fallback
     cheapest = min(valid, key=lambda u: u.price_min)
     priciest = max(valid, key=lambda u: u.price_max)
-    lo = f"{cheapest._fmt(cheapest.price_min)}({cheapest.type_name})"
+    lo_name = _normalize_type_name(cheapest.type_name)
+    lo = f"{cheapest._fmt(cheapest.price_min)}({lo_name})"
     if cheapest is priciest and cheapest.price_min == cheapest.price_max:
         return lo
-    hi = f"~ {priciest._fmt(priciest.price_max)}({priciest.type_name})"
+    hi_name = _normalize_type_name(priciest.type_name)
+    hi = f"~ {priciest._fmt(priciest.price_max)}({hi_name})"
     return f"{lo}<br>{hi}"
 
 
@@ -202,7 +217,7 @@ def _render_unit_rows_intro(unit_types: list[UnitType]) -> str:
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.15);">
         <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.type_name}</td>
-        <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{ut.area_sqm:.2f}</td>
+        <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{round(ut.area_sqm, 1):.1f}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{total:,}세대</td>
         <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.price_range_str}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{ut.price_per_3_3}</td>
@@ -217,7 +232,7 @@ def _render_unit_rows(unit_types: list[UnitType], t: dict) -> str:
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid {t['border']}; {stripe}">
         <td style="padding: 10px 8px; font-weight: 700; color: {t['accent']};">{ut.type_name}</td>
-        <td style="padding: 10px 8px; color: {t['text2']};">{ut.area_sqm:.2f}</td>
+        <td style="padding: 10px 8px; color: {t['text2']};">{round(ut.area_sqm, 1):.1f}</td>
         <td style="padding: 10px 8px; color: {t['text']};">{ut.general_units:,}</td>
         <td style="padding: 10px 8px; color: {t['text']};">{ut.special_units:,}</td>
         <td style="padding: 10px 8px; color: {t['step1']}; font-weight: 700;">{ut.price_range_str}</td>
@@ -388,8 +403,9 @@ class BlogHTMLRenderer:
             "{{TAX_DESC}}":        data.tax_desc or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
             # 단지 기본
             "{{APT_NAME}}":         data.apt_name,
-            "{{SUPPLY_LOCATION}}":  data.supply_location,
-            "{{SUPPLY_SCALE}}":     data.supply_scale,
+            "{{SUPPLY_LOCATION}}":          data.supply_location,
+            "{{SUPPLY_LOCATION_ENCODED}}":  quote(data.supply_location or data.location),
+            "{{SUPPLY_SCALE}}":             data.supply_scale,
             "{{PRICE_RANGE}}":      data.price_range,
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
             "{{TOTAL_UNITS}}":    f"{total_units:,}",
@@ -425,6 +441,21 @@ class BlogHTMLRenderer:
             # 테이블 집계
             "{{TOTAL_GENERAL}}":  f"{total_general:,}",
             "{{TOTAL_SPECIAL}}":  f"{total_special:,}",
+            # 모집공고문 버튼
+            "{{NOTICE_BTN}}": (
+                f'<div style="margin-top:24px;text-align:center;">'
+                f'<a href="{data.notice_url}" target="_blank" rel="noopener noreferrer" '
+                f'style="display:inline-flex;align-items:center;gap:8px;'
+                f'background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);'
+                f'border:2px solid var(--c-primary,#d97757);'
+                f'font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;'
+                f'text-decoration:none;letter-spacing:-0.2px;'
+                f'box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" '
+                f'onmouseover="this.style.background=\'var(--c-primary,#d97757)\';this.style.color=\'#fff\'" '
+                f'onmouseout="this.style.background=\'var(--c-surface,#fff)\';this.style.color=\'var(--c-dark,#2c2925)\'">'
+                f'📋 모집공고문 바로가기</a></div>'
+                if data.notice_url else ""
+            ),
             # 메타
             "{{SOURCE_DATE}}":    data.source_date,
         }

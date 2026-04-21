@@ -35,60 +35,62 @@ html {
   --c-tag-resupply-text:    #57673f;
 }
 
-/* ─── 팔레트 B : Neutral Elegance ─── */
+/* ─── 팔레트 B : Deep Crimson × Navy ─── */
 html[data-palette="B"] {
-  --c-primary:        #e0afa0;
-  --c-primary-dark:   #c49080;
-  --c-primary-light:  #f9f1ef;
-  --c-primary-stripe: rgba(224,175,160,0.07);
-  --c-accent:         #8a817c;
-  --c-bg:             #f4f3ee;
+  --c-primary:        #c1121f;
+  --c-primary-dark:   #780000;
+  --c-primary-light:  #fde8e0;
+  --c-primary-stripe: rgba(193,18,31,0.06);
+  --c-accent:         #669bbc;
+  --c-bg:             #fdf5ec;
   --c-surface:        #ffffff;
-  --c-dark:           #2e2924;
-  --c-mid:            #7a7370;
-  --c-light-gray:     #bcb8b1;
-  --c-hero-bg:        #eeebe4;
-  --c-nav-bg:         #463f3a;
-  --c-green:          #8a817c;
-  --c-green-dark:     #635d59;
-  --c-green-light:    #f0eeea;
-  --c-card-grad-new:        linear-gradient(145deg,#e0afa0 0%,#c49080 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#8a817c 0%,#635d59 100%);
-  --c-cta-bg:               #635d59;
-  --c-cta-hover:            #52504c;
-  --c-tag-new-bg:           #f9f1ef;
-  --c-tag-new-text:         #c49080;
-  --c-tag-resupply-bg:      #f0eeea;
-  --c-tag-resupply-text:    #635d59;
+  --c-dark:           #003049;
+  --c-mid:            #4e6e80;
+  --c-light-gray:     #c8dbe8;
+  --c-hero-bg:        #f5e8d5;
+  --c-nav-bg:         #003049;
+  --c-green:          #669bbc;
+  --c-green-dark:     #3d7299;
+  --c-green-light:    #e0eff7;
+  --c-card-grad-new:        linear-gradient(145deg,#c1121f 0%,#780000 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#669bbc 0%,#3d7299 100%);
+  --c-cta-bg:               #003049;
+  --c-cta-hover:            #001e30;
+  --c-tag-new-bg:           #fde8e0;
+  --c-tag-new-text:         #780000;
+  --c-tag-resupply-bg:      #e0eff7;
+  --c-tag-resupply-text:    #3d7299;
 }
 
-/* ─── 팔레트 C : Pastel Dreamland ─── */
+/* ─── 팔레트 C : Punch Red × Oxford Navy ─── */
 html[data-palette="C"] {
-  --c-primary:        #ffafcc;
-  --c-primary-dark:   #cc7fa0;
-  --c-primary-light:  #fff5f8;
-  --c-primary-stripe: rgba(255,175,204,0.08);
-  --c-accent:         #a2d2ff;
-  --c-bg:             #fdf8ff;
+  --c-primary:        #e63946;
+  --c-primary-dark:   #c22030;
+  --c-primary-light:  #fce8ea;
+  --c-primary-stripe: rgba(230,57,70,0.07);
+  --c-accent:         #457b9d;
+  --c-bg:             #f0f8fb;
   --c-surface:        #ffffff;
-  --c-dark:           #2d1f3d;
-  --c-mid:            #8070a0;
-  --c-light-gray:     #ddd0f0;
-  --c-hero-bg:        #f5eefc;
-  --c-nav-bg:         #3d2952;
-  --c-green:          #bde0fe;
-  --c-green-dark:     #6ab0e0;
-  --c-green-light:    #eef6ff;
-  --c-card-grad-new:        linear-gradient(145deg,#ffafcc 0%,#cdb4db 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#bde0fe 0%,#a2d2ff 100%);
-  --c-cta-bg:               #7060a8;
-  --c-cta-hover:            #5a4c8a;
-  --c-tag-new-bg:           #fff5f8;
-  --c-tag-new-text:         #cc7fa0;
-  --c-tag-resupply-bg:      #eef6ff;
-  --c-tag-resupply-text:    #6ab0e0;
+  --c-dark:           #1d3557;
+  --c-mid:            #4a6a8a;
+  --c-light-gray:     #a8dadc;
+  --c-hero-bg:        #e4f3f8;
+  --c-nav-bg:         #1d3557;
+  --c-green:          #a8dadc;
+  --c-green-dark:     #457b9d;
+  --c-green-light:    #eaf6f8;
+  --c-card-grad-new:        linear-gradient(145deg,#e63946 0%,#c22030 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a8dadc 0%,#457b9d 100%);
+  --c-cta-bg:               #1d3557;
+  --c-cta-hover:            #0f2035;
+  --c-tag-new-bg:           #fce8ea;
+  --c-tag-new-text:         #c22030;
+  --c-tag-resupply-bg:      #eaf6f8;
+  --c-tag-resupply-text:    #457b9d;
 }
 body { margin: 0; padding: 0; background: var(--c-bg); }
+/* ─── 팔레트 콘텐츠 반영 ─── */
+#post-wrap { background: var(--c-bg) !important; }
 </style>
 </head>
 <body>
@@ -101,7 +103,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 -->
 
 <!-- ══ 전체 래퍼 ══ -->
-<div style="
+<div id="post-wrap" style="
   background: #FAF9F7;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
@@ -192,7 +194,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 4px 14px rgba(44,40,37,0.10);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
-      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">12억 7,200만원(048.6543)<br>~ 17억 6,900만원(059.9880A)</div>
+      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">12억 7,200만원(48.63)<br>~ 17억 6,900만원(60.10A)</div>
     </div>
 
     <!-- 총 공급 -->
@@ -227,16 +229,22 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
       box-shadow: 0 1px 4px rgba(44,40,37,0.07);
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C; margin-bottom: 6px;">공급 위치</div>
-      <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">서울특별시 마포구 도화동 16-1번지 일원</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">177세대
-      <a href="https://map.naver.com/v5/search/%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EB%A7%88%ED%8F%AC%EA%B5%AC%20%EB%8F%84%ED%99%94%EB%8F%99%2016-1%EB%B2%88%EC%A7%80%20%EC%9D%BC%EC%9B%90" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;
-                background:#ffffff;border:1px solid var(--c-primary);
-                color:var(--c-primary);border-radius:6px;padding:7px 14px;
-                font-size:13px;font-weight:700;text-decoration:none;
-                letter-spacing:0.2px;">
-        🗺️ 네이버 지도에서 보기 →
-      </a></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: #2C2825; margin-bottom: 4px;">서울특별시 마포구 도화동 16-1번지 일원</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: #6A635C;">177세대</div>
+        </div>
+        <a href="https://map.naver.com/v5/search/%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EB%A7%88%ED%8F%AC%EA%B5%AC%20%EB%8F%84%ED%99%94%EB%8F%99%2016-1%EB%B2%88%EC%A7%80%20%EC%9D%BC%EC%9B%90" target="_blank" rel="noopener"
+   title="네이버 지도에서 보기"
+   style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+          width:38px;height:38px;border-radius:8px;text-decoration:none;transition:opacity 150ms;"
+   onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="38" height="38" rx="8" fill="#03C75A"/>
+    <path d="M9 9v20h5.6l10.2-13.7V29H30V9h-5.6L14.2 22.7V9z" fill="white"/>
+  </svg>
+</a>
+      </div>
     </div>
 
   </div>
@@ -269,28 +277,24 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEE8; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">교통</div>
-      <div style="font-size: 20px; font-weight: 800; color: #A84830; margin-bottom: 8px; line-height: 1;">★★★★☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">공덕역(5호선·6호선·공항철도·경의중앙선 환승) 도보 약 10분 내외 거리로 추정되며, 4개 노선 환승이 가능한 뛰어난 교통 환경을 갖추고 있습니다. 정확한 도보 거리는 현장 확인 권장.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #EBF5EE; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">학군</div>
-      <div style="font-size: 20px; font-weight: 800; color: #2D6349; margin-bottom: 8px; line-height: 1;">★★★★☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">마포구 내 초등학교 배정 예정이며, 인근 중학교 학군도 서울 내 양호한 수준으로 알려져 있습니다. 정확한 배정 학교는 서울시 교육청 학구도 서비스에서 확인 필요.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FEF8EC; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">생활편의</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B6200; margin-bottom: 8px; line-height: 1;">★★★★☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">마포구 도화동 인근으로 편의점·음식점·카페 등 생활 편의시설이 풍부하며, 대형마트(이마트 공덕점 등) 차량 5~10분 거리권에 위치해 생활 인프라가 양호한 편입니다.</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: #FDEEF0; border-radius: 10px; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
       <div style="font-size: 16px; font-weight: 700; color: #6A635C; margin-bottom: 6px;">의료</div>
-      <div style="font-size: 20px; font-weight: 800; color: #8B1A2A; margin-bottom: 8px; line-height: 1;">★★★☆☆</div>
       <div style="font-size: 16px; color: #6A635C; line-height: 1.5;">인근에 의원·약국 등 1차 의료기관이 다수 있으며, 종합병원급은 차량으로 10분 내외 거리에 위치합니다. 대학병원 도보권은 아니므로 참고하세요.</div>
     </div>
 
@@ -396,6 +400,9 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
 
   </div><!-- end timeline -->
 
+  <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000114&pblancNo=2026000114" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
+
+
   <!-- 타입별 서술 -->
   <p style="font-size: 16px; color: #6A635C; line-height: 1.6; margin: 0 0 16px 0;">
     공덕역자이르네는 <strong>전용 48~59㎡</strong> 총 6가지 타입으로 구성되는데요, <strong>59㎡B 타입이 일반+특별 합산 70세대</strong>로 가장 많은 물량을 차지하고 있어요. 같은 전용면적이라도 세부 타입에 따라 분양가와 구조가 다를 수 있으니 꼭 확인해 보세요.
@@ -481,7 +488,7 @@ body { margin: 0; padding: 0; background: var(--c-bg); }
     </table>
   </div>
 
-    <div style="margin-top:24px;text-align:center;"><a href="https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000114&pblancNo=2026000114&atchmnflSeqNo=1789328&atchmnflSn=6" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-primary);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" onmouseover="this.style.background='var(--c-primary-dark)'" onmouseout="this.style.background='var(--c-primary)'">📄 모집공고문 다운로드</a></div>
+    <div style="margin-top:24px;text-align:center;"><a href="https://www.applyhome.co.kr/ai/aia/selectSubscrptDetailView.do?houseManageNo=2026000114&pblancNo=2026000114" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-surface,#fff);color:var(--c-dark,#2c2925);border:2px solid var(--c-primary,#d97757);font-size:15px;font-weight:700;padding:12px 26px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 200ms;" onmouseover="this.style.background='var(--c-primary,#d97757)';this.style.color='#fff'" onmouseout="this.style.background='var(--c-surface,#fff)';this.style.color='var(--c-dark,#2c2925)'">📋 모집공고문 바로가기</a></div>
 
 </div>
 
