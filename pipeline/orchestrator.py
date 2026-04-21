@@ -74,7 +74,8 @@ FACT_EXTRACTION_PROMPT = """
 - midterm_count: 중도금 납부 횟수 (숫자만, 예: 6), 공고에 없으면 6
 - balance_ratio: 잔금 비율 (숫자만, 예: 30)
 - acquisition_tax_rate: 취득세율 (예: "1~3%")
-- is_hot_zone: 투기과열지구 여부 (Y/N)
+- is_hot_zone: 투기과열지구 여부 (Y/N/해당없음, 없으면 null)
+- live_requirement: 실거주 의무 여부 (예: "2년 실거주 의무", "없음", 없으면 null)
 - is_price_cap: 분양가상한제 여부 (Y/N)
 - eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
   각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
@@ -639,6 +640,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         supply_location=facts.get("supply_location", ""),
         supply_scale=facts.get("supply_scale", ""),
         total_households=str(facts.get("total_households") or ""),
+        is_hot_zone=facts.get("is_hot_zone") or "",
+        live_requirement=facts.get("live_requirement") or "",
         price_range=facts.get("price_range", ""),
         unit_types=unit_types,
         special_supply_date=facts.get("special_supply_date", "-"),

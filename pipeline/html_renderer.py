@@ -90,6 +90,8 @@ class PostData:
     supply_location: str
     supply_scale: str
     total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
+    is_hot_zone: str = ""        # 투기과열지구 여부 (Y/N/공고문 확인 필요)
+    live_requirement: str = ""   # 실거주 의무 (있음/없음/공고문 확인 필요)
     price_range: str
 
     # 유닛 타입
@@ -558,7 +560,11 @@ class BlogHTMLRenderer:
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
             "{{TOTAL_UNITS}}":    f"{total_units:,}",
             "{{MOVE_IN_DATE}}":   data.move_in_date,
-            "{{RESALE_RESTRICTION}}": data.resale_restriction,
+            # 청약 규제 정보
+            "{{IS_HOT_ZONE}}":       data.is_hot_zone or "공고문 확인 필요",
+            "{{LIVE_REQUIREMENT}}":  data.live_requirement or "공고문 확인 필요",
+            "{{RESALE_RESTRICTION_BADGE}}": data.resale_restriction or "공고문 확인 필요",
+            "{{RESALE_RESTRICTION}}": data.resale_restriction or "공고문을 통해 전매제한 기간을 반드시 확인하세요.",
             # 청약 일정
             "{{SPECIAL_SUPPLY_DATE}}": data.special_supply_date,
             "{{RANK2_DATE}}":     data.rank2_date,
@@ -591,11 +597,6 @@ class BlogHTMLRenderer:
             "{{TOTAL_SPECIAL}}":  f"{total_special:,}",
             # 메타
             "{{SOURCE_DATE}}":    data.source_date,
-            # 공고문 버튼
-            "{{NOTICE_DOC_BTN}}": _notice_doc_btn(
-                data.notice_url,
-                is_lh="apply.lh.or.kr" in data.notice_url,
-            ),
         }
         for k, v in replacements.items():
             html = html.replace(k, str(v) if v is not None else "")
@@ -713,6 +714,9 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "move_in_date":         data.move_in_date,
         "supply_location":      data.supply_location,
         "total_households":     data.total_households,
+        "is_hot_zone":          data.is_hot_zone,
+        "live_requirement":     data.live_requirement,
+        "resale_restriction":   data.resale_restriction,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {

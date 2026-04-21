@@ -6,10 +6,10 @@
 
 <!-- ══ 전체 래퍼 ══ -->
 <div style="
-  background: {{T_BG}};
+  background: var(--c-bg, {{T_BG}});
   font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
   font-size: 16px;
-  color: {{T_TEXT}};
+  color: var(--c-dark, {{T_TEXT}});
   max-width: 680px;
   margin: 0 auto;
   line-height: 1.6;
@@ -56,7 +56,7 @@
   {{HEADER_META_ROWS}}
 </div>
 
-<div style="height: 4px; background: linear-gradient(90deg, {{T_ACCENT}}, {{T_ACCENT_DARK}}, transparent); margin-bottom: 40px;"></div>
+<div style="height: 4px; background: linear-gradient(90deg, var(--c-primary, {{T_ACCENT}}), var(--c-primary-dark, {{T_ACCENT_DARK}}), transparent); margin-bottom: 40px;"></div>
 
 
 <!-- ══════════════════════════════════════════
@@ -64,10 +64,10 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     01 · 단지 소개
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 20px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 20px 0; line-height: 1.4;">
     {{APT_NAME}},<br>어떤 단지인가요?
   </h2>
 
@@ -75,10 +75,10 @@
   <div style="
     background: {{T_SURFACE}};
     border: 1px solid {{T_BORDER}};
-    border-left: 4px solid {{T_ACCENT}};
+    border-left: 4px solid var(--c-primary, {{T_ACCENT}});
     border-radius: {{T_RADIUS_LG}};
     padding: 20px 22px;
-    font-size: 16px; color: {{T_TEXT}}; line-height: 1.6;
+    font-size: 16px; color: var(--c-dark, {{T_TEXT}}); line-height: 1.6;
     margin-bottom: 28px;
   ">{{APT_INTRO}}</div>
 
@@ -88,7 +88,7 @@
     <!-- 분양가 — 전체 폭 -->
     <div style="
       flex: 1 1 100%;
-      background: {{T_ACCENT}}; color: #fff;
+      background: var(--c-primary, {{T_ACCENT}}); color: #fff;
       border-radius: {{T_RADIUS_MD}}; padding: 20px 22px;
       box-shadow: {{T_SHADOW_MD}};
     ">
@@ -103,8 +103,8 @@
       border-radius: {{T_RADIUS_MD}}; padding: 18px 16px;
       box-shadow: {{T_SHADOW_SM}};
     ">
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 6px;">🏗️ 총 공급</div>
-      <div style="font-size: 22px; font-weight: 800; color: {{T_TEXT}};">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">🏗️ 총 공급</div>
+      <div style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}});">
         {{TOTAL_UNITS}}<span style="font-size:15px; font-weight:500; margin-left:2px;">세대</span>
       </div>
     </div>
@@ -116,8 +116,8 @@
       border-radius: {{T_RADIUS_MD}}; padding: 18px 16px;
       box-shadow: {{T_SHADOW_SM}};
     ">
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 6px;">🏠 입주 예정</div>
-      <div style="font-size: 18px; font-weight: 800; color: {{T_TEXT}};">{{MOVE_IN_DATE}}</div>
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">🏠 입주 예정</div>
+      <div style="font-size: 18px; font-weight: 800; color: var(--c-dark, {{T_TEXT}});">{{MOVE_IN_DATE}}</div>
     </div>
 
     <!-- 공급 위치 — 전체 폭 -->
@@ -127,17 +127,53 @@
       border-radius: {{T_RADIUS_MD}}; padding: 18px 20px;
       box-shadow: {{T_SHADOW_SM}};
     ">
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 6px;">📍 공급 위치</div>
-      <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 4px;">{{SUPPLY_LOCATION}}</div>
-      <div style="font-size: 14px; letter-spacing: 0.025em; color: {{T_TEXT2}}; margin-bottom: 10px;">{{SUPPLY_SCALE}}</div>
-      <a href="{{NAVER_MAP_URL}}" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:6px;
-                background:{{T_SURFACE}};border:1px solid {{T_ACCENT}};
-                color:{{T_ACCENT}};border-radius:6px;padding:7px 14px;
-                font-size:13px;font-weight:700;text-decoration:none;
-                letter-spacing:0.2px;">
-        🗺️ 네이버 지도에서 보기 →
-      </a>
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">📍 공급 위치</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 4px;">{{SUPPLY_LOCATION}}</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 10px;">{{SUPPLY_SCALE}}</div>
+        </div>
+        <a href="{{NAVER_MAP_URL}}" target="_blank" rel="noopener"
+           title="네이버 지도에서 보기"
+           style="flex-shrink:0;display:inline-flex;align-items:flex-end;justify-content:center;
+                  width:30px;height:42px;text-decoration:none;transition:opacity 150ms;"
+           onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          <svg width="30" height="42" viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="naverPinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00B4D8"/>
+                <stop offset="100%" stop-color="#03C75A"/>
+              </linearGradient>
+            </defs>
+            <path d="M15 0C6.716 0 0 6.716 0 15c0 5.39 2.86 10.11 7.14 12.73L15 42l7.86-14.27C27.14 25.11 30 20.39 30 15 30 6.716 23.284 0 15 0z" fill="url(#naverPinGrad)"/>
+            <path d="M9.5 9.5v11h2.6l5.2-7V20.5H20V9.5h-2.6l-5.2 7V9.5z" fill="white"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 청약 규제 정보 — 전체 폭 -->
+    <div style="
+      flex: 1 1 100%;
+      background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}};
+      border-radius: {{T_RADIUS_MD}}; padding: 18px 20px;
+      box-shadow: {{T_SHADOW_SM}};
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 12px;">📋 청약 규제 정보</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 110px;">
+          <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">투기과열지구</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{IS_HOT_ZONE}}</div>
+        </div>
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 110px;">
+          <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">실거주 의무</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{LIVE_REQUIREMENT}}</div>
+        </div>
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 110px;">
+          <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">전매제한</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{RESALE_RESTRICTION_BADGE}}</div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -153,14 +189,14 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 20px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.6; margin: 0 0 26px 0;">
+  <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.6; margin: 0 0 26px 0;">
     {{LOCATION_INTRO}}
   </p>
 
@@ -169,30 +205,30 @@
 
     <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD1_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
-      <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT2}}; margin-bottom: 6px;">교통</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">교통</div>
       <div style="font-size: 20px; font-weight: 800; color: {{T_CARD1_TEXT}}; margin-bottom: 8px; line-height: 1;">{{SUBWAY_SCORE}}</div>
-      <div style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.5;">{{SUBWAY_DETAIL}}</div>
+      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{SUBWAY_DETAIL}}</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD2_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
-      <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT2}}; margin-bottom: 6px;">학군</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">학군</div>
       <div style="font-size: 20px; font-weight: 800; color: {{T_CARD2_TEXT}}; margin-bottom: 8px; line-height: 1;">{{SCHOOL_SCORE}}</div>
-      <div style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.5;">{{SCHOOL_DETAIL}}</div>
+      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{SCHOOL_DETAIL}}</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD3_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
-      <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT2}}; margin-bottom: 6px;">생활편의</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">생활편의</div>
       <div style="font-size: 20px; font-weight: 800; color: {{T_CARD3_TEXT}}; margin-bottom: 8px; line-height: 1;">{{LIFE_SCORE}}</div>
-      <div style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.5;">{{LIFE_DETAIL}}</div>
+      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{LIFE_DETAIL}}</div>
     </div>
 
     <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD4_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
       <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
-      <div style="font-size: 16px; font-weight: 700; color: {{T_TEXT2}}; margin-bottom: 6px;">의료</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">의료</div>
       <div style="font-size: 20px; font-weight: 800; color: {{T_CARD4_TEXT}}; margin-bottom: 8px; line-height: 1;">{{MEDICAL_SCORE}}</div>
-      <div style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.5;">{{MEDICAL_DETAIL}}</div>
+      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{MEDICAL_DETAIL}}</div>
     </div>
 
   </div>
@@ -208,15 +244,15 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     03 · 분양 일정 &amp; 공급 정보
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 20px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 20px 0; line-height: 1.4;">
     언제, 어떻게 청약하면 될까요?
   </h2>
 
   <!-- 일정 서술 -->
-  <p style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.6; margin: 0 0 26px 0;">
+  <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.6; margin: 0 0 26px 0;">
     {{SCHEDULE_DESC}}
   </p>
 
@@ -231,14 +267,14 @@
     <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
       <div style="
         flex-shrink: 0; width: 38px; height: 38px;
-        background: {{T_ACCENT}}; color: #fff; border-radius: 50%;
+        background: var(--c-primary, {{T_ACCENT}}); color: #fff; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 15px; font-weight: 800;
       ">1</div>
       <div style="flex: 1; padding-top: 5px;">
         <div style="font-size: 12px; color: {{T_MUTED}}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">SPECIAL</div>
-        <div style="font-size: 17px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 3px;">특별공급</div>
-        <div style="font-size: 17px; color: {{T_ACCENT}}; font-weight: 800;">{{SPECIAL_SUPPLY_DATE}}</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 3px;">특별공급</div>
+        <div style="font-size: 17px; color: var(--c-primary, {{T_ACCENT}}); font-weight: 800;">{{SPECIAL_SUPPLY_DATE}}</div>
       </div>
     </div>
     <div style="margin-left: 19px; height: 22px; width: 2px; background: {{T_BORDER}};"></div>
@@ -247,14 +283,14 @@
     <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
       <div style="
         flex-shrink: 0; width: 38px; height: 38px;
-        background: {{T_ACCENT_DARK}}; color: #fff; border-radius: 50%;
+        background: var(--c-primary-dark, {{T_ACCENT_DARK}}); color: #fff; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 15px; font-weight: 800;
       ">2</div>
       <div style="flex: 1; padding-top: 5px;">
         <div style="font-size: 12px; color: {{T_MUTED}}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">1ST PRIORITY</div>
-        <div style="font-size: 17px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 3px;">1순위 청약</div>
-        <div style="font-size: 17px; color: {{T_ACCENT_DARK}}; font-weight: 800;">{{RANK1_DATE}}</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 3px;">1순위 청약</div>
+        <div style="font-size: 17px; color: var(--c-primary-dark, {{T_ACCENT_DARK}}); font-weight: 800;">{{RANK1_DATE}}</div>
       </div>
     </div>
     <div style="margin-left: 19px; height: 22px; width: 2px; background: {{T_BORDER}};"></div>
@@ -263,42 +299,42 @@
     <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
       <div style="
         flex-shrink: 0; width: 38px; height: 38px;
-        background: {{T_TEXT2}}; color: #fff; border-radius: 50%;
+        background: var(--c-mid, {{T_TEXT2}}); color: #fff; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 15px; font-weight: 800;
       ">3</div>
       <div style="flex: 1; padding-top: 5px;">
         <div style="font-size: 12px; color: {{T_MUTED}}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">2ND PRIORITY</div>
-        <div style="font-size: 17px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 3px;">2순위 청약</div>
-        <div style="font-size: 17px; color: {{T_TEXT2}}; font-weight: 800;">{{RANK2_DATE}}</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 3px;">2순위 청약</div>
+        <div style="font-size: 17px; color: var(--c-mid, {{T_TEXT2}}); font-weight: 800;">{{RANK2_DATE}}</div>
       </div>
     </div>
-    <div style="margin-left: 19px; height: 22px; width: 2px; background: {{T_ACCENT}};"></div>
+    <div style="margin-left: 19px; height: 22px; width: 2px; background: var(--c-primary, {{T_ACCENT}});"></div>
 
     <!-- STEP 4 당첨자 발표 (강조) -->
     <div style="display: flex; gap: 18px; align-items: flex-start;">
       <div style="
         flex-shrink: 0; width: 38px; height: 38px;
-        background: {{T_ACCENT}}; color: #fff; border-radius: 50%;
+        background: var(--c-primary, {{T_ACCENT}}); color: #fff; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 20px;
       ">🎉</div>
       <div style="
         flex: 1; padding: 14px 18px;
-        background: {{T_ACCENT_LIGHT}};
-        border: 1px solid {{T_ACCENT}};
+        background: var(--c-primary-light, {{T_ACCENT_LIGHT}});
+        border: 1px solid var(--c-primary, {{T_ACCENT}});
         border-radius: {{T_RADIUS_MD}};
       ">
-        <div style="font-size: 12px; color: {{T_ACCENT_DARK}}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">WINNER</div>
-        <div style="font-size: 17px; font-weight: 800; color: {{T_TEXT}}; margin-bottom: 3px;">당첨자 발표</div>
-        <div style="font-size: 20px; color: {{T_ACCENT}}; font-weight: 800;">{{WINNER_DATE}}</div>
+        <div style="font-size: 12px; color: var(--c-primary-dark, {{T_ACCENT_DARK}}); font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">WINNER</div>
+        <div style="font-size: 17px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 3px;">당첨자 발표</div>
+        <div style="font-size: 20px; color: var(--c-primary, {{T_ACCENT}}); font-weight: 800;">{{WINNER_DATE}}</div>
       </div>
     </div>
 
   </div><!-- end timeline -->
 
   <!-- 타입별 서술 -->
-  <p style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.6; margin: 0 0 16px 0;">
+  <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.6; margin: 0 0 16px 0;">
     {{UNIT_TYPE_DESC}}
   </p>
 
@@ -320,16 +356,15 @@
       </tbody>
       <tfoot>
         <tr style="background: {{T_SURFACE}}; font-weight: 700; text-align: center; border-top: 2px solid {{T_BORDER}};">
-          <td colspan="2" style="padding: 12px 10px; color: {{T_TEXT}}; font-size: 15px;">합계</td>
-          <td style="padding: 12px 8px; color: {{T_TEXT}};">{{TOTAL_GENERAL}}세대</td>
-          <td style="padding: 12px 8px; color: {{T_TEXT}};">{{TOTAL_SPECIAL}}세대</td>
-          <td colspan="2" style="padding: 12px 10px; color: {{T_ACCENT}}; font-weight: 800;">총 {{TOTAL_UNITS}}세대</td>
+          <td colspan="2" style="padding: 12px 10px; color: var(--c-dark, {{T_TEXT}}); font-size: 15px;">합계</td>
+          <td style="padding: 12px 8px; color: var(--c-dark, {{T_TEXT}});">{{TOTAL_GENERAL}}세대</td>
+          <td style="padding: 12px 8px; color: var(--c-dark, {{T_TEXT}});">{{TOTAL_SPECIAL}}세대</td>
+          <td colspan="2" style="padding: 12px 10px; color: var(--c-primary, {{T_ACCENT}}); font-weight: 800;">총 {{TOTAL_UNITS}}세대</td>
         </tr>
       </tfoot>
     </table>
   </div>
 
-  {{NOTICE_DOC_BTN}}
 
 </div>
 
@@ -343,10 +378,10 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     04 · 청약 신청자격
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 20px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 20px 0; line-height: 1.4;">
     나는 청약 신청 가능할까요?
   </h2>
 
@@ -364,20 +399,20 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     05 · 자금 계획
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 20px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 20px 0; line-height: 1.4;">
     얼마를, 언제 준비해야 할까요?
   </h2>
 
-  <p style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.6; margin: 0 0 28px 0;">
+  <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.6; margin: 0 0 28px 0;">
     {{FINANCIAL_INTRO}}
   </p>
 
   <!-- 납부 비율 시각화 바 (CSS 차트) -->
   <div style="margin-bottom: 32px;">
-    <div style="font-size: 15px; font-weight: 700; color: {{T_TEXT}}; margin-bottom: 12px;">📊 분양가 납부 비율</div>
+    <div style="font-size: 15px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 12px;">📊 분양가 납부 비율</div>
 
     <div style="display: flex; border-radius: {{T_RADIUS_MD}}; overflow: hidden; height: 48px; box-shadow: {{T_SHADOW_SM}};">
       <div style="
@@ -410,7 +445,7 @@
   </div>
 
   <!-- 납부 단계 수직 타임라인 -->
-  <div style="position: relative; padding-left: 24px; border-left: 3px solid {{T_ACCENT_LIGHT}};">
+  <div style="position: relative; padding-left: 24px; border-left: 3px solid var(--c-primary-light, {{T_ACCENT_LIGHT}});">
 
     <!-- 1. 계약금 -->
     <div style="margin-bottom: 32px; position: relative;">
@@ -423,10 +458,10 @@
       ">1</div>
       <div style="font-size: 18px; font-weight: 800; color: {{T_STEP1}}; margin-bottom: 10px;">계약금 — {{CONTRACT_RATIO}}%</div>
       <div style="background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}}; border-radius: {{T_RADIUS_MD}}; padding: 16px 18px;">
-        <p style="font-size: 16px; color: {{T_TEXT2}}; margin: 0 0 8px 0; line-height: 1.6;">
-          분양가의 <strong style="color: {{T_TEXT}};">{{CONTRACT_RATIO}}%</strong>를 계약 즉시 자기자본으로 납부해요.
+        <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0 0 8px 0; line-height: 1.6;">
+          분양가의 <strong style="color: var(--c-dark, {{T_TEXT}});">{{CONTRACT_RATIO}}%</strong>를 계약 즉시 자기자본으로 납부해요.
         </p>
-        <p style="font-size: 17px; font-weight: 800; color: {{T_TEXT}}; margin: 0;">약 {{CONTRACT_AMOUNT}}</p>
+        <p style="font-size: 17px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0;">약 {{CONTRACT_AMOUNT}}</p>
       </div>
     </div>
 
@@ -441,7 +476,7 @@
       ">2</div>
       <div style="font-size: 18px; font-weight: 800; color: {{T_STEP2}}; margin-bottom: 10px;">중도금 — {{MIDTERM_RATIO}}% ({{MIDTERM_COUNT}}회 분납)</div>
       <div style="background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}}; border-radius: {{T_RADIUS_MD}}; padding: 16px 18px;">
-        <p style="font-size: 16px; color: {{T_TEXT2}}; margin: 0; line-height: 1.6;">{{LOAN_INFO}}</p>
+        <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0; line-height: 1.6;">{{LOAN_INFO}}</p>
       </div>
     </div>
 
@@ -456,8 +491,8 @@
       ">3</div>
       <div style="font-size: 18px; font-weight: 800; color: {{T_STEP3}}; margin-bottom: 10px;">잔금 — {{BALANCE_RATIO}}% (입주 시)</div>
       <div style="background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}}; border-radius: {{T_RADIUS_MD}}; padding: 16px 18px;">
-        <p style="font-size: 16px; color: {{T_TEXT2}}; margin: 0; line-height: 1.6;">
-          입주 시 주택담보대출(주담대)로 전환해요. <strong style="color: {{T_TEXT}};">DSR 40%</strong> 규제 대상이므로 사전에 한도를 꼭 확인해두세요.
+        <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0; line-height: 1.6;">
+          입주 시 주택담보대출(주담대)로 전환해요. <strong style="color: var(--c-dark, {{T_TEXT}});">DSR 40%</strong> 규제 대상이므로 사전에 한도를 꼭 확인해두세요.
         </p>
       </div>
     </div>
@@ -466,16 +501,16 @@
   <!-- 전매제한 알림 -->
   <div style="
     margin-top: 28px;
-    background: {{T_ACCENT_LIGHT}};
-    border: 1px solid {{T_ACCENT}};
+    background: var(--c-primary-light, {{T_ACCENT_LIGHT}});
+    border: 1px solid var(--c-primary, {{T_ACCENT}});
     border-radius: {{T_RADIUS_MD}};
     padding: 16px 18px;
     display: flex; align-items: flex-start; gap: 12px;
   ">
     <span style="font-size: 20px; flex-shrink: 0; margin-top: 1px;">🔒</span>
     <div>
-      <div style="font-size: 15px; font-weight: 700; color: {{T_ACCENT_DARK}}; margin-bottom: 4px;">전매제한 안내</div>
-      <div style="font-size: 16px; color: {{T_TEXT}};">{{RESALE_RESTRICTION}}</div>
+      <div style="font-size: 15px; font-weight: 700; color: var(--c-primary-dark, {{T_ACCENT_DARK}}); margin-bottom: 4px;">전매제한 안내</div>
+      <div style="font-size: 16px; color: var(--c-dark, {{T_TEXT}});">{{RESALE_RESTRICTION}}</div>
     </div>
   </div>
 
@@ -492,17 +527,17 @@
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 12px; font-weight: 700; color: {{T_ACCENT}}; letter-spacing: 1.5px; margin-bottom: 10px;">
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, {{T_ACCENT}}); letter-spacing: 1.5px; margin-bottom: 10px;">
     06 · 자주 묻는 질문
   </div>
-  <h2 style="font-size: 22px; font-weight: 800; color: {{T_TEXT}}; margin: 0 0 12px 0; line-height: 1.4;">
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0 0 12px 0; line-height: 1.4;">
     청약 준비자들이 가장 많이 묻는 질문 모음
   </h2>
   <p style="font-size: 14px; letter-spacing: 0.025em; color: {{T_MUTED}}; margin: 0 0 20px 0; line-height: 1.5;">
     공고문 내용을 바탕으로 작성된 답변입니다. 실제 조건은 분양사 공식 자료를 반드시 확인하세요.
   </p>
 
-  <p style="font-size: 16px; color: {{T_TEXT2}}; line-height: 1.6; margin: 0 0 30px 0;">
+  <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.6; margin: 0 0 30px 0;">
     {{QA_INTRO}}
   </p>
 
@@ -526,7 +561,7 @@
     <div style="font-size: 12px; font-weight: 700; color: {{T_MUTED}}; letter-spacing: 0.5px; margin-bottom: 10px;">
       ⚠️ 이용 안내 및 면책 고지
     </div>
-    <p style="color: {{T_TEXT2}}; font-size: 14px; letter-spacing: 0.025em; line-height: 1.6; margin: 0 0 12px 0;">
+    <p style="color: var(--c-mid, {{T_TEXT2}}); font-size: 14px; letter-spacing: 0.025em; line-height: 1.6; margin: 0 0 12px 0;">
       본 포스팅은 <strong>한국부동산원 청약홈({{SOURCE_DATE}} 공고 기준)</strong> 공개 정보를 바탕으로 작성되었습니다.
       실제 청약 자격·대출 조건·세금은 반드시 금융기관 및 분양사에서 직접 확인하세요.
       투자 권유가 아닌 정보 제공 목적입니다.
