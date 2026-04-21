@@ -1,0 +1,93 @@
+name: 포스트 전면 재생성
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '처리 건수 제한 (0=전체, 숫자=테스트용)'
+        required: false
+        default: '0'
+      skip_pdf:
+        description: 'PDF 다운로드 생략 (청약홈 403 차단 시 true)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      notice_id:
+        description: '특정 공고만 처리 (houseManageNo, 비우면 전체)'
+        required: false
+        default: ''
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  reprocess:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+        with:
+          ref: claude/review-claude-md-nTSPo
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: pip install anthropic google-genai python-dotenv httpx pdfplumber openai chromadb
+
+      - name: .env 생성
+        run: |
+          cat <<EOF > .env
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
+          EOF
+
+      - name: 재생성 실행
+        run: |
+          ARGS=""
+          if [ "${{ inputs.limit }}" != "0" ]; then
+            ARGS="$ARGS --limit ${{ inputs.limit }}"
+          fi
+          if [ "${{ inputs.skip_pdf }}" = "true" ]; then
+            ARGS="$ARGS --skip-pdf"
+          fi
+          if [ -n "${{ inputs.notice_id }}" ]; then
+            ARGS="$ARGS --notice ${{ inputs.notice_id }}"
+          fi
+          python batch_reprocess.py $ARGS 2>&1 | tee reprocess_result.txt
+
+      - name: 결과를 Job Summary에 출력
+        if: always()
+        run: |
+          echo '## 재생성 결과' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -50 reprocess_result.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Git 설정
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 변경사항 커밋 & 푸시
+        if: success()
+        run: |
+          git add output/posts/ output/index.html output/sitemap.xml output/pdfs/ || true
+          if git diff --cached --quiet; then
+            echo "변경사항 없음"
+          else
+            git commit -m "chore: 포스트 전면 재생성 (신청자격·규제정보 포함)"
+            git push origin claude/review-claude-md-nTSPo
+          fi
