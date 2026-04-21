@@ -27,5 +27,8 @@
     "step6": "카테고리 설정 후 발행"
   },
   "special_supply_date": "",
-  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000115&pblancNo=2026000115&atchmnflSeqNo=1794028&atchmnflSn=4"
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000115&pblancNo=2026000115&atchmnflSeqNo=1794028&atchmnflSn=4",
+  "is_hot_zone": "비해당",
+  "resale_restriction": "없음",
+  "live_requirement": "없음"
 }

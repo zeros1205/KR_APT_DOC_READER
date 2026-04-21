@@ -27,5 +27,8 @@
     "step6": "카테고리 설정 후 발행"
   },
   "special_supply_date": "",
-  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000124&pblancNo=2026000124&atchmnflSeqNo=1794067&atchmnflSn=1"
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000124&pblancNo=2026000124&atchmnflSeqNo=1794067&atchmnflSn=1",
+  "is_hot_zone": "비해당",
+  "resale_restriction": "3년",
+  "live_requirement": "3년"
 }
