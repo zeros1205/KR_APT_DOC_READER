@@ -1,0 +1,70 @@
+name: 청약 규제 정보 실채움
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry-run (실제 파일 수정 없이 미리보기)'
+        type: boolean
+        default: false
+      limit:
+        description: '처리할 포스트 수 제한 (0 = 전체)'
+        type: number
+        default: 0
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  patch-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: .env 파일 생성
+        run: |
+          cat <<EOF > .env
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          EOF
+
+      - name: 청약 규제 정보 실채움 실행
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.limit }}" != "0" ] && [ -n "${{ github.event.inputs.limit }}" ]; then
+            ARGS="$ARGS --limit ${{ github.event.inputs.limit }}"
+          fi
+          python patch_policy_data.py $ARGS
+
+      - name: index.html 재생성
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python pipeline/build_index.py
+
+      - name: 변경사항 커밋 및 푸시
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/posts/ output/index.html output/sitemap.xml 2>/dev/null || true
+          git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
+            git commit -m "chore: 청약 규제 정보 실채움 [$(date +%Y-%m-%d)]"
+          git push origin ${{ github.ref_name }}

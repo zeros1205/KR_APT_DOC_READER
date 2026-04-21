@@ -67,15 +67,20 @@ FACT_EXTRACTION_PROMPT = """
 - winner_date: YYYY-MM-DD
 - move_in_date: YYYY년 MM월
 - loan_info: 중도금 대출 가능 여부 및 조건 요약
-- resale_restriction: 전매제한 기간
+- resale_restriction: 전매제한 기간 — 공고문의 "제한사항", "전매제한", "계약 조건" 섹션에 기재.
+  예: "소유권이전등기일로부터 3년", "입주 후 6개월", "분양가상한제 적용 10년", "없음".
+  공고에 없으면 null. 조건별로 다를 경우 가장 긴 기간 기준으로 요약.
 - contract_ratio: 계약금 비율 (숫자만, 예: 10)
 - contract_amount: 최저 분양가 기준 계약금 금액 (예: "약 3,000만원"), 공고에 없으면 null
 - midterm_ratio: 중도금 비율 (숫자만, 예: 60)
 - midterm_count: 중도금 납부 횟수 (숫자만, 예: 6), 공고에 없으면 6
 - balance_ratio: 잔금 비율 (숫자만, 예: 30)
 - acquisition_tax_rate: 취득세율 (예: "1~3%")
-- is_hot_zone: 투기과열지구 여부 (Y/N/해당없음, 없으면 null)
-- live_requirement: 실거주 의무 여부 (예: "2년 실거주 의무", "없음", 없으면 null)
+- is_hot_zone: 투기과열지구 해당 여부 — 공고문의 "규제지역", "적용지역", "분양조건" 섹션 참조.
+  반드시 "Y", "N", "해당없음" 중 하나로만 답할 것. 투기과열지구 또는 청약조정대상지역 여부 기준.
+  명시 없으면 null.
+- live_requirement: 거주 의무 여부 — "거주의무", "실거주 의무", "실거주기간" 항목에 기재.
+  예: "2년 이상 실거주", "없음", "해당 없음". 공고에 없으면 null.
 - is_price_cap: 분양가상한제 여부 (Y/N)
 - eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
   각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
@@ -550,7 +555,16 @@ def _select_theme(supply_type: str) -> str:
     return BLOG_THEME
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "") -> Path | None:
+def _fmt_hot_zone(v: str) -> str:
+    """API/LLM raw 값(Y/N/해당없음) → 한국어 표시값 변환"""
+    if v in ("Y", "y"):
+        return "해당 (투기과열지구)"
+    if v in ("N", "n", "해당없음", "아니오", "비해당"):
+        return "비해당"
+    return v  # 그 외 텍스트 값 그대로 사용
+
+
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -640,7 +654,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         supply_location=facts.get("supply_location", ""),
         supply_scale=facts.get("supply_scale", ""),
         total_households=str(facts.get("total_households") or ""),
-        is_hot_zone=facts.get("is_hot_zone") or "",
+        is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or api_is_hot_zone or ""),
         live_requirement=facts.get("live_requirement") or "",
         price_range=facts.get("price_range", ""),
         unit_types=unit_types,
@@ -729,7 +743,7 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url)
+    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone)
 
 
 # ──────────────────────────────────────────────────
