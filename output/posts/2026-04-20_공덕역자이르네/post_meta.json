@@ -30,5 +30,8 @@
     "step5": "태그 입력: 공덕역자이르네, 마포구청약, 공덕역분양, 서울청약2026, 자이르네, 도화동아파트, 마포구분양, 청약정보, 특별공급, 서울아파트분양",
     "step6": "카테고리 설정 후 발행"
   },
-  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000114&pblancNo=2026000114&atchmnflSeqNo=1789328&atchmnflSn=6"
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000114&pblancNo=2026000114&atchmnflSeqNo=1789328&atchmnflSn=6",
+  "is_hot_zone": "비해당",
+  "resale_restriction": "3년",
+  "live_requirement": "없음"
 }
