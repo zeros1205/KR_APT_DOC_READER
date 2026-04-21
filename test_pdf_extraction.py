@@ -65,7 +65,7 @@ FIELD_LABELS = {"regulated_zone": "규제지역 여부", "readmission_limit": "�
 MODELS = [
     ("Sonnet 4.6", "claude", "claude-sonnet-4-6"),
     ("Opus 4.7",   "claude", "claude-opus-4-7"),
-    ("Gemini 2.5 Pro", "gemini", "gemini-2.5-pro-preview-05-06"),
+    ("Gemini 3.1 Pro", "gemini", "gemini-3.1-pro-preview"),
 ]
 
 
