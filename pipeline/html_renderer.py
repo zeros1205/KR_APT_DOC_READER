@@ -560,6 +560,8 @@ class BlogHTMLRenderer:
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
             "{{TOTAL_UNITS}}":    f"{total_units:,}",
             "{{MOVE_IN_DATE}}":   data.move_in_date,
+            # 공고문 URL
+            "{{NOTICE_URL}}":        data.notice_url or "#",
             # 청약 규제 정보
             "{{IS_HOT_ZONE}}":       data.is_hot_zone or "공고문 확인 필요",
             "{{LIVE_REQUIREMENT}}":  data.live_requirement or "공고문 확인 필요",
