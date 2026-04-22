@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: [청약 공고 자동 수집 및 포스팅 생성]
     types: [completed]
+  workflow_dispatch:
 
 jobs:
   check-post-count:
