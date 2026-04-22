@@ -47,77 +47,10 @@ jobs:
           pip install -r requirements.txt
           pip install httpx python-dotenv
 
-      - name: Run price audit
+      - name: Run price audit with API validation
         env:
           PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          mkdir -p output
-          python3 << 'EOF'
-          import asyncio
-          import json
-          import re
-          import httpx
-          import os
-          from pathlib import Path
-          from datetime import datetime
-
-          API_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1"
-          PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
-          OUTPUT_DIR = Path('output')
-
-          async def search_notices():
-              if not PUBLIC_DATA_API_KEY or "여기에" in PUBLIC_DATA_API_KEY:
-                  return {
-                      'timestamp': datetime.now().isoformat(),
-                      'total': 0,
-                      'found_api': 0,
-                      'with_errors': 0,
-                      'details': [],
-                      'status': 'API_KEY_NOT_SET'
-                  }
-
-              post_dir = OUTPUT_DIR / 'posts'
-              results = []
-              total = 0
-
-              if post_dir.exists():
-                  for post_folder in sorted(post_dir.iterdir()):
-                      if post_folder.is_dir():
-                          meta_file = post_folder / 'post_meta.json'
-                          if meta_file.exists():
-                              with open(meta_file) as f:
-                                  meta = json.load(f)
-                              total += 1
-                              results.append({
-                                  'apt_name': meta.get('apt_name', ''),
-                                  'price_range': meta.get('price_range', ''),
-                                  'notice_date': meta.get('notice_date', ''),
-                                  'special_supply_date': meta.get('special_supply_date', ''),
-                                  'rank1_date': meta.get('rank1_date', ''),
-                                  'rank2_date': meta.get('rank2_date', '')
-                              })
-
-              return {
-                  'timestamp': datetime.now().isoformat(),
-                  'total': total,
-                  'found_api': 0,
-                  'with_errors': 0,
-                  'details': results,
-                  'status': 'SUCCESS'
-              }
-
-          async def main():
-              results = await search_notices()
-              with open(OUTPUT_DIR / 'price_audit_results.json', 'w') as f:
-                  json.dump(results, f, ensure_ascii=False, indent=2)
-              print(f"✓ 검사 대상: {results['total']}개")
-              print(f"⚠️  상태: {results['status']}")
-
-          asyncio.run(main())
-          EOF
+        run: python3 audit_prices_with_api.py
 
       - name: Upload results
         if: success()
