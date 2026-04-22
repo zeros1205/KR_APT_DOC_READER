@@ -784,6 +784,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
     # Step 1: 팩트 추출
     facts = await agent_fact_extraction(notice_text)
+    if not facts.get("apt_name") and doc.apt_name:
+        facts["apt_name"] = doc.apt_name
+        print(f"  [Agent 1] 단지명 폴백 적용: {doc.apt_name}")
     if not facts.get("apt_name"):
         print("❌ 팩트 추출 실패 - 단지명 없음. 파이프라인 중단.")
         return None
