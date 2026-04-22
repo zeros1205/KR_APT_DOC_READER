@@ -1,0 +1,61 @@
+name: 분양가·일정 감사
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '대상 브랜치'
+        required: false
+        default: 'main'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install httpx
+
+      - name: Run audit
+        env:
+          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python3 audit_prices_with_api.py
+
+      - name: Save results
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-results
+          path: output/price_audit_results.json
+
+      - name: Display results
+        if: success()
+        run: |
+          if [ -f output/price_audit_results.json ]; then
+            echo "## 📊 감사 완료" >> $GITHUB_STEP_SUMMARY
+            python3 << 'SCRIPT'
+import json
+with open('output/price_audit_results.json') as f:
+  data = json.load(f)
+print(f"✓ 검사 대상: {data['total']}개")
+print(f"✓ API 발견: {data['found_api']}개")
+print(f"⚠️  차이 발견: {data['with_errors']}개")
+SCRIPT
+          fi
