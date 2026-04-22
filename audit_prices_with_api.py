@@ -31,6 +31,7 @@ class AuditResult:
     house_manage_no: str = ""
     found_api: bool = False
     errors: dict = None  # {field: (expected, actual)}
+    errors_fixed: int = 0
 
     def __post_init__(self):
         if self.errors is None:
@@ -155,8 +156,8 @@ def format_price(p_min: int, p_max: int) -> str:
     return f"{single_price(p_min)}~{single_price(p_max)}"
 
 
-async def audit_post(api: CheongYakAPI, post_folder: Path) -> AuditResult:
-    """단일 포스트 감사"""
+async def audit_post(api: CheongYakAPI, post_folder: Path, auto_fix: bool = True) -> AuditResult:
+    """단일 포스트 감사 및 자동 수정"""
     meta_file = post_folder / 'post_meta.json'
 
     if not meta_file.exists():
@@ -179,7 +180,7 @@ async def audit_post(api: CheongYakAPI, post_folder: Path) -> AuditResult:
     result.found_api = True
     result.house_manage_no = api_data.get("HOUSE_MANAGE_NO", "")
 
-    # 필드별 비교
+    # 필드별 비교 및 수정
     comparisons = {
         'price_range': {
             'current': meta.get('price_range', ''),
@@ -208,6 +209,7 @@ async def audit_post(api: CheongYakAPI, post_folder: Path) -> AuditResult:
         },
     }
 
+    modified = False
     for field, comp in comparisons.items():
         current = comp['current']
 
@@ -222,6 +224,17 @@ async def audit_post(api: CheongYakAPI, post_folder: Path) -> AuditResult:
 
         if current_clean and api_clean and current_clean != api_clean:
             result.errors[field] = (current_clean, api_clean)
+
+            # 자동 수정: API 값으로 업데이트
+            if auto_fix and api_clean:
+                meta[field] = api_clean
+                modified = True
+
+    # 수정사항 저장
+    if modified and auto_fix:
+        with open(meta_file, 'w', encoding='utf-8') as f:
+            json.dump(meta, f, ensure_ascii=False, indent=2)
+        result.errors_fixed = len(result.errors)  # 수정된 항목 수
 
     return result
 
@@ -257,33 +270,36 @@ async def main():
         apt_name = meta.get('apt_name', '')
         print(f"\n[{i}/{len(post_folders)}] {apt_name}...")
 
-        result = await audit_post(api, post_folder)
+        result = await audit_post(api, post_folder, auto_fix=True)
         results.append(result)
 
         if result.found_api:
             if result.errors:
-                print(f"  ⚠️  {len(result.errors)}개 차이 발견:")
+                print(f"  ⚠️  {len(result.errors)}개 차이 발견 → {result.errors_fixed}개 자동 수정:")
                 for field, (current, api_val) in result.errors.items():
                     print(f"    - {field}")
-                    print(f"      현재: {current}")
-                    print(f"      API:  {api_val}")
+                    print(f"      이전: {current}")
+                    print(f"      수정: {api_val}")
             else:
                 print(f"  ✓ 모든 데이터 일치")
         else:
             print(f"  ❌ API에서 공고 찾기 실패")
 
     # 결과 저장
+    total_fixed = sum(r.errors_fixed for r in results)
     results_data = {
         'timestamp': datetime.now().isoformat(),
         'total': len(results),
         'found_api': sum(1 for r in results if r.found_api),
         'with_errors': sum(1 for r in results if r.errors),
+        'auto_fixed': total_fixed,
         'details': [
             {
                 'apt_name': r.apt_name,
                 'found_api': r.found_api,
                 'house_manage_no': r.house_manage_no,
-                'errors': r.errors
+                'errors': r.errors,
+                'auto_fixed': r.errors_fixed
             }
             for r in results
         ]
@@ -293,11 +309,12 @@ async def main():
         json.dump(results_data, f, ensure_ascii=False, indent=2)
 
     print("\n" + "="*70)
-    print("감사 완료")
+    print("감사 및 자동 수정 완료")
     print("="*70)
     print(f"✓ 검사 대상: {results_data['total']}개")
     print(f"✓ API 발견: {results_data['found_api']}개")
-    print(f"⚠️  차이 있음: {results_data['with_errors']}개")
+    print(f"⚠️  차이 발견: {results_data['with_errors']}개")
+    print(f"✅ 자동 수정: {results_data['auto_fixed']}개 항목")
     print(f"📄 결과 저장: {RESULTS_FILE}")
 
 
