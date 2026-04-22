@@ -15,11 +15,12 @@ from dataclasses import dataclass
 # 설정
 API_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1"
 
-# API 키는 config.py에서 자동 로드 (GitHub secret 또는 .env)
+# API 키 로드: config.py 시도 → 환경변수 사용
 try:
     from pipeline.config import PUBLIC_DATA_API_KEY
-except ImportError:
-    PUBLIC_DATA_API_KEY = None
+except (ImportError, AttributeError):
+    import os
+    PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
 
 OUTPUT_DIR = Path('output')
 RESULTS_FILE = OUTPUT_DIR / 'price_audit_results.json'
