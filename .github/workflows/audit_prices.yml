@@ -51,11 +51,11 @@ jobs:
           if [ -f output/price_audit_results.json ]; then
             echo "## 📊 감사 완료" >> $GITHUB_STEP_SUMMARY
             python3 << 'SCRIPT'
-import json
-with open('output/price_audit_results.json') as f:
-  data = json.load(f)
-print(f"✓ 검사 대상: {data['total']}개")
-print(f"✓ API 발견: {data['found_api']}개")
-print(f"⚠️  차이 발견: {data['with_errors']}개")
-SCRIPT
+            import json
+            with open('output/price_audit_results.json') as f:
+              data = json.load(f)
+            print(f"✓ 검사 대상: {data['total']}개")
+            print(f"✓ API 발견: {data['found_api']}개")
+            print(f"⚠️  차이 발견: {data['with_errors']}개")
+            SCRIPT
           fi
