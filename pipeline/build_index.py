@@ -9,6 +9,7 @@ output/index.html 프론트페이지를 생성한다.
 """
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -30,6 +31,9 @@ def load_posts() -> list[dict]:
     for meta_path in sorted(POSTS_DIR.glob("*/post_meta.json"), reverse=True):
         try:
             meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            if meta.get("publication_status", "live") != "live" or meta.get("draft") is True:
+                print(f"  [draft 제외] {meta_path.parent.name}")
+                continue
             post_dir = meta_path.parent.name
             meta["post_url"] = f"posts/{post_dir}/post.html"
             if not meta.get("region_category"):
@@ -42,7 +46,10 @@ def load_posts() -> list[dict]:
             posts.append(meta)
         except Exception as e:
             print(f"  [경고] {meta_path} 파싱 실패: {e}")
-    return posts
+    def _sort_key(post: dict):
+        dt = _parse_date(post.get("special_supply_date", "")) or _parse_date(post.get("rank1_date", "")) or _parse_date(post.get("generated_at", ""))
+        return dt or datetime.min
+    return sorted(posts, key=_sort_key, reverse=True)
 
 
 def _fmt_date(date_str: str) -> tuple[str, str]:
@@ -67,12 +74,14 @@ def _parse_date(date_str: str) -> datetime | None:
 
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:
     """(label, card_grad_cssvar, tag_type)
-    tag_type: 'new' | 'resupply'
+    tag_type: 'new' | 'resupply' | 'draft'
     """
     combined = title + " " + apt_name
+    if "불법행위" in combined:
+        return "미지정", "var(--c-card-grad-new)", "draft"
+
     resupply_map = [
         ("무순위",   "무순위"),
-        ("불법행위", "불법행위재공급"),
         ("임의",     "임의공급"),
         ("취소후",   "취소후재공급"),
         ("잔여",     "잔여세대"),
@@ -111,6 +120,32 @@ def _date_cell(label: str, month: str, day: str) -> str:
     )
 
 
+def _supply_scale_label(post: dict) -> str:
+    raw = (
+        post.get("supply_scale")
+        or post.get("supply_total_units")
+        or post.get("subtitle")
+        or post.get("title")
+        or ""
+    )
+    text = str(raw).strip()
+    if not text:
+        return "정보 없음"
+    match = re.search(r"(\d[\d,]*)\s*세대", text)
+    if match:
+        return f"{match.group(1)}세대"
+    if text.isdigit():
+        return f"{int(text):,}세대"
+    return "정보 없음"
+
+
+def _notice_date_label(post: dict) -> str:
+    dt = _parse_date(post.get("notice_date", "")) or _parse_date(post.get("generated_at", ""))
+    if not dt:
+        return "모집공고일 정보 없음"
+    return f"모집공고일 {dt.year}년 {dt.month}월 {dt.day}일"
+
+
 def _render_filter_btn(label: str, count: int, js_value: str, group: str) -> str:
     return (
         f'<button class="tab-btn" data-group="{group}" data-value="{js_value}" '
@@ -120,54 +155,82 @@ def _render_filter_btn(label: str, count: int, js_value: str, group: str) -> str
     )
 
 
+def _header_search_html() -> str:
+    return """
+<div class="search-wrap search-wrap-header" style="margin-right:0;">
+  <span class="search-icon">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  </span>
+  <input id="search-input" type="text" placeholder="단지명 검색"
+         oninput="filterSearch(this.value)" autocomplete="off">
+</div>
+"""
+
+
 def _render_featured(posts: list[dict]) -> str:
-    featured = posts[:3]
+    featured = posts[:6]
     if not featured:
         return ""
 
     items: list[str] = []
-    for idx, post in enumerate(featured, start=1):
+    for idx, post in enumerate(featured):
         apt_name = post.get("apt_name", "(단지명 없음)")
-        location = post.get("location", "위치 정보 없음")
-        price = post.get("price_range") or "분양가 확인 필요"
         url = post["post_url"]
-        label, _, _ = _supply_info(post.get("title", apt_name), apt_name)
-        rank1_dt = _parse_date(post.get("rank1_date", ""))
-        rank1_label = (
-            f"{rank1_dt.month}월 {rank1_dt.day}일 1순위"
-            if rank1_dt else "일정 확인 필요"
-        )
+        label = _notice_date_label(post)
+        supply_scale = _supply_scale_label(post)
         items.append(
             f"""
-            <a href="{url}" style="display:flex;gap:16px;align-items:flex-start;
-               padding:18px 0;text-decoration:none;border-top:{'0' if idx == 1 else '1px'} solid var(--c-light-gray);">
-              <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                          flex-shrink:0;background:var(--c-primary-light);color:var(--c-primary);font-size:16px;font-weight:900;">
-                {idx}
-              </div>
-              <div style="min-width:0;flex:1;">
-                <p style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--c-primary);margin-bottom:7px;">{label}</p>
-                <p style="font-size:18px;font-weight:800;line-height:1.45;color:var(--c-dark);word-break:keep-all;margin-bottom:6px;">
-                  {apt_name}
-                </p>
-                <p style="font-size:13px;color:var(--c-mid);line-height:1.6;margin-bottom:9px;">
-                  {location}
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    {price}
-                  </span>
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    {rank1_label}
-                  </span>
-                </div>
-              </div>
+            <a href="{url}" class="featured-item" data-name="{apt_name.lower()}" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                {apt_name}
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 {supply_scale}<br>{label}
+              </p>
             </a>
             """
         )
-    return "".join(items)
+    featured_list = "".join(items)
+    guide_html = """
+<div class="section-card guide-card" style="padding:26px 22px 24px;">
+  <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+            letter-spacing:2px;margin-bottom:10px;">USER GUIDE</p>
+  <p class="guide-headline" style="font-size:31px;color:#1f1d1a;line-height:1.18;font-weight:900;
+            letter-spacing:-1.2px;max-width:460px;word-break:keep-all;margin-bottom:14px;">
+    <span style="color:var(--c-primary);">입주자모집공고</span>를 빠르게 확인하고<br>
+    내 집 마련에 성공하세요
+  </p>
+  <p class="guide-body" style="font-size:14px;line-height:1.85;color:var(--c-mid);word-break:keep-all;">
+    관심지역, 공급유형 필터 또는 단지명 검색으로<br>
+    원하는 단지를 쉽게 찾아볼 수 있어요.
+  </p>
+</div>
+"""
+    picks_html = f"""
+<div class="section-card picks-card" style="padding:26px 22px 18px;">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:8px;">
+    <div>
+      <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+                letter-spacing:2px;margin-bottom:10px;">LATEST UPDATES</p>
+    </div>
+  </div>
+  <div class="featured-list" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;">
+    {featured_list}
+  </div>
+</div>
+"""
+    return f"""
+<section style="padding:36px 24px 8px;">
+  <div class="featured-shell" style="max-width:1160px;margin:0 auto;display:grid;grid-template-columns:minmax(0,0.78fr) minmax(0,1.22fr);gap:20px;">
+    {guide_html}
+    {picks_html}
+  </div>
+</section>
+"""
 
 
 def _render_card(p: dict, _serial: int) -> str:
@@ -274,7 +337,7 @@ def build() -> None:
     sys.path.insert(0, str(Path(__file__).parent))
     from shared_ui import (
         FONT_LINK, FONT_FAMILY, PALETTE_CSS,
-        PALETTE_INIT_JS, PALETTE_SWITCH_JS, shared_nav,
+        PALETTE_INIT_JS, shared_nav,
     )
 
     posts = load_posts()
@@ -298,8 +361,6 @@ def build() -> None:
     unknown  = sorted(r for r in region_counts if r not in _REGION_ORDER)
     regions  = ["전체"] + known + unknown
     total        = len(posts)
-    region_count = len(region_counts)
-
     region_tabs = "".join(
         _render_filter_btn(r, total if r == "전체" else region_counts.get(r, 0), r, "region")
         for r in regions
@@ -316,8 +377,7 @@ def build() -> None:
         if label == "전체" or supply_counts.get(label, 0) > 0
     )
     cards_html  = "".join(_render_card(p, i + 1) for i, p in enumerate(posts))
-    nav_html    = shared_nav("/")
-    featured_html = _render_featured(posts)
+    nav_html    = shared_nav("/", _header_search_html())
     latest_generated = max((p.get("generated_at", "") for p in posts), default="")
     latest_dt = None
     if latest_generated:
@@ -326,17 +386,10 @@ def build() -> None:
         except Exception:
             latest_dt = None
     latest_label = (
-        f"{latest_dt.year}.{latest_dt.month:02d}.{latest_dt.day:02d} 업데이트"
+        f"최근 업데이트 {latest_dt.year}년 {latest_dt.month}월 {latest_dt.day}일"
         if latest_dt else "최근 업데이트 정보 없음"
     )
-    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    upcoming_rank1 = sum(
-        1 for p in posts
-        if (dt := _parse_date(p.get("rank1_date", ""))) and dt >= today
-    )
-    seoul_gyeonggi = region_counts.get("서울", 0) + region_counts.get("경기도", 0)
-    supply_count = len([k for k, v in supply_counts.items() if v > 0])
-
+    featured_html = _render_featured(posts)
     html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
 <head>
@@ -402,14 +455,43 @@ body {{
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }}
-.intro-grid {{
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
-  gap: 22px;
-}}
 @media (max-width: 960px) {{ .cards-grid {{ grid-template-columns: repeat(2, 1fr); }} }}
-@media (max-width: 960px) {{ .intro-grid {{ grid-template-columns: 1fr; }} }}
 @media (max-width: 580px) {{ .cards-grid {{ grid-template-columns: 1fr; }} }}
+
+@media (max-width: 900px) {{
+  .featured-shell {{
+    grid-template-columns: 1fr !important;
+  }}
+  .featured-list {{
+    grid-template-columns: 1fr !important;
+  }}
+  .guide-headline {{
+    font-size: 24px !important;
+    line-height: 1.22 !important;
+    max-width: none !important;
+  }}
+  .guide-body {{
+    font-size: 13px !important;
+    line-height: 1.75 !important;
+  }}
+}}
+
+@media (max-width: 580px) {{
+  .guide-card,
+  .picks-card {{
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }}
+  .guide-headline {{
+    font-size: 22px !important;
+  }}
+  .featured-title {{
+    font-size: 16px !important;
+  }}
+  .featured-meta {{
+    font-size: 11px !important;
+  }}
+}}
 
 /* ── 카드 ── */
 .post-card {{
@@ -470,6 +552,18 @@ body {{
   position: relative;
   flex-shrink: 0;
   margin-right: 4px;
+}}
+.search-wrap-header {{
+  margin-right: 0;
+}}
+.search-wrap-header::after {{
+  display: none;
+}}
+.search-wrap-header #search-input {{
+  width: 140px;
+}}
+.search-wrap-header #search-input:focus {{
+  width: 180px;
 }}
 .search-wrap::after {{
   content: '';
@@ -544,9 +638,9 @@ body {{
       <span style="color:var(--c-primary);">정과장이 쉽게</span> 정리해 드립니다
     </h1>
 
-    <p style="font-size:16px;color:var(--c-dark);opacity:0.65;line-height:1.75;
+    <p style="font-size:16px;color:#2c2925;opacity:1;line-height:1.75;
               max-width:460px;margin-bottom:44px;word-break:keep-all;">
-      한국부동산원 청약홈 공개 데이터를 AI로 분석하여<br>
+      한국부동산원 청약홈 공개 데이터를 분석하여<br>
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
@@ -556,116 +650,20 @@ body {{
                    font-size:13px;font-weight:700;color:var(--c-dark);">
         {latest_label}
       </span>
-      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
-                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
-                   font-size:13px;font-weight:700;color:var(--c-dark);">
-        곧 1순위 접수 {upcoming_rank1}건
-      </span>
     </div>
 
-    <!-- 통계 카드 -->
-    <div style="display:flex;flex-wrap:wrap;gap:12px;">
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-primary);letter-spacing:-1px;">{total}</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">분석 공고</div>
-      </div>
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-accent);letter-spacing:-1px;">{region_count}</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">커버 지역</div>
-      </div>
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-green-dark);letter-spacing:-1px;">{seoul_gyeonggi}</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">서울·경기 공고</div>
-      </div>
-    </div>
   </div>
 </section>
 
 <div style="height:3px;background:linear-gradient(90deg,var(--c-primary),var(--c-accent),transparent);"></div>
 
+{featured_html}
 
-<!-- ══ 메인 ══ -->
-<main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
-
-  <section class="intro-grid" style="margin-bottom:36px;">
-    <div class="section-card" style="padding:28px;">
-      <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:10px;">START HERE</p>
-      <h2 style="font-size:28px;font-weight:900;line-height:1.28;letter-spacing:-0.9px;color:var(--c-dark);margin-bottom:12px;word-break:keep-all;">
-        이번 주 청약 흐름을 빠르게 훑고<br>원하는 단지로 바로 들어가세요
-      </h2>
-      <p style="font-size:15px;line-height:1.8;color:var(--c-mid);margin-bottom:20px;max-width:560px;word-break:keep-all;">
-        지역 탭과 공급 유형 필터를 같이 쓰면 재공급 공고, 공공분양 공고, 서울권 신규 공고만 빠르게 압축해서 볼 수 있습니다.
-      </p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          지역 탐색 {region_count}개 권역
-        </span>
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          공급 유형 {supply_count}개
-        </span>
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          검색으로 단지명 바로 찾기
-        </span>
-      </div>
-    </div>
-
-    <aside class="section-card" style="padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
-        <div>
-          <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:8px;">LATEST PICKS</p>
-          <h3 style="font-size:22px;font-weight:900;letter-spacing:-0.6px;color:var(--c-dark);">최근 분석 공고</h3>
-        </div>
-        <span style="font-size:12px;font-weight:700;color:var(--c-mid);">TOP 3</span>
-      </div>
-      {featured_html}
-    </aside>
-  </section>
-
-  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
-              justify-content:space-between;gap:16px;margin-bottom:22px;">
-    <div>
-      <p style="font-size:10px;font-weight:700;color:var(--c-mid);
-                letter-spacing:2px;margin-bottom:5px;">ANALYSIS REPORTS</p>
-      <h2 style="font-size:22px;font-weight:800;color:var(--c-dark);letter-spacing:-0.5px;">
-        분양 공고 분석 모음
-      </h2>
-    </div>
-    <p id="result-count" style="font-size:13px;color:var(--c-mid);">
-      총 <strong style="color:var(--c-dark);">{total}</strong>건
-    </p>
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;
-              padding-bottom:24px;border-bottom:1px solid var(--c-light-gray);">
-    <div class="search-wrap">
-      <span class="search-icon">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </span>
-      <input id="search-input" type="text" placeholder="단지명 검색"
-             oninput="filterSearch(this.value)" autocomplete="off">
-    </div>
-    {region_tabs}
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:32px;">
-    <span style="font-size:12px;font-weight:800;letter-spacing:1px;color:var(--c-mid);margin-right:4px;">공급유형</span>
-    {supply_tabs}
-  </div>
-
-  <div class="cards-grid" id="cards-grid">
-    {cards_html}
-  </div>
-  <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
-
-  <div id="pagination" style="display:flex;justify-content:center;align-items:center;
-       gap:6px;margin-top:48px;flex-wrap:wrap;"></div>
-
+<main style="max-width:1160px;margin:0 auto;padding:22px 24px 96px;">
+  <p id="featured-no-result" style="display:none;text-align:center;padding:48px 20px 0;
+     color:var(--c-mid);font-size:14px;">
+    검색 결과가 없습니다.
+  </p>
 </main>
 
 
@@ -699,93 +697,21 @@ body {{
 
 
 <script>
-{PALETTE_SWITCH_JS}
-
-var POSTS_PER_PAGE = 12;
-var _currentPage = 1;
-var _activeFilters = {{
-  region: '전체',
-  supply: '전체'
-}};
-
-function _getMatchedCards() {{
-  var q = ((document.getElementById('search-input') || {{}}).value || '').toLowerCase().trim();
-  var all = Array.from(document.querySelectorAll('.post-card'));
-  return all.filter(function(card) {{
-    var regionMatch = _activeFilters.region === '전체' || card.dataset.region === _activeFilters.region;
-    var supplyMatch = _activeFilters.supply === '전체' || card.dataset.supply === _activeFilters.supply;
-    var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
-    return regionMatch && supplyMatch && nameMatch;
-  }});
-}}
-
-function _renderPage(matched, page) {{
-  var start = (page - 1) * POSTS_PER_PAGE;
-  var end   = start + POSTS_PER_PAGE;
-  var all   = document.querySelectorAll('.post-card');
-  all.forEach(function(c) {{ c.style.display = 'none'; }});
-  matched.slice(start, end).forEach(function(c) {{ c.style.display = ''; }});
-}}
-
-function _renderPagination(matched) {{
-  var box = document.getElementById('pagination');
-  if (!box) return;
-  var total = matched.length;
-  var pages = Math.ceil(total / POSTS_PER_PAGE);
-  if (pages <= 1) {{ box.innerHTML = ''; return; }}
-  var html = '';
-  var btnBase = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-light-gray);'
-    + 'background:var(--c-surface);color:var(--c-dark);font-size:13px;font-weight:600;'
-    + 'cursor:pointer;font-family:inherit;transition:all 150ms;padding:0 10px;"';
-  var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
-    + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
-    + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
-  for (var i = 1; i <= pages; i++) {{
-    if (i === _currentPage) {{
-      html += '<button ' + btnActive + '>' + i + '</button>';
-    }} else {{
-      html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
-    }}
-  }}
-  box.innerHTML = html;
-}}
-
-function _applyFilters() {{
-  _currentPage = 1;
-  var matched = _getMatchedCards();
-  _renderPage(matched, _currentPage);
-  _renderPagination(matched);
-  document.getElementById('result-count').innerHTML =
-    '총 <strong style="color:var(--c-dark);">' + matched.length + '</strong>건';
-  document.getElementById('no-result').classList.toggle('show', matched.length === 0);
-}}
-
-function goPage(page) {{
-  _currentPage = page;
-  var matched = _getMatchedCards();
-  _renderPage(matched, _currentPage);
-  _renderPagination(matched);
-  if (window.scrollY > document.getElementById('cards-grid').offsetTop - 120) {{
-    window.scrollTo({{top: document.getElementById('cards-grid').offsetTop - 80, behavior: 'smooth'}});
-  }}
-}}
-
-function filterGroup(btn, group, value) {{
-  document.querySelectorAll('.tab-btn[data-group="' + group + '"]').forEach(function(b) {{
-    b.classList.remove('active');
-  }});
-  btn.classList.add('active');
-  _activeFilters[group] = value;
-  _applyFilters();
-}}
-
 function filterSearch(val) {{
-  _applyFilters();
+  var q = (val || '').toLowerCase().trim();
+  var items = Array.from(document.querySelectorAll('.featured-item'));
+  var matched = 0;
+  items.forEach(function(item) {{
+    var name = (item.dataset.name || '').toLowerCase();
+    var ok = !q || name.includes(q);
+    item.style.display = ok ? '' : 'none';
+    if (ok) matched += 1;
+  }});
+  var box = document.getElementById('featured-no-result');
+  if (box) box.style.display = matched === 0 ? 'block' : 'none';
 }}
 
-document.querySelector('.tab-btn[data-group="region"][data-value="전체"]').classList.add('active');
-document.querySelector('.tab-btn[data-group="supply"][data-value="전체"]').classList.add('active');
-_applyFilters();
+filterSearch((document.getElementById('search-input') || {{}}).value || '');
 </script>
 
 </body>

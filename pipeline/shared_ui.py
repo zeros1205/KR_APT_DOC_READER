@@ -45,29 +45,34 @@ html {
 
 /* ─── 팔레트 B : Neutral Elegance ─── */
 html[data-palette="B"] {
-  --c-primary:        #e0afa0;
-  --c-primary-dark:   #c49080;
-  --c-primary-light:  #f9f1ef;
-  --c-primary-stripe: rgba(224,175,160,0.07);
-  --c-accent:         #8a817c;
-  --c-bg:             #f4f3ee;
+  --hunter-green:     #386641ff;
+  --sage-green:       #6a994eff;
+  --yellow-green:     #a7c957ff;
+  --vanilla-cream:    #f2e8cfff;
+  --blushed-brick:    #bc4749ff;
+  --c-primary:        #386641;
+  --c-primary-dark:   #2f5236;
+  --c-primary-light:  #edf4e9;
+  --c-primary-stripe: rgba(56,102,65,0.08);
+  --c-accent:         #6a994e;
+  --c-bg:             #f2e8cf;
   --c-surface:        #ffffff;
-  --c-dark:           #2e2924;
-  --c-mid:            #7a7370;
-  --c-light-gray:     #bcb8b1;
-  --c-hero-bg:        #eeebe4;
-  --c-nav-bg:         #463f3a;
-  --c-green:          #8a817c;
-  --c-green-dark:     #635d59;
-  --c-green-light:    #f0eeea;
-  --c-card-grad-new:        linear-gradient(145deg,#e0afa0 0%,#c49080 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#8a817c 0%,#635d59 100%);
-  --c-cta-bg:               #635d59;
-  --c-cta-hover:            #52504c;
-  --c-tag-new-bg:           #f9f1ef;
-  --c-tag-new-text:         #c49080;
-  --c-tag-resupply-bg:      #f0eeea;
-  --c-tag-resupply-text:    #635d59;
+  --c-dark:           #2c2925;
+  --c-mid:            #6a994e;
+  --c-light-gray:     rgba(56,102,65,0.20);
+  --c-hero-bg:        #f2e8cf;
+  --c-nav-bg:         #2f5236;
+  --c-green:          #a7c957;
+  --c-green-dark:     #386641;
+  --c-green-light:    #edf4e9;
+  --c-card-grad-new:        linear-gradient(145deg,#6a994e 0%,#386641 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a7c957 0%,#6a994e 100%);
+  --c-cta-bg:               #386641;
+  --c-cta-hover:            #2f5236;
+  --c-tag-new-bg:           #edf4e9;
+  --c-tag-new-text:         #386641;
+  --c-tag-resupply-bg:      #edf4e9;
+  --c-tag-resupply-text:    #6a994e;
 }
 
 /* ─── 팔레트 C : Pastel Dreamland ─── */
@@ -105,35 +110,7 @@ PALETTE_INIT_JS = (
     '</script>'
 )
 
-# body 하단 <script> 안에 삽입할 팔레트 전환 JS
-PALETTE_SWITCH_JS = """\
-var _PALETTES = ['A','B','C'];
-function cyclePalette() {
-  var cur = document.documentElement.getAttribute('data-palette') || 'A';
-  var next = _PALETTES[(_PALETTES.indexOf(cur) + 1) % _PALETTES.length];
-  document.documentElement.setAttribute('data-palette', next);
-  localStorage.setItem('apt-palette', next);
-  var lbl = document.getElementById('palette-label');
-  if (lbl) lbl.textContent = next;
-}
-document.addEventListener('DOMContentLoaded', function() {
-  var lbl = document.getElementById('palette-label');
-  if (lbl) lbl.textContent = document.documentElement.getAttribute('data-palette') || 'A';
-});"""
-
-_PALETTE_BTN_SVG = (
-    '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">'
-    '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01'
-    '-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z'
-    'M6.5 12C5.67 12 5 11.33 5 10.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12z'
-    'M9.5 8C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5 11 5.67 11 6.5 10.33 8 9.5 8z'
-    'M14.5 8c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5 16 5.67 16 6.5 15.33 8 14.5 8z'
-    'M17.5 12c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9 19 9.67 19 10.5 18.33 12 17.5 12z"/>'
-    '</svg>'
-)
-
-
-def shared_nav(home_href: str = "/") -> str:
+def shared_nav(home_href: str = "/", right_extra: str = "") -> str:
     """공유 네비게이션 바 HTML.
     home_href: 프론트페이지 링크 경로 (index: '/', detail: '../../')
     """
@@ -154,17 +131,7 @@ def shared_nav(home_href: str = "/") -> str:
         # 우측 버튼 그룹
         f'<div style="display:flex;align-items:center;gap:10px;">'
 
-        # 팔레트 토글 버튼
-        f'<button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" '
-        f'style="display:inline-flex;align-items:center;gap:5px;background:transparent;'
-        f'border:1px solid #fff;border-radius:6px;padding:5px 11px;'
-        f'cursor:pointer;font-size:12px;color:#fff;font-family:inherit;'
-        f'transition:all 150ms;"'
-        f' onmouseover="this.style.borderColor=\'rgba(255,255,255,0.7)\';this.style.color=\'rgba(255,255,255,0.7)\'"'
-        f' onmouseout="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'">'
-        f'{_PALETTE_BTN_SVG}'
-        f'<span id="palette-label">A</span>'
-        f'</button>'
+        f'{right_extra}'
 
         # 청약홈 링크
         f'<a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" '

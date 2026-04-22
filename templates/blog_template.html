@@ -32,7 +32,7 @@
     position: absolute; top: 0; right: 0; bottom: 0; width: 100px;
     background: repeating-linear-gradient(
       45deg, transparent, transparent 10px,
-      rgba(255,255,255,0.04) 10px, rgba(255,255,255,0.04) 20px
+      rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px
     );
     pointer-events: none;
   "></div>
@@ -52,6 +52,10 @@
     color: {{T_HEADER_SUB}};
     font-size: 16px; margin: 0 0 22px 0; line-height: 1.5;
   ">{{POST_SUBTITLE}}</p>
+
+  <div style="font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.88); margin-bottom: 8px;">
+    모집공고일: <span style="font-weight: 800;">{{NOTICE_DATE}}</span>
+  </div>
 
   {{HEADER_META_ROWS}}
 </div>
@@ -131,7 +135,6 @@
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div>
           <div style="font-size: 16px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 4px;">{{SUPPLY_LOCATION}}</div>
-          <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 10px;">{{SUPPLY_SCALE}}</div>
         </div>
         <a href="{{NAVER_MAP_URL}}" target="_blank" rel="noopener"
            style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--c-primary, {{T_ACCENT}});border-radius:6px;padding:5px 11px;text-decoration:none;font-size:12px;color:var(--c-primary, {{T_ACCENT}});font-family:inherit;transition:all 150ms;white-space:nowrap;"
@@ -149,30 +152,26 @@
       box-shadow: {{T_SHADOW_SM}};
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 12px;">📋 청약 규제 정보</div>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-        <div style="flex: 1 1 calc(50% - 6px); min-width: 140px;">
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">규제지역 여부</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{REGULATED_ZONE}}</div>
         </div>
-        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">재당첨 제한</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{READMISSION_LIMIT}}</div>
         </div>
-        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">전매제한</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{RESALE_RESTRICTION_BADGE}}</div>
         </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">거주의무기간</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{LIVE_REQUIREMENT}}</div>
         </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">분양가 상한제</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{PRICE_CAP}}</div>
-        </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
-          <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">택지 유형</div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{LAND_TYPE}}</div>
         </div>
       </div>
     </div>
@@ -201,7 +200,7 @@
     {{LOCATION_INTRO}}
   </p>
 
-  <!-- 입지 별점 4-카드 (2열) -->
+  <!-- 입지 4-카드 (2열) -->
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
 
     <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD1_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
@@ -464,9 +463,8 @@
       <div style="font-size: 18px; font-weight: 800; color: {{T_STEP1}}; margin-bottom: 10px;">계약금 — {{CONTRACT_RATIO}}%</div>
       <div style="background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}}; border-radius: {{T_RADIUS_MD}}; padding: 16px 18px;">
         <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0 0 8px 0; line-height: 1.6;">
-          분양가의 <strong style="color: var(--c-dark, {{T_TEXT}});">{{CONTRACT_RATIO}}%</strong>를 계약 즉시 자기자본으로 납부해요.
+          계약금은 청약 이후 가장 먼저 준비하는 금액이에요. 세부 조건은 공고문을 확인해 주세요.
         </p>
-        <p style="font-size: 17px; font-weight: 800; color: var(--c-dark, {{T_TEXT}}); margin: 0;">약 {{CONTRACT_AMOUNT}}</p>
       </div>
     </div>
 
@@ -481,7 +479,7 @@
       ">2</div>
       <div style="font-size: 18px; font-weight: 800; color: {{T_STEP2}}; margin-bottom: 10px;">중도금 — {{MIDTERM_RATIO}}% ({{MIDTERM_COUNT}}회 분납)</div>
       <div style="background: {{T_SURFACE}}; border: 1px solid {{T_BORDER}}; border-radius: {{T_RADIUS_MD}}; padding: 16px 18px;">
-        <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0; line-height: 1.6;">{{LOAN_INFO}}</p>
+        <p style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); margin: 0; line-height: 1.6;">중도금은 일정에 맞춰 나누어 준비하는 단계예요. 대출 가능 여부와 세부 조건은 공고문과 금융기관에서 확인해 주세요.</p>
       </div>
     </div>
 

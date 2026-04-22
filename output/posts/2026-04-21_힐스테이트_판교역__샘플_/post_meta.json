@@ -59,8 +59,14 @@
     "1순위 미달 시 접수",
     "청약통장 가입 1회 이상"
   ],
+  "contract_ratio": "10",
+  "contract_amount": "7,500만 ~ 1억 1,200만원",
+  "midterm_ratio": "60",
+  "midterm_count": "6",
+  "balance_ratio": "30",
+  "loan_info": "중도금 무이자 집단대출 (분양가의 60%)",
   "notice_url": "",
-  "generated_at": "2026-04-21T22:28:14.311365",
+  "generated_at": "2026-04-21T22:38:03.090731",
   "naver_blog_guide": {
     "step1": "네이버 블로그 → 글쓰기",
     "step2": "스마트에디터 ONE → [HTML] 버튼",

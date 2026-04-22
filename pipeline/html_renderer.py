@@ -89,13 +89,11 @@ class PostData:
     location: str
     supply_location: str
     supply_scale: str
-    total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
     is_hot_zone: str = ""        # 투기과열지구 여부 (legacy, IS_HOT_ZONE 토큰으로도 사용)
     regulated_zone: str = ""     # 규제지역 여부 (e.g. "투기과열지구, 청약과열지역", "비규제지역")
     readmission_limit: str = ""  # 재당첨 제한 (e.g. "10년", "없음")
     live_requirement: str = ""   # 거주의무기간 (있음/없음/공고문 확인 필요)
     price_cap: str = ""          # 분양가 상한제 (적용/미적용)
-    land_type: str = ""          # 택지 유형 (민간택지/공공택지)
     price_range: str = ""
 
     # 유닛 타입
@@ -109,7 +107,6 @@ class PostData:
     move_in_date: str = "-"
 
     # 금융
-    loan_info: str = ""
     resale_restriction: str = ""
     contract_ratio: str = "10"
     contract_amount: str = ""
@@ -125,14 +122,9 @@ class PostData:
     capital_gains_tax_rate: str = "1주택 2년 보유 시 비과세 가능"
     capital_gains_tax_amount: str = "-"
 
-    # 입지 별점
-    subway_score: str = "★★★☆☆"
     subway_detail: str = ""
-    school_score: str = "★★★☆☆"
     school_detail: str = ""
-    life_score: str = "★★★☆☆"
     life_detail: str = ""
-    medical_score: str = "★★★☆☆"
     medical_detail: str = ""
 
     # 내러티브 산문 (LLM 생성) — 섹션 도입부
@@ -171,6 +163,7 @@ class PostData:
 
     # 공고문 URL
     notice_url: str = ""
+    publication_status: str = "live"
 
 
 # ──────────────────────────────────────────────────
@@ -181,7 +174,7 @@ TEMPLATE_PATH = Path(__file__).parent.parent / "templates" / "blog_template.html
 
 _SUPPLY_LABEL_MAP = [
     ("무순위",    "무순위"),
-    ("불법행위",  "불법행위재공급"),
+    ("불법행위",  "미지정"),
     ("임의",      "임의공급"),
     ("취소후",    "취소후재공급"),
     ("잔여",      "잔여세대"),
@@ -236,6 +229,21 @@ def _notice_doc_btn(notice_url: str, is_lh: bool = False) -> str:
 def _naver_map_url(address: str) -> str:
     from urllib.parse import quote
     return f"https://map.naver.com/v5/search/{quote(address)}" if address else "https://map.naver.com/"
+
+
+def _strip_total_households(scale: str) -> str:
+    """공급규모 문자열에서 총 세대수 표기를 제거."""
+    if not scale:
+        return ""
+    cleaned = re.sub(r"[\s,/·-]*총\s*\d+\s*세대", "", scale)
+    cleaned = re.sub(r"[\s,/·-]*\d+\s*세대", "", cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned).strip(" ,/·-")
+    return cleaned or scale
+
+
+def _html_with_breaks(text: str) -> str:
+    """개행을 <br>로 바꿔 HTML에서 줄바꿈을 보존."""
+    return text.replace("\r\n", "\n").replace("\n", "<br>")
 
 
 def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
@@ -436,7 +444,6 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
 def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
     """헤더 하단 메타 정보 세로 배치. 빈 값 행 자동 숨김."""
     fields = [
-        ("모집공고일", data.notice_date),
         ("특별공급", data.special_supply_date),
         ("일반공급(1순위)", data.rank1_date),
         ("일반공급(2순위)", data.rank2_date),
@@ -549,9 +556,9 @@ class BlogHTMLRenderer:
             "{{LOCATION}}":       data.location,
             "{{READ_TIME}}":      str(data.read_time),
             # 내러티브
-            "{{APT_INTRO}}":       data.apt_intro or f"{data.apt_name} 분양 정보를 안내해 드립니다.",
+            "{{APT_INTRO}}":       _html_with_breaks(data.apt_intro or f"{data.apt_name} 분양 정보를 안내해 드립니다."),
             "{{LOCATION_INTRO}}":  data.location_intro or f"{data.location} 입지를 살펴보겠습니다.",
-            "{{FINANCIAL_INTRO}}": data.financial_intro or "자금 계획을 미리 세워두는 것이 중요합니다.",
+            "{{FINANCIAL_INTRO}}": data.financial_intro or "계약금, 중도금, 잔금은 일정에 맞춰 순서대로 준비하면 됩니다.",
             "{{QA_INTRO}}":        data.qa_intro or "자주 받는 질문에 답해드릴게요.",
             "{{UNIT_TYPE_DESC}}":  data.unit_type_desc or f"{data.apt_name}은 아래와 같은 타입으로 공급됩니다.",
             "{{SCHEDULE_DESC}}":   data.schedule_desc or "청약 일정을 미리 확인하고 준비하세요.",
@@ -560,30 +567,32 @@ class BlogHTMLRenderer:
             "{{APT_NAME}}":         data.apt_name,
             "{{SUPPLY_LOCATION}}":  data.supply_location,
             "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_location or data.location),
-            "{{SUPPLY_SCALE}}":     data.supply_scale,
+            "{{SUPPLY_SCALE}}":     _strip_total_households(data.supply_scale),
             "{{PRICE_RANGE}}":      data.price_range,
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
             "{{TOTAL_UNITS}}":    f"{total_units:,}",
             "{{MOVE_IN_DATE}}":   data.move_in_date,
             # 공고문 URL
             "{{NOTICE_URL}}":        data.notice_url or "#",
+            "{{NOTICE_DATE}}":       data.notice_date or data.source_date or "",
             # 청약 규제 정보
-            "{{IS_HOT_ZONE}}":       data.is_hot_zone or "공고문 확인 필요",
-            "{{REGULATED_ZONE}}":    data.regulated_zone or data.is_hot_zone or "공고문 확인 필요",
-            "{{READMISSION_LIMIT}}": data.readmission_limit or "공고문 확인 필요",
-            "{{LIVE_REQUIREMENT}}":  data.live_requirement or "공고문 확인 필요",
-            "{{PRICE_CAP}}":         data.price_cap or "공고문 확인 필요",
-            "{{LAND_TYPE}}":         data.land_type or "공고문 확인 필요",
-            "{{RESALE_RESTRICTION_BADGE}}": data.resale_restriction or "공고문 확인 필요",
-            "{{RESALE_RESTRICTION}}": data.resale_restriction or "공고문을 통해 전매제한 기간을 반드시 확인하세요.",
+            "{{IS_HOT_ZONE}}":       data.is_hot_zone or "미기재",
+            "{{REGULATED_ZONE}}":    data.regulated_zone or data.is_hot_zone or "미기재",
+            "{{READMISSION_LIMIT}}": data.readmission_limit or "미기재",
+            "{{LIVE_REQUIREMENT}}":  data.live_requirement or "미기재",
+            "{{PRICE_CAP}}":         data.price_cap or "미기재",
+            "{{RESALE_RESTRICTION_BADGE}}": data.resale_restriction or "미기재",
+            "{{RESALE_RESTRICTION}}": data.resale_restriction or "미기재",
             # 청약 일정
             "{{SPECIAL_SUPPLY_DATE}}": data.special_supply_date,
             "{{RANK2_DATE}}":     data.rank2_date,
             "{{WINNER_DATE}}":    data.winner_date,
             # 금융
-            "{{LOAN_INFO}}":      data.loan_info,
+            "{{LOAN_INFO}}": (
+                "계약금, 중도금, 잔금은 청약 일정에 맞춰 순서대로 준비하면 됩니다. "
+                "세부 납부 조건과 대출 가능 여부는 공고문과 금융기관에서 확인하세요."
+            ),
             "{{CONTRACT_RATIO}}": data.contract_ratio,
-            "{{CONTRACT_AMOUNT}}":data.contract_amount or "-",
             "{{MIDTERM_RATIO}}":  data.midterm_ratio,
             "{{MIDTERM_COUNT}}":  data.midterm_count,
             "{{BALANCE_RATIO}}":  data.balance_ratio,
@@ -595,13 +604,9 @@ class BlogHTMLRenderer:
             "{{CAPITAL_GAINS_TAX_RATE}}": data.capital_gains_tax_rate,
             "{{CAPITAL_GAINS_TAX_AMOUNT}}": data.capital_gains_tax_amount,
             # 입지
-            "{{SUBWAY_SCORE}}":   data.subway_score,
             "{{SUBWAY_DETAIL}}":  data.subway_detail,
-            "{{SCHOOL_SCORE}}":   data.school_score,
             "{{SCHOOL_DETAIL}}":  data.school_detail,
-            "{{LIFE_SCORE}}":     data.life_score,
             "{{LIFE_DETAIL}}":    data.life_detail,
-            "{{MEDICAL_SCORE}}":  data.medical_score,
             "{{MEDICAL_DETAIL}}": data.medical_detail,
             # 테이블 집계
             "{{TOTAL_GENERAL}}":  f"{total_general:,}",
@@ -661,7 +666,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     from config import SITE_URL
     from shared_ui import (
         FONT_LINK, FONT_FAMILY, PALETTE_CSS,
-        PALETTE_INIT_JS, PALETTE_SWITCH_JS, shared_nav,
+        PALETTE_INIT_JS, shared_nav,
     )
 
     post_slug = f"{date_str}_{safe}"
@@ -685,7 +690,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="{ 'noindex, nofollow' if data.publication_status != 'live' else 'index, follow' }">
 {FONT_LINK}
 {PALETTE_INIT_JS}
 <style>
@@ -698,9 +703,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
 <div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
 {html}
 </div>
-<script>
-{PALETTE_SWITCH_JS}
-</script>
 </body>
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
@@ -724,13 +726,11 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "notice_date":          data.notice_date,
         "move_in_date":         data.move_in_date,
         "supply_location":      data.supply_location,
-        "total_households":     data.total_households,
         "is_hot_zone":          data.is_hot_zone,
         "regulated_zone":       data.regulated_zone,
         "readmission_limit":    data.readmission_limit,
         "live_requirement":     data.live_requirement,
         "price_cap":            data.price_cap,
-        "land_type":            data.land_type,
         "resale_restriction":   data.resale_restriction,
         "eligibility_special":   data.eligibility_special,
         "eligibility_rank1":     data.eligibility_rank1,
@@ -740,8 +740,8 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "midterm_ratio":         data.midterm_ratio,
         "midterm_count":         data.midterm_count,
         "balance_ratio":         data.balance_ratio,
-        "loan_info":             data.loan_info,
         "notice_url":           data.notice_url,
+        "publication_status":   data.publication_status,
         "generated_at":    datetime.now().isoformat(),
         "naver_blog_guide": {
             "step1": "네이버 블로그 → 글쓰기",

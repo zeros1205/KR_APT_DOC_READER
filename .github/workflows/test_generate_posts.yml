@@ -1,0 +1,103 @@
+name: 청약 공고 글 생성 테스트
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: '최근 N일 공고 수집'
+        required: false
+        default: '7'
+      limit:
+        description: '최대 처리 건수'
+        required: false
+        default: '3'
+      reset_history:
+        description: '생성 히스토리 초기화'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      rebuild_index:
+        description: 'index.html 재생성'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  generate-posts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: .env 파일 생성 (GitHub Secrets → .env)
+        run: |
+          cat <<EOF > .env
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
+          EOF
+
+      - name: 생성 히스토리 초기화
+        if: ${{ github.event.inputs.reset_history == 'true' }}
+        run: |
+          mkdir -p output
+          printf '[]\n' > output/processed_notices.json
+          echo "processed_notices.json 초기화 완료" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 파이프라인 실행
+        run: |
+          DAYS="${{ github.event.inputs.days || '7' }}"
+          LIMIT="${{ github.event.inputs.limit || '3' }}"
+          python run.py --days "$DAYS" --limit "$LIMIT"
+
+      - name: index.html 재생성
+        if: ${{ github.event.inputs.rebuild_index == 'true' }}
+        run: python pipeline/build_index.py
+
+      - name: 실행 결과 요약
+        if: always()
+        run: |
+          echo '## 청약 공고 글 생성 테스트 결과' >> "$GITHUB_STEP_SUMMARY"
+          echo '- 생성된 포스트 디렉터리:' >> "$GITHUB_STEP_SUMMARY"
+          find output/posts -mindepth 1 -maxdepth 1 -type d | sort | tail -20 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '- processed_notices.json:' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f output/processed_notices.json ]; then
+            wc -c output/processed_notices.json >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: 생성된 포스팅 업로드 (아티팩트 백업)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-posts-${{ github.run_id }}
+          path: |
+            output/posts/
+            output/index.html
+            output/sitemap.xml
+            output/robots.txt
+            output/processed_notices.json
+          retention-days: 7
+          if-no-files-found: ignore

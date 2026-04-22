@@ -5,7 +5,7 @@ orchestrator.py
 
 흐름:
   [데이터 수집] → [팩트 추출 Agent] → [콘텐츠 생성 Agent]
-               → [CTA 최적화 Agent] → [품질 검수 Agent]
+               → [품질 검수 Agent]
                → [HTML 렌더링] → [로컬 저장]
 ────────────────────────────────────────────────────
 """
@@ -21,12 +21,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from config import (
     OPENAI_API_KEY, GEMINI_API_KEY,
     LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
-    OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
-    CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
-    PREFERRED_IMAGE_SOURCE, BLOG_THEME,
+    OUTPUT_DIR, MIN_QUALITY_SCORE, BLOG_THEME,
 )
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
-from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
@@ -51,6 +48,8 @@ FACT_EXTRACTION_PROMPT = """
 당신은 부동산 분양 공고문 분석 전문가입니다.
 아래 [공고 원문]에서 정보를 추출하여 JSON으로만 답하세요.
 [공고 원문]에 없는 수치는 절대 추측하거나 생성하지 마세요. 없으면 null로 표기.
+PDF 원문과 API 정보가 함께 있으면 PDF에 적힌 값을 최우선으로 반영하세요.
+어떤 필드도 임의의 확인 문구로 채우지 말고, 정보가 없으면 null 또는 빈 값으로 두세요.
 
 추출할 필드 (JSON 키명 고정):
 - apt_name: 단지명
@@ -58,15 +57,12 @@ FACT_EXTRACTION_PROMPT = """
 - supply_location: 전체 공급위치 (공고문 그대로)
 - supply_scale: 공급규모 요약
 - unit_types: 배열 (type_name, area_sqm, general_units, special_units, price_min, price_max 키를 가진 객체 목록)
-- price_range: "X억~Y억원" 형식 문자열
-- total_households: 단지 전체 세대수 정수 (분양 공급 물량과 다를 수 있음. 공고에 명시된 경우만. 없으면 null)
 - notice_date: 모집공고일 YYYY-MM-DD (없으면 null)
 - special_supply_date: YYYY-MM-DD
 - rank1_date: YYYY-MM-DD
 - rank2_date: YYYY-MM-DD
 - winner_date: YYYY-MM-DD
 - move_in_date: YYYY년 MM월
-- loan_info: 중도금 대출 가능 여부 및 조건 요약
 - resale_restriction: 전매제한 기간 — 공고문의 "제한사항", "전매제한", "계약 조건" 섹션에 기재.
   예: "소유권이전등기일로부터 3년", "입주 후 6개월", "분양가상한제 적용 10년", "없음".
   공고에 없으면 null. 조건별로 다를 경우 가장 긴 기간 기준으로 요약.
@@ -85,8 +81,6 @@ FACT_EXTRACTION_PROMPT = """
   예: "2년", "없음", "해당 없음". 공고에 없으면 null.
 - price_cap: 분양가 상한제 적용 여부 — "분양가상한제" 항목.
   반드시 "적용" 또는 "미적용" 중 하나. 공고에 없으면 null.
-- land_type: 택지 유형 — "택지유형", "토지 구분" 항목.
-  예: "민간택지", "공공택지", "공공주택지구". 공고에 없으면 null.
 - is_price_cap: 분양가상한제 여부 (Y/N) — legacy, price_cap과 중복 추출
 - eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
   각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
@@ -126,7 +120,6 @@ FINANCIAL_EXTRACTION_PROMPT = """
 - 공고문에 실제로 적힌 내용만 사용하고, 추측은 금지합니다.
 - 비율은 숫자만 반환하세요. 예: 10, 60, 30
 - 계약금 금액은 공고문에 있는 표현을 최대한 그대로 반환하세요.
-- 중도금 대출이 없거나 조건이 불명확하면 loan_info에 "공고문 확인 필요"를 반환하세요.
 - 정보가 없으면 null 또는 기본값을 사용하지 말고 빈 값으로 두세요.
 
 반드시 추출할 키:
@@ -135,7 +128,6 @@ FINANCIAL_EXTRACTION_PROMPT = """
 - midterm_ratio
 - midterm_count
 - balance_ratio
-- loan_info
 
 [공고 원문]:
 {notice_text}
@@ -154,8 +146,83 @@ def _has_financial_data(facts: dict) -> bool:
     """자금 계획 정보가 하나라도 채워졌는지 확인."""
     return any(
         facts.get(key)
-        for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info")
+        for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio")
     )
+
+
+def _derive_price_range(unit_types: list[dict]) -> str:
+    """타입별 최저/최고 분양가를 바탕으로 범위를 계산한다."""
+    lows: list[int] = []
+    highs: list[int] = []
+
+    for ut in unit_types:
+        low = _parse_price_manwon(ut.get("price_min", 0))
+        high = _parse_price_manwon(ut.get("price_max", 0))
+        if low <= 0 and high <= 0:
+            continue
+        if low <= 0:
+            low = high
+        if high <= 0:
+            high = low
+        lows.append(low)
+        highs.append(high)
+
+    if not lows or not highs:
+        return ""
+
+    lo = min(lows)
+    hi = max(highs)
+    if lo <= 0 or hi <= 0:
+        return ""
+    if lo == hi:
+        return UnitType._fmt(lo)
+    return f"{UnitType._fmt(lo)} ~ {UnitType._fmt(hi)}"
+
+
+def _extract_pdf_policy_overrides(notice_text: str) -> dict:
+    """PDF에서 추출한 규제 정보를 사실 추출 결과보다 우선 적용한다."""
+    overrides: dict = {}
+    if not notice_text:
+        return overrides
+
+    policy_lines: dict[str, str] = {}
+    for line in notice_text.splitlines():
+        line = line.strip()
+        if not line.startswith("[PDF 정책]"):
+            continue
+        m = re.match(r"\[PDF 정책\]\s*([^:]+):\s*(.+)$", line)
+        if not m:
+            continue
+        key = m.group(1).strip()
+        value = m.group(2).strip()
+        if key and value:
+            policy_lines[key] = value
+
+    key_map = {
+        "regulated_zone": "regulated_zone",
+        "is_hot_zone": "is_hot_zone",
+        "readmission_limit": "readmission_limit",
+        "resale_restriction": "resale_restriction",
+        "live_requirement": "live_requirement",
+        "price_cap": "price_cap",
+        "is_price_cap": "is_price_cap",
+    }
+    for src_key, dst_key in key_map.items():
+        value = policy_lines.get(src_key)
+        if value:
+            overrides[dst_key] = value
+
+    if "regulated_zone" in overrides and "is_hot_zone" not in overrides:
+        zone = overrides["regulated_zone"]
+        if any(token in zone for token in ("투기과열지구", "청약과열지역", "조정대상지역")):
+            overrides["is_hot_zone"] = "Y"
+        elif any(token in zone for token in ("비규제지역", "해당없음")):
+            overrides["is_hot_zone"] = "N"
+
+    if "price_cap" in overrides and "is_price_cap" not in overrides:
+        overrides["is_price_cap"] = "Y" if overrides["price_cap"] == "적용" else "N"
+
+    return overrides
 
 
 async def agent_fact_extraction(notice_text: str) -> dict:
@@ -174,6 +241,10 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         facts = json.loads(m.group()) if m else {}
         if not facts:
             print("  [Agent 1] JSON 파싱 실패")
+
+    pdf_policy_overrides = _extract_pdf_policy_overrides(notice_text)
+    if pdf_policy_overrides:
+        facts.update(pdf_policy_overrides)
 
     # 자격 정보가 비어 있으면 전용 재추출을 한 번 더 수행한다.
     if facts and not _has_eligibility_data(facts):
@@ -230,7 +301,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
                 m = _re.search(r'\{.*\}', raw_financial, _re.DOTALL)
                 financial = json.loads(m.group()) if m else {}
 
-            for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info"):
+            for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio"):
                 if financial.get(key) not in (None, "", []):
                     facts[key] = financial.get(key)
             if _has_financial_data(facts):
@@ -243,78 +314,104 @@ async def agent_fact_extraction(notice_text: str) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 2: 입지 분석 (Gemini)
+# Agent 2: 입지 분석 (GPT-5.4)
 # ──────────────────────────────────────────────────
 
-LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
-아래 단지 정보를 바탕으로 입지 분석을 정확하게 작성하세요.
+LOCATION_ANALYSIS_PROMPT = """?? ?? ??? ???? ?? ?? ??? ??????.
+?, ???? ??, ???, ???, ???? ?? ?? ?? ??? ???? ??? ??? ?????.
 
-【필수 준수 원칙】
-- 실제로 존재하는 역명·학교명·병원명·상업시설명만 기재. 모르면 "확인 필요" 기재
-- 비수도권(강원·충청·전라·경상·제주 등) 지역에서는 지하철/도시철도 언급 절대 금지.
-  대신 KTX·버스·도로 접근성·생활권 중심으로 서술
-- 지하철 가능 도시: 서울·경기·인천·대전·대구·부산·광주·울산(일부)
-- 도보 5분 ≈ 400m, 도보 10분 ≈ 800m, 도보 15분 ≈ 1.2km 기준 준수
-- 별점 기준:
-  subway: ★★★★★ 도보5분이내 / ★★★★☆ 도보10분 / ★★★☆☆ 도보15분 / ★★☆☆☆ 버스환승 / ★☆☆☆☆ 지하철없음·비수도권
-  school: ★★★★★ 학원가+명문중고 / ★★★★☆ 초등+중학군양호 / ★★★☆☆ 보통 / ★★☆☆☆ 원거리 / ★☆☆☆☆ 정보없음
-  life:   ★★★★★ 대형마트+백화점 도보권 / ★★★★☆ 대형마트10분 / ★★★☆☆ 슈퍼+편의점 / ★★☆☆☆ 차량필요 / ★☆☆☆☆ 편의시설없음
-  medical:★★★★★ 대학병원 도보권 / ★★★★☆ 종합병원 차량5분 / ★★★☆☆ 차량10분 / ★★☆☆☆ 의원급만 / ★☆☆☆☆ 의료기관없음
+?? ??:
+- ?? ??? ??? ???? ??, ??? ???? ??? ???? ??? ?????.
+- ??? ??? ???, ?? ??, ?????, ???? ????? ??? ?? ??? ?????.
+- ??? ??/?? ????? ?? ????? ??? ?? ??? ?????.
+- ????? ????, ???, ??, ???? ?? ?? ???? ??? ??? ?????.
+- ??? ????, ????, ??? ?? ?? ???? ????? ?????.
+- ??? ?? ??, ??? ?? ?? ?????.
+- ??? ???? ??? ?? ??? ??? ??, ??? ???? ????? ?????.
 
-[단지 정보]:
+[?? ??]:
 {facts_json}
 
-JSON만 출력:
+JSON? ??:
 {{
-  "location_intro": "100~150자. 해당 지역 분위기·생활 환경을 독자에게 친근하게 설명",
-  "subway_score":   "★★★☆☆",
-  "subway_detail":  "역명과 도보 분수 명시. 비수도권은 KTX/버스/도로 접근성. 지하철 없는 도시에서 지하철 절대 금지",
-  "school_score":   "★★★★☆",
-  "school_detail":  "배정 초등학교명 + 학군 평가",
-  "life_score":     "★★★☆☆",
-  "life_detail":    "가장 가까운 대형마트·백화점·상업시설 명칭과 거리",
-  "medical_score":  "★★★☆☆",
-  "medical_detail": "가장 가까운 종합병원 명칭과 거리"
+  "location_intro": "100~150?. ?? ??? ???? ??? ??? ????? ?????.",
+  "subway_detail":  "??? ???, ?? ??, ?????, ???? ??? ? ??? ?? ??? ????? ?????.",
+  "school_detail":  "??/?? ????? ?? ??? ? ??? ?? ???? ????? ?????.",
+  "life_detail":    "????, ???, ??, ???? ? ???? ??? ????? ?????.",
+  "medical_detail": "????, ????, ??? ? ?? ???? ????? ?????."
 }}"""
 
-LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
-사실 정확성을 검증하고 오류가 있으면 수정하세요.
+LOCATION_VERIFY_PROMPT = """??? AI? ??? ?? ?????.
+?? ???? ???? ??? ??? ?????.
 
-검증 기준:
-1. 역명·학교명·병원명·상업시설명이 실제 위치 근처에 존재하는가?
-2. 비수도권에서 지하철을 언급하는 오류가 없는가?
-3. 도보·차량 거리 수치가 현실적인가?
-4. 별점이 설명 내용과 일치하는가?
+?? ??:
+1. ???? ????????????????? ?? ?????
+2. ?????? ???? ???? ???? ?????
+3. ????? ?? ??? ????? ???? ?????
+4. ??? ???? ??? ?? ??? ???? ?????
 
-[단지명]: {apt_name}
-[위치]: {location}
+[???]: {apt_name}
+[??]: {location}
 
-[Gemini 생성 입지 분석]:
+[GPT ?? ?? ??]:
 {location_json}
 
-수정 필요 시 수정된 JSON 반환. 수정 없으면 원본 그대로 반환. JSON만 출력."""
+?? ?? ? ??? JSON ??. ?? ??? ?? ??? ??. JSON? ??."""
 
 _LOCATION_KEYS = (
-    "location_intro", "subway_score", "subway_detail",
-    "school_score", "school_detail", "life_score", "life_detail",
-    "medical_score", "medical_detail",
+    "location_intro", "subway_detail",
+    "school_detail", "life_detail",
+    "medical_detail",
 )
 
 
-async def agent_location_analysis_gemini(facts: dict) -> dict:
-    """Agent 2: Gemini로 입지 분석 생성"""
-    print("  [Agent 2] 입지 분석 시작 (Gemini)...")
-    if not GEMINI_API_KEY:
-        print("  [Agent 2] GEMINI_API_KEY 미설정 → 건너뜀")
+async def agent_location_analysis_gpt(facts: dict) -> dict:
+    """Agent 2: GPT-5.4로 입지 분석 생성"""
+    print("  [Agent 2] 입지 분석 시작 (GPT-5.4)...")
+    try:
+        raw = await _call_openai_json(
+            system=(
+                "당신은 한국 부동산 입지 분석 전문가입니다.\n"
+                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
+            ),
+            user=LOCATION_ANALYSIS_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            ),
+            model=LLM_CONTENT_MODEL,
+            max_tokens=3000,
+        )
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    except Exception as e:
+        print(f"  [Agent 2] GPT-5.4 오류 ({e}) → 빈 딕셔너리 반환")
         return {}
+
+
+async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict:
+    """Agent 3: Gemini 3.1 Pro Preview로 입지 분석 검증·교정"""
+    print("  [Agent 3] 입지 분석 검증 시작 (Gemini 3.1 Pro Preview)...")
+    if not location_data:
+        return location_data
+    if not GEMINI_API_KEY:
+        print("  [Agent 3] GEMINI_API_KEY 미설정 → 검증 건너뜀")
+        return location_data
     try:
         from google import genai as google_genai
         from google.genai import types as genai_types
+
         client = google_genai.Client(api_key=GEMINI_API_KEY)
         resp = client.models.generate_content(
             model=LLM_LOCATION_MODEL,
-            contents=LOCATION_ANALYSIS_PROMPT.format(
-                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            contents=LOCATION_VERIFY_PROMPT.format(
+                apt_name=facts.get("apt_name", ""),
+                location=facts.get("location", ""),
+                location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
             ),
             config=genai_types.GenerateContentConfig(
                 system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
@@ -326,151 +423,76 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
         except json.JSONDecodeError:
             import re as _re
             m = _re.search(r'\{.*\}', raw, _re.DOTALL)
-            result = json.loads(m.group()) if m else {}
-        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
-        return result
-    except Exception as e:
-        print(f"  [Agent 2] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
-        return {}
-
-
-async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
-    """Agent 3: GPT-5.4로 입지 분석 검증·교정"""
-    print("  [Agent 3] 입지 분석 검증 시작 (GPT-5.4)...")
-    if not location_data:
-        return location_data
-    try:
-        raw = await _call_openai_json(
-            system=(
-                "당신은 한국 지리·부동산 전문가입니다.\n"
-                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
-            ),
-            user=LOCATION_VERIFY_PROMPT.format(
-                apt_name=facts.get("apt_name", ""),
-                location=facts.get("location", ""),
-                location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
-            ),
-            model=LLM_CONTENT_MODEL,
-            max_tokens=2000,
-        )
-        try:
-            result = json.loads(raw)
-        except json.JSONDecodeError:
-            import re as _re
-            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
             result = json.loads(m.group()) if m else location_data
         print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 3] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        print(f"  [Agent 3] Gemini 검증 오류 ({e}) → 원본 결과 그대로 사용")
         return location_data
 
 
 # ──────────────────────────────────────────────────
 # Agent 4: 블로그 콘텐츠 생성
 # ──────────────────────────────────────────────────
-CONTENT_GEN_PROMPT = """
-당신은 네이버 블로그 콘텐츠 전문가이자 분양 담당 마케터입니다.
-독자는 청약에 관심 있는 20~40대 실수요자입니다.
+CONTENT_GEN_PROMPT = """?? ?? ??? ???? ??? ??? Q&A? ?????.
+????, ????, ?? ??? ?? ???? ??? ???? ?????.
+???? ?? ???? ?? ?? ??? ?? ???.
 
-글쓰기 방식: 마케팅 담당자가 고객을 처음 만나 대화하듯 자연스럽고 친근한 스토리텔링으로 작성하세요.
-딱딱한 공문서 스타일이 아닌, 독자가 술술 읽히는 산문체로 작성해야 합니다.
+?? ??:
+- ?? ??? ??? ??? ???? ????.
+- ?? ??? ??? ???? ??? ??? ???? ????.
+- ?? ??? ???, ???, ??? ???? ????? ??? ?? ??? ??.
+- ?? ?? ???? ?? ??? ?? ???.
+- ?????????????? ?? ????? ????.
+- ??? ??, ???? ?? ??? ????.
+- ???? ??? ????? ???? ?? ?????? ??.
+- SEO? ????? ?? ???? ???.
+- Q&A? ?? 7?, ? ??? 300~500? ??? ??.
 
-【공급세대수 vs 총세대수 구분 원칙 — 반드시 준수】
-- apt_intro에서 "이번 청약 공급 물량(공급세대수)"과 "단지 전체 세대수(total_households)"를 절대 혼용하지 마세요.
-- total_households(단지 전체 세대수)가 있는 경우: "총 X세대 규모 단지"라고 언급하되, 이번 공급 물량(공급세대수)은 별도로 "이번 청약 Y세대 모집"처럼 명확히 구분하여 서술.
-- total_households가 null인 경우: 단지 규모(총세대수) 추측·언급 절대 금지. 이번 공급세대수만 언급.
+?? ??:
+- post_title: 50? ??
+- post_subtitle: 30? ??
+- apt_intro: 150~200?
+- location_intro: 100~150?
+- financial_intro: 80~100?
+- qa_intro: 60~80?
+- schedule_desc: 80~120?
+- unit_type_desc: 80~130?
+- tax_desc: 80~120?
+- ? Q&A answer: 300~500?
 
-【Q&A 작성 절대 원칙 — 반드시 준수】
-아래 금지 원칙을 단 하나라도 위반하면 답변 전체가 무효입니다.
-
-① 개인 조건 판단 절대 금지
-   - "당신은 자격이 됩니다", "신청하세요", "유리합니다" 등 특정인에게 적합 여부를 판단하는 표현 금지
-   - 소득·자산·가점·가족 구성 등 독자의 개인 조건을 전제로 한 결론 도출 금지
-
-② 투자·수익 예측 절대 금지
-   - "시세차익 기대", "오를 가능성", "투자 가치 있음" 등 부동산 가격 전망 일체 금지
-
-③ 법령·세금·대출 한도 단정 금지
-   - 취득세율·대출한도·DSR 계산값 등을 "확정"처럼 단정하지 말 것
-   - 반드시 "공고문 및 관련 기관에서 직접 확인 필요" 문구 포함
-
-④ 답변 말미 필수 문구
-   - 모든 Q&A 답변 마지막에 반드시 다음 문구 포함:
-     <br><span style="font-size:13px; color:#999;">※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span>
-
-[단지 정보]:
+[?? ??]:
 {facts_json}
 
-다음 JSON 형식으로 출력하세요:
+?? JSON ??:
 {{
-  "post_title": "50자 이내 후킹 제목 (단지명+위치+분양가 또는 핵심 포인트 포함)",
-  "post_subtitle": "30자 이내 부제목 (이 글을 읽어야 하는 이유)",
-  "seo_tags": ["단지명태그", "지역태그", "청약관련태그", ...최대10개],
-
-  "apt_intro": "150~200자. 반드시 '안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. 오늘은 ' 으로 시작. 이어서 단지명과 가장 큰 매력 포인트를 자연스럽게 연결. <strong> 태그 사용 가능.",
-
-  "location_intro": "100~150자. 해당 지역의 분위기와 생활 환경을 친근하게 설명. 지역 특색과 장점 중심. 독자가 그 동네를 떠올릴 수 있도록 묘사.",
-
-  "financial_intro": "80~100자. 자금 계획의 중요성을 공감 가는 방식으로 도입. '청약 당첨만큼 중요한 게 자금 준비인데요~' 같은 톤.",
-
-  "qa_intro": "60~80자. '청약 준비하면서 많은 분들이 공통으로 궁금해 하는 내용들을 모았어요' 같은 톤. 댓글 유도·구독 유도·공유 요청 등 일체 금지. 순수하게 정보 안내로만 마무리.",
-
+  "post_title": "50? ?? ??",
+  "post_subtitle": "30? ?? ??",
+  "seo_tags": ["??1", "??2", "??3", "??4", "??5", "??6", "??7"],
+  "apt_intro": "?? ?? ??",
+  "location_intro": "?? ?? ??",
+  "financial_intro": "?? ?? ??",
+  "qa_intro": "Q&A ?? ??",
   "qa_blocks": [
-    {{
-      "question": "실수요자가 실제로 궁금해하는 질문 (중도금대출/주담대 키워드 포함)",
-      "answer": "300~500자. 공고문 팩트 기반 설명. 개인 적합 여부 판단 금지. <strong>강조</strong>, <br> 줄바꿈 사용 가능. 답변 말미에 ※ 개인 조건 확인 필요 문구 필수."
-    }},
-    {{
-      "question": "특별공급/청약 자격 관련 (생애최초/신혼부부 키워드)",
-      "answer": "300~500자. 자격 요건 객관적 나열만. '귀하는 해당됩니다' 류 판단 절대 금지. 답변 말미 ※ 문구 필수."
-    }},
-    {{
-      "question": "입지/학군/교통 관련 (역세권/학군 키워드)",
-      "answer": "300~500자. 공고문·공개 데이터 기반 사실 서술만. 답변 말미 ※ 문구 필수."
-    }},
-    {{
-      "question": "취득세/세금/자금계획 관련 (취득세/DTI 키워드)",
-      "answer": "300~500자. 세율·한도 단정 금지. '일반적인 기준' 수준으로만 안내. 답변 말미 ※ 문구 필수."
-    }},
-    {{
-      "question": "인테리어/발코니 확장 관련 (아파트인테리어 키워드)",
-      "answer": "300~500자. 답변 말미 ※ 문구 필수."
-    }},
-    {{
-      "question": "청약 가점/당첨 전략 관련 (가점제/추첨제 키워드)",
-      "answer": "300~500자. 특정 가점 점수로 '당첨 가능' 단정 절대 금지. 경쟁률·제도 구조 설명 수준으로만. 답변 말미 ※ 문구 필수."
-    }}
+    {{"question": "??", "answer": "??"}}
   ],
-
-  "schedule_desc": "청약 일정 타임라인 블록 앞에 들어갈 설명 (80~120자). '특별공급부터 당첨자 발표까지, 날짜별로 정리해드릴게요' 같은 자연스러운 연결. 구체적인 날짜 언급 포함.",
-
-  "unit_type_desc": "타입별 분양가 표 앞에 들어갈 설명 (80~130자). 공급 타입 구성의 특징·포인트를 친근하게 설명. '이 단지는 ~타입으로 구성되는데요, ~가 특히 눈에 띄어요' 같은 톤. <strong> 태그 사용 가능.",
-
-  "tax_desc": "세금 표 앞에 들어갈 설명 (80~120자). 취득세·재산세·양도세를 미리 알아야 하는 이유를 공감 가는 방식으로 설명. '내 집 마련 후에도 세금은 계속 따라와요' 같은 톤.",
-
-  "subway_score": "★★★☆☆",
-  "subway_detail": "실제 역 이름과 도보 분수 (★★★★★ 도보5분이내 / ★★★★☆ 도보10분 / ★★★☆☆ 도보15분 / ★★☆☆☆ 버스환승 / ★☆☆☆☆ 지하철없음)",
-  "school_score": "★★★★☆",
-  "school_detail": "초등학교 배정 + 학군 평가 (★★★★★ 학원가+명문중고 / ★★★★☆ 초등+중학군양호 / ★★★☆☆ 초등+중학군보통 / ★★☆☆☆ 원거리배정 / ★☆☆☆☆ 정보없음)",
-  "life_score": "★★★☆☆",
-  "life_detail": "가장 가까운 대형마트/백화점 (★★★★★ 대형마트+백화점 도보권 / ★★★★☆ 대형마트 10분 / ★★★☆☆ 슈퍼+편의점 / ★★☆☆☆ 차량필요 / ★☆☆☆☆ 편의시설없음)",
-  "medical_score": "★★★☆☆",
-  "medical_detail": "가장 가까운 종합병원 (★★★★★ 대학병원 도보권 / ★★★★☆ 종합병원 차량5분 / ★★★☆☆ 차량10분 / ★★☆☆☆ 의원급만 / ★☆☆☆☆ 의료기관없음)"
-}}
-"""
-
-# CTA URL 매핑 (추후 제휴 링크 등록 후 활성화)
-
-
+  "schedule_desc": "?? ??",
+  "unit_type_desc": "??/?? ??",
+  "tax_desc": "?? ??",
+  "subway_detail": "?? ?? ?? ??",
+  "school_detail": "?? ??? ?? ??",
+  "life_detail": "???? ?? ??",
+  "medical_detail": "?? ??? ?? ??"
+}}"""
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
-    print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
+    """Agent 4: ??? ??? + Q&A ?? (GPT-5.4)"""
+    print("  [Agent 4] ??? ?? ?? (GPT-5.4)...")
     raw = await _call_openai_json(
         system=(
-            "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
-            "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
-            "모든 텍스트는 한국어로 작성하며, 독자에게 직접 말을 걸듯 자연스럽고 따뜻하게 작성하세요."
+            "??? ?? ??? ?? ??? ???? ???? ??? ??? ?????.\n"
+            "????? ????? ????? ????.\n"
+            "JSON? ?????. ???? ???? ?? ?? JSON? ????.\n"
+            "?? ???? ???? ????, ???? ???? ???? ????? ??."
         ),
         user=CONTENT_GEN_PROMPT.format(
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
@@ -484,7 +506,7 @@ async def agent_content_generation(facts: dict) -> dict:
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         content = json.loads(m.group()) if m else {}
-    print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
+    print(f"  [Agent 4] ??: Q&A {len(content.get('qa_blocks', []))}? ??")
     return content
 
 
@@ -492,49 +514,49 @@ async def agent_content_generation(facts: dict) -> dict:
 # Agent 5: Q&A 팩트체크 (GPT-5.4 mini)
 # ──────────────────────────────────────────────────
 
-FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니다.
-아래 [단지 팩트]와 [Q&A 목록]을 검토하고, 각 답변의 사실 정확성을 점검하세요.
+FACTCHECK_SYSTEM = """??? ?? ?????? ?? ??????.
+?? [?? ??]? [Q&A ??]? ????, ? ??? ?? ???? ?????.
 
-검토 기준:
-1. 단지 팩트(분양가·일정·대출조건·세금)와 답변 내용이 일치하는가?
-2. 한국 청약제도(특별공급 자격·가점제·전매제한 등)를 정확히 설명하고 있는가?
-3. 과장·오해를 유발하는 표현이 없는가?
-4. 【필수 점검】 개인 조건 판단 금지 원칙 위반 여부:
-   - "당신은 자격이 됩니다", "신청하세요", "유리합니다" 등 개인 적합 여부 판단 표현 → 즉시 삭제·수정
-   - 투자 수익·시세 전망 언급 → 즉시 삭제
-   - 세금·대출 한도를 확정적으로 단정한 표현 → "일반적 기준" 수준으로 완화
-   - 모든 답변 말미에 ※ 개인 조건 확인 필요 문구가 있는지 확인 → 없으면 추가:
-     <br><span style="font-size:13px; color:#999;">※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span>
+?? ??:
+1. ?? ??(??????????????)? ?? ??? ??????
+2. ?? ????(???? ??????????? ?)? ??? ???? ????
+3. ?????? ???? ??? ????
+4. ?? ?? ?? ?? ??? ??? ????
+   - "??? ??? ???", "?????", "?????" ? ?? ?? ?? ?? ??? ?????.
+   - ?? ????? ?? ??? ?????.
+   - ????? ??? ????? ??? ??? "??? ??" ???? ?????.
+   - ?? ?? ??? ?? ?? ?? ??? ????? ????? ???.
 
-출력 형식 (JSON만):
+?? ?? (JSON?):
 {
   "qa_blocks": [
     {
-      "question": "원본 질문 그대로",
-      "answer": "수정된 답변 (문제없으면 원본 그대로, 문제있으면 정정된 내용으로 교체)",
+      "question": "?? ?? ???",
+      "answer": "??? ?? (????? ?? ???, ????? ??? ???? ??)",
       "status": "ok" | "corrected",
-      "note": "수정 사유 (status=ok이면 빈 문자열)"
+      "note": "?? ?? (status=ok?? ? ???)"
     }
   ],
   "overall": "pass" | "fail",
-  "summary": "전체 팩트체크 요약 (1~2문장)"
+  "summary": "?? ???? ?? (1~2??)"
 }"""
 
-FACTCHECK_USER_TPL = """[단지 팩트]
+FACTCHECK_USER_TPL = """[?? ??]
 {facts_json}
 
-[Q&A 목록]
+[Q&A ??]
 {qa_json}
 
-위 Q&A 답변을 팩트체크하고 JSON으로 반환하세요."""
+? Q&A ??? ?????? JSON?? ?????."""
+
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 5: GPT-5.4 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
-    print("  [Agent 5] Q&A 팩트체크 시작 (GPT-5.4 mini)...")
+    """Agent 5: Gemini 3.1 Pro Preview로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    print("  [Agent 5] Q&A 팩트체크 시작 (Gemini 3.1 Pro Preview)...")
 
-    if not OPENAI_API_KEY:
-        print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
+    if not GEMINI_API_KEY:
+        print("  [Agent 5] GEMINI_API_KEY 미설정 → 팩트체크 건너뜀")
         return content
 
     try:
@@ -542,12 +564,18 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
             qa_json=json.dumps(content.get("qa_blocks", []), ensure_ascii=False, indent=2),
         )
-        raw = await _call_openai_json(
-            system=FACTCHECK_SYSTEM,
-            user=user_msg,
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
             model=LLM_FACTCHECK_MODEL,
-            max_tokens=3000,
+            contents=user_msg,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=FACTCHECK_SYSTEM,
+            ),
         )
+        raw = (resp.text or "").strip()
 
         # JSON 추출
         try:
@@ -578,16 +606,13 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 4: CTA 최적화 (저품질 방어 포함)
+# Agent 6: CTA 검수 (향후 도입 예정)
 # ──────────────────────────────────────────────────
 
 def agent_cta_optimization(content: dict, facts: dict) -> dict:
     """
-    Agent 6: 콘텐츠 검수
-    (CTA 링크는 추후 활성화 예정, 현재는 데이터 패스스루)
+    향후 도입 예정인 CTA 검수용 자리표시자.
     """
-    print("  [Agent 6] 콘텐츠 검수 시작...")
-    print(f"  [Agent 6] Q&A {len(content.get('qa_blocks', []))}개 확인 (CTA 링크 비활성)")
     return content
 
 
@@ -662,11 +687,11 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # ──────────────────────────────────────────────────
 # 파이프라인 흐름:
 #   [Agent 1] 팩트 추출 (Haiku)
-#   [Agent 2] 입지 분석 (Gemini) — subway/school/life/medical 별점+설명
-#   [Agent 3] 입지 검증 (GPT-5.4) — 역명·학교명·비수도권 지하철 오류 교정
+#   [Agent 2] 입지 분석 (GPT-5.4) — subway/school/life/medical 설명
+#   [Agent 3] 입지 검증 (Gemini 3.1 Pro Preview) — 지역 일반 설명 기준으로 과도한 구체화 교정
 #   [Agent 4] 콘텐츠 생성 (GPT-5.4)
 #   [Agent 5] Q&A 팩트체크 (GPT-5.4 mini)
-#   [Agent 6] CTA 최적화
+#   [Agent 6] CTA 검수(향후)
 #   [Agent 7] 품질 검수
 #   [렌더링] HTML 생성 → 저장
 
@@ -675,13 +700,18 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # 메인 오케스트레이터
 # ──────────────────────────────────────────────────
 
-_RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위", "임의공급")
+_RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "임의공급")
+
+
+def _is_draft_supply(supply_type: str) -> bool:
+    """청약접수 종료 공고는 미지정/드래프트로 분리한다."""
+    return "불법행위" in (supply_type or "")
 
 
 def _select_theme(supply_type: str) -> str:
     """공급 유형에 따라 테마 자동 선택.
     신규분양(특별/일반 1·2순위) → config BLOG_THEME (기본 claude)
-    무순위·임의공급·불법행위재공급 → resupply (연두 팔레트)
+    무순위·임의공급·재공급 → resupply (연두 팔레트)
     """
     if any(kw in supply_type for kw in _RESUPPLY_KEYWORDS):
         return "resupply"
@@ -695,6 +725,11 @@ def _fmt_hot_zone(v: str) -> str:
     if v in ("N", "n", "해당없음", "아니오", "비해당"):
         return "비해당"
     return v  # 그 외 텍스트 값 그대로 사용
+
+
+def _html_with_breaks(text: str) -> str:
+    """개행을 <br>로 바꿔 HTML에서 줄바꿈을 보존."""
+    return text.replace("\r\n", "\n").replace("\n", "<br>")
 
 
 def _parse_price_manwon(value) -> int:
@@ -756,21 +791,19 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     apt_name = facts["apt_name"]
     post_dir = OUTPUT_DIR / "posts" / f"temp_{apt_name}"
 
-    # Step 2: 이미지 검색 (병렬)
-    print(f"\n  [이미지] '{apt_name}' 관련 이미지 검색...")
-    images = await find_images_for_post(
-        apt_name=apt_name,
-        output_dir=OUTPUT_DIR,
+    unit_type_dicts = facts.get("unit_types", []) or []
+    facts["price_range"] = _derive_price_range(unit_type_dicts) or facts.get("price_range", "")
+    facts["supply_total_units"] = sum(
+        int(ut.get("general_units", 0) or 0) + int(ut.get("special_units", 0) or 0)
+        for ut in unit_type_dicts
     )
 
-    # 타입이 1개뿐이면 84타입 평면도 슬롯 불필요
-    if len(facts.get("unit_types", [])) <= 1 and "floor_plan_84" in images:
-        del images["floor_plan_84"]
-        print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
+    # Step 2: 이미지 검색은 향후 도입 예정이므로 현재 비활성화
+    images: dict = {}
 
-    # Step 2: 입지 분석 (Gemini → GPT-5.4 검증)
-    location_data = await agent_location_analysis_gemini(facts)
-    location_data = await agent_location_verify_gpt(location_data, facts)
+    # Step 2: 입지 분석 (GPT-5.4 생성 → Gemini 3.1 Pro Preview 검증)
+    location_data = await agent_location_analysis_gpt(facts)
+    location_data = await agent_location_verify_gemini(location_data, facts)
 
     # Step 3~5: 콘텐츠 생성 + 팩트체크 + 품질 검수 루프
     for attempt in range(1, max_retries + 2):
@@ -780,7 +813,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         if location_data:
             content.update({k: location_data[k] for k in _LOCATION_KEYS if location_data.get(k)})
         content = await agent_factcheck_qa(content, facts)
-        content = agent_cta_optimization(content, facts)
+        # CTA 검수는 향후 도입 예정
+        # content = agent_cta_optimization(content, facts)
         score, issues = await agent_quality_check(content, facts)
 
         if score >= MIN_QUALITY_SCORE:
@@ -818,14 +852,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     midterm_ratio = str(facts.get("midterm_ratio") or "60")
     midterm_count = str(facts.get("midterm_count") or "6")
     balance_ratio = str(facts.get("balance_ratio") or "30")
-    loan_info = facts.get("loan_info") or "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요."
     contract_amount = facts.get("contract_amount") or ""
-    if not contract_amount and unit_types:
-        min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
-        if min_price > 0:
-            contract_amount = f"약 {int(min_price * int(contract_ratio) / 100):,}만원"
-    if not contract_amount:
-        contract_amount = "공고문 확인 필요"
+
+    publication_status = "draft" if _is_draft_supply(supply_type) else "live"
 
     post_data = PostData(
         apt_name=apt_name,
@@ -834,13 +863,11 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         location=facts.get("location", ""),
         supply_location=facts.get("supply_location", ""),
         supply_scale=facts.get("supply_scale", ""),
-        total_households=str(facts.get("total_households") or ""),
         is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or api_is_hot_zone or ""),
         regulated_zone=facts.get("regulated_zone") or "",
         readmission_limit=facts.get("readmission_limit") or "",
         live_requirement=facts.get("live_requirement") or "",
         price_cap=facts.get("price_cap") or "",
-        land_type=facts.get("land_type") or "",
         price_range=facts.get("price_range", ""),
         unit_types=unit_types,
         special_supply_date=facts.get("special_supply_date", "-"),
@@ -848,7 +875,6 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         rank2_date=facts.get("rank2_date", "-"),
         winner_date=facts.get("winner_date", "-"),
         move_in_date=facts.get("move_in_date", "-"),
-        loan_info=loan_info,
         resale_restriction=facts.get("resale_restriction") or "-",
         contract_ratio=contract_ratio,
         contract_amount=contract_amount,
@@ -861,13 +887,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         property_tax_amount="-",
         capital_gains_tax_rate="1주택 2년 보유 시 비과세 가능",
         capital_gains_tax_amount="-",
-        subway_score=content.get("subway_score", "★★★☆☆"),
         subway_detail=content.get("subway_detail", ""),
-        school_score=content.get("school_score", "★★★☆☆"),
         school_detail=content.get("school_detail", ""),
-        life_score=content.get("life_score", "★★★☆☆"),
         life_detail=content.get("life_detail", ""),
-        medical_score=content.get("medical_score", "★★★☆☆"),
         medical_detail=content.get("medical_detail", ""),
         # 내러티브 산문 필드
         apt_intro=content.get("apt_intro", ""),
@@ -886,6 +908,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         read_time=max(6, len(str(content)) // 450),
         theme=theme or BLOG_THEME,
         supply_type=supply_type,
+        publication_status=publication_status,
         eligibility_special=facts.get("eligibility_special") or [],
         eligibility_rank1=facts.get("eligibility_rank1") or [],
         eligibility_rank2=facts.get("eligibility_rank2") or [],
@@ -914,7 +937,11 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
     ChromaDB 없이도 동작 보장.
     """
     theme = _select_theme(doc.supply_type)
-    print(f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작... (공급유형: {doc.supply_type or '신규'} → 테마: {theme})")
+    publication_status = "draft" if _is_draft_supply(doc.supply_type) else "live"
+    print(
+        f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작... "
+        f"(공급유형: {doc.supply_type or '신규'} → 테마: {theme}, 상태: {publication_status})"
+    )
 
     try:
         from agents.rag_store import ApartmentRAGStore
@@ -928,7 +955,14 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone)
+    return await run_pipeline(
+        notice_text,
+        max_retries=max_retries,
+        theme=theme,
+        supply_type=doc.supply_type,
+        notice_url=doc.notice_url,
+        api_is_hot_zone=doc.is_hot_zone,
+    )
 
 
 # ──────────────────────────────────────────────────

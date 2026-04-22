@@ -134,7 +134,6 @@ async def test_step3_html_render(images: dict):
         rank2_date="2026.04.29",
         winner_date="2026.05.08",
         move_in_date="2028년 12월",
-        loan_info="중도금 무이자 집단대출 (분양가의 60%)",
         resale_restriction="전매제한 3년",
         contract_ratio="10",
         contract_amount="7,500만 ~ 1억 1,200만원",
@@ -147,20 +146,17 @@ async def test_step3_html_render(images: dict):
         property_tax_amount="연 약 70~140만원 (추정)",
         capital_gains_tax_rate="1주택 2년 보유·거주 시 비과세 가능",
         capital_gains_tax_amount="비과세 요건 충족 시 0원",
-        subway_score="★★★★★",
         subway_detail="신분당선 판교역 도보 5분",
-        school_score="★★★★☆",
         school_detail="판교초 배정, 분당중·고 인근",
-        life_score="★★★★☆",
         life_detail="현대백화점 판교점 도보 10분",
-        medical_score="★★★☆☆",
         medical_detail="분당서울대병원 차량 10분",
         qa_blocks=qa_blocks,
         # 내러티브 산문 (샘플)
         apt_intro=(
-            "안녕하세요! 오늘은 판교 한복판, 신분당선 바로 앞에 들어서는 "
-            "<strong>힐스테이트 판교역</strong> 분양 정보를 꼼꼼하게 정리해드리려고 해요. "
-            "842세대 대단지에 중도금 무이자까지, 실수요자라면 꼭 체크해보세요."
+            "안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다.\n"
+            "오늘은 힐스테이트 판교역 이야기를 편하게 풀어볼게요.\n"
+            "경기도 성남시 분당구 삼평동에 들어서는 총 842세대 규모 단지이고, 이번 청약도 842세대 모집으로 진행됩니다.\n"
+            "판교 생활권을 가까이 누릴 수 있다는 점이 가장 먼저 눈에 들어오는 곳입니다."
         ),
         location_intro=(
             "판교는 이제 강남 못지않은 생활 인프라를 자랑하는 지역이죠. "
@@ -223,6 +219,7 @@ async def test_step3_html_render(images: dict):
         source_date="2026-04-15",
         read_time=8,
         theme="claude",
+        publication_status="live",
     )
 
     renderer = BlogHTMLRenderer()
