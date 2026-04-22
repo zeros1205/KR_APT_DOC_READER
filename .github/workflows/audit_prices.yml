@@ -1,0 +1,106 @@
+name: 분양가·일정 전수 감사
+
+on:
+  workflow_dispatch:  # 수동 실행
+  pull_request:
+    paths:
+      - 'output/posts/*/post_meta.json'
+      - 'audit_prices_with_api.py'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install httpx
+
+      - name: Run price audit
+        env:
+          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: |
+          python3 audit_prices_with_api.py
+
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: price-audit-results
+          path: output/price_audit_results.json
+          retention-days: 30
+
+      - name: Check for differences
+        id: check
+        run: |
+          if [ -f output/price_audit_results.json ]; then
+            ERRORS=$(python3 -c "
+import json
+with open('output/price_audit_results.json') as f:
+    data = json.load(f)
+    print(data.get('with_errors', 0))
+")
+            echo "error_count=$ERRORS" >> $GITHUB_OUTPUT
+            if [ "$ERRORS" -gt 0 ]; then
+              echo "## 📊 분양가·일정 감사 완료" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "⚠️ **차이 발견: $ERRORS개**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "상세 결과: [price_audit_results.json](artifacts)" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && steps.check.outputs.error_count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('output/price_audit_results.json')) {
+              const results = JSON.parse(fs.readFileSync('output/price_audit_results.json', 'utf8'));
+              const errorCount = results.with_errors || 0;
+
+              let comment = `## 📊 분양가·일정 감사 결과\n\n`;
+              comment += `✓ 검사 대상: ${results.total}개\n`;
+              comment += `✓ API 발견: ${results.found_api}개\n`;
+              comment += `⚠️ 차이 발견: ${errorCount}개\n\n`;
+
+              if (errorCount > 0) {
+                comment += `### 수정 필요 항목\n`;
+                const errors = results.details.filter(d => Object.keys(d.errors).length > 0);
+                for (const item of errors.slice(0, 10)) {
+                  comment += `\n**${item.apt_name}**\n`;
+                  for (const [field, [current, api_val]] of Object.entries(item.errors)) {
+                    comment += `- ${field}: \`${current}\` → \`${api_val}\`\n`;
+                  }
+                }
+                if (errors.length > 10) {
+                  comment += `\n... 외 ${errors.length - 10}개 항목`;
+                }
+              }
+
+              comment += `\n\n📄 **상세 결과**: artifacts/price_audit_results.json`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
