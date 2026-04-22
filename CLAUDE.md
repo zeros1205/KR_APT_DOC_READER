@@ -62,13 +62,34 @@
 - 입지 분석 섹션과 자금 계획 섹션: 이미지 없음 (섹션 자체 디자인으로 충분)
 
 ## API 키 관리
-`.env` 파일에 보관. 코드에 직접 입력 금지.
-필요 키:
+
+### 로컬 개발 (`.env` 파일)
+```bash
+ANTHROPIC_API_KEY=sk-ant-...          # Claude Haiku
+OPENAI_API_KEY=sk-...                 # GPT-5.4
+GEMINI_API_KEY=AIzaSy...              # Gemini Flash
+UNSPLASH_ACCESS_KEY=...               # Unsplash 이미지
+PEXELS_API_KEY=...                    # Pexels 이미지
+PUBLIC_DATA_API_KEY=...               # 청약홈 OpenAPI
+```
+
+### GitHub Secrets (CI/CD 자동 실행)
+모든 API 키는 **GitHub Repository Secrets**에 저장됨. Claude Code 스크립트에서 접근 필요 시:
+```python
+from pipeline.config import PUBLIC_DATA_API_KEY  # 자동 로드
+```
+
+**필수 키 설명:**
 - `ANTHROPIC_API_KEY` — Claude Haiku (팩트 추출 보조 LLM)
-- `OPENAI_API_KEY` — GPT-5.4 콘텐츠 생성/검증 + OpenAI Embeddings (ChromaDB RAG용)
+- `OPENAI_API_KEY` — GPT-5.4 콘텐츠 생성/검증 + OpenAI Embeddings
 - `GEMINI_API_KEY` — Gemini Flash (Q&A 팩트체크)
 - `UNSPLASH_ACCESS_KEY` / `PEXELS_API_KEY` — 이미지 자동 수집
-- `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI
+- `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI (데이터 검증용)
+
+**PUBLIC_DATA_API_KEY 발급:**
+1. https://www.data.go.kr 회원가입
+2. "한국부동산원_청약홈 분양정보 조회 서비스" 검색 → 활용신청
+3. 개발계정 즉시 발급 (40,000회/일)
 
 ## 파이프라인 구조
 ```

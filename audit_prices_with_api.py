@@ -14,7 +14,12 @@ from dataclasses import dataclass
 
 # 설정
 API_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1"
-PUBLIC_DATA_API_KEY = None  # .env에서 로드
+
+# API 키는 config.py에서 자동 로드 (GitHub secret 또는 .env)
+try:
+    from pipeline.config import PUBLIC_DATA_API_KEY
+except ImportError:
+    PUBLIC_DATA_API_KEY = None
 
 OUTPUT_DIR = Path('output')
 RESULTS_FILE = OUTPUT_DIR / 'price_audit_results.json'
@@ -224,16 +229,11 @@ async def audit_post(api: CheongYakAPI, post_folder: Path) -> AuditResult:
 async def main():
     """메인 실행"""
 
-    # API 키 로드
-    try:
-        from pipeline.config import PUBLIC_DATA_API_KEY as KEY
-        api_key = KEY
-    except:
-        api_key = None
+    api_key = PUBLIC_DATA_API_KEY
 
     if not api_key or "여기에" in str(api_key):
-        print("⚠️  PUBLIC_DATA_API_KEY 미설정")
-        print("   .env 파일을 확인하세요")
+        print("❌ PUBLIC_DATA_API_KEY 미설정")
+        print("   GitHub Secrets 또는 .env 파일을 확인하세요")
         return
 
     api = CheongYakAPI(api_key)
