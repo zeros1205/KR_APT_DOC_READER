@@ -84,15 +84,35 @@ pipeline/
 ```
 
 ## 실행 명령어 요약
+
+### 로컬 실행
 ```bash
-# 로컬 (Windows)
+# Windows PowerShell
 .venv\Scripts\Activate.ps1
 python run.py --sample            # 샘플 테스트
 python run.py --days 7 --limit 3  # 실제 공고 수집
 python test_pipeline.py --step 3  # HTML 렌더링 테스트 (API 불필요)
 python test_pipeline.py --step 6  # RAG 연동 전체 테스트
-
-# GitHub Actions: .github/workflows/daily.yml
-# 매일 UTC 00:00 (KST 09:00) 자동 실행 / workflow_dispatch 수동 실행
-# 기본값: --days 7 --limit 3 / timeout 60분
 ```
+
+### GitHub Actions 워크플로우
+
+#### 📊 분양가·일정 감사 워크플로우
+**파일**: `.github/workflows/audit_prices.yml`
+**실행 위치**: `main` 브랜치
+**대상 데이터**: `main` 브랜치의 모든 포스트 (output/posts/*/post_meta.json)
+
+**사용법**:
+1. GitHub → **Actions** 탭
+2. **"분양가·일정 감사"** 워크플로우 선택
+3. **Run workflow** 버튼 (main 브랜치)
+4. **Run** 클릭
+
+**결과**: 모든 포스트의 분양가·모집공고·일정 정보를 JSON으로 수집 → artifacts 저장
+
+#### ⏰ 일일 자동 실행
+**파일**: `.github/workflows/daily.yml`
+**실행 주기**: 매일 UTC 00:00 (KST 09:00)
+**실행 브랜치**: main
+**수동 실행**: workflow_dispatch (Actions 탭 → Daily workflow → Run workflow)
+**기본값**: `--days 7 --limit 3` (지난 7일, 최대 3개)
