@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ko" data-palette="A">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정과장의 청약노트</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>(function(){var p=localStorage.getItem("apt-palette")||"A";document.documentElement.setAttribute("data-palette",p);})();</script>
+<style>
+/* ─── 팔레트 A : Claude / Anthropic (기본값) ─── */
+html {
+  --c-primary:        #d97757;
+  --c-primary-dark:   #b85c38;
+  --c-primary-light:  #fdf0ea;
+  --c-primary-stripe: rgba(217,119,87,0.05);
+  --c-accent:         #6a9bcc;
+  --c-bg:             #faf9f5;
+  --c-surface:        #ffffff;
+  --c-dark:           #2c2925;
+  --c-mid:            #767370;
+  --c-light-gray:     #e8e6dc;
+  --c-hero-bg:        #f2efe6;
+  --c-nav-bg:         #2a2721;
+  --c-green:          #788c5d;
+  --c-green-dark:     #57673f;
+  --c-green-light:    #edf2e6;
+  --c-card-grad-new:        linear-gradient(145deg,#d97757 0%,#b85c38 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#788c5d 0%,#57673f 100%);
+  --c-cta-bg:               #4a4540;
+  --c-cta-hover:            #38342f;
+  --c-tag-new-bg:           #fdf0ea;
+  --c-tag-new-text:         #b85c38;
+  --c-tag-resupply-bg:      #edf2e6;
+  --c-tag-resupply-text:    #57673f;
+}
+
+/* ─── 팔레트 B : Deep Crimson × Navy ─── */
+html[data-palette="B"] {
+  --c-primary:        #c1121f;
+  --c-primary-dark:   #780000;
+  --c-primary-light:  #fde8e0;
+  --c-primary-stripe: rgba(193,18,31,0.06);
+  --c-accent:         #669bbc;
+  --c-bg:             #fdf5ec;
+  --c-surface:        #ffffff;
+  --c-dark:           #003049;
+  --c-mid:            #4e6e80;
+  --c-light-gray:     #c8dbe8;
+  --c-hero-bg:        #f5e8d5;
+  --c-nav-bg:         #003049;
+  --c-green:          #669bbc;
+  --c-green-dark:     #3d7299;
+  --c-green-light:    #e0eff7;
+  --c-card-grad-new:        linear-gradient(145deg,#c1121f 0%,#780000 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#669bbc 0%,#3d7299 100%);
+  --c-cta-bg:               #003049;
+  --c-cta-hover:            #001e30;
+  --c-tag-new-bg:           #fde8e0;
+  --c-tag-new-text:         #780000;
+  --c-tag-resupply-bg:      #e0eff7;
+  --c-tag-resupply-text:    #3d7299;
+}
+
+/* ─── 팔레트 C : Punch Red × Oxford Navy ─── */
+html[data-palette="C"] {
+  --c-primary:        #e63946;
+  --c-primary-dark:   #c22030;
+  --c-primary-light:  #fce8ea;
+  --c-primary-stripe: rgba(230,57,70,0.07);
+  --c-accent:         #457b9d;
+  --c-bg:             #f0f8fb;
+  --c-surface:        #ffffff;
+  --c-dark:           #1d3557;
+  --c-mid:            #4a6a8a;
+  --c-light-gray:     #a8dadc;
+  --c-hero-bg:        #e4f3f8;
+  --c-nav-bg:         #1d3557;
+  --c-green:          #a8dadc;
+  --c-green-dark:     #457b9d;
+  --c-green-light:    #eaf6f8;
+  --c-card-grad-new:        linear-gradient(145deg,#e63946 0%,#c22030 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a8dadc 0%,#457b9d 100%);
+  --c-cta-bg:               #1d3557;
+  --c-cta-hover:            #0f2035;
+  --c-tag-new-bg:           #fce8ea;
+  --c-tag-new-text:         #c22030;
+  --c-tag-resupply-bg:      #eaf6f8;
+  --c-tag-resupply-text:    #457b9d;
+}
+body { margin: 0; padding: 0; background: var(--c-bg); }
+/* ─── 팔레트 콘텐츠 반영 ─── */
+#post-wrap { background: var(--c-bg) !important; }
+</style>
+</head>
+<body>
+<header id="site-nav" style="background:var(--c-nav-bg);padding:0 24px;position:sticky;top:0;z-index:50;border-bottom:2px solid var(--c-primary);"><div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;"><a href="../../" style="text-decoration:none;display:flex;align-items:center;gap:10px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--c-primary);border-radius:6px;font-size:15px;flex-shrink:0;">📝</span><span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">정과장의 청약노트</span></a><div style="display:flex;align-items:center;gap:10px;"><button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" style="display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid #fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#fff;font-family:inherit;transition:all 150ms;" onmouseover="this.style.borderColor='rgba(255,255,255,0.7)';this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.borderColor='#fff';this.style.color='#fff'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.7-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zM6.5 12C5.67 12 5 11.3 5 10.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zM9.5 8C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5 11 5.67 11 6.5 10.3 8 9.5 8zM14.5 8c-.83 0-1.5-.67-1.5-1.5S13.7 5 14.5 5 16 5.67 16 6.5 15.3 8 14.5 8zM17.5 12c-.83 0-1.5-.67-1.5-1.5S16.7 9 17.5 9 19 9.67 19 10.5 18.3 12 17.5 12z"/></svg><span id="palette-label">A</span></button><a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" style="font-size:12px;color:#fff;text-decoration:none;border:1px solid #fff;border-radius:6px;padding:5px 12px;white-space:nowrap;transition:all 150ms;" onmouseover="this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.7)'" onmouseout="this.style.color='#fff';this.style.borderColor='#fff'">청약홈 ↗</a></div></div></header>
+<div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
+<!--
+  네이버 블로그 포스팅 템플릿 v3.0
+  ── 모바일 퍼스트 / 최소 16px / 고정 인트로 / CSS 차트 ──
+  제약: 인라인 스타일 전용 · <script> 없음 · 외부 CSS 없음
+-->
+
+<!-- ══ 전체 래퍼 ══ -->
+<div id="post-wrap" style="
+  background: var(--c-bg, #FAF9F7);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  color: var(--c-dark, #2C2825);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+">
+
+
+<!-- ══════════════════════════════════════════
+     헤더 — 제목 + 메타
+═══════════════════════════════════════════ -->
+<div style="
+  background: linear-gradient(135deg, var(--c-primary, #CC5F3F) 0%, var(--c-primary-dark, #A84830) 60%, #8B3A24 100%);
+  padding: 30px 20px 26px;
+  position: relative;
+  overflow: hidden;
+">
+  <div style="
+    position: absolute; top: 0; right: 0; bottom: 0; width: 100px;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 10px,
+      rgba(255,255,255,0.04) 10px, rgba(255,255,255,0.04) 20px
+    );
+    pointer-events: none;
+  "></div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+    <span style="display:inline-block; background:rgba(255,255,255,0.18); color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px; padding:5px 14px; border-radius:24px; border:1px solid rgba(255,255,255,0.28);">공공분양</span>
+    <span style="display:inline-block; background:rgba(255,255,255,0.18); color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px; padding:5px 14px; border-radius:24px; border:1px solid rgba(255,255,255,0.28);">인천</span>
+  </div>
+
+  <h1 style="
+    color: #FFFFFF;
+    font-size: 26px; font-weight: 800; line-height: 1.4;
+    margin: 0 0 12px 0; letter-spacing: -0.5px;
+  ">인천가정2지구 B2블록 공공분양주택(후속사업)</h1>
+
+  <p style="
+    color: rgba(255,255,255,0.78);
+    font-size: 16px; margin: 0 0 22px 0; line-height: 1.5;
+  ">308세대 알짜 공공분양, 핵심 정보만 쏙쏙 모았어요</p>
+
+  <div style="margin-bottom:5px;"><span style="color:rgba(255,255,255,0.78);font-size:13px;">일반공급(1순위): </span><strong style="color:#FFFFFF;font-size:14px;">2026-04-27</strong></div>
+    <div style="margin-bottom:5px;"><span style="color:rgba(255,255,255,0.78);font-size:13px;">주소: </span><strong style="color:#FFFFFF;font-size:14px;">인천광역시 서구 가정동, 청라동</strong></div>
+</div>
+
+<div style="height: 4px; background: linear-gradient(90deg, var(--c-primary, #CC5F3F), var(--c-primary-dark, #A84830), transparent); margin-bottom: 40px;"></div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 1 — 단지 소개
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    01 · 단지 소개
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
+    인천가정2지구 B2블록 공공분양주택(후속사업),<br>어떤 단지인가요?
+  </h2>
+
+  <!-- 인사말 버블 -->
+  <div style="
+    background: #F5F2ED;
+    border: 1px solid #DED9D1;
+    border-left: 4px solid var(--c-primary, #CC5F3F);
+    border-radius: 16px;
+    padding: 20px 22px;
+    font-size: 16px; color: var(--c-dark, #2C2825); line-height: 1.6;
+    margin-bottom: 28px;
+  ">안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. 오늘은 <strong>인천광역시 서구 가정동·청라동 일원에 들어서는 '인천가정2지구 B2블록 공공분양주택(후속사업)'</strong>을 소개해 드릴게요. 총 308세대가 공급되며, <strong>분양가 상한제가 적용된 공공분양</strong>이라는 점이 가장 큰 포인트랍니다. 인천 서구의 발전 흐름 속에서 실수요자라면 한 번쯤 눈여겨볼 만한 단지예요.</div>
+
+
+  <!-- 핵심 지표 카드 -->
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
+
+    <!-- 분양가 — 전체 폭 -->
+    <div style="
+      flex: 1 1 100%;
+      background: var(--c-primary, #CC5F3F); color: #fff;
+      border-radius: 10px; padding: 20px 22px;
+      box-shadow: 0 4px 14px rgba(44,40,37,0.10);
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; opacity: 0.88; margin-bottom: 6px;">💰 분양가 범위</div>
+      <div style="font-size: 16px; font-weight: 700; line-height: 1.6;">5억 5,131만원(75.00A타입)<br>~ 6억 2,516만원(84.00A타입)</div>
+    </div>
+
+    <!-- 총 공급 -->
+    <div style="
+      flex: 1 1 calc(50% - 5px);
+      background: #F5F2ED; border: 1px solid #DED9D1;
+      border-radius: 10px; padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, #6A635C); margin-bottom: 6px;">🏗️ 총 공급</div>
+      <div style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825);">
+        306<span style="font-size:15px; font-weight:500; margin-left:2px;">세대</span>
+      </div>
+    </div>
+
+    <!-- 입주 예정 -->
+    <div style="
+      flex: 1 1 calc(50% - 5px);
+      background: #F5F2ED; border: 1px solid #DED9D1;
+      border-radius: 10px; padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, #6A635C); margin-bottom: 6px;">🏠 입주 예정</div>
+      <div style="font-size: 18px; font-weight: 800; color: var(--c-dark, #2C2825);">2028년 07월</div>
+    </div>
+
+    <!-- 공급 위치 — 전체 폭 -->
+    <div style="
+      flex: 1 1 100%;
+      background: #F5F2ED; border: 1px solid #DED9D1;
+      border-radius: 10px; padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, #6A635C); margin-bottom: 6px;">공급 위치</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 700; color: var(--c-dark, #2C2825); margin-bottom: 4px;">인천광역시 서구 가정동, 청라동 일원 인천가정2 공공주택지구내 B2블록</div>
+          <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, #6A635C);">308세대</div>
+        </div>
+        <a href="https://map.naver.com/v5/search/%EC%9D%B8%EC%B2%9C%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%84%9C%EA%B5%AC%20%EA%B0%80%EC%A0%95%EB%8F%99%2C%20%EC%B2%AD%EB%9D%BC%EB%8F%99%20%EC%9D%BC%EC%9B%90%20%EC%9D%B8%EC%B2%9C%EA%B0%80%EC%A0%952%20%EA%B3%B5%EA%B3%B5%EC%A3%BC%ED%83%9D%EC%A7%80%EA%B5%AC%EB%82%B4%20B2%EB%B8%94%EB%A1%9D" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--c-primary, #CC5F3F);border-radius:6px;padding:5px 11px;text-decoration:none;font-size:12px;color:var(--c-primary, #CC5F3F);font-family:inherit;transition:all 150ms;white-space:nowrap;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>위치 보기</a>
+      </div>
+    </div>
+
+
+    <!-- 청약 규제 정보 -->
+    <div style="
+      flex: 1 1 100%;
+      background: #F5F2ED; border: 1px solid #DED9D1;
+      border-radius: 10px; padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+    ">
+      <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, #6A635C); margin-bottom: 12px;">📋 청약 규제 정보</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <div style="flex: 1 1 calc(50% - 6px); min-width: 140px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">규제지역 여부</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">비규제지역</div>
+        </div>
+        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">재당첨 제한</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">공고문 확인 필요</div>
+        </div>
+        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">전매제한</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">공고문 확인 필요</div>
+        </div>
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">거주의무기간</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">해당없음</div>
+        </div>
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">분양가 상한제</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">적용</div>
+        </div>
+        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+          <div style="font-size: 12px; color: #A39D96; margin-bottom: 4px; letter-spacing: 0.5px;">택지 유형</div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark);">공공택지</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 2 — 입지 분석
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    02 · 입지 분석
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
+    이 동네, 어떤 곳인가요?
+  </h2>
+
+  <p style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
+    인천 서구 가정동과 청라동은 청라국제도시와 맞닿아 있어 점점 생활 인프라가 탄탄해지고 있는 동네예요. 청라의 넉넉한 녹지와 깔끔한 도시 계획의 분위기가 이 일대까지 자연스럽게 이어지고 있어서, 조용하고 쾌적한 주거 환경을 원하시는 분들이 특히 관심 갖는 지역이기도 해요.
+  </p>
+
+  <!-- 입지 별점 4-카드 (2열) -->
+  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+    <div style="flex: 1 1 calc(50% - 5px); background: var(--c-primary-light, #FDEEE8); border-radius: 10px; padding: 20px 14px; text-align: center;">
+      <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, #6A635C); margin-bottom: 6px;">교통</div>
+      <div style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.5;">인천지하철 2호선 가정중앙시장역·서부여성회관역 등이 인근에 위치하나, 단지에서 도보 약 10~15분 내외로 예상됩니다. 정확한 거리는 단지 위치 확정 후 확인 필요.</div>
+    </div>
+
+    <div style="flex: 1 1 calc(50% - 5px); background: #EBF5EE; border-radius: 10px; padding: 20px 14px; text-align: center;">
+      <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, #6A635C); margin-bottom: 6px;">학군</div>
+      <div style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.5;">가정동 인근 초등학교 배정 예상, 청라국제도시 인근 학원가 이용 가능 생활권. 중학군도 비교적 양호한 편으로 알려져 있으나 실제 배정은 입주 시점 기준으로 확인 필요.</div>
+    </div>
+
+    <div style="flex: 1 1 calc(50% - 5px); background: #FEF8EC; border-radius: 10px; padding: 20px 14px; text-align: center;">
+      <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, #6A635C); margin-bottom: 6px;">생활편의</div>
+      <div style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.5;">차량 10분 내외 거리에 홈플러스·이마트 등 대형마트 이용 가능. 청라국제도시의 상업시설 접근성도 양호한 편.</div>
+    </div>
+
+    <div style="flex: 1 1 calc(50% - 5px); background: #FDEEF0; border-radius: 10px; padding: 20px 14px; text-align: center;">
+      <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, #6A635C); margin-bottom: 6px;">의료</div>
+      <div style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.5;">차량 10분 내외 거리에 인천 서구 일대 종합병원 이용 가능. 대학병원급은 다소 거리가 있으며 차량 이동 필요.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 3 — 분양 일정 & 공급 타입
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    03 · 분양 일정 &amp; 공급 정보
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
+    언제, 어떻게 청약하면 될까요?
+  </h2>
+
+  <!-- 일정 서술 -->
+  <p style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
+    청약 일정, 헷갈리기 쉬운데 한눈에 정리해드릴게요! 1순위 청약은 2026년 4월 27일, 2순위는 4월 29일에 진행되고 당첨자 발표는 5월 15일이에요. 입주는 2028년 7월 예정이랍니다.
+  </p>
+
+  <!-- 청약 일정 수직 타임라인 -->
+  <div style="
+    background: #F5F2ED; border: 1px solid #DED9D1;
+    border-radius: 16px; padding: 26px 22px;
+    margin-bottom: 36px;
+  ">
+
+    <!-- STEP 1 특별공급 -->
+    <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
+      <div style="
+        flex-shrink: 0; width: 38px; height: 38px;
+        background: var(--c-primary, #CC5F3F); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 15px; font-weight: 800;
+      ">1</div>
+      <div style="flex: 1; padding-top: 5px;">
+        <div style="font-size: 12px; color: #A39D96; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">SPECIAL</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, #2C2825); margin-bottom: 3px;">특별공급</div>
+        <div style="font-size: 17px; color: var(--c-primary, #CC5F3F); font-weight: 800;"></div>
+      </div>
+    </div>
+    <div style="margin-left: 19px; height: 22px; width: 2px; background: #DED9D1;"></div>
+
+    <!-- STEP 2 1순위 -->
+    <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
+      <div style="
+        flex-shrink: 0; width: 38px; height: 38px;
+        background: var(--c-primary-dark, #A84830); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 15px; font-weight: 800;
+      ">2</div>
+      <div style="flex: 1; padding-top: 5px;">
+        <div style="font-size: 12px; color: #A39D96; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">1ST PRIORITY</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, #2C2825); margin-bottom: 3px;">1순위 청약</div>
+        <div style="font-size: 17px; color: var(--c-primary-dark, #A84830); font-weight: 800;">2026-04-27</div>
+      </div>
+    </div>
+    <div style="margin-left: 19px; height: 22px; width: 2px; background: #DED9D1;"></div>
+
+    <!-- STEP 3 2순위 -->
+    <div style="display: flex; gap: 18px; align-items: flex-start; margin-bottom: 6px;">
+      <div style="
+        flex-shrink: 0; width: 38px; height: 38px;
+        background: var(--c-mid, #6A635C); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 15px; font-weight: 800;
+      ">3</div>
+      <div style="flex: 1; padding-top: 5px;">
+        <div style="font-size: 12px; color: #A39D96; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">2ND PRIORITY</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, #2C2825); margin-bottom: 3px;">2순위 청약</div>
+        <div style="font-size: 17px; color: var(--c-mid, #6A635C); font-weight: 800;">2026-04-29</div>
+      </div>
+    </div>
+    <div style="margin-left: 19px; height: 22px; width: 2px; background: var(--c-primary, #CC5F3F);"></div>
+
+    <!-- STEP 4 당첨자 발표 (강조) -->
+    <div style="display: flex; gap: 18px; align-items: flex-start;">
+      <div style="
+        flex-shrink: 0; width: 38px; height: 38px;
+        background: var(--c-primary, #CC5F3F); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
+      ">🎉</div>
+      <div style="
+        flex: 1; padding: 14px 18px;
+        background: var(--c-primary-light, #FDEEE8);
+        border: 1px solid var(--c-primary, #CC5F3F);
+        border-radius: 10px;
+      ">
+        <div style="font-size: 12px; color: var(--c-primary-dark, #A84830); font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">WINNER</div>
+        <div style="font-size: 17px; font-weight: 800; color: var(--c-dark, #2C2825); margin-bottom: 3px;">당첨자 발표</div>
+        <div style="font-size: 20px; color: var(--c-primary, #CC5F3F); font-weight: 800;">2026-05-15</div>
+      </div>
+    </div>
+
+  </div><!-- end timeline -->
+
+
+
+
+
+  <!-- 타입별 서술 -->
+  <p style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 16px 0;">
+    이 단지는 <strong>074.9500A, 084.0000A·B, 084.9800C</strong> 총 4가지 타입으로 구성되는데요, 전용 84㎡ 계열이 전체 물량의 대부분을 차지해요. <strong>분양가 상한제 적용 단지</strong>인 만큼 가격 구성도 꼼꼼히 살펴보시면 좋겠어요.
+  </p>
+
+  <!-- 타입별 분양가 표 (가로 스크롤) -->
+  <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; box-shadow: 0 1px 4px rgba(44,40,37,0.07);">
+    <table style="width: 100%; min-width: 420px; border-collapse: collapse; font-size: 15px; background: #fff;">
+      <thead>
+        <tr style="background: var(--c-dark, #2C2825); color: #FFFFFF; text-align: center;">
+          <th style="padding: 14px 10px; font-weight: 700; white-space: nowrap;">타입</th>
+          <th style="padding: 14px 8px; font-weight: 700; white-space: nowrap;">전용(㎡)</th>
+          <th style="padding: 14px 8px; font-weight: 700; white-space: nowrap;">일반공급</th>
+          <th style="padding: 14px 8px; font-weight: 700; white-space: nowrap;">특별공급</th>
+          <th style="padding: 14px 10px; font-weight: 700; white-space: nowrap;">분양가</th>
+          <th style="padding: 14px 8px; font-weight: 700; white-space: nowrap;">3.3㎡당</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      <tr style="text-align: center; border-bottom: 1px solid #DED9D1; ">
+        <td style="padding: 10px 8px; font-weight: 700; color: var(--c-primary, #CC5F3F);">074.9500A타입</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">98.7</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">11</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">30</td>
+        <td style="padding: 10px 8px; color: #B83C1E; font-weight: 700;">5억 5,131만원</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">1,843만원</td>
+      </tr>
+
+      <tr style="text-align: center; border-bottom: 1px solid #DED9D1; background: #F5F2ED;">
+        <td style="padding: 10px 8px; font-weight: 700; color: var(--c-primary, #CC5F3F);">084.0000A타입</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">111.3</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">50</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">136</td>
+        <td style="padding: 10px 8px; color: #B83C1E; font-weight: 700;">6억 2,516만원</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">1,853만원</td>
+      </tr>
+
+      <tr style="text-align: center; border-bottom: 1px solid #DED9D1; ">
+        <td style="padding: 10px 8px; font-weight: 700; color: var(--c-primary, #CC5F3F);">084.0000B타입</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">111.4</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">15</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">42</td>
+        <td style="padding: 10px 8px; color: #B83C1E; font-weight: 700;">6억 2,516만원</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">1,852만원</td>
+      </tr>
+
+      <tr style="text-align: center; border-bottom: 1px solid #DED9D1; background: #F5F2ED;">
+        <td style="padding: 10px 8px; font-weight: 700; color: var(--c-primary, #CC5F3F);">084.9800C타입</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">111.9</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">8</td>
+        <td style="padding: 10px 8px; color: var(--c-dark, #2C2825);">14</td>
+        <td style="padding: 10px 8px; color: #B83C1E; font-weight: 700;">6억 2,508만원</td>
+        <td style="padding: 10px 8px; color: var(--c-mid, #6A635C);">1,843만원</td>
+      </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background: #F5F2ED; font-weight: 700; text-align: center; border-top: 2px solid #DED9D1;">
+          <td colspan="2" style="padding: 12px 10px; color: var(--c-dark, #2C2825); font-size: 15px;">합계</td>
+          <td style="padding: 12px 8px; color: var(--c-dark, #2C2825);">84세대</td>
+          <td style="padding: 12px 8px; color: var(--c-dark, #2C2825);">222세대</td>
+          <td colspan="2" style="padding: 12px 10px; color: var(--c-primary, #CC5F3F); font-weight: 800;">총 306세대</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+    <div style="margin-top:24px;text-align:center;"><a href="https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancList.do?mi=1027" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-primary);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" onmouseover="this.style.background='var(--c-primary-dark)'" onmouseout="this.style.background='var(--c-primary)'">LH청약플러스 바로가기 →</a></div>
+
+
+  <div style="margin-top:24px;text-align:center;"><a href="https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancList.do?mi=1027" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:var(--c-primary, #CC5F3F);color:#fff;font-size:15px;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:background 200ms;" onmouseover="this.style.background='var(--c-primary-dark, #A84830)'" onmouseout="this.style.background='var(--c-primary, #CC5F3F)'">📋 모집공고문 보기 →</a></div>
+</div>
+
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
+
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 — 청약 신청자격
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    04 · 청약 신청자격
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
+    나는 청약할 수 있을까요?
+  </h2>
+
+  <div style="font-size:13px;font-weight:700;color:var(--c-primary, #CC5F3F);letter-spacing:0.5px;margin-bottom:12px;">특별공급</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;"><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-dark, #2C2825);margin-bottom:10px;">신혼부부특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">혼인 7년 이내 또는 6세 이하 자녀 있는 무주택 세대구성원</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">청약통장 가입 6개월 이상, 납입 6회 이상</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균소득 100% 이하 → 70% 우선공급 (맞벌이 120%)</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">자산: 부동산 2억 1,550만원 이하, 자동차 3,708만원 이하</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-dark, #2C2825);margin-bottom:10px;">생애최초특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">세대구성원 전원 과거 주택 소유 이력 없는 무주택자</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">청약통장 가입 12개월 이상, 납입 12회 이상</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">근로자·자영업자로 소득세 납부 이력 보유</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균소득 100% 이하 (맞벌이 120%)</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-dark, #2C2825);margin-bottom:10px;">다자녀가구특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">미성년 자녀 3명 이상인 무주택 세대구성원</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">소득: 도시근로자 월평균소득 120% 이하 (맞벌이 130%)</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">청약통장 가입 6개월 이상, 납입 6회 이상</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-dark, #2C2825);margin-bottom:10px;">노부모부양특별공급</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">만 65세 이상 직계존속 3년 이상 부양 중인 무주택 세대주</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">청약통장 가입 24개월 이상, 납입 24회 이상 (공공분양 기준)</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-dark, #2C2825);margin-bottom:10px;">기관추천특별공급(장애인)</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">등록 장애인으로 관할 기관 추천 필수</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">무주택 세대구성원</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.7;padding:2px 0;">청약통장 보유 (가입 기간 제한 없음)</li></ul></div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;"><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-top:3px solid var(--c-primary, #CC5F3F);border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-primary, #CC5F3F);margin-bottom:12px;">1순위 자격</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-primary, #CC5F3F);font-weight:700;margin-right:6px;">·</span>수도권(인천·서울·경기) 거주 성년자인 무주택 세대구성원</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-primary, #CC5F3F);font-weight:700;margin-right:6px;">·</span>청약통장 가입 24개월 이상 + 납입 24회 이상</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-primary, #CC5F3F);font-weight:700;margin-right:6px;">·</span>소득기준 충족 (도시근로자 월평균소득 100% 이하)</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-primary, #CC5F3F);font-weight:700;margin-right:6px;">·</span>인천광역시 거주자 100% 우선 공급</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-primary, #CC5F3F);font-weight:700;margin-right:6px;">·</span>일반공급 80% 순차제(저축총액순) + 20% 추첨제</li></ul></div><div style="flex:1 1 calc(50% - 8px);min-width:200px;background:#F5F2ED;border:1px solid #DED9D1;border-top:3px solid var(--c-mid, #6A635C);border-radius:10px;padding:16px 18px;"><div style="font-size:14px;font-weight:800;color:var(--c-mid, #6A635C);margin-bottom:12px;">2순위 자격</div><ul style="list-style:none;padding:0;margin:0;"><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-mid, #6A635C);font-weight:700;margin-right:6px;">·</span>무주택 세대구성원으로 청약통장 24개월 미만자</li><li style="font-size:14px;color:var(--c-mid, #6A635C);line-height:1.8;padding:3px 0;border-bottom:1px solid #DED9D1;"><span style="color:var(--c-mid, #6A635C);font-weight:700;margin-right:6px;">·</span>수도권 거주 성년자로 청약통장 보유</li></ul></div></div>
+  <p style="font-size:13px;color:var(--c-mid, #6A635C);margin-top:16px;line-height:1.6;">※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. 반드시 청약홈 및 분양사 공식 자료를 통해 최종 확인하세요.</p>
+
+</div>
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 — 자금 계획
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    05 · 자금 계획
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
+    얼마를, 언제 준비해야 할까요?
+  </h2>
+
+  <p style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 28px 0;">
+    청약 당첨만큼 중요한 게 바로 자금 준비인데요~ 분양가가 5.5억~6.2억원 수준이라 계약금·중도금·잔금 흐름을 미리 파악해 두시는 게 정말 중요해요. 특히 공공분양은 자금 조건이 일반 민간분양과 다를 수 있으니, 공고문을 꼼꼼히 확인하시는 걸 추천드립니다.
+  </p>
+
+  <!-- 납부 비율 시각화 바 (CSS 차트) -->
+  <div style="margin-bottom: 32px;">
+    <div style="font-size: 15px; font-weight: 700; color: var(--c-dark, #2C2825); margin-bottom: 12px;">📊 분양가 납부 비율</div>
+
+    <div style="display: flex; border-radius: 10px; overflow: hidden; height: 48px; box-shadow: 0 1px 4px rgba(44,40,37,0.07);">
+      <div style="
+        background: #B83C1E;
+        width: 10%;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 15px; font-weight: 800;
+        flex-shrink: 0;
+      ">10%</div>
+      <div style="
+        background: #D4820A;
+        flex: 1;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 16px; font-weight: 800;
+      ">60%</div>
+      <div style="
+        background: var(--c-primary, #CC5F3F);
+        width: 30%;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 15px; font-weight: 800;
+        flex-shrink: 0;
+      ">30%</div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">
+      <span style="font-size: 14px; letter-spacing: 0.025em; color: #B83C1E; font-weight: 700;">■ 계약금 10%</span>
+      <span style="font-size: 14px; letter-spacing: 0.025em; color: #D4820A; font-weight: 700;">■ 중도금 60%</span>
+      <span style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-primary, #CC5F3F); font-weight: 700;">■ 잔금 30%</span>
+    </div>
+  </div>
+
+  <!-- 납부 단계 수직 타임라인 -->
+  <div style="position: relative; padding-left: 24px; border-left: 3px solid var(--c-primary-light, #FDEEE8);">
+
+    <!-- 1. 계약금 -->
+    <div style="margin-bottom: 32px; position: relative;">
+      <div style="
+        position: absolute; left: -36px; top: 2px;
+        width: 26px; height: 26px;
+        background: #B83C1E; color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 800;
+      ">1</div>
+      <div style="font-size: 18px; font-weight: 800; color: #B83C1E; margin-bottom: 10px;">계약금 — 10%</div>
+      <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
+        <p style="font-size: 16px; color: var(--c-mid, #6A635C); margin: 0 0 8px 0; line-height: 1.6;">계약 체결 시 자기자본으로 납부합니다. 정확한 납부 시기와 방법은 공고문 및 계약서를 기준으로 합니다.</p>
+      </div>
+    </div>
+
+    <!-- 2. 중도금 -->
+    <div style="margin-bottom: 32px; position: relative;">
+      <div style="
+        position: absolute; left: -36px; top: 2px;
+        width: 26px; height: 26px;
+        background: #D4820A; color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 800;
+      ">2</div>
+      <div style="font-size: 18px; font-weight: 800; color: #D4820A; margin-bottom: 10px;">중도금 — 60% (6회 분납)</div>
+      <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
+        <p style="font-size: 16px; color: var(--c-mid, #6A635C); margin: 0; line-height: 1.6;">공사 기간 중 분납합니다. 각 회차별 납부 일정과 금액은 공고문 및 계약서를 기준으로 합니다.</p>
+      </div>
+    </div>
+
+    <!-- 3. 잔금 -->
+    <div style="position: relative;">
+      <div style="
+        position: absolute; left: -36px; top: 2px;
+        width: 26px; height: 26px;
+        background: var(--c-primary, #CC5F3F); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 800;
+      ">3</div>
+      <div style="font-size: 18px; font-weight: 800; color: var(--c-primary, #CC5F3F); margin-bottom: 10px;">잔금 — 30% (입주 시)</div>
+      <div style="background: #F5F2ED; border: 1px solid #DED9D1; border-radius: 10px; padding: 16px 18px;">
+        <p style="font-size: 16px; color: var(--c-mid, #6A635C); margin: 0; line-height: 1.6;">입주 지정기간 내 납부합니다. 납부 방법 및 세부 조건은 입주안내문 및 계약서를 기준으로 합니다.</p>
+      </div>
+    </div>
+  </div>
+      <div style="font-size: 16px; color: var(--c-dark, #2C2825);">공고문을 통해 전매제한 기간을 반드시 확인하세요.</div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- 구분선 -->
+<div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
+
+
+<!-- ══════════════════════════════════════════
+     SECTION 5 — 독자 Q&A
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px; margin-bottom: 44px;">
+
+  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">
+    06 · 자주 묻는 질문
+  </div>
+  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 12px 0; line-height: 1.4;">
+    청약 준비자들이 가장 많이 묻는 질문 모음
+  </h2>
+  <p style="font-size: 14px; letter-spacing: 0.025em; color: #A39D96; margin: 0 0 20px 0; line-height: 1.5;">
+    공고문 내용을 바탕으로 작성된 답변입니다. 실제 조건은 분양사 공식 자료를 반드시 확인하세요.
+  </p>
+
+  <p style="font-size: 16px; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 30px 0;">
+    청약 준비하면서 많은 분들이 공통으로 궁금해 하는 내용들을 모았어요. 자금 계획부터 자격 요건, 입지 정보까지 하나씩 살펴보시면 도움이 될 거예요.
+  </p>
+
+  
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">중도금 대출이나 주담대는 어떻게 되나요? 자금 계획을 어떻게 세워야 할까요?</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">공공분양주택의 자금 계획은 일반 민간 분양과 조금 다르게 접근하셔야 해요. <br><br>이번 단지의 경우 공고문 상에 <strong>대출 관련 별도 안내가 명시되어 있지 않아</strong> 중도금 집단대출 여부나 주택담보대출 한도에 대해서는 공고문 및 분양사를 통해 직접 확인하시는 것이 가장 정확합니다. <br><br>일반적으로 공공분양의 경우 <strong>HUG(주택도시보증공사) 또는 HF(한국주택금융공사)의 보증을 활용한 중도금 대출</strong>이 가능한 경우가 있으나, 단지별·시기별로 조건이 달라질 수 있어요. 또한 최근 DSR(총부채원리금상환비율) 규제 강화로 인해 대출 가능 금액이 개인 소득 수준에 따라 크게 달라질 수 있다는 점도 꼭 염두에 두세요. <br><br>분양가가 5.5억~6.2억 수준인 만큼, 계약금·중도금·잔금 비율을 미리 파악하고 자신의 현금 흐름에 맞게 시뮬레이션해 보시는 걸 권해드려요.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">생애최초나 신혼부부 특별공급으로 청약할 수 있나요? 자격 요건이 궁금해요.</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">이번 단지는 <strong>특별공급과 일반공급</strong>으로 나뉘어 진행되며, 타입별로 특별공급 물량이 일반공급보다 많게 배정되어 있어요. 예를 들어 084.0000A타입의 경우 특별공급 136세대, 일반공급 50세대로 구성되어 있답니다. <br><br>공공분양의 특별공급은 크게 <strong>생애최초, 신혼부부, 다자녀, 노부모 부양</strong> 등의 유형으로 나뉘는데요, 각 유형마다 소득 기준·자산 기준·무주택 기간 등 세부 자격 요건이 다르게 적용됩니다. <br><br>특히 공공분양은 민간분양에 비해 <strong>소득 및 자산 기준이 상당히 엄격하게 적용</strong>되는 경우가 많아요. 생애최초의 경우 세대원 전원 무주택 요건, 일정 기간 이상의 소득세 납부 이력 등이 요구될 수 있고, 신혼부부의 경우 혼인 기간·자녀 수에 따라 가점이 달라지기도 해요. <br><br>정확한 자격 요건과 소득·자산 기준은 반드시 해당 공고문을 통해 확인하시고, 모호한 부분은 분양사나 LH 등 관련 기관에 문의하시는 걸 강력히 권장합니다.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">단지 주변 교통이나 학군은 어떤가요? 역세권인지도 궁금해요.</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">인천 서구 가정동·청라동 일원은 <strong>인천지하철 2호선 가정중앙시장역, 서부여성회관역</strong> 등이 인근에 위치해 있어요. 단, 단지 위치에 따라 도보 접근성이 달라질 수 있으므로 실제 도보 거리는 정확한 단지 위치를 확인한 후 체크해 보시는 걸 권해드려요. <br><br>또한 수도권제2순환고속도로, 인천국제공항고속도로 등 광역 도로망과의 접근성도 이 지역의 교통 장점 중 하나로 꼽히고 있습니다. <br><br>학군 면에서는 가정동 일대에 초등학교가 배정되어 있으며, 청라국제도시 인근의 학원가 인프라를 함께 활용할 수 있는 생활권에 속해 있어요. 다만 <strong>실제 배정 학교는 입주 시점의 학군 배정 기준에 따라 달라질 수 있으므로</strong> 인천시교육청 등을 통해 반드시 사전 확인하시기 바랍니다. <br><br>주변에 홈플러스, 이마트 등 대형 쇼핑 시설과 청라의 상업 인프라를 차량으로 이용할 수 있어 생활 편의성도 무난한 편으로 알려져 있어요.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">취득세는 얼마나 나오나요? 세금이나 자금 계획 세울 때 뭘 챙겨야 하죠?</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">내 집 마련을 준비할 때 분양가만 보시면 안 되고, <strong>취득세·인지세·법무 비용</strong> 등 부대 비용까지 함께 고려하셔야 해요. <br><br>취득세의 경우 일반적으로 주택 취득 금액과 주택 수에 따라 세율이 달라지는데요, 현행 세법 기준으로는 <strong>1주택자의 경우 취득가액에 따라 1~3% 수준의 세율</strong>이 적용되는 것으로 알려져 있어요. 다만 이는 일반적인 기준이며, 조정대상지역 여부·주택 수·취득 시기 등에 따라 세율이 달라질 수 있습니다. 이번 단지가 위치한 인천 서구는 현재 비규제지역(조정대상지역 외)으로 확인되나, 향후 변경 가능성도 있으니 계약 전 최신 기준을 꼭 확인하세요. <br><br>또한 <strong>재산세와 종합부동산세</strong>는 매년 발생하는 보유 비용이고, 추후 매도 시에는 양도소득세도 발생할 수 있어요. 세금 항목이 생각보다 다양하기 때문에, 전문 세무사 또는 관련 기관을 통해 자신의 상황에 맞는 세금 계획을 미리 세워보시는 걸 추천드립니다.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">발코니 확장이나 인테리어 옵션은 어떻게 되나요? 아파트 내부 구성이 궁금해요.</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">새 아파트에 입주할 때 가장 설레는 부분 중 하나가 바로 인테리어 계획이죠! 이번 단지는 <strong>전용 74~84㎡ 중형 타입</strong>으로 구성되어 있어 실용적인 공간 활용이 가능한 크기예요. <br><br>발코니 확장 여부와 유상 옵션 항목(시스템에어컨, 빌트인 가전, 마루재 업그레이드 등)은 <strong>입주자 모집 공고문 및 견본주택 오픈 시 별도 안내</strong>가 이루어지는 것이 일반적이에요. 공공분양의 경우 민간분양에 비해 옵션 항목이 제한적인 경우도 있으니, 반드시 공고문과 분양사 안내를 통해 확인하세요. <br><br>발코니 확장을 선택할 경우 실사용 면적이 넓어지는 효과가 있지만, 추가 비용이 발생하므로 전체 자금 계획에 반영해 두시는 게 좋아요. 또한 공공분양 아파트의 경우 <strong>마감재 기준이 공고문에 명시</strong>되는 경우가 있으니 꼼꼼히 살펴보시길 추천드려요. <br><br>입주 예정일이 2028년 7월인 만큼 아직 시간적 여유가 있지만, 자금 계획에 옵션 비용까지 미리 포함해 두시면 나중에 당황하는 일이 줄어든답니다.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="
+    border: 1px solid #DED9D1; border-radius: 16px;
+    margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(44,40,37,0.07);
+  ">
+    <!-- 질문 -->
+    <div style="
+      background: var(--c-dark, #2C2825); padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 10px;
+    ">
+      <span style="
+        background: var(--c-primary, #CC5F3F); color: #FFFFFF;
+        font-weight: 700; font-size: 12px;
+        padding: 2px 9px; border-radius: 6px;
+        flex-shrink: 0; margin-top: 1px;
+      ">Q</span>
+      <span style="
+        color: #FFFFFF; font-size: 16px;
+        font-weight: 700; line-height: 1.6; word-break: keep-all;
+      ">청약 가점이 몇 점 정도면 당첨 가능성이 있나요? 가점제와 추첨제 비율이 어떻게 되죠?</span>
+    </div>
+    <!-- 답변 -->
+    <div style="padding: 16px 18px; background: var(--c-bg, #FAF9F7);">
+      <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <span style="
+          background: #4A7C5F; color: #FFFFFF;
+          font-weight: 700; font-size: 12px;
+          padding: 2px 9px; border-radius: 6px; flex-shrink: 0;
+        ">A</span>
+        <div style="color: var(--c-dark, #2C2825); font-size: 16px; line-height: 1.6; word-break: keep-all;">청약 전략을 세울 때 가점제와 추첨제 비율을 파악하는 건 정말 중요한 첫 걸음이에요. <br><br>공공분양은 일반적으로 <strong>일반공급의 경우 가점제 비율이 높게 적용</strong>되는 편이에요. 가점제는 무주택 기간, 부양가족 수, 청약통장 가입 기간 세 가지 항목을 합산해 최대 84점으로 계산됩니다. 추첨제는 가점과 관계없이 무작위로 당첨자를 선정하는 방식이에요. <br><br>다만 <strong>정확한 가점제·추첨제 적용 비율은 해당 공고문에서 타입별로 명시</strong>되므로, 반드시 공고문을 직접 확인하셔야 해요. 또한 특별공급의 경우 가점제가 아닌 별도의 우선순위 기준이 적용되기 때문에 일반공급과 전략이 달라질 수 있답니다. <br><br>이번 단지는 308세대 규모의 공공분양으로, 특별공급 물량이 전체의 상당 부분을 차지하고 있어요. 특별공급 자격이 있으신 분들은 일반공급보다 특별공급 쪽의 경쟁 구조를 먼저 파악해 보시는 것도 하나의 접근 방법이에요. 단, 특정 가점으로 당첨이 보장된다는 건 어디에서도 장담할 수 없으니 참고용으로만 활용하세요.<br><br><span style='font-size:13px; color:#999;'>※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     FOOTER — 면책 고지 + SEO 태그
+═══════════════════════════════════════════ -->
+<div style="padding: 0 20px 8px;">
+
+  <div style="
+    background: #F5F2ED;
+    border: 1px solid #DED9D1;
+    border-radius: 10px;
+    padding: 20px 20px;
+    margin-bottom: 20px;
+  ">
+    <div style="font-size: 12px; font-weight: 700; color: #A39D96; letter-spacing: 0.5px; margin-bottom: 10px;">
+      ⚠️ 이용 안내 및 면책 고지
+    </div>
+    <p style="color: var(--c-mid, #6A635C); font-size: 14px; letter-spacing: 0.025em; line-height: 1.6; margin: 0 0 12px 0;">
+      본 포스팅은 <strong>한국부동산원 청약홈(2026-04-27 공고 기준)</strong> 공개 정보를 바탕으로 작성되었습니다.
+      실제 청약 자격·대출 조건·세금은 반드시 금융기관 및 분양사에서 직접 확인하세요.
+      투자 권유가 아닌 정보 제공 목적입니다.
+    </p>
+    <div style="border-top: 1px solid #DED9D1; padding-top: 12px;">
+      <p style="color: #A39D96; font-size: 13px; letter-spacing: 0.025em; margin: 0; line-height: 1.6;">
+        📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털 · 국토교통부 실거래가
+      </p>
+    </div>
+  </div>
+
+  <!-- SEO 태그 -->
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 8px;">
+    <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#인천가정2지구B2블록</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#인천서구공공분양</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#인천청약2026</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#가정동아파트</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#청라동분양</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#공공분양청약</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#생애최초청약</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#신혼부부특별공급</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#인천아파트분양</span>
+  <span style="background:var(--c-primary-light, #FDEEE8); color:var(--c-primary-dark, #A84830); font-size:11px; padding:4px 10px; border-radius:24px; font-weight:600; display:inline-block;">#가점제청약전략</span>
+  </div>
+
+</div>
+
+</div><!-- end 전체 래퍼 -->
+
+</div>
+<script>
+var _PALETTES = ['A','B','C'];
+function cyclePalette() {
+  var cur = document.documentElement.getAttribute('data-palette') || 'A';
+  var next = _PALETTES[(_PALETTES.indexOf(cur) + 1) % _PALETTES.length];
+  document.documentElement.setAttribute('data-palette', next);
+  localStorage.setItem('apt-palette', next);
+  var lbl = document.getElementById('palette-label');
+  if (lbl) lbl.textContent = next;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var lbl = document.getElementById('palette-label');
+  if (lbl) lbl.textContent = document.documentElement.getAttribute('data-palette') || 'A';
+});
+</script>
+</body>
+</html>

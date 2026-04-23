@@ -1,0 +1,37 @@
+{
+  "apt_name": "엘리프 창원",
+  "title": "엘리프 창원 분양 총정리 | 창원 의창구 5.36억~5.95억 청약 가이드",
+  "subtitle": "청약 전 꼭 알아야 할 핵심 정보만 쏙쏙",
+  "theme": "claude",
+  "tags": [
+    "엘리프창원",
+    "창원청약",
+    "의창구분양",
+    "창원명곡동아파트",
+    "경남청약",
+    "생애최초청약",
+    "신혼부부청약",
+    "2026청약일정",
+    "창원신축아파트",
+    "청약가점제"
+  ],
+  "location": "경상남도 창원시 의창구 창원명곡동",
+  "region_category": "경상남도",
+  "price_range": "5.36억~5.95억원",
+  "special_supply_date": "2026-04-20",
+  "rank1_date": "2026-04-21",
+  "move_in_date": "2028년 07월",
+  "generated_at": "2026-04-20T10:53:46.827223",
+  "naver_blog_guide": {
+    "step1": "네이버 블로그 → 글쓰기",
+    "step2": "스마트에디터 ONE → [HTML] 버튼",
+    "step3": "post.html 전체 붙여넣기",
+    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
+    "step5": "태그 입력: 엘리프창원, 창원청약, 의창구분양, 창원명곡동아파트, 경남청약, 생애최초청약, 신혼부부청약, 2026청약일정, 창원신축아파트, 청약가점제",
+    "step6": "카테고리 설정 후 발행"
+  },
+  "notice_url": "https://static.applyhome.co.kr/ai/aia/getAtchmnfl.do?houseManageNo=2026000110&pblancNo=2026000110&atchmnflSeqNo=1784559&atchmnflSn=2",
+  "is_hot_zone": "비해당",
+  "resale_restriction": "1년",
+  "live_requirement": "없음"
+}
