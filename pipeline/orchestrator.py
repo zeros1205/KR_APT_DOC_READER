@@ -28,6 +28,7 @@ from config import (
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
+from agents.pdf_policy import extract_policy_from_pdf_text
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
@@ -158,9 +159,465 @@ def _has_financial_data(facts: dict) -> bool:
     )
 
 
+def _derive_price_range(unit_types: list[dict]) -> str:
+    """타입별 최저/최고 분양가를 바탕으로 범위를 계산한다."""
+    lows: list[int] = []
+    highs: list[int] = []
+
+    for ut in unit_types:
+        low = _parse_price_manwon(ut.get("price_min", 0))
+        high = _parse_price_manwon(ut.get("price_max", 0))
+        if low <= 0 and high <= 0:
+            continue
+        if low <= 0:
+            low = high
+        if high <= 0:
+            high = low
+        lows.append(low)
+        highs.append(high)
+
+    if not lows or not highs:
+        return ""
+
+    lo = min(lows)
+    hi = max(highs)
+    if lo <= 0 or hi <= 0:
+        return ""
+    if lo == hi:
+        return UnitType._fmt(lo)
+    return f"{UnitType._fmt(lo)} ~ {UnitType._fmt(hi)}"
+
+
+def _extract_pdf_policy_overrides(notice_text: str) -> dict:
+    """PDF에서 추출한 규제 정보를 사실 추출 결과보다 우선 적용한다."""
+    overrides: dict = {}
+    if not notice_text:
+        return overrides
+
+    policy_lines: dict[str, str] = {}
+    for line in notice_text.splitlines():
+        line = line.strip()
+        if not line.startswith("[PDF 정책]"):
+            continue
+        m = re.match(r"\[PDF 정책\]\s*([^:]+):\s*(.+)$", line)
+        if not m:
+            continue
+        key = m.group(1).strip()
+        value = m.group(2).strip()
+        if key and value:
+            policy_lines[key] = value
+
+    key_map = {
+        "regulated_zone": "regulated_zone",
+        "is_hot_zone": "is_hot_zone",
+        "readmission_limit": "readmission_limit",
+        "resale_restriction": "resale_restriction",
+        "live_requirement": "live_requirement",
+        "price_cap": "price_cap",
+        "is_price_cap": "is_price_cap",
+    }
+    for src_key, dst_key in key_map.items():
+        value = policy_lines.get(src_key)
+        if value:
+            overrides[dst_key] = value
+
+    if "regulated_zone" in overrides and "is_hot_zone" not in overrides:
+        zone = overrides["regulated_zone"]
+        if any(token in zone for token in ("투기과열지구", "청약과열지역", "조정대상지역")):
+            overrides["is_hot_zone"] = "Y"
+        elif any(token in zone for token in ("비규제지역", "해당없음")):
+            overrides["is_hot_zone"] = "N"
+
+    if "price_cap" in overrides and "is_price_cap" not in overrides:
+        overrides["is_price_cap"] = "Y" if overrides["price_cap"] == "적용" else "N"
+
+    return overrides
+
+
+def _extract_bracket_value(text: str, label: str) -> str:
+    """[라벨] 값 형태의 문장에서 값을 추출한다."""
+    m = re.search(rf"\[{re.escape(label)}\]\s*([^\n]+)", text or "")
+    return m.group(1).strip() if m else ""
+
+
+def _extract_first_match(text: str, patterns: tuple[str, ...], default: str = "") -> str:
+    """여러 패턴 중 처음 매칭되는 값을 반환한다."""
+    for pat in patterns:
+        m = re.search(pat, text or "", re.IGNORECASE | re.DOTALL)
+        if m:
+            value = m.group(1).strip()
+            if value:
+                return value
+    return default
+
+
+def _parse_unit_types_from_text(notice_text: str) -> list[dict]:
+    """표 형태 또는 요약 문장에서 주택형 정보를 추출한다."""
+    unit_types: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+
+    for raw_line in (notice_text or "").splitlines():
+        line = raw_line.strip()
+        if not line or "|" not in line:
+            continue
+        parts = [part.strip() for part in line.split("|")]
+        if len(parts) < 5:
+            continue
+
+        type_name = parts[0]
+        area_text = parts[1]
+        general_text = parts[2]
+        special_text = parts[3]
+        price_text = parts[4]
+
+        if not re.search(r"\d", type_name):
+            continue
+
+        if "전용" in area_text:
+            m = re.search(r"([\d.]+)", area_text)
+            area_text = m.group(1) if m else area_text
+        elif not re.search(r"[\d.]", area_text):
+            continue
+        if "세대" in general_text:
+            m = re.search(r"(\d+)", general_text)
+            general_text = m.group(1) if m else general_text
+        elif not general_text.isdigit():
+            continue
+        if "세대" in special_text:
+            m = re.search(r"(\d+)", special_text)
+            special_text = m.group(1) if m else special_text
+        elif not special_text.isdigit():
+            continue
+        if "분양가" in price_text or "가격" in price_text:
+            m = re.search(r"([0-9.,억천백십만~\s]+)", price_text)
+            price_text = m.group(1).strip() if m else price_text
+        if not re.search(r"\d", price_text):
+            continue
+
+        key = (type_name, area_text)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        unit_types.append(
+            {
+                "type_name": type_name.replace("타입", "타입").strip(),
+                "area_sqm": area_text,
+                "general_units": general_text,
+                "special_units": special_text,
+                "price_min": price_text.split("~")[0].strip() if "~" in price_text else price_text,
+                "price_max": price_text.split("~")[-1].strip() if "~" in price_text else price_text,
+            }
+        )
+
+    if unit_types:
+        return unit_types
+
+    # 서술형 텍스트에서 1차 추출
+    pattern = re.compile(
+        r"(?P<type>\d+[A-Z]?(?:타입)?)\s*(?:\(|\[)?\s*(?P<area>[\d.]+)\s*㎡.*?"
+        r"(?:일반|공급)\s*(?P<general>\d+)\s*세대.*?"
+        r"(?:특별|우선)\s*(?P<special>\d+)\s*세대.*?"
+        r"(?:분양가|가격|분양가상한)\s*(?P<price>[0-9.,억천백십만~\s]+)",
+        re.IGNORECASE,
+    )
+    for m in pattern.finditer(notice_text or ""):
+        unit_types.append(
+            {
+                "type_name": m.group("type").replace("타입타입", "타입"),
+                "area_sqm": m.group("area"),
+                "general_units": m.group("general"),
+                "special_units": m.group("special"),
+                "price_min": m.group("price").split("~")[0].strip(),
+                "price_max": m.group("price").split("~")[-1].strip(),
+            }
+        )
+
+    return unit_types
+
+
+def _fallback_fact_extraction(notice_text: str) -> dict:
+    """LLM 없이도 샘플/오프라인 실행이 가능한 결정론적 팩트 추출."""
+    text = notice_text or ""
+    facts: dict = dict(_extract_pdf_policy_overrides(text))
+
+    apt_name = _extract_bracket_value(text, "단지명") or _extract_bracket_value(text, "주택명")
+    if not apt_name:
+        apt_name = _extract_first_match(
+            text,
+            (
+                r"\[단지 소개\]\s*([^\n]+)",
+                r"단지명\s*[:：]\s*([^\n]+)",
+                r"주택명\s*[:：]\s*([^\n]+)",
+            ),
+        )
+    location = _extract_bracket_value(text, "공급위치")
+    if not location:
+        location = _extract_first_match(
+            text,
+            (
+                r"공급위치\s*[:：]\s*([^\n]+)",
+                r"위치\s*[:：]\s*([^\n]+)",
+            ),
+        )
+
+    unit_types = _parse_unit_types_from_text(text)
+    price_range = _derive_price_range(unit_types)
+
+    facts.update(
+        {
+            "apt_name": apt_name,
+            "location": location,
+            "supply_location": location,
+            "supply_scale": _extract_bracket_value(text, "총 공급세대")
+            or _extract_first_match(text, (r"총\s*공급세대\s*[:：]\s*([^\n]+)",)),
+            "unit_types": unit_types,
+            "notice_date": _extract_bracket_value(text, "모집공고일"),
+            "special_supply_date": _extract_bracket_value(text, "특별공급")
+            or _extract_first_match(text, (r"특별공급\s*[:：]\s*([0-9\-년월일\.~ ]+)",)),
+            "rank1_date": _extract_bracket_value(text, "1순위 청약")
+            or _extract_first_match(text, (r"1순위\s*청약\s*[:：]\s*([0-9\-년월일\.~ ]+)",)),
+            "rank2_date": _extract_bracket_value(text, "2순위 청약")
+            or _extract_first_match(text, (r"2순위\s*청약\s*[:：]\s*([0-9\-년월일\.~ ]+)",)),
+            "winner_date": _extract_bracket_value(text, "당첨자발표"),
+            "move_in_date": _extract_bracket_value(text, "입주예정"),
+            "contract_ratio": _extract_first_match(text, (r"계약금[^\d]*(\d+)\s*%", r"계약금\s*(\d+)\s*%"), "10"),
+            "contract_amount": "",
+            "midterm_ratio": _extract_first_match(text, (r"중도금[^\d]*(\d+)\s*%", r"중도금\s*(\d+)\s*%"), "60"),
+            "midterm_count": _extract_first_match(text, (r"(\d+)\s*회\s*분납", r"(\d+)\s*회"), "6"),
+            "balance_ratio": _extract_first_match(text, (r"잔금[^\d]*(\d+)\s*%", r"잔금\s*(\d+)\s*%"), "30"),
+            "acquisition_tax_rate": "1~3%",
+            "is_hot_zone": facts.get("is_hot_zone") or "N",
+            "regulated_zone": facts.get("regulated_zone") or ("비규제지역" if facts.get("is_hot_zone") == "N" else "해당없음"),
+            "readmission_limit": facts.get("readmission_limit") or "공고문 확인 필요",
+            "live_requirement": facts.get("live_requirement") or "공고문 확인 필요",
+            "price_cap": facts.get("price_cap") or ("미적용" if facts.get("is_hot_zone") == "N" else "공고문 확인 필요"),
+            "is_price_cap": facts.get("is_price_cap") or ("N" if facts.get("price_cap") == "미적용" else "해당없음"),
+            "resale_restriction": facts.get("resale_restriction") or "공고문 확인 필요",
+            "eligibility_special": [
+                {
+                    "type_name": "특별공급",
+                    "quota": None,
+                    "requirements": [
+                        "공고문에 명시된 특별공급 자격과 해당 유형별 요건을 모두 충족해야 합니다.",
+                        "무주택 세대구성원, 청약통장 가입, 거주지역 요건은 공고문과 청약홈 기준으로 확인합니다.",
+                        "세부 가점과 소득·자산 기준은 모집공고 최종본을 기준으로 재확인해야 합니다.",
+                    ],
+                }
+            ],
+            "eligibility_rank1": [
+                "1순위 자격은 공고문에 적힌 해당지역 거주요건과 청약통장 가입기간을 기준으로 확인합니다.",
+                "세대구성원 및 무주택 요건, 예치금 조건은 모집공고와 청약홈 안내를 함께 확인해야 합니다.",
+                "지역별 1순위 접수일은 공고문 일정표를 기준으로 준비합니다.",
+            ],
+            "eligibility_rank2": [
+                "2순위 자격은 1순위 미달 시 접수 가능하며, 공고문 기준으로 별도 확인이 필요합니다.",
+            ],
+        }
+    )
+
+    if unit_types:
+        facts["price_range"] = price_range
+        def _safe_int(value: object) -> int:
+            try:
+                return int(str(value).strip() or 0)
+            except Exception:
+                return 0
+
+        facts["supply_total_units"] = sum(
+            _safe_int(ut.get("general_units", 0)) + _safe_int(ut.get("special_units", 0))
+            for ut in unit_types
+        )
+        if not facts.get("supply_scale") and facts.get("supply_total_units"):
+            facts["supply_scale"] = f"총 {facts['supply_total_units']}세대"
+        if not facts.get("contract_amount"):
+            min_price = min(
+                (_parse_price_manwon(ut.get("price_min", 0)) for ut in unit_types),
+                default=0,
+            )
+            if min_price > 0:
+                facts["contract_amount"] = f"약 {int(min_price * int(facts['contract_ratio']) / 100):,}만원"
+    else:
+        facts["price_range"] = price_range or ""
+        facts["supply_total_units"] = 0
+
+    return facts
+
+
+def _extract_section_text(text: str, header: str) -> str:
+    """[섹션명]부터 다음 섹션 전까지의 텍스트를 가져온다."""
+    pattern = re.compile(
+        rf"\[{re.escape(header)}\]\s*(.*?)(?=\n\[[^\]]+\]|\Z)",
+        re.DOTALL,
+    )
+    m = pattern.search(text or "")
+    return m.group(1).strip() if m else ""
+
+
+def _fallback_location_analysis(facts: dict, notice_text: str) -> dict:
+    """입지 분석을 LLM 없이 구성한다."""
+    text = notice_text or ""
+    apt_name = facts.get("apt_name", "")
+    location = facts.get("location", "") or facts.get("supply_location", "")
+
+    location_section = _extract_section_text(text, "입지 정보")
+    section_lines = [line.strip() for line in location_section.splitlines() if line.strip()]
+    section_text = " ".join(section_lines[:3])
+
+    transit = _extract_first_match(
+        text,
+        (
+            r"(신분당선[^\n]+)",
+            r"([가-힣]+역\s*도보\s*\d+분)",
+            r"([가-힣]+선\s*[^\n]+)",
+        ),
+    )
+    school = _extract_first_match(
+        text,
+        (
+            r"(배정학교[^\n]+)",
+            r"([가-힣]+초등학교[^\n]*)",
+            r"([가-힣]+중학교[^\n]*)",
+        ),
+    )
+    life = _extract_first_match(
+        text,
+        (
+            r"(백화점[^\n]+)",
+            r"(테크노밸리[^\n]+)",
+            r"(마트[^\n]+)",
+        ),
+    )
+    medical = _extract_first_match(text, (r"([가-힣]+병원[^\n]*)",))
+
+    subway_detail = transit or (section_text if section_text else f"{location} 일대의 교통 접근성을 공고문과 지도로 함께 확인해야 합니다.")
+    school_detail = school or f"{apt_name} 인근 학교 배정은 교육청 학군 자료와 공고문을 함께 확인하는 것이 안전합니다."
+    life_detail = life or f"{location} 생활권의 편의시설은 공고문과 지도 서비스 기준으로 확인하는 것이 좋습니다."
+    medical_detail = medical or f"의료 접근성은 {location or apt_name} 주변 생활권을 기준으로 확인해야 합니다."
+
+    location_intro = (
+        f"{apt_name}은(는) {location or '공고문상 공급위치'}에 들어서는 단지로, "
+        f"{section_text or '교통, 교육, 생활 인프라를 함께 점검해야 하는 입지입니다.'} "
+        f"실제 체감 가치는 역세권 여부, 학군, 생활편의시설의 밀도에 따라 달라질 수 있습니다."
+    )
+
+    return {
+        "location_intro": location_intro,
+        "subway_score": "★★★☆☆",
+        "subway_detail": subway_detail,
+        "school_score": "★★★☆☆",
+        "school_detail": school_detail,
+        "life_score": "★★★☆☆",
+        "life_detail": life_detail,
+        "medical_score": "★★★☆☆",
+        "medical_detail": medical_detail,
+    }
+
+
+def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
+    """LLM 없이도 렌더링 가능한 기본 콘텐츠를 만든다."""
+    apt_name = facts.get("apt_name", "미확인 단지")
+    location = facts.get("location", "") or facts.get("supply_location", "")
+    supply_type = facts.get("supply_type", "")
+    price_range = facts.get("price_range", "")
+    unit_types = facts.get("unit_types", []) or []
+    rank1_date = facts.get("rank1_date", "-")
+    winner_date = facts.get("winner_date", "-")
+    contract_ratio = str(facts.get("contract_ratio") or "10")
+    midterm_ratio = str(facts.get("midterm_ratio") or "60")
+    midterm_count = str(facts.get("midterm_count") or "6")
+    balance_ratio = str(facts.get("balance_ratio") or "30")
+    regulated_zone = facts.get("regulated_zone") or "공고문 확인 필요"
+    readmission_limit = facts.get("readmission_limit") or "공고문 확인 필요"
+    live_requirement = facts.get("live_requirement") or "공고문 확인 필요"
+    price_cap = facts.get("price_cap") or "공고문 확인 필요"
+
+    unit_names = ", ".join(ut.get("type_name", "") for ut in unit_types[:4] if ut.get("type_name")) or "주요 타입"
+    type_summary = (
+        f"타입은 {unit_names} 중심으로 구성되어 있으며, 가격대는 {price_range or '공고문 확인 필요'}입니다."
+    )
+
+    qa_blocks = [
+        {
+            "question": "이 단지는 어떤 점을 먼저 봐야 하나요?",
+            "answer": (
+                f"{apt_name}은(는) {location or '공고문상 공급위치'}에 들어서는 공고로, "
+                f"가장 먼저 일정과 규제, 타입별 가격대를 함께 보는 것이 중요합니다. "
+                f"현재 확인되는 가격 범위는 {price_range or '공고문 확인 필요'}이고, "
+                f"1순위 접수는 {rank1_date or '공고문 확인 필요'}에 진행됩니다. "
+                f"단지의 장점은 입지와 공급구성이 맞아떨어질 때 더 선명해지므로, 교통·교육·생활편의 동선을 함께 확인해야 합니다."
+            ),
+        },
+        {
+            "question": "규제와 청약 제한은 어떻게 해석하면 되나요?",
+            "answer": (
+                f"규제 정보는 {regulated_zone}, 전매제한은 {facts.get('resale_restriction') or '공고문 확인 필요'}, "
+                f"재당첨 제한은 {readmission_limit}, 거주의무기간은 {live_requirement}, 분양가상한제는 {price_cap}로 정리됩니다. "
+                f"실제 청약 가능 여부는 세대원 구성, 거주지역, 청약통장 가입기간, 예치금 조건이 함께 맞아야 판단할 수 있습니다. "
+                f"따라서 규제 문구 하나만 보지 말고 공고문 전체와 청약홈 안내를 함께 대조하는 것이 안전합니다."
+            ),
+        },
+        {
+            "question": "자금계획은 어떻게 준비해야 하나요?",
+            "answer": (
+                f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}%라는 흐름으로 이해하면 됩니다. "
+                f"최소 분양가를 기준으로 계약금 규모를 계산한 뒤, 중도금 대출 가능 여부와 이자 조건, 잔금 시점의 현금 흐름을 따로 점검해야 합니다. "
+                f"특히 {apt_name}처럼 타입별 분양가 차이가 있는 단지는 같은 단지 안에서도 실제 필요 자금이 달라질 수 있으니, "
+                f"희망 평형을 정한 다음 숫자를 다시 산출하는 방식이 가장 효율적입니다."
+            ),
+        },
+    ]
+
+    seo_tags = [
+        apt_name,
+        location.split()[0] if location else "청약",
+        supply_type or "분양",
+        "청약일정",
+        "분양가",
+        "규제지역",
+        "자금계획",
+    ]
+
+    return {
+        "post_title": f"{apt_name} 청약 핵심 정리와 체크포인트",
+        "post_subtitle": f"{location or '공고문상 공급위치'} 기준으로 꼭 볼 규제와 일정",
+        "apt_intro": (
+            f"{apt_name}은(는) {location or '공고문상 공급위치'}에 위치한 {supply_type or '분양'} 공고입니다. "
+            f"{type_summary} 일정과 규제, 자금 흐름을 한 번에 정리해 두면 청약 판단이 훨씬 쉬워집니다."
+        ),
+        "location_intro": location_data.get("location_intro")
+        or f"{apt_name}의 입지는 {location or '공고문상 공급위치'}를 중심으로 교통과 생활권을 함께 보는 것이 핵심입니다.",
+        "financial_intro": (
+            f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 구조로 이해하면 됩니다. "
+            f"분양가 범위는 {price_range or '공고문 확인 필요'}이므로 희망 타입별로 실제 필요 자금을 따로 계산해야 합니다."
+        ),
+        "qa_intro": "아래 Q&A에서는 일정, 규제, 자금계획 순서로 실무적으로 필요한 포인트만 다시 정리합니다.",
+        "schedule_desc": (
+            f"특별공급과 1순위, 2순위 일정은 각각 공고문 일정표를 기준으로 확인해야 합니다. "
+            f"대표 청약일은 {rank1_date or '공고문 확인 필요'}이며, 당첨자 발표는 {winner_date or '공고문 확인 필요'}입니다."
+        ),
+        "unit_type_desc": (
+            f"타입별 공급 정보는 {type_summary} 실제 선택은 가격대와 면적, 공급 세대수를 함께 비교해야 합니다."
+        ),
+        "tax_desc": (
+            f"세금 측면에서는 취득세율 {facts.get('acquisition_tax_rate') or '1~3%'}를 기본값으로 보고, "
+            f"입주 후 보유세와 양도세는 실거주 계획에 맞춰 별도로 검토해야 합니다."
+        ),
+        "qa_blocks": qa_blocks,
+        "seo_tags": seo_tags,
+        "subway_detail": location_data.get("subway_detail", "교통 접근성은 공고문과 지도를 함께 확인해야 합니다."),
+        "school_detail": location_data.get("school_detail", "학군 정보는 교육청 자료와 함께 확인해야 합니다."),
+        "life_detail": location_data.get("life_detail", "생활편의시설은 지도 기반으로 재확인하는 것이 좋습니다."),
+        "medical_detail": location_data.get("medical_detail", "의료 인프라는 실제 생활권 반경을 기준으로 확인해야 합니다."),
+    }
 async def agent_fact_extraction(notice_text: str) -> dict:
     """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
+    if not OPENAI_API_KEY.strip():
+        print("  [Agent 1] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
+        facts = _fallback_fact_extraction(notice_text)
+        print(f"  [Agent 1] 완료: {facts.get('apt_name', '미확인')} 추출")
+        return facts
     raw = await _call_openai_json(
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
@@ -173,7 +630,8 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         facts = json.loads(m.group()) if m else {}
         if not facts:
-            print("  [Agent 1] JSON 파싱 실패")
+            print("  [Agent 1] JSON 파싱 실패 → 결정론적 폴백 사용")
+            facts = _fallback_fact_extraction(notice_text)
 
     # 자격 정보가 비어 있으면 전용 재추출을 한 번 더 수행한다.
     if facts and not _has_eligibility_data(facts):
@@ -310,6 +768,7 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
     try:
         from google import genai as google_genai
         from google.genai import types as genai_types
+
         client = google_genai.Client(api_key=GEMINI_API_KEY)
         resp = client.models.generate_content(
             model=LLM_LOCATION_MODEL,
@@ -325,13 +784,84 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
             result = json.loads(raw)
         except json.JSONDecodeError:
             import re as _re
-            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            m = _re.search(r"\{.*\}", raw, _re.DOTALL)
             result = json.loads(m.group()) if m else {}
         print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
         print(f"  [Agent 2] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
         return {}
+
+
+async def agent_location_analysis_gpt(facts: dict) -> dict:
+    """Agent 2: GPT-5.4로 입지 분석 생성"""
+    print("  [Agent 2] 입지 분석 시작 (GPT-5.4)...")
+    if not OPENAI_API_KEY.strip():
+        print("  [Agent 2] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
+        result = _fallback_location_analysis(facts, "")
+        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    try:
+        raw = await _call_openai_json(
+            system=(
+                "당신은 한국 부동산 입지 분석 전문가입니다.\n"
+                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
+            ),
+            user=LOCATION_ANALYSIS_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            ),
+            model=LLM_CONTENT_MODEL,
+            max_tokens=3000,
+        )
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    except Exception as e:
+        print(f"  [Agent 2] GPT-5.4 오류 ({e}) → 결정론적 폴백 사용")
+        return _fallback_location_analysis(facts, "")
+
+
+async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict:
+    """Agent 3: Gemini 3.1 Pro Preview로 입지 분석 검증·교정"""
+    print("  [Agent 3] 입지 분석 검증 시작 (Gemini 3.1 Pro Preview)...")
+    if not location_data:
+        return location_data
+    if not GEMINI_API_KEY:
+        print("  [Agent 3] GEMINI_API_KEY 미설정 → 검증 건너뜀")
+        return location_data
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
+            model=LLM_LOCATION_MODEL,
+            contents=LOCATION_VERIFY_PROMPT.format(
+                apt_name=facts.get("apt_name", ""),
+                location=facts.get("location", ""),
+                location_json=json.dumps(location_data, ensure_ascii=False, indent=2),
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+            ),
+        )
+        raw = resp.text.strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else location_data
+        print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        return result
+    except Exception as e:
+        print(f"  [Agent 3] Gemini 검증 오류 ({e}) → 원본 결과 그대로 사용")
+        return location_data
 
 
 async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
@@ -466,6 +996,11 @@ CONTENT_GEN_PROMPT = """
 async def agent_content_generation(facts: dict) -> dict:
     """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
     print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
+    if not OPENAI_API_KEY.strip():
+        print("  [Agent 4] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
+        content = _fallback_content_generation(facts, {})
+        print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
+        return content
     raw = await _call_openai_json(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
@@ -484,6 +1019,9 @@ async def agent_content_generation(facts: dict) -> dict:
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         content = json.loads(m.group()) if m else {}
+        if not content:
+            print("  [Agent 4] JSON 파싱 실패 → 결정론적 폴백 사용")
+            content = _fallback_content_generation(facts, {})
     print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
@@ -732,7 +1270,34 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "") -> Path | None:
+def _merge_pdf_policy(facts: dict, policy_text: str) -> dict:
+    """PDF 규제 텍스트를 파싱해 LLM/공공데이터 결과를 덮어쓴다."""
+    if not policy_text.strip():
+        return facts
+
+    policy = extract_policy_from_pdf_text(policy_text)
+    if not policy:
+        return facts
+
+    merged = dict(facts)
+    for key in ("regulated_zone", "readmission_limit", "resale_restriction", "live_requirement", "price_cap", "land_type", "is_hot_zone"):
+        value = policy.get(key)
+        if value not in (None, "", [], "공고문 확인 필요"):
+            merged[key] = value
+    return merged
+
+
+async def run_pipeline(
+    notice_text: str,
+    max_retries: int = 2,
+    theme: str = "",
+    supply_type: str = "",
+    notice_url: str = "",
+    api_is_hot_zone: str = "",
+    *,
+    doc: NoticeDocument | None = None,
+    pdf_policy_text: str = "",
+) -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -749,7 +1314,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
     # Step 1: 팩트 추출
     facts = await agent_fact_extraction(notice_text)
-    if not facts.get("apt_name") and doc.apt_name:
+    facts = _merge_pdf_policy(facts, pdf_policy_text or (doc.pdf_policy_text if doc else ""))
+
+    if not facts.get("apt_name") and doc and doc.apt_name:
         facts["apt_name"] = doc.apt_name
         print(f"  [Agent 1] 단지명 폴백 적용: {doc.apt_name}")
     if not facts.get("apt_name"):
@@ -910,28 +1477,10 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 # ──────────────────────────────────────────────────
 
 async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Path | None:
-    """
-    NoticeDocument → RAG 저장 → 컨텍스트 조합 → 블로그 포스팅 생성
+    """LangGraph 엔트리포인트로 위임한다."""
+    from main_langgraph import run_pipeline_from_doc as run_graph_pipeline
 
-    RAG 초기화 실패 시 doc.to_rag_text()로 자동 폴백하여
-    ChromaDB 없이도 동작 보장.
-    """
-    theme = _select_theme(doc.supply_type)
-    print(f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작... (공급유형: {doc.supply_type or '신규'} → 테마: {theme})")
-
-    try:
-        from agents.rag_store import ApartmentRAGStore
-        store = ApartmentRAGStore()
-        store.add_notice(doc)
-        notice_text = store.get_full_context(doc.notice_id)
-        if not notice_text.strip():
-            raise ValueError("RAG 컨텍스트 비어 있음")
-        print(f"  [RAG] 컨텍스트 {len(notice_text):,}자 조합 완료")
-    except Exception as e:
-        print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
-        notice_text = doc.to_rag_text()
-
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone)
+    return await run_graph_pipeline(doc, max_retries=max_retries)
 
 
 # ──────────────────────────────────────────────────

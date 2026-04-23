@@ -37,6 +37,7 @@ import pdfplumber
 
 sys.path.append(str(Path(__file__).parent.parent))
 from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
+from agents.pdf_policy import find_local_pdf, normalize_pdf_text
 
 
 # ══════════════════════════════════════════════════
@@ -102,6 +103,7 @@ class NoticeDocument:
     is_metro_private: str    # 수도권내민영공공주택지구
 
     # 원문 텍스트 (RAG용)
+    pdf_policy_text: str = ""
     raw_text: str = ""
     tables: list = field(default_factory=list)
     pdf_path: str | None = None
@@ -151,6 +153,8 @@ class NoticeDocument:
 [시행사] {self.developer}
 [문의처] {self.contact}
 [규제사항] {', '.join(flags) if flags else '없음'}
+
+{self.pdf_policy_text}
 
 {self.raw_text}
 
@@ -445,7 +449,105 @@ def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
     print(f"  [PDF] 추출: {sum(len(t) for t in texts)}자, 표 {len(tables)}개")
     return "\n\n".join(texts), tables
 
+def _merge_text_blocks(*blocks: str) -> str:
+    parts = [normalize_pdf_text(block) if block else "" for block in blocks]
+    return "\n\n".join(part for part in parts if part.strip())
 
+
+_POLICY_RESALE_PATTERNS = [
+    r"소유권이전등기일로부터\s*(\d+년)",
+    r"전매제한\s*기간\s*[：:]\s*([^\n,。<]{3,40})",
+    r"전매제한\s*[：:]\s*([^\n,。<]{3,40})",
+    r"입주\s*후\s*(\d+년\s*(?:이상\s*)?전매제한)",
+    r"분양가상한제\s*적용\s*(\d+년)",
+    r"전매\s*제한\s*없음",
+    r"전매제한\s*없음",
+]
+
+_POLICY_LIVE_PATTERNS = [
+    r"거주\s*의무\s*기간\s*[：:]\s*([^\n,。<]{3,30})",
+    r"실거주\s*의무\s*[：:]\s*([^\n,。<]{3,30})",
+    r"실거주\s*의무\s*(\d+년\s*이상)",
+    r"거주\s*의무\s*(\d+년\s*이상)",
+    r"실거주\s*의무\s*(없음|해당\s*없음|비해당)",
+    r"거주\s*의무\s*(없음|해당\s*없음)",
+]
+
+
+def _clean_policy_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip(" :·,.;")
+
+
+def _first_match(text: str, patterns: list[str]) -> str:
+    for pat in patterns:
+        m = re.search(pat, text, re.IGNORECASE | re.MULTILINE)
+        if m:
+            value = m.group(1) if m.lastindex else m.group(0)
+            value = _clean_policy_text(value)
+            if value:
+                return value
+    return ""
+
+
+def _extract_policy_summary(pdf_text: str) -> dict[str, str]:
+    """PDF 원문에서 규제 핵심 항목을 구조화한다."""
+    if not pdf_text:
+        return {}
+
+    text = pdf_text
+    summary: dict[str, str] = {}
+
+    if "비규제지역" in text or "비해당" in text or "해당없음" in text:
+        summary["regulated_zone"] = "비규제지역"
+        summary["is_hot_zone"] = "N"
+    else:
+        zones: list[str] = []
+        for label in ("투기과열지구", "청약과열지역", "조정대상지역"):
+            if label in text and label not in zones:
+                zones.append(label)
+        if zones:
+            summary["regulated_zone"] = ", ".join(zones)
+            summary["is_hot_zone"] = "Y"
+
+    resale = _first_match(text, _POLICY_RESALE_PATTERNS)
+    if resale:
+        summary["resale_restriction"] = resale
+
+    live_req = _first_match(text, _POLICY_LIVE_PATTERNS)
+    if live_req:
+        summary["live_requirement"] = live_req
+
+    readmission = _first_match(
+        text,
+        [
+            r"재당첨\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
+            r"재당첨\s*제한\s*(\d+년)",
+            r"재당첨\s*제한\s*(없음|해당\s*없음|비해당)",
+            r"재청약\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
+            r"재청약\s*제한\s*(\d+년)",
+            r"재청약\s*제한\s*(없음|해당\s*없음|비해당)",
+        ],
+    )
+    if readmission:
+        summary["readmission_limit"] = readmission
+
+    price_cap = _first_match(
+        text,
+        [
+            r"분양가상한제\s*[：:]\s*(적용|미적용|없음|해당\s*없음)",
+            r"분양가상한제\s*(적용|미적용)",
+        ],
+    )
+    if not price_cap and "분양가상한제" in text:
+        if "미적용" in text or "없음" in text:
+            price_cap = "미적용"
+        elif "적용" in text:
+            price_cap = "적용"
+    if price_cap:
+        summary["price_cap"] = price_cap
+        summary["is_price_cap"] = "Y" if price_cap == "적용" else "N"
+
+    return summary
 # ══════════════════════════════════════════════════
 # 7. 통합 수집 함수
 # ══════════════════════════════════════════════════
@@ -495,19 +597,25 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # PDF 공고문 (URL 있을 때) — 무순위/재공급의 경우 분양가 정보가 PDF에만 있을 수 있음
-        if doc.notice_url:
+        # PDF 공고문 (로컬 우선, 없으면 URL 다운로드)
+        pdf_dir = Path(__file__).resolve().parents[2] / "PDF"
+        pdf_file = find_local_pdf(pdf_dir, doc.notice_id, doc.apt_name)
+        if pdf_file:
+            print(f"  [PDF] 로컬 발견: {pdf_file.name}")
+        elif doc.notice_url:
             safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
             pdf_file = await download_pdf(
                 doc.notice_url,
                 OUTPUT_DIR / "pdfs",
                 f"{safe}_{doc.notice_id}.pdf",
             )
-            if pdf_file:
-                pdf_text, pdf_tables = parse_pdf(pdf_file)
-                doc.raw_text = pdf_text or doc.raw_text
-                doc.tables   = pdf_tables or doc.tables
-                doc.pdf_path = str(pdf_file)
+
+        if pdf_file:
+            pdf_text, pdf_tables = parse_pdf(pdf_file)
+            doc.pdf_policy_text = pdf_text
+            doc.raw_text = _merge_text_blocks(doc.raw_text, pdf_text)
+            doc.tables = pdf_tables or doc.tables
+            doc.pdf_path = str(pdf_file)
 
         docs.append(doc)
 
