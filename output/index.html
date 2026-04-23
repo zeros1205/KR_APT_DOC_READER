@@ -1,0 +1,967 @@
+﻿<!DOCTYPE html>
+<html lang="ko" data-palette="A">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정과장의 청약노트 — 분양 공고 분석 모음</title>
+<meta name="description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
+<link rel="canonical" href="https://apt-note.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="정과장의 청약노트">
+<meta property="og:title" content="정과장의 청약노트 — 분양 공고 분석 모음">
+<meta property="og:description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
+<meta property="og:url" content="https://apt-note.com/">
+<meta property="og:image" content="https://apt-note.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="정과장의 청약노트 — 분양 공고 분석 모음">
+<meta name="twitter:description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트.">
+<meta name="twitter:image" content="https://apt-note.com/og-image.png">
+<meta name="robots" content="index, follow">
+<link rel="sitemap" type="application/xml" href="https://apt-note.com/sitemap.xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>(function(){var p=localStorage.getItem("apt-palette")||"A";document.documentElement.setAttribute("data-palette",p);})();</script>
+<style>
+/* ─── 팔레트 A : Claude / Anthropic (기본값) ─── */
+html {
+  --c-primary:        #d97757;
+  --c-primary-dark:   #b85c38;
+  --c-primary-light:  #fdf0ea;
+  --c-primary-stripe: rgba(217,119,87,0.05);
+  --c-accent:         #6a9bcc;
+  --c-bg:             #faf9f5;
+  --c-surface:        #ffffff;
+  --c-dark:           #2c2925;
+  --c-mid:            #767370;
+  --c-light-gray:     #e8e6dc;
+  --c-hero-bg:        #f2efe6;
+  --c-nav-bg:         #2a2721;
+  --c-green:          #788c5d;
+  --c-green-dark:     #57673f;
+  --c-green-light:    #edf2e6;
+  --c-card-grad-new:        linear-gradient(145deg,#d97757 0%,#b85c38 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#788c5d 0%,#57673f 100%);
+  --c-cta-bg:               #4a4540;
+  --c-cta-hover:            #38342f;
+  --c-tag-new-bg:           #fdf0ea;
+  --c-tag-new-text:         #b85c38;
+  --c-tag-resupply-bg:      #edf2e6;
+  --c-tag-resupply-text:    #57673f;
+}
+
+/* ─── 팔레트 B : Neutral Elegance ─── */
+html[data-palette="B"] {
+  --hunter-green:     #386641ff;
+  --sage-green:       #6a994eff;
+  --yellow-green:     #a7c957ff;
+  --vanilla-cream:    #f2e8cfff;
+  --blushed-brick:    #bc4749ff;
+  --c-primary:        #386641;
+  --c-primary-dark:   #2f5236;
+  --c-primary-light:  #edf4e9;
+  --c-primary-stripe: rgba(56,102,65,0.08);
+  --c-accent:         #6a994e;
+  --c-bg:             #f2e8cf;
+  --c-surface:        #ffffff;
+  --c-dark:           #2c2925;
+  --c-mid:            #6a994e;
+  --c-light-gray:     rgba(56,102,65,0.20);
+  --c-hero-bg:        #f2e8cf;
+  --c-nav-bg:         #2f5236;
+  --c-green:          #a7c957;
+  --c-green-dark:     #386641;
+  --c-green-light:    #edf4e9;
+  --c-card-grad-new:        linear-gradient(145deg,#6a994e 0%,#386641 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a7c957 0%,#6a994e 100%);
+  --c-cta-bg:               #386641;
+  --c-cta-hover:            #2f5236;
+  --c-tag-new-bg:           #edf4e9;
+  --c-tag-new-text:         #386641;
+  --c-tag-resupply-bg:      #edf4e9;
+  --c-tag-resupply-text:    #6a994e;
+}
+
+/* ─── 팔레트 C : Pastel Dreamland ─── */
+html[data-palette="C"] {
+  --c-primary:        #ffafcc;
+  --c-primary-dark:   #cc7fa0;
+  --c-primary-light:  #fff5f8;
+  --c-primary-stripe: rgba(255,175,204,0.08);
+  --c-accent:         #a2d2ff;
+  --c-bg:             #fdf8ff;
+  --c-surface:        #ffffff;
+  --c-dark:           #2d1f3d;
+  --c-mid:            #8070a0;
+  --c-light-gray:     #ddd0f0;
+  --c-hero-bg:        #f5eefc;
+  --c-nav-bg:         #3d2952;
+  --c-green:          #bde0fe;
+  --c-green-dark:     #6ab0e0;
+  --c-green-light:    #eef6ff;
+  --c-card-grad-new:        linear-gradient(145deg,#ffafcc 0%,#cdb4db 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#bde0fe 0%,#a2d2ff 100%);
+  --c-cta-bg:               #7060a8;
+  --c-cta-hover:            #5a4c8a;
+  --c-tag-new-bg:           #fff5f8;
+  --c-tag-new-text:         #cc7fa0;
+  --c-tag-resupply-bg:      #eef6ff;
+  --c-tag-resupply-text:    #6ab0e0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  background: var(--c-bg);
+  color: var(--c-dark);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── 탭 ── */
+.tab-btn {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1.5px solid var(--c-light-gray);
+  background: var(--c-surface);
+  color: var(--c-dark);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: inherit;
+}
+.tab-count { font-weight: 400; color: var(--c-mid); }
+.tab-btn:hover { border-color: var(--c-primary); color: var(--c-primary); }
+.tab-btn:hover .tab-count { color: var(--c-primary); opacity:0.7; }
+.tab-btn.active {
+  background: var(--c-primary);
+  color: #fff;
+  border-color: var(--c-primary);
+  font-weight: 700;
+}
+.tab-btn.active .tab-count { color: rgba(255,255,255,0.7); }
+
+/* ── 그리드 ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+@media (max-width: 960px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 580px) { .cards-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 900px) {
+  .featured-shell {
+    grid-template-columns: 1fr !important;
+  }
+  .guide-body {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .guide-card {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .guide-body {
+    font-size: 16px !important;
+  }
+  .mobile-tab-scroll {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+  .mobile-tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── 카드 ── */
+.post-card {
+  background: var(--c-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  border: 1px solid var(--c-light-gray);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+}
+.post-card.hidden { display: none !important; }
+
+/* ── 카드 헤더 ── */
+.card-header {
+  position: relative;
+  padding: 16px 16px 18px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.card-title {
+  position: relative;
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
+}
+.card-title-track {
+  display: inline-block;
+  min-width: 100%;
+  will-change: transform;
+}
+.card-title.is-marquee .card-title-track {
+  animation: card-title-pingpong var(--marquee-duration, 6s) ease-in-out infinite alternate;
+}
+@keyframes card-title-pingpong {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--marquee-shift, -40px)); }
+}
+
+/* ── CTA ── */
+.card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  background: var(--c-cta-bg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+.card-cta:hover { background: var(--c-cta-hover); }
+
+/* ── 히어로 줄무늬 ── */
+.hero-stripe {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -55deg, transparent, transparent 28px,
+    var(--c-primary-stripe) 28px, var(--c-primary-stripe) 29px
+  );
+  pointer-events: none;
+}
+
+/* ── 검색 ── */
+.search-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+.search-wrap-header {
+  margin-right: 0;
+}
+.search-wrap-header::after {
+  display: none;
+}
+.search-wrap-header .search-input {
+  width: 176px;
+  height: 36px;
+  padding-left: 36px;
+  padding-right: 12px;
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.96);
+}
+.search-wrap-header .search-input:focus {
+  width: 220px;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 4px rgba(217,119,87,0.12);
+}
+.search-wrap::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--c-light-gray);
+}
+.search-input {
+  padding: 7px 12px 7px 34px;
+  border-radius: 6px;
+  border: 1.5px solid var(--c-light-gray);
+  background: var(--c-surface);
+  color: var(--c-dark);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  width: 160px;
+  transition: border-color 150ms, width 200ms, box-shadow 150ms, background 150ms;
+}
+.search-input:focus {
+  border-color: var(--c-primary);
+  width: 200px;
+  box-shadow: 0 0 0 4px rgba(217,119,87,0.10);
+}
+.search-input::placeholder { color: var(--c-mid); }
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--c-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  z-index: 2;
+}
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(320px, 72vw);
+  background: var(--c-surface);
+  border: 1px solid var(--c-light-gray);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(36, 32, 28, 0.12);
+  overflow: hidden;
+  display: none;
+  z-index: 30;
+  max-height: 286px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.search-suggestions.show {
+  display: block;
+}
+.search-suggestion {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 11px 14px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: inherit;
+}
+.search-suggestion + .search-suggestion {
+  border-top: 1px solid var(--c-light-gray);
+}
+.search-suggestion:hover,
+.search-suggestion.active {
+  background: var(--c-primary-light);
+}
+.search-suggestion-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-dark);
+  line-height: 1.35;
+}
+.search-suggestion-meta {
+  font-size: 11px;
+  color: var(--c-mid);
+  line-height: 1.35;
+}
+
+/* ── 빈 결과 ── */
+#no-result { display:none; text-align:center; padding:80px 20px; color:var(--c-mid); font-size:15px; }
+#no-result.show { display:block; }
+
+.section-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-light-gray);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(36, 32, 28, 0.06);
+}
+#filter-dock {
+  position: sticky;
+  top: 54px;
+  z-index: 35;
+  background: var(--c-bg);
+  margin: 0 -24px 32px;
+  padding: 14px 24px 16px;
+  border-bottom: 1px solid rgba(217,119,87,0.24);
+  box-shadow: 0 18px 32px rgba(36,32,28,0.12);
+  overflow: hidden;
+}
+#filter-dock-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--c-primary), #ef9a74);
+  transition: width 120ms ease-out;
+}
+#scroll-top-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  z-index: 60;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+#scroll-top-btn:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+
+<header id="site-nav" style="background:var(--c-nav-bg);padding:0 24px;position:sticky;top:0;z-index:50;border-bottom:2px solid var(--c-primary);"><div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;"><a href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px;"><img src="jung_reader_logo.png" alt="정과장의 청약노트 로고" style="width:30px;height:30px;border-radius:8px;object-fit:cover;flex-shrink:0;display:block;"><span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">정과장의 청약노트</span></a><div style="display:flex;align-items:center;gap:10px;"><div class="search-wrap search-wrap-header" style="margin-right:0;"><span class="search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><input class="search-input js-apt-search" type="text" placeholder="단지명 검색" autocomplete="off"><div class="search-suggestions"></div></div></div></div></header>
+
+
+<!-- ══ 히어로 ══ -->
+<section style="background:var(--c-hero-bg);padding:72px 24px 40px;position:relative;overflow:hidden;">
+  <div class="hero-stripe"></div>
+  <div style="position:absolute;right:-60px;top:-60px;width:320px;height:320px;
+              border-radius:50%;border:1px solid var(--c-primary-stripe);pointer-events:none;"></div>
+
+  <div style="max-width:1160px;margin:0 auto;position:relative;">
+
+    <div style="display:inline-flex;align-items:center;
+                background:var(--c-primary-light);border:1px solid rgba(0,0,0,0.08);
+                border-radius:6px;padding:6px 16px;margin-bottom:24px;">
+      <span style="font-size:16px;font-weight:700;color:var(--c-primary);letter-spacing:0.5px;">
+        아파트 청약 공고문 분석 서비스
+      </span>
+    </div>
+
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:var(--c-dark);
+               line-height:1.18;margin-bottom:18px;word-break:keep-all;letter-spacing:-1.5px;">
+      복잡한 청약 공고문,<br>
+      <span style="color:var(--c-primary);">정과장이 쉽게</span> 정리해 드립니다
+    </h1>
+
+    <p style="font-size:16px;color:#2c2925;opacity:1;line-height:1.75;
+              max-width:460px;margin-bottom:44px;word-break:keep-all;">
+      한국부동산원 청약홈 공개 데이터를 분석하여<br>
+      분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
+                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
+                   font-size:13px;font-weight:700;color:var(--c-dark);">
+        최근 업데이트 2026년 4월 22일
+      </span>
+    </div>
+
+  </div>
+</section>
+
+<div style="height:3px;background:linear-gradient(90deg,var(--c-primary),var(--c-accent),transparent);"></div>
+
+
+<section style="padding:36px 24px 8px;">
+  <div class="featured-shell" style="max-width:600px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:20px;">
+    
+<div id="user-guide-card" class="section-card guide-card" style="padding:26px 22px 50px;position:relative;">
+  <button id="dismiss-user-guide" type="button" style="position:absolute;right:18px;bottom:18px;border:0;background:transparent;color:var(--c-mid);border-radius:999px;padding:6px 0;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1;transition:all 150ms;">
+    다시 보지 않기
+  </button>
+  <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+            letter-spacing:2px;margin-bottom:10px;">USER GUIDE</p>
+  <p class="guide-body" style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;
+            letter-spacing:0;max-width:none;word-break:keep-all;margin-bottom:6px;">
+    <span style="color:var(--c-primary);">입주자모집공고</span>를 빠르게 확인하고
+    내 집 마련에 성공하세요
+  </p>
+  <p class="guide-body" style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;word-break:keep-all;">
+    <span style="color:var(--c-primary);">관심지역</span>, <span style="color:var(--c-primary);">공급유형 필터</span> 또는 <span style="color:var(--c-primary);">단지명 검색</span>으로
+    원하는 단지를 쉽게 찾아볼 수 있어요.
+  </p>
+</div>
+
+  </div>
+</section>
+
+
+<main style="max-width:1160px;margin:0 auto;padding:22px 24px 96px;">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;
+              justify-content:space-between;gap:16px;margin-bottom:22px;">
+    <div>
+      <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+                letter-spacing:2px;margin-bottom:5px;">ANALYSIS REPORTS</p>
+      <h2 style="font-size:22px;font-weight:800;color:var(--c-dark);letter-spacing:-0.5px;">
+        분양 공고 분석 모음
+      </h2>
+    </div>
+  </div>
+
+  <div id="filter-dock">
+    <div class="mobile-tab-scroll" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">
+      <button class="tab-btn" data-group="region" data-value="전체" onclick="filterGroup(this,'region','전체')">전체</button><button class="tab-btn" data-group="region" data-value="경기도" onclick="filterGroup(this,'region','경기도')">경기도</button><button class="tab-btn" data-group="region" data-value="제주도" onclick="filterGroup(this,'region','제주도')">제주</button>
+    </div>
+    <div id="filter-dock-progress"></div>
+  </div>
+
+  <div class="cards-grid" id="cards-grid">
+    <article class="post-card" data-region="경기도" data-supply="민간분양" data-name="힐스테이트 판교역" data-url="posts/2026-04-24_힐스테이트_판교역/post.html" onclick="location.href='posts/2026-04-24_힐스테이트_판교역/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">힐스테이트 판교역</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        7억 5,000만원 ~ 11억 2,000만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 25일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:13px;color:var(--c-mid);">-</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 경기도 성남시 분당구 삼평동 123</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#힐스테이트 판교역</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#경기도</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#청약일정</span></div>
+  <a href="posts/2026-04-24_힐스테이트_판교역/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
+<article class="post-card" data-region="경기도" data-supply="민간분양" data-name="힐스테이트 판교역" data-url="posts/2026-04-23_힐스테이트_판교역/post.html" onclick="location.href='posts/2026-04-23_힐스테이트_판교역/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">힐스테이트 판교역</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        7억 5,000만원 ~ 11억 2,000만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 25일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:13px;color:var(--c-mid);">-</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 경기도 성남시 분당구 삼평동 123</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#힐스테이트 판교역</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#경기도</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#청약일정</span></div>
+  <a href="posts/2026-04-23_힐스테이트_판교역/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
+<article class="post-card" data-region="경기도" data-supply="민간분양" data-name="용인 양지 서희스타힐스 하이뷰" data-url="posts/2026-04-23_용인_양지_서희스타힐스_하이뷰/post.html" onclick="location.href='posts/2026-04-23_용인_양지_서희스타힐스_하이뷰/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">용인 양지 서희스타힐스 하이뷰</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        4억 2,100만원 ~ 5억 4,400만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">5월 6일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">5월 7일</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 경기도 용인시 처인구 양지읍 양지리</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인양지서희스타힐스하이뷰</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#용인청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#처인구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#양지읍아파트</span></div>
+  <a href="posts/2026-04-23_용인_양지_서희스타힐스_하이뷰/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
+<article class="post-card" data-region="경기도" data-supply="공공분양" data-name="고덕신도시 아테라 A-63블록 공공분양주택" data-url="posts/2026-04-23_고덕신도시_아테라_A_63블록_공공분양주택/post.html" onclick="location.href='posts/2026-04-23_고덕신도시_아테라_A_63블록_공공분양주택/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">공공분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">고덕신도시 아테라 A-63블록 공공분양주택</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        4억 7,552만원 ~ 5억 4,150만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 27일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 28일</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 경기도 평택시 고덕동</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#고덕신도시아테라A63블록</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#고덕신도시아테라</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#평택분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#평택청약</span></div>
+  <a href="posts/2026-04-23_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
+<article class="post-card" data-region="제주도" data-supply="민간분양" data-name="PH159" data-url="posts/2026-04-23_PH159/post.html" onclick="location.href='posts/2026-04-23_PH159/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">PH159</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        4억 5,000만원 ~ 6억 7,500만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:13px;color:var(--c-mid);">-</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 30일</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 제주특별자치도 제주시 조천읍 북촌리</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#PH159</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#제주청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#조천읍분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#제주시아파트</span></div>
+  <a href="posts/2026-04-23_PH159/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
+  </div>
+  <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
+
+  <div id="pagination" style="display:flex;justify-content:center;align-items:center;
+       gap:6px;margin-top:48px;flex-wrap:wrap;"></div>
+</main>
+
+
+<!-- ══ 푸터 ══ -->
+<footer style="background:var(--c-nav-bg);padding:40px 24px;">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px;
+                padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <div>
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <img src="jung_reader_logo.png" alt="정과장의 청약노트 로고"
+               style="width:80px;height:80px;border-radius:18px;object-fit:cover;flex-shrink:0;display:block;">
+          <div style="text-align:left;">
+            <p style="color:#fff;font-size:22px;font-weight:800;margin-bottom:8px;">정과장의 청약노트</p>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:2.2;">
+              <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
+              <p>⚠️ 투자 권유가 아닌 정보 제공 목적입니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:20px;">
+      Copyright © 2026 정과장의 청약노트 All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<button id="scroll-top-btn" type="button" aria-label="최상단으로 이동">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M18 15l-6-6-6 6"></path>
+  </svg>
+</button>
+
+<script>
+var POSTS_PER_PAGE = 12;
+var _currentPage = 1;
+var _activeFilters = {
+  region: '전체',
+  supply: '전체'
+};
+var _searchState = new WeakMap();
+
+function _getMatchedCards() {
+  var all = Array.from(document.querySelectorAll('.post-card'));
+  return all.filter(function(card) {
+    var regionMatch = _activeFilters.region === '전체' || card.dataset.region === _activeFilters.region;
+    return regionMatch;
+  });
+}
+
+function _renderPage(matched, page) {
+  var start = (page - 1) * POSTS_PER_PAGE;
+  var end = start + POSTS_PER_PAGE;
+  document.querySelectorAll('.post-card').forEach(function(card) { card.style.display = 'none'; });
+  matched.slice(start, end).forEach(function(card) { card.style.display = ''; });
+  requestAnimationFrame(_bindCardTitleMarquee);
+}
+
+function _renderPagination(matched) {
+  var box = document.getElementById('pagination');
+  if (!box) return;
+  var pages = Math.ceil(matched.length / POSTS_PER_PAGE);
+  if (pages <= 1) {
+    box.innerHTML = '';
+    return;
+  }
+  var btnBase = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-light-gray);'
+    + 'background:var(--c-surface);color:var(--c-dark);font-size:13px;font-weight:600;'
+    + 'cursor:pointer;font-family:inherit;transition:all 150ms;padding:0 10px;"';
+  var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
+    + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
+    + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
+  var html = '';
+  for (var i = 1; i <= pages; i++) {
+    if (i === _currentPage) {
+      html += '<button ' + btnActive + '>' + i + '</button>';
+    } else {
+      html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
+    }
+  }
+  box.innerHTML = html;
+}
+
+function _applyFilters() {
+  _currentPage = 1;
+  var matched = _getMatchedCards();
+  _renderPage(matched, _currentPage);
+  _renderPagination(matched);
+  var resultCount = document.getElementById('result-count');
+  if (resultCount) {
+    resultCount.innerHTML =
+      '총 <strong style="color:var(--c-dark);">' + matched.length + '</strong>건';
+  }
+  document.getElementById('no-result').classList.toggle('show', matched.length === 0);
+}
+
+function goPage(page) {
+  _currentPage = page;
+  var matched = _getMatchedCards();
+  _renderPage(matched, _currentPage);
+  _renderPagination(matched);
+  var grid = document.getElementById('cards-grid');
+  if (grid && window.scrollY > grid.offsetTop - 120) {
+    window.scrollTo({ top: grid.offsetTop - 80, behavior: 'smooth' });
+  }
+}
+
+function filterGroup(btn, group, value) {
+  document.querySelectorAll('.tab-btn[data-group="' + group + '"]').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  _activeFilters[group] = value;
+  _applyFilters();
+}
+
+function _buildSuggestions(query) {
+  var q = (query || '').toLowerCase().trim();
+  if (!q) return [];
+  var seen = new Set();
+  return Array.from(document.querySelectorAll('.post-card')).filter(function(card) {
+    var name = (card.dataset.name || '').trim();
+    var url = (card.dataset.url || '').trim();
+    if (!name || !url) return false;
+    var key = name + '|' + url;
+    if (seen.has(key)) return false;
+    var matched = name.toLowerCase().includes(q);
+    if (matched) seen.add(key);
+    return matched;
+  }).slice(0, 10).map(function(card) {
+    return {
+      name: card.dataset.name || '',
+      url: card.dataset.url || '',
+      region: card.dataset.region || '',
+      supply: card.dataset.supply || ''
+    };
+  });
+}
+
+function _closeSuggestions(input) {
+  var wrap = input.closest('.search-wrap');
+  var box = wrap ? wrap.querySelector('.search-suggestions') : null;
+  if (!box) return;
+  box.classList.remove('show');
+  box.innerHTML = '';
+  _searchState.set(input, { items: [], activeIndex: -1 });
+}
+
+function _renderSuggestions(input) {
+  var wrap = input.closest('.search-wrap');
+  var box = wrap ? wrap.querySelector('.search-suggestions') : null;
+  if (!box) return;
+  var items = _buildSuggestions(input.value);
+  _searchState.set(input, { items: items, activeIndex: -1 });
+  if (!items.length) {
+    _closeSuggestions(input);
+    return;
+  }
+  box.innerHTML = items.map(function(item, idx) {
+    return '<button type="button" class="search-suggestion" data-index="' + idx + '" data-url="' + item.url + '">'
+      + '<span class="search-suggestion-title">' + item.name + '</span>'
+      + '<span class="search-suggestion-meta">' + item.region + ' · ' + item.supply + '</span>'
+      + '</button>';
+  }).join('');
+  box.classList.add('show');
+  if (!box.dataset.wheelBound) {
+    box.addEventListener('wheel', function(e) {
+      var delta = e.deltaY;
+      if (!delta) return;
+      box.scrollTop += delta;
+      e.preventDefault();
+      e.stopPropagation();
+    }, { passive: false });
+    box.dataset.wheelBound = 'true';
+  }
+  box.querySelectorAll('.search-suggestion').forEach(function(btn) {
+    btn.addEventListener('click', function() { location.href = btn.dataset.url; });
+  });
+}
+
+function _syncSearchInputs(source) {
+  document.querySelectorAll('.js-apt-search').forEach(function(input) {
+    if (input !== source) {
+      input.value = source.value;
+      _renderSuggestions(input);
+    }
+  });
+}
+
+function _activateSuggestion(input, nextIndex) {
+  var wrap = input.closest('.search-wrap');
+  var box = wrap ? wrap.querySelector('.search-suggestions') : null;
+  var state = _searchState.get(input) || { items: [], activeIndex: -1 };
+  if (!box || !state.items.length) return;
+  var buttons = Array.from(box.querySelectorAll('.search-suggestion'));
+  if (!buttons.length) return;
+  var index = nextIndex;
+  if (index < 0) index = buttons.length - 1;
+  if (index >= buttons.length) index = 0;
+  buttons.forEach(function(btn) { btn.classList.remove('active'); });
+  buttons[index].classList.add('active');
+  _searchState.set(input, { items: state.items, activeIndex: index });
+}
+
+function _bindSearchInputs() {
+  document.querySelectorAll('.js-apt-search').forEach(function(input) {
+    _searchState.set(input, { items: [], activeIndex: -1 });
+    input.addEventListener('input', function() {
+      _renderSuggestions(input);
+      _syncSearchInputs(input);
+    });
+    input.addEventListener('focus', function() {
+      if (input.value.trim()) _renderSuggestions(input);
+    });
+    input.addEventListener('keydown', function(e) {
+      var state = _searchState.get(input) || { items: [], activeIndex: -1 };
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        _activateSuggestion(input, state.activeIndex + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        _activateSuggestion(input, state.activeIndex - 1);
+      } else if (e.key === 'Enter') {
+        if (state.items.length) {
+          e.preventDefault();
+          var item = state.items[state.activeIndex >= 0 ? state.activeIndex : 0];
+          if (item && item.url) location.href = item.url;
+        }
+      } else if (e.key === 'Escape') {
+        _closeSuggestions(input);
+      }
+    });
+  });
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.js-apt-search').forEach(function(input) {
+      var wrap = input.closest('.search-wrap');
+      if (wrap && !wrap.contains(e.target)) _closeSuggestions(input);
+    });
+  });
+}
+
+function _bindCardTitleMarquee() {
+  document.querySelectorAll('.card-title').forEach(function(title) {
+    var track = title.querySelector('.card-title-track');
+    if (!track) return;
+    title.classList.remove('is-marquee');
+    title.style.removeProperty('--marquee-shift');
+    title.style.removeProperty('--marquee-duration');
+    var overflow = Math.ceil(track.scrollWidth - title.clientWidth);
+    if (overflow > 4) {
+      title.classList.add('is-marquee');
+      title.style.setProperty('--marquee-shift', '-' + overflow + 'px');
+      var duration = Math.min(12, Math.max(4, overflow / 24));
+      title.style.setProperty('--marquee-duration', duration + 's');
+    }
+  });
+}
+
+function _bindUserGuideDismiss() {
+  var card = document.getElementById('user-guide-card');
+  var btn = document.getElementById('dismiss-user-guide');
+  if (!card || !btn) return;
+  var today = new Date().toISOString().slice(0, 10);
+  var key = 'apt-hide-user-guide-until';
+  if (localStorage.getItem(key) === today) {
+    card.style.display = 'none';
+    return;
+  }
+  btn.addEventListener('click', function() {
+    localStorage.setItem(key, today);
+    card.style.display = 'none';
+  });
+}
+
+function _bindFilterDockProgress() {
+  var progress = document.getElementById('filter-dock-progress');
+  if (!progress) return;
+  function updateProgress() {
+    var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    var ratio = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+    progress.style.width = (ratio * 100).toFixed(2) + '%';
+  }
+  updateProgress();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+}
+
+function _bindScrollTopButton() {
+  var btn = document.getElementById('scroll-top-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+document.querySelector('.tab-btn[data-group="region"][data-value="전체"]').classList.add('active');
+var defaultSupplyBtn = document.querySelector('.tab-btn[data-group="supply"][data-value="전체"]');
+if (defaultSupplyBtn) defaultSupplyBtn.classList.add('active');
+_bindSearchInputs();
+_bindFilterDockProgress();
+_bindScrollTopButton();
+_bindUserGuideDismiss();
+_applyFilters();
+</script>
+
+</body>
+</html>
