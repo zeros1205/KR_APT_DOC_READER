@@ -46,6 +46,9 @@ jobs:
           PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
           EOF
 
+      - name: Google Search Grounding 테스트
+        run: python test_google_grounding.py
+
       - name: 파이프라인 실행
         run: |
           DAYS=${{ github.event.inputs.days || '7' }}
