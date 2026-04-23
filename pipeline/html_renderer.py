@@ -192,6 +192,8 @@ _SUPPLY_LABEL_MAP = [
 _PUBLIC_APT_KW = ("공공분양", "공공임대", "행복주택", "국민임대", "lh", "sh공사",
                   "경기주택", "인천도시공사", "주공", "공공지원")
 
+_DISPLAY_EMPTY_VALUES = {"", "-", "None", "null", "해당없음", "공고문 확인 필요"}
+
 
 def _supply_label(supply_type: str, apt_name: str = "") -> str:
     for kw, label in _SUPPLY_LABEL_MAP:
@@ -209,6 +211,201 @@ def _render_header_tag(label: str, radius: str) -> str:
         f' border:1px solid rgba(255,255,255,0.28); background:rgba(255,255,255,0.18);'
         f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
         f' line-height:1;">{label}</span>'
+    )
+
+
+def _stringify(value: object) -> str:
+    return str(value).strip() if value is not None else ""
+
+
+def _display_value(value: object, default: str = "미기재") -> str:
+    text = _stringify(value)
+    return default if text in _DISPLAY_EMPTY_VALUES else text
+
+
+def _display_date(value: object) -> str:
+    return _display_value(value, default="")
+
+
+def _safe_int(value: object) -> int:
+    try:
+        return int(str(value).strip() or 0)
+    except Exception:
+        return 0
+
+
+def _parse_price_manwon(value: object) -> int:
+    if value is None:
+        return 0
+    if isinstance(value, (int, float)):
+        return int(value)
+
+    text = str(value).strip().replace(",", "")
+    if not text or text in {"-", "null", "None"}:
+        return 0
+    if text.isdigit():
+        return int(text)
+
+    total = 0
+    m = re.search(r"(\d+(?:\.\d+)?)\s*억", text)
+    if m:
+        total += int(float(m.group(1)) * 10000)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*천\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 1000)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*백\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 100)
+    m = re.search(r"(\d+(?:\.\d+)?)\s*십\s*만원", text)
+    if m:
+        total += int(float(m.group(1)) * 10)
+    if "만원" in text and total == 0:
+        m = re.search(r"(\d+(?:\.\d+)?)\s*만원", text)
+        if m:
+            total += int(float(m.group(1)))
+    return total
+
+
+def _canonical_subtitle(post_subtitle: str, supply_location: str, location: str) -> str:
+    return _stringify(supply_location) or _stringify(location) or _stringify(post_subtitle)
+
+
+def _canonical_supply_scale(supply_scale: str, total_households: str, unit_types: list["UnitType"]) -> str:
+    scale = _stringify(supply_scale)
+    if scale:
+        return scale
+    households = _stringify(total_households)
+    if households:
+        households_clean = households.replace(",", "")
+        if households_clean.isdigit():
+            return f"총 {int(households_clean):,}세대"
+        return households
+    total_units = sum(max(0, _safe_int(ut.general_units)) + max(0, _safe_int(ut.special_units)) for ut in unit_types)
+    return f"총 {total_units:,}세대" if total_units > 0 else ""
+
+
+def _normalize_contract_amount(contract_amount: str, contract_ratio: str, unit_types: list["UnitType"]) -> str:
+    amount = _stringify(contract_amount)
+    if amount and amount not in {"-", "None", "null"}:
+        return amount
+    min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
+    if min_price > 0:
+        return f"약 {int(min_price * _safe_int(contract_ratio or 10) / 100):,}만원"
+    return "공고문 확인 필요"
+
+
+def build_post_data(
+    *,
+    facts: dict,
+    content: dict,
+    doc=None,
+    theme: str,
+    supply_type: str,
+    notice_url: str,
+    api_is_hot_zone: str = "",
+) -> PostData:
+    """상세페이지 기준 샘플 구조에 맞는 PostData를 단일 규칙으로 조립한다."""
+    unit_types = [
+        UnitType(
+            type_name=ut.get("type_name", ""),
+            area_sqm=float(ut.get("area_sqm", 0) or 0),
+            general_units=_safe_int(ut.get("general_units", 0)),
+            special_units=_safe_int(ut.get("special_units", 0)),
+            price_min=_parse_price_manwon(ut.get("price_min", 0)),
+            price_max=_parse_price_manwon(ut.get("price_max", 0)),
+        )
+        for ut in facts.get("unit_types", [])
+    ]
+
+    qa_blocks = [
+        QABlock(question=qa.get("question", ""), answer=qa.get("answer", ""))
+        for qa in content.get("qa_blocks", [])
+    ]
+
+    apt_name = _stringify(facts.get("apt_name")) or _stringify(getattr(doc, "apt_name", ""))
+    location = _stringify(facts.get("location"))
+    supply_location = _stringify(facts.get("supply_location")) or _stringify(getattr(doc, "supply_address", ""))
+    total_households = _stringify(
+        facts.get("total_households")
+        or getattr(doc, "total_units", "")
+        or facts.get("supply_total_units")
+        or ""
+    )
+    supply_scale = _canonical_supply_scale(_stringify(facts.get("supply_scale")), total_households, unit_types)
+    price_range = _stringify(facts.get("price_range"))
+    contract_ratio = _stringify(facts.get("contract_ratio") or "10")
+    midterm_ratio = _stringify(facts.get("midterm_ratio") or "60")
+    midterm_count = _stringify(facts.get("midterm_count") or "6")
+    balance_ratio = _stringify(facts.get("balance_ratio") or "30")
+
+    return PostData(
+        apt_name=apt_name,
+        post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
+        post_subtitle=_canonical_subtitle(
+            _stringify(content.get("post_subtitle", "")),
+            supply_location,
+            location,
+        ),
+        location=location,
+        supply_location=supply_location,
+        supply_scale=supply_scale,
+        total_households=total_households,
+        is_hot_zone=_display_value(_stringify(facts.get("is_hot_zone")) or api_is_hot_zone, default="해당없음"),
+        regulated_zone=_display_value(facts.get("regulated_zone"), default="미기재"),
+        readmission_limit=_display_value(facts.get("readmission_limit"), default="미기재"),
+        live_requirement=_display_value(facts.get("live_requirement"), default="미기재"),
+        price_cap=_display_value(facts.get("price_cap"), default="미기재"),
+        land_type=_display_value(facts.get("land_type"), default="미기재"),
+        price_range=price_range,
+        unit_types=unit_types,
+        special_supply_date=_display_date(facts.get("special_supply_date")),
+        rank1_date=_display_date(facts.get("rank1_date")),
+        rank2_date=_display_date(facts.get("rank2_date")),
+        winner_date=_display_date(facts.get("winner_date")),
+        move_in_date=_display_value(facts.get("move_in_date"), default="미정"),
+        loan_info=_display_value(
+            facts.get("loan_info"),
+            default="중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
+        ),
+        resale_restriction=_display_value(facts.get("resale_restriction"), default="미기재"),
+        contract_ratio=contract_ratio,
+        contract_amount=_normalize_contract_amount(_stringify(facts.get("contract_amount")), contract_ratio, unit_types),
+        midterm_ratio=midterm_ratio,
+        midterm_count=midterm_count,
+        balance_ratio=balance_ratio,
+        acquisition_tax_rate=_display_value(facts.get("acquisition_tax_rate"), default="1~3%"),
+        acquisition_tax_amount="-",
+        property_tax_rate="과세표준 × 0.1~0.4%",
+        property_tax_amount="-",
+        capital_gains_tax_rate="1주택 2년 보유 시 비과세 가능",
+        capital_gains_tax_amount="-",
+        subway_score=_stringify(content.get("subway_score")) or "★★★☆☆",
+        subway_detail=_stringify(content.get("subway_detail")),
+        school_score=_stringify(content.get("school_score")) or "★★★☆☆",
+        school_detail=_stringify(content.get("school_detail")),
+        life_score=_stringify(content.get("life_score")) or "★★★☆☆",
+        life_detail=_stringify(content.get("life_detail")),
+        medical_score=_stringify(content.get("medical_score")) or "★★★☆☆",
+        medical_detail=_stringify(content.get("medical_detail")),
+        apt_intro=_stringify(content.get("apt_intro")) or f"{apt_name} 분양 정보를 안내해 드립니다.",
+        location_intro=_stringify(content.get("location_intro")) or f"{location or apt_name} 입지를 살펴보겠습니다.",
+        financial_intro=_stringify(content.get("financial_intro")) or "자금 계획을 미리 세워두는 것이 중요합니다.",
+        qa_intro=_stringify(content.get("qa_intro")) or "자주 받는 질문에 답해드릴게요.",
+        unit_type_desc=_stringify(content.get("unit_type_desc")) or f"{apt_name}은 아래와 같은 타입으로 공급됩니다.",
+        schedule_desc=_stringify(content.get("schedule_desc")) or "청약 일정을 미리 확인하고 준비하세요.",
+        tax_desc=_stringify(content.get("tax_desc")) or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
+        eligibility_special=facts.get("eligibility_special") or [],
+        eligibility_rank1=facts.get("eligibility_rank1") or [],
+        eligibility_rank2=facts.get("eligibility_rank2") or [],
+        qa_blocks=qa_blocks,
+        seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
+        images={},
+        source_date=_display_date(facts.get("rank1_date")),
+        notice_date=_display_date(facts.get("notice_date")),
+        read_time=max(6, len(str(content)) // 450),
+        theme=theme,
+        supply_type=supply_type or _stringify(getattr(doc, "supply_type", "")),
+        notice_url=notice_url or _stringify(getattr(doc, "notice_url", "")),
     )
 
 
@@ -463,7 +660,7 @@ def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
 
 def _header_subtitle(data: "PostData") -> str:
     """상세페이지 히어로 서브타이틀은 주소를 우선 노출."""
-    return data.supply_location or data.location or data.post_subtitle
+    return _canonical_subtitle(data.post_subtitle, data.supply_location, data.location)
 
 
 def _apply_theme(html: str, t: dict) -> str:
@@ -571,7 +768,11 @@ class BlogHTMLRenderer:
             "{{APT_NAME}}":         data.apt_name,
             "{{SUPPLY_LOCATION}}":  data.supply_location,
             "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_location or data.location),
-            "{{SUPPLY_SCALE}}":     data.supply_scale,
+            "{{SUPPLY_SCALE_BLOCK}}": (
+                f'<div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {t["text2"]}); margin-bottom: 10px;">'
+                f'{data.supply_scale}</div>'
+                if _stringify(data.supply_scale) else ""
+            ),
             "{{PRICE_RANGE}}":      data.price_range,
             "{{PRICE_RANGE_TYPED}}": _price_range_typed(data.unit_types, data.price_range),
             "{{TOTAL_UNITS}}":    f"{total_units:,}",

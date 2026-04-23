@@ -2,6 +2,7 @@
   네이버 블로그 포스팅 템플릿 v3.0
   ── 모바일 퍼스트 / 최소 16px / 고정 인트로 / CSS 차트 ──
   제약: 인라인 스타일 전용 · <script> 없음 · 외부 CSS 없음
+  기준 샘플: output/posts/2026-04-23_힐스테이트_판교역/post.html
 -->
 
 <!-- ══ 전체 래퍼 ══ -->
@@ -131,7 +132,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div>
           <div style="font-size: 16px; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 4px;">{{SUPPLY_LOCATION}}</div>
-          <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 10px;">{{SUPPLY_SCALE}}</div>
+          {{SUPPLY_SCALE_BLOCK}}
         </div>
         <a href="{{NAVER_MAP_URL}}" target="_blank" rel="noopener"
            style="flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--c-primary, {{T_ACCENT}});border-radius:6px;padding:5px 11px;text-decoration:none;font-size:12px;color:var(--c-primary, {{T_ACCENT}});font-family:inherit;transition:all 150ms;white-space:nowrap;"
@@ -197,33 +198,21 @@
     {{LOCATION_INTRO}}
   </p>
 
-  <!-- 입지 별점 4-카드 (2열) -->
-  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-
-    <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD1_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
-      <div style="font-size: 30px; margin-bottom: 8px;">🚇</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">교통</div>
-      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{SUBWAY_DETAIL}}</div>
+  <div style="display:flex;flex-direction:column;gap:22px;">
+    <div>
+      <div style="font-size:20px;font-weight:800;color:var(--c-dark, {{T_TEXT}});margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
+      <div style="font-size:16px;color:var(--c-dark, {{T_TEXT}});line-height:1.75;">{{SUBWAY_DETAIL}}</div>
     </div>
 
-    <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD2_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
-      <div style="font-size: 30px; margin-bottom: 8px;">🎓</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">학군</div>
-      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{SCHOOL_DETAIL}}</div>
+    <div>
+      <div style="font-size:20px;font-weight:800;color:var(--c-dark, {{T_TEXT}});margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
+      <div style="font-size:16px;color:var(--c-dark, {{T_TEXT}});line-height:1.75;">{{SCHOOL_DETAIL}}</div>
     </div>
 
-    <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD3_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
-      <div style="font-size: 30px; margin-bottom: 8px;">🏪</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">생활편의</div>
-      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{LIFE_DETAIL}}</div>
+    <div>
+      <div style="font-size:20px;font-weight:800;color:var(--c-dark, {{T_TEXT}});margin:0 0 10px 0;">3. 단지 특징</div>
+      <div style="font-size:16px;color:var(--c-dark, {{T_TEXT}});line-height:1.75;">{{LIFE_DETAIL}}</div>
     </div>
-
-    <div style="flex: 1 1 calc(50% - 5px); background: {{T_CARD4_BG}}; border-radius: {{T_RADIUS_MD}}; padding: 20px 14px; text-align: center;">
-      <div style="font-size: 30px; margin-bottom: 8px;">🏥</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 6px;">의료</div>
-      <div style="font-size: 16px; color: var(--c-mid, {{T_TEXT2}}); line-height: 1.5;">{{MEDICAL_DETAIL}}</div>
-    </div>
-
   </div>
 </div>
 

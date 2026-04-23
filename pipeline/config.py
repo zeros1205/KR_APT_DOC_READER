@@ -7,13 +7,15 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-
 # ── 프로젝트 경로 ──
 BASE_DIR = Path(__file__).parent.parent
 TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
+
+# cwd/.env와 프로젝트 루트 .env를 모두 시도
+load_dotenv()
+load_dotenv(BASE_DIR / ".env")
 
 # ── OpenAI ──
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -23,7 +25,7 @@ LLM_EMBED_MODEL = "text-embedding-3-small"
 
 # ── Google Gemini (입지 분석 전용) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"
+LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.5-pro")
 
 # ── OpenAI 팩트체크 ──
 LLM_FACTCHECK_MODEL = "gpt-5.4-mini"
@@ -36,6 +38,9 @@ PREFERRED_IMAGE_SOURCE = "unsplash"   # "unsplash" | "pexels"
 # ── 청약홈 공공데이터 API ──
 PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
 APARTMENT_API_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1"
+
+# ── Kakao Local API ──
+KAKAO_API_KEY = os.getenv("KAKAO_API_KEY", "")
 
 # ── CTA URL (제휴/CPA 링크로 교체) ──
 CTA_LOAN_COMPARE = os.getenv("CTA_LOAN_COMPARE", "https://finda.co.kr/")

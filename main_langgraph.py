@@ -26,20 +26,18 @@ except ModuleNotFoundError:  # pragma: no cover - runtime fallback
     _HAS_LANGGRAPH = False
 
 from pipeline.config import BLOG_THEME, MIN_QUALITY_SCORE, OUTPUT_DIR, OPENAI_API_KEY
-from pipeline.html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
+from pipeline.html_renderer import BlogHTMLRenderer, PostData, build_post_data, save_post
 from pipeline.agents.collector import NoticeDocument
 from pipeline.agents.pdf_policy import extract_policy_from_pdf_text
 from pipeline.orchestrator import (
     _derive_price_range,
     _fallback_content_generation,
     _fallback_location_analysis,
-    _fmt_hot_zone,
-    _parse_price_manwon,
     _select_theme,
     agent_content_generation,
     agent_fact_extraction,
     agent_factcheck_qa,
-    agent_location_analysis_gpt,
+    agent_location_analysis_gemini,
     agent_location_verify_gemini,
     agent_quality_check,
 )
@@ -211,10 +209,9 @@ async def analyze_location_node(state: PipelineState) -> dict[str, Any]:
     if not facts:
         return {"location_data": {}}
 
-    if not OPENAI_API_KEY.strip():
+    location_data = await agent_location_analysis_gemini(facts)
+    if not location_data:
         location_data = _fallback_location_analysis(facts, state.get("notice_text") or "")
-    else:
-        location_data = await agent_location_analysis_gpt(facts)
     location_data = await agent_location_verify_gemini(location_data, facts)
     return {"location_data": location_data}
 
@@ -268,100 +265,14 @@ def assemble_post_data_node(state: PipelineState) -> dict[str, Any]:
     facts = state.get("facts") or {}
     content = state.get("content") or {}
     doc = state.get("doc")
-
-    unit_types = [
-        UnitType(
-            type_name=ut.get("type_name", ""),
-            area_sqm=float(ut.get("area_sqm", 0) or 0),
-            general_units=int(ut.get("general_units", 0) or 0),
-            special_units=int(ut.get("special_units", 0) or 0),
-            price_min=_parse_price_manwon(ut.get("price_min", 0)),
-            price_max=_parse_price_manwon(ut.get("price_max", 0)),
-        )
-        for ut in facts.get("unit_types", [])
-    ]
-
-    qa_blocks = [
-        QABlock(question=qa.get("question", ""), answer=qa.get("answer", ""))
-        for qa in content.get("qa_blocks", [])
-    ]
-
-    contract_ratio = str(facts.get("contract_ratio") or "10")
-    midterm_ratio = str(facts.get("midterm_ratio") or "60")
-    midterm_count = str(facts.get("midterm_count") or "6")
-    balance_ratio = str(facts.get("balance_ratio") or "30")
-    contract_amount = facts.get("contract_amount") or ""
-    if not contract_amount and unit_types:
-        min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
-        if min_price > 0:
-            contract_amount = f"약 {int(min_price * int(contract_ratio) / 100):,}만원"
-    if not contract_amount:
-        contract_amount = "공고문 확인 필요"
-
-    apt_name = facts.get("apt_name") or (doc.apt_name if doc else "")
-    supply_location = facts.get("supply_location") or (doc.supply_address if doc else "")
-    total_households = str(
-        facts.get("total_households")
-        or (doc.total_units if doc else "")
-        or facts.get("supply_total_units")
-        or ""
-    )
-    price_range = facts.get("price_range") or _derive_price_range(facts.get("unit_types", [])) or ""
-
-    post_data = PostData(
-        apt_name=apt_name,
-        post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
-        post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
-        location=facts.get("location", ""),
-        supply_location=supply_location,
-        supply_scale=facts.get("supply_scale") or total_households,
-        is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or state.get("api_is_hot_zone") or ""),
-        regulated_zone=facts.get("regulated_zone") or "",
-        readmission_limit=facts.get("readmission_limit") or "",
-        live_requirement=facts.get("live_requirement") or "",
-        price_cap=facts.get("price_cap") or "",
-        price_range=price_range,
-        unit_types=unit_types,
-        special_supply_date=facts.get("special_supply_date", "-"),
-        rank1_date=facts.get("rank1_date", "-"),
-        rank2_date=facts.get("rank2_date", "-"),
-        winner_date=facts.get("winner_date", "-"),
-        move_in_date=facts.get("move_in_date", "-"),
-        resale_restriction=facts.get("resale_restriction") or "-",
-        contract_ratio=contract_ratio,
-        contract_amount=contract_amount,
-        midterm_ratio=midterm_ratio,
-        midterm_count=midterm_count,
-        balance_ratio=balance_ratio,
-        acquisition_tax_rate=facts.get("acquisition_tax_rate", "1~3%"),
-        acquisition_tax_amount="-",
-        property_tax_rate="과세표준 × 0.1~0.4%",
-        property_tax_amount="-",
-        capital_gains_tax_rate="1주택 2년 보유 시 비과세 가능",
-        capital_gains_tax_amount="-",
-        subway_detail=content.get("subway_detail", ""),
-        school_detail=content.get("school_detail", ""),
-        life_detail=content.get("life_detail", ""),
-        medical_detail=content.get("medical_detail", ""),
-        apt_intro=content.get("apt_intro", ""),
-        location_intro=content.get("location_intro", ""),
-        financial_intro=content.get("financial_intro", ""),
-        qa_intro=content.get("qa_intro", ""),
-        unit_type_desc=content.get("unit_type_desc", ""),
-        schedule_desc=content.get("schedule_desc", ""),
-        tax_desc=content.get("tax_desc", ""),
-        eligibility_special=facts.get("eligibility_special") or [],
-        eligibility_rank1=facts.get("eligibility_rank1") or [],
-        eligibility_rank2=facts.get("eligibility_rank2") or [],
-        qa_blocks=qa_blocks,
-        seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
-        images={},
-        source_date=facts.get("rank1_date", ""),
-        notice_date=facts.get("notice_date", ""),
-        read_time=max(6, len(str(content)) // 450),
+    post_data = build_post_data(
+        facts=facts,
+        content=content,
+        doc=doc,
         theme=state.get("theme") or BLOG_THEME,
         supply_type=state.get("supply_type") or (doc.supply_type if doc else ""),
         notice_url=state.get("notice_url") or (doc.notice_url if doc else ""),
+        api_is_hot_zone=state.get("api_is_hot_zone") or (doc.is_hot_zone if doc else ""),
     )
     return {"post_data": post_data}
 

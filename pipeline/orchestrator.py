@@ -19,16 +19,17 @@ from openai import AsyncOpenAI
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
-    OPENAI_API_KEY, GEMINI_API_KEY,
+    OPENAI_API_KEY, GEMINI_API_KEY, KAKAO_API_KEY,
     LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
     OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
     CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
     PREFERRED_IMAGE_SOURCE, BLOG_THEME,
 )
-from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
+from html_renderer import BlogHTMLRenderer, UnitType, build_post_data, save_post
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 from agents.pdf_policy import extract_policy_from_pdf_text
+from kakao_local import KakaoLocalClient, merge_places, normalize_places, score_from_distance
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
@@ -454,8 +455,168 @@ def _extract_section_text(text: str, header: str) -> str:
     return m.group(1).strip() if m else ""
 
 
+def _format_distance_label(distance: int) -> str:
+    return f"{distance}m" if distance > 0 else "거리 확인 필요"
+
+
+def _render_place_list_html(items: list, *, empty_text: str, columns: int = 1) -> str:
+    if not items:
+        return f'<div style="font-size:13px;color:#8A817C;">{empty_text}</div>'
+
+    if columns == 2:
+        wrapper_open = '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;">'
+    else:
+        wrapper_open = '<div style="display:flex;flex-direction:column;gap:8px;">'
+
+    blocks = []
+    for item in items:
+        source_badge = (
+            f'<span style="display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;'
+            f'background:rgba(217,119,87,0.12);color:#B85C38;font-size:11px;font-weight:700;">{item.source}</span>'
+        )
+        address_html = (
+            f'<div style="font-size:12px;color:#8A817C;line-height:1.45;word-break:keep-all;">{item.address}</div>'
+            if item.address else ""
+        )
+        blocks.append(
+            f'<div style="border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 11px;'
+            f'background:rgba(255,255,255,0.48);">'
+            f'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;">'
+            f'<strong style="font-size:13px;color:#2C2925;line-height:1.45;">{item.name}</strong>'
+            f'<span style="flex-shrink:0;font-size:12px;font-weight:700;color:#B85C38;">{_format_distance_label(item.distance)}</span>'
+            f'</div>'
+            f'<div style="margin-bottom:4px;">{source_badge}</div>'
+            f'{address_html}'
+            f'</div>'
+        )
+    return wrapper_open + "".join(blocks) + "</div>"
+
+
+def _nearest_distance(items: list) -> int | None:
+    distances = [item.distance for item in items if getattr(item, "distance", 0) > 0]
+    return min(distances) if distances else None
+
+
+def _build_sales_location_intro(apt_name: str, location: str, transit: list, schools: list, life: list, medical: list) -> str:
+    hooks: list[str] = []
+    if transit:
+        hooks.append(f"가까운 교통 거점을 걸어서 이용할 수 있다는 점")
+    if schools:
+        hooks.append(f"반경 500m 안에 학교가 모여 있다는 점")
+    if life:
+        hooks.append(f"생활편의시설이 촘촘하게 붙어 있다는 점")
+    if medical:
+        hooks.append(f"의료 인프라까지 생활권 안에서 챙길 수 있다는 점")
+
+    if not hooks:
+        return (
+            f"{apt_name}는 {location or '공급 위치'} 기준으로 생활권을 다시 확인해볼 필요가 있는 단지입니다. "
+            f"시행사 관점에서 보더라도 실제 장점은 교통과 생활 인프라가 얼마나 가까이 붙어 있는지에서 갈리므로, "
+            f"카카오 로컬 API 기준 반경 500m 내 시설을 중심으로 장점을 정리했습니다."
+        )
+
+    joined = "· ".join(hooks[:3])
+    return (
+        f"{apt_name}는 {location or '공급 위치'} 기준으로 보면 {joined}이 먼저 눈에 들어오는 단지입니다. "
+        f"시행사 세일즈 관점에서 가장 강조할 만한 포인트는, 일상 동선에 필요한 교통·학교·편의시설·의료시설이 "
+        f"반경 500m 안에서 얼마나 촘촘하게 붙어 있느냐인데, 이 단지는 그 장점을 비교적 직관적으로 보여주기 좋습니다."
+    )
+
+
+async def _build_kakao_location_analysis(facts: dict) -> dict:
+    address = (
+        facts.get("supply_location")
+        or facts.get("location")
+        or ""
+    ).strip()
+    apt_name = (facts.get("apt_name") or "").strip()
+    if not KAKAO_API_KEY.strip() or not address:
+        return {}
+
+    client = KakaoLocalClient(KAKAO_API_KEY)
+    coords = await client.geocode(address)
+    if not coords and apt_name:
+        coords = await client.geocode_keyword(apt_name, region_hint=address)
+    if not coords:
+        return {}
+    x, y = coords
+
+    subway_docs = await client.category_search("SW8", x=x, y=y, radius=500)
+    bus_docs = await client.keyword_search("버스정류장", x=x, y=y, radius=500)
+    train_docs = await client.keyword_search("기차역", x=x, y=y, radius=500)
+    airport_docs = await client.keyword_search("공항", x=x, y=y, radius=500)
+    school_docs = await client.category_search("SC4", x=x, y=y, radius=500)
+    mart_docs = await client.category_search("MT1", x=x, y=y, radius=500)
+    park_docs = await client.category_search("PK6", x=x, y=y, radius=500)
+    department_docs = await client.keyword_search("백화점", x=x, y=y, radius=500)
+    sports_docs = await client.keyword_search("체육시설", x=x, y=y, radius=500)
+    hospital_docs = await client.category_search("HP8", x=x, y=y, radius=500)
+    health_docs = await client.keyword_search("보건소", x=x, y=y, radius=500)
+
+    transit = merge_places(
+        normalize_places(subway_docs, source="지하철역"),
+        normalize_places(
+            bus_docs,
+            source="광역/간선버스",
+            include_if=lambda doc: "버스" in (doc.get("category_name") or "") or "정류장" in (doc.get("place_name") or ""),
+        ),
+        normalize_places(train_docs, source="기차역"),
+        normalize_places(airport_docs, source="공항"),
+        limit=10,
+    )
+    schools = merge_places(
+        normalize_places(
+            school_docs,
+            source="학교",
+            include_if=lambda doc: (doc.get("place_name") or "").endswith("초등학교") or (doc.get("place_name") or "").endswith("중학교"),
+        ),
+        limit=10,
+    )
+    life = merge_places(
+        normalize_places(mart_docs, source="대형마트"),
+        normalize_places(department_docs, source="백화점"),
+        normalize_places(park_docs, source="공원"),
+        normalize_places(sports_docs, source="체육시설"),
+        limit=10,
+    )
+    medical = merge_places(
+        normalize_places(hospital_docs, source="병원"),
+        normalize_places(health_docs, source="보건소"),
+        limit=10,
+    )
+
+    return {
+        "_location_source": "kakao",
+        "location_intro": _build_sales_location_intro(apt_name, address, transit, schools, life, medical),
+        "subway_score": score_from_distance(_nearest_distance(transit), thresholds=(250, 400, 500, 700)),
+        "subway_detail": _render_place_list_html(
+            transit,
+            empty_text="반경 500m 이내에서 확인된 교통 거점이 없습니다.",
+            columns=1,
+        ),
+        "school_score": score_from_distance(_nearest_distance(schools), thresholds=(200, 350, 500, 700)),
+        "school_detail": _render_place_list_html(
+            schools,
+            empty_text="반경 500m 이내 초등학교·중학교 정보가 확인되지 않았습니다.",
+            columns=2,
+        ),
+        "life_score": score_from_distance(_nearest_distance(life), thresholds=(200, 350, 500, 700)),
+        "life_detail": _render_place_list_html(
+            life,
+            empty_text="반경 500m 이내 주요 생활편의시설 정보가 확인되지 않았습니다.",
+            columns=1,
+        ),
+        "medical_score": score_from_distance(_nearest_distance(medical), thresholds=(200, 350, 500, 700)),
+        "medical_detail": _render_place_list_html(
+            medical,
+            empty_text="반경 500m 이내 의료기관 정보가 확인되지 않았습니다.",
+            columns=1,
+        ),
+    }
+
+
 def _fallback_location_analysis(facts: dict, notice_text: str) -> dict:
-    """입지 분석을 LLM 없이 구성한다."""
+    """입지 분석을 LLM 없이 3개 섹션 HTML로 구성한다."""
     text = notice_text or ""
     apt_name = facts.get("apt_name", "")
     location = facts.get("location", "") or facts.get("supply_location", "")
@@ -490,27 +651,38 @@ def _fallback_location_analysis(facts: dict, notice_text: str) -> dict:
     )
     medical = _extract_first_match(text, (r"([가-힣]+병원[^\n]*)",))
 
-    subway_detail = transit or (section_text if section_text else f"{location} 일대의 교통 접근성을 공고문과 지도로 함께 확인해야 합니다.")
-    school_detail = school or f"{apt_name} 인근 학교 배정은 교육청 학군 자료와 공고문을 함께 확인하는 것이 안전합니다."
-    life_detail = life or f"{location} 생활권의 편의시설은 공고문과 지도 서비스 기준으로 확인하는 것이 좋습니다."
-    medical_detail = medical or f"의료 접근성은 {location or apt_name} 주변 생활권을 기준으로 확인해야 합니다."
+    transit_items = [
+        transit or f"{location or apt_name} 기준 주요 이동 동선은 공고문과 현장 생활권을 함께 보면서 판단하는 편이 안전합니다.",
+        "주요 업무지구 또는 생활권으로 이어지는 도로 접근성이 실거주 만족도를 좌우하는 핵심 포인트입니다.",
+        "대중교통 환승 동선과 자차 이동 동선을 함께 확인하면 실제 체감 입지를 더 정확하게 읽을 수 있습니다.",
+    ]
+    school_items = [
+        school or f"{apt_name} 인근 학군과 배정 가능 학교는 교육청 기준 자료를 함께 확인하는 것이 좋습니다.",
+        "초등학교 접근성과 중학교 진학 동선을 같이 보면 가족 단위 실거주 수요가 느끼는 장점이 더 선명해집니다.",
+        "주변 주거지 성숙도와 생활 인프라 밀도는 자녀 교육 환경의 체감 품질에 직접 연결되는 요소입니다.",
+    ]
+    life_items = [
+        f"{apt_name}는 {facts.get('supply_scale') or '공급 규모'}를 바탕으로 지역 내 새로운 주거 선택지로 읽히는 단지입니다.",
+        life or f"{location or apt_name} 생활권의 편의시설 접근성은 실제 거주 편의성을 판단하는 핵심 기준입니다.",
+        medical or f"의료·생활 기반시설은 {location or apt_name} 주변 생활권을 기준으로 추가 확인할 만합니다.",
+    ]
 
-    location_intro = (
-        f"{apt_name}은(는) {location or '공고문상 공급위치'}에 들어서는 단지로, "
-        f"{section_text or '교통, 교육, 생활 인프라를 함께 점검해야 하는 입지입니다.'} "
-        f"실제 체감 가치는 역세권 여부, 학군, 생활편의시설의 밀도에 따라 달라질 수 있습니다."
+    location_intro = _limit_sentences(
+        f"{apt_name}는 {location or '공고문상 공급위치'}에 들어서는 단지로, "
+        f"{section_text or '교통과 교육, 생활 인프라의 균형을 함께 살펴볼 만한 곳입니다.'} "
+        f"실거주 관점에서는 출퇴근 동선과 생활권 완성도를 중심으로 장점을 읽어보는 접근이 유효합니다."
     )
 
     return {
         "location_intro": location_intro,
-        "subway_score": "★★★☆☆",
-        "subway_detail": subway_detail,
-        "school_score": "★★★☆☆",
-        "school_detail": school_detail,
-        "life_score": "★★★☆☆",
-        "life_detail": life_detail,
-        "medical_score": "★★★☆☆",
-        "medical_detail": medical_detail,
+        "subway_score": "",
+        "subway_detail": _html_list(transit_items),
+        "school_score": "",
+        "school_detail": _html_list(school_items),
+        "life_score": "",
+        "life_detail": _html_list(life_items),
+        "medical_score": "",
+        "medical_detail": "",
     }
 
 
@@ -791,45 +963,55 @@ async def agent_fact_extraction(notice_text: str) -> dict:
 # Agent 2: 입지 분석 (Gemini)
 # ──────────────────────────────────────────────────
 
-LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
-아래 단지 정보를 바탕으로 입지 분석을 정확하게 작성하세요.
+LOCATION_ANALYSIS_PROMPT = """당신은 아파트를 분양해야 하는 시행사 세일즈맨이자, 문장을 잘 쓰는 부동산 카피라이터입니다.
+아래 단지 정보를 바탕으로 장점 중심의 입지 분석을 작성하세요.
 
-【필수 준수 원칙】
-- 실제로 존재하는 역명·학교명·병원명·상업시설명만 기재. 모르면 "확인 필요" 기재
-- 비수도권(강원·충청·전라·경상·제주 등) 지역에서는 지하철/도시철도 언급 절대 금지.
-  대신 KTX·버스·도로 접근성·생활권 중심으로 서술
-- 지하철 가능 도시: 서울·경기·인천·대전·대구·부산·광주·울산(일부)
-- 도보 5분 ≈ 400m, 도보 10분 ≈ 800m, 도보 15분 ≈ 1.2km 기준 준수
-- 별점 기준:
-  subway: ★★★★★ 도보5분이내 / ★★★★☆ 도보10분 / ★★★☆☆ 도보15분 / ★★☆☆☆ 버스환승 / ★☆☆☆☆ 지하철없음·비수도권
-  school: ★★★★★ 학원가+명문중고 / ★★★★☆ 초등+중학군양호 / ★★★☆☆ 보통 / ★★☆☆☆ 원거리 / ★☆☆☆☆ 정보없음
-  life:   ★★★★★ 대형마트+백화점 도보권 / ★★★★☆ 대형마트10분 / ★★★☆☆ 슈퍼+편의점 / ★★☆☆☆ 차량필요 / ★☆☆☆☆ 편의시설없음
-  medical:★★★★★ 대학병원 도보권 / ★★★★☆ 종합병원 차량5분 / ★★★☆☆ 차량10분 / ★★☆☆☆ 의원급만 / ★☆☆☆☆ 의료기관없음
+문체 기준:
+- 첨부된 구글 AI 모드 요약처럼 단정하고 설명적인 문장으로 작성
+- 과장된 감탄사, 이모지, 광고 문구, CTA 금지
+- 장점을 강조하되 사실처럼 단정할 수 없는 내용은 "기대된다", "매력으로 읽힌다" 수준으로만 표현
+- 투자수익, 시세차익, 가격상승 전망, 당첨 가능성 예측 금지
+
+출력 구조:
+1. location_intro: 요약 3문장 이내
+2. subway_detail: "1. 교통 및 입지 여건" 섹션용 HTML 목록
+3. school_detail: "2. 교육 및 주거 환경" 섹션용 HTML 목록
+4. life_detail: "3. 단지 특징" 섹션용 HTML 목록
+
+반드시 지킬 것:
+- JSON만 출력
+- subway_detail / school_detail / life_detail 는 반드시 <ul>...</ul> 형식의 HTML 문자열
+- 각 섹션은 2~4개의 <li>로 구성
+- 실제 확인된 facts만 기반으로 쓰고, facts에 없는 고유명사·역명·학교명·시설명은 새로 만들지 말 것
+- 생활·교육·교통이 부족하면 장점 중심의 일반화 문장으로 안전하게 작성할 것
+- medical_detail은 빈 문자열로 둘 것
+- score 계열 필드는 빈 문자열로 둘 것
 
 [단지 정보]:
 {facts_json}
 
 JSON만 출력:
 {{
-  "location_intro": "100~150자. 해당 지역 분위기·생활 환경을 독자에게 친근하게 설명",
-  "subway_score":   "★★★☆☆",
-  "subway_detail":  "역명과 도보 분수 명시. 비수도권은 KTX/버스/도로 접근성. 지하철 없는 도시에서 지하철 절대 금지",
-  "school_score":   "★★★★☆",
-  "school_detail":  "배정 초등학교명 + 학군 평가",
-  "life_score":     "★★★☆☆",
-  "life_detail":    "가장 가까운 대형마트·백화점·상업시설 명칭과 거리",
-  "medical_score":  "★★★☆☆",
-  "medical_detail": "가장 가까운 종합병원 명칭과 거리"
+  "location_intro": "요약 3문장 이내",
+  "subway_score": "",
+  "subway_detail": "<ul><li>...</li><li>...</li></ul>",
+  "school_score": "",
+  "school_detail": "<ul><li>...</li><li>...</li></ul>",
+  "life_score": "",
+  "life_detail": "<ul><li>...</li><li>...</li></ul>",
+  "medical_score": "",
+  "medical_detail": ""
 }}"""
 
 LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
-사실 정확성을 검증하고 오류가 있으면 수정하세요.
+사실관계와 문장 구조를 검토하고, 부정확하거나 과한 표현이 있으면 수정하세요.
 
 검증 기준:
-1. 역명·학교명·병원명·상업시설명이 실제 위치 근처에 존재하는가?
-2. 비수도권에서 지하철을 언급하는 오류가 없는가?
-3. 도보·차량 거리 수치가 현실적인가?
-4. 별점이 설명 내용과 일치하는가?
+1. facts에 없는 고유명사·역명·학교명·시설명을 새로 만들지 않았는가?
+2. 투자수익, 시세차익, 가격상승, 당첨 가능성 예측이 들어가 있지 않은가?
+3. location_intro는 3문장 이내인가?
+4. subway_detail / school_detail / life_detail 은 각각 <ul>...</ul> HTML 목록인가?
+5. "교통 및 입지 여건 / 교육 및 주거 환경 / 단지 특징"에 맞는 내용으로 구분되어 있는가?
 
 [단지명]: {apt_name}
 [위치]: {location}
@@ -846,12 +1028,78 @@ _LOCATION_KEYS = (
 )
 
 
+def _strip_html(text: str) -> str:
+    return re.sub(r"<[^>]+>", "", text or "").strip()
+
+
+def _limit_sentences(text: str, max_sentences: int = 3) -> str:
+    cleaned = re.sub(r"\s+", " ", _strip_html(text))
+    if not cleaned:
+        return ""
+    parts = [part.strip() for part in re.split(r"(?<=[.!?。！？])\s+", cleaned) if part.strip()]
+    if len(parts) <= max_sentences:
+        return cleaned
+    return " ".join(parts[:max_sentences]).strip()
+
+
+def _html_list(items: list[str]) -> str:
+    normalized = [re.sub(r"\s+", " ", (item or "").strip()) for item in items if (item or "").strip()]
+    if not normalized:
+        return "<ul><li>공고문 기준으로 추가 확인이 필요한 항목입니다.</li></ul>"
+    lis = "".join(f"<li>{item}</li>" for item in normalized[:4])
+    return f"<ul>{lis}</ul>"
+
+
+def _normalize_location_output(result: dict, facts: dict, notice_text: str = "") -> dict:
+    apt_name = facts.get("apt_name", "해당 단지")
+    location = facts.get("location", "") or facts.get("supply_location", "") or "공급 위치"
+
+    intro = _limit_sentences(result.get("location_intro", ""))
+    if not intro:
+        intro = _limit_sentences(
+            f"{apt_name}는 {location} 생활권을 바탕으로 교통과 주거 편의성을 함께 살펴볼 만한 단지입니다. "
+            f"이번 공고에서는 실거주 관점에서 확인해야 할 장점 위주로 핵심만 정리했습니다."
+        )
+
+    normalized = {
+        "location_intro": intro,
+        "subway_score": "",
+        "subway_detail": result.get("subway_detail", "") or "",
+        "school_score": "",
+        "school_detail": result.get("school_detail", "") or "",
+        "life_score": "",
+        "life_detail": result.get("life_detail", "") or "",
+        "medical_score": "",
+        "medical_detail": "",
+    }
+
+    for key in ("subway_detail", "school_detail", "life_detail"):
+        value = (normalized.get(key) or "").strip()
+        if not value:
+            continue
+        if not value.lstrip().startswith("<ul"):
+            chunks = [line.strip("-• \t") for line in re.split(r"[\r\n]+", _strip_html(value)) if line.strip()]
+            normalized[key] = _html_list(chunks)
+
+    if not normalized["subway_detail"] or normalized["subway_detail"] == "<ul></ul>":
+        fallback = _fallback_location_analysis(facts, notice_text)
+        normalized["subway_detail"] = fallback["subway_detail"]
+    if not normalized["school_detail"] or normalized["school_detail"] == "<ul></ul>":
+        fallback = _fallback_location_analysis(facts, notice_text)
+        normalized["school_detail"] = fallback["school_detail"]
+    if not normalized["life_detail"] or normalized["life_detail"] == "<ul></ul>":
+        fallback = _fallback_location_analysis(facts, notice_text)
+        normalized["life_detail"] = fallback["life_detail"]
+
+    return normalized
+
+
 async def agent_location_analysis_gemini(facts: dict) -> dict:
-    """Agent 2: Gemini로 입지 분석 생성"""
-    print("  [Agent 2] 입지 분석 시작 (Gemini)...")
+    """Agent 2: Gemini 3.5 Pro 기반 입지 분석 생성."""
+    print(f"  [Agent 2] 입지 분석 시작 ({LLM_LOCATION_MODEL})...")
     if not GEMINI_API_KEY:
-        print("  [Agent 2] GEMINI_API_KEY 미설정 → 건너뜀")
-        return {}
+        print("  [Agent 2] GEMINI_API_KEY 미설정 → 결정론적 폴백 사용")
+        return _fallback_location_analysis(facts, "")
     try:
         from google import genai as google_genai
         from google.genai import types as genai_types
@@ -873,49 +1121,22 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
             import re as _re
             m = _re.search(r"\{.*\}", raw, _re.DOTALL)
             result = json.loads(m.group()) if m else {}
+        result = _normalize_location_output(result, facts)
         print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 2] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
-        return {}
-
-
-async def agent_location_analysis_gpt(facts: dict) -> dict:
-    """Agent 2: GPT-5.4로 입지 분석 생성"""
-    print("  [Agent 2] 입지 분석 시작 (GPT-5.4)...")
-    if not OPENAI_API_KEY.strip():
-        print("  [Agent 2] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
-        result = _fallback_location_analysis(facts, "")
-        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
-        return result
-    try:
-        raw = await _call_openai_json(
-            system=(
-                "당신은 한국 부동산 입지 분석 전문가입니다.\n"
-                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
-            ),
-            user=LOCATION_ANALYSIS_PROMPT.format(
-                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
-            ),
-            model=LLM_CONTENT_MODEL,
-            max_tokens=3000,
-        )
-        try:
-            result = json.loads(raw)
-        except json.JSONDecodeError:
-            import re as _re
-            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
-            result = json.loads(m.group()) if m else {}
-        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
-        return result
-    except Exception as e:
-        print(f"  [Agent 2] GPT-5.4 오류 ({e}) → 결정론적 폴백 사용")
+        print(f"  [Agent 2] Gemini 오류 ({e}) → 결정론적 폴백 사용")
         return _fallback_location_analysis(facts, "")
 
 
+async def agent_location_analysis_gpt(facts: dict) -> dict:
+    """호환성용 래퍼. 입지 분석은 Gemini 경로를 사용한다."""
+    return await agent_location_analysis_gemini(facts)
+
+
 async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict:
-    """Agent 3: Gemini 3.1 Pro Preview로 입지 분석 검증·교정"""
-    print("  [Agent 3] 입지 분석 검증 시작 (Gemini 3.1 Pro Preview)...")
+    """Agent 3: Gemini로 입지 분석 검증·교정"""
+    print(f"  [Agent 3] 입지 분석 검증 시작 ({LLM_LOCATION_MODEL})...")
     if not location_data:
         return location_data
     if not GEMINI_API_KEY:
@@ -944,6 +1165,7 @@ async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict
             import re as _re
             m = _re.search(r'\{.*\}', raw, _re.DOTALL)
             result = json.loads(m.group()) if m else location_data
+        result = _normalize_location_output(result, facts)
         print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
@@ -955,6 +1177,9 @@ async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
     """Agent 3: GPT-5.4로 입지 분석 검증·교정"""
     print("  [Agent 3] 입지 분석 검증 시작 (GPT-5.4)...")
     if not location_data:
+        return location_data
+    if location_data.get("_location_source") == "kakao":
+        print("  [Agent 3] Kakao 실데이터 경로 → 별도 LLM 검증 생략")
         return location_data
     try:
         raw = await _call_openai_json(
@@ -1453,103 +1678,16 @@ async def run_pipeline(
         print(f"\n  🔄 품질 미달 ({score}점) - 재생성...")
 
     # Step 5: PostData 조립
-    unit_types = [
-        UnitType(
-            type_name=ut["type_name"],
-            area_sqm=float(ut.get("area_sqm", 0)),
-            general_units=int(ut.get("general_units", 0)),
-            special_units=int(ut.get("special_units", 0)),
-            price_min=_parse_price_manwon(ut.get("price_min", 0)),
-            price_max=_parse_price_manwon(ut.get("price_max", 0)),
-        )
-        for ut in facts.get("unit_types", [])
-    ]
-
-    qa_blocks = [
-        QABlock(
-            question=qa["question"],
-            answer=qa["answer"],
-        )
-        for qa in content.get("qa_blocks", [])
-    ]
-
-    contract_ratio = str(facts.get("contract_ratio") or "10")
-    midterm_ratio = str(facts.get("midterm_ratio") or "60")
-    midterm_count = str(facts.get("midterm_count") or "6")
-    balance_ratio = str(facts.get("balance_ratio") or "30")
-    loan_info = facts.get("loan_info") or "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요."
-    contract_amount = facts.get("contract_amount") or ""
-    if not contract_amount and unit_types:
-        min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
-        if min_price > 0:
-            contract_amount = f"약 {int(min_price * int(contract_ratio) / 100):,}만원"
-    if not contract_amount:
-        contract_amount = "공고문 확인 필요"
-
-    post_data = PostData(
-        apt_name=apt_name,
-        post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
-        post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
-        location=facts.get("location", ""),
-        supply_location=facts.get("supply_location", ""),
-        supply_scale=facts.get("supply_scale", ""),
-        total_households=str(facts.get("total_households") or ""),
-        is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or api_is_hot_zone or ""),
-        regulated_zone=facts.get("regulated_zone") or "",
-        readmission_limit=facts.get("readmission_limit") or "",
-        live_requirement=facts.get("live_requirement") or "",
-        price_cap=facts.get("price_cap") or "",
-        land_type=facts.get("land_type") or "",
-        price_range=facts.get("price_range", ""),
-        unit_types=unit_types,
-        special_supply_date=facts.get("special_supply_date", "-"),
-        rank1_date=facts.get("rank1_date", "-"),
-        rank2_date=facts.get("rank2_date", "-"),
-        winner_date=facts.get("winner_date", "-"),
-        move_in_date=facts.get("move_in_date", "-"),
-        loan_info=loan_info,
-        resale_restriction=facts.get("resale_restriction") or "-",
-        contract_ratio=contract_ratio,
-        contract_amount=contract_amount,
-        midterm_ratio=midterm_ratio,
-        midterm_count=midterm_count,
-        balance_ratio=balance_ratio,
-        acquisition_tax_rate=facts.get("acquisition_tax_rate", "1~3%"),
-        acquisition_tax_amount="-",
-        property_tax_rate="과세표준 × 0.1~0.4%",
-        property_tax_amount="-",
-        capital_gains_tax_rate="1주택 2년 보유 시 비과세 가능",
-        capital_gains_tax_amount="-",
-        subway_score=content.get("subway_score", "★★★☆☆"),
-        subway_detail=content.get("subway_detail", ""),
-        school_score=content.get("school_score", "★★★☆☆"),
-        school_detail=content.get("school_detail", ""),
-        life_score=content.get("life_score", "★★★☆☆"),
-        life_detail=content.get("life_detail", ""),
-        medical_score=content.get("medical_score", "★★★☆☆"),
-        medical_detail=content.get("medical_detail", ""),
-        # 내러티브 산문 필드
-        apt_intro=content.get("apt_intro", ""),
-        location_intro=content.get("location_intro", ""),
-        financial_intro=content.get("financial_intro", ""),
-        qa_intro=content.get("qa_intro", ""),
-        # 정보 블록 앞 서술 필드
-        unit_type_desc=content.get("unit_type_desc", ""),
-        schedule_desc=content.get("schedule_desc", ""),
-        tax_desc=content.get("tax_desc", ""),
-        qa_blocks=qa_blocks,
-        seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
-        images=images,
-        source_date=facts.get("rank1_date", ""),
-        notice_date=facts.get("notice_date", ""),
-        read_time=max(6, len(str(content)) // 450),
+    post_data = build_post_data(
+        facts=facts,
+        content=content,
+        doc=doc,
         theme=theme or BLOG_THEME,
         supply_type=supply_type,
-        eligibility_special=facts.get("eligibility_special") or [],
-        eligibility_rank1=facts.get("eligibility_rank1") or [],
-        eligibility_rank2=facts.get("eligibility_rank2") or [],
         notice_url=notice_url,
+        api_is_hot_zone=api_is_hot_zone,
     )
+    post_data.images = images
 
     # Step 6: HTML 렌더링
     print("\n  🎨 HTML 렌더링...")
