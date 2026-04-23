@@ -1133,6 +1133,11 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
             ),
             config=genai_types.GenerateContentConfig(
                 system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+                tools=[
+                    genai_types.Tool(
+                        google_search=genai_types.GoogleSearch()
+                    )
+                ]
             ),
         )
         raw = resp.text.strip()
