@@ -36,6 +36,14 @@ on:
         options:
           - 'true'
           - 'false'
+      clean_output:
+        description: '기존 생성 결과 정리 후 새로 생성'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -44,6 +52,8 @@ jobs:
   generate-posts:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: write
 
     steps:
       - name: 코드 체크아웃
@@ -74,6 +84,15 @@ jobs:
           mkdir -p output
           printf '[]\n' > output/processed_notices.json
           echo "processed_notices.json 초기화 완료" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 기존 생성 결과 정리
+        if: ${{ github.event_name == 'push' || github.event.inputs.clean_output == 'true' }}
+        run: |
+          rm -rf output/posts
+          mkdir -p output/posts
+          printf '[]\n' > output/processed_notices.json
+          rm -f output/index.html output/sitemap.xml output/robots.txt
+          echo "기존 output/posts 및 인덱스 초기화 완료" >> "$GITHUB_STEP_SUMMARY"
 
       - name: 파이프라인 실행
         run: |
@@ -110,3 +129,12 @@ jobs:
             output/processed_notices.json
           retention-days: 7
           if-no-files-found: ignore
+
+      - name: 생성 결과 커밋 및 푸시
+        if: ${{ success() && github.ref_name == 'main' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/posts/ output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json
+          git diff --cached --quiet && echo "커밋할 변경사항 없음" || git commit -m "chore: refresh generated posts [skip ci]"
+          git push origin ${{ github.ref_name }}

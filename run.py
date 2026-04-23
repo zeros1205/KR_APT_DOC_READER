@@ -33,7 +33,15 @@ PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
 def _load_processed() -> set[str]:
     if PROCESSED_FILE.exists():
-        return set(json.loads(PROCESSED_FILE.read_text(encoding="utf-8")))
+        raw = PROCESSED_FILE.read_text(encoding="utf-8-sig").strip()
+        if not raw:
+            return set()
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            print("[경고] processed_notices.json 파싱 실패 → 빈 히스토리로 진행")
+            return set()
+        return set(data)
     return set()
 
 
