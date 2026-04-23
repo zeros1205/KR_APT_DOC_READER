@@ -149,30 +149,26 @@
       box-shadow: {{T_SHADOW_SM}};
     ">
       <div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {{T_TEXT2}}); margin-bottom: 12px;">📋 청약 규제 정보</div>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-        <div style="flex: 1 1 calc(50% - 6px); min-width: 140px;">
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">규제지역 여부</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{REGULATED_ZONE}}</div>
         </div>
-        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">재당첨 제한</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{READMISSION_LIMIT}}</div>
         </div>
-        <div style="flex: 1 1 calc(25% - 6px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">전매제한</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{RESALE_RESTRICTION_BADGE}}</div>
         </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">거주의무기간</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{LIVE_REQUIREMENT}}</div>
         </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
+        <div style="min-width: 140px;">
           <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">분양가 상한제</div>
           <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{PRICE_CAP}}</div>
-        </div>
-        <div style="flex: 1 1 calc(33.33% - 8px); min-width: 100px;">
-          <div style="font-size: 12px; color: {{T_MUTED}}; margin-bottom: 4px; letter-spacing: 0.5px;">택지 유형</div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--c-dark, {{T_TEXT}});">{{LAND_TYPE}}</div>
         </div>
       </div>
     </div>

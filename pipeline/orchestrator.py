@@ -610,6 +610,93 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         "life_detail": location_data.get("life_detail", "생활편의시설은 지도 기반으로 재확인하는 것이 좋습니다."),
         "medical_detail": location_data.get("medical_detail", "의료 인프라는 실제 생활권 반경을 기준으로 확인해야 합니다."),
     }
+
+
+_QA_REQUIRED_NOTE = (
+    '<br><span style="font-size:13px; color:#999;">'
+    '※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, '
+    '반드시 분양사 및 관련 기관에 직접 확인하세요.</span>'
+)
+
+_RISKY_CONTENT_PATTERNS = (
+    r"시세차익",
+    r"투자\s*가치",
+    r"가격이\s*오를",
+    r"상승\s*가능성",
+    r"수익",
+    r"당첨\s*가능",
+    r"당첨을\s*노려",
+    r"유리합",
+    r"추천드",
+    r"신청하",
+    r"자격이\s*됩니다",
+    r"적합합",
+)
+
+
+def _contains_risky_claim(text: str) -> bool:
+    if not text:
+        return False
+    return any(re.search(pattern, text, re.IGNORECASE) for pattern in _RISKY_CONTENT_PATTERNS)
+
+
+def _ensure_qa_required_note(answer: str) -> str:
+    answer = (answer or "").strip()
+    if not answer:
+        return _QA_REQUIRED_NOTE.lstrip("<br>")
+    if "※ 개인 조건" in answer:
+        return answer
+    return f"{answer}{_QA_REQUIRED_NOTE}"
+
+
+def _sanitize_generated_content(content: dict, facts: dict, location_data: dict) -> dict:
+    """과장·투자성·개인판단이 섞인 생성 결과를 보수적으로 보정한다."""
+    fallback = _fallback_content_generation(facts, location_data)
+    sanitized = dict(content or {})
+
+    narrative_keys = (
+        "apt_intro",
+        "location_intro",
+        "financial_intro",
+        "qa_intro",
+        "schedule_desc",
+        "unit_type_desc",
+        "tax_desc",
+    )
+    for key in narrative_keys:
+        value = str(sanitized.get(key) or "").strip()
+        if not value or _contains_risky_claim(value):
+            sanitized[key] = fallback.get(key, "")
+
+    qa_blocks = sanitized.get("qa_blocks")
+    if not isinstance(qa_blocks, list) or not qa_blocks:
+        sanitized["qa_blocks"] = fallback["qa_blocks"]
+    else:
+        safe_blocks = []
+        for qa in qa_blocks:
+            question = str((qa or {}).get("question") or "").strip()
+            answer = str((qa or {}).get("answer") or "").strip()
+            if not question or not answer or _contains_risky_claim(question) or _contains_risky_claim(answer):
+                safe_blocks = fallback["qa_blocks"]
+                break
+            safe_blocks.append(
+                {
+                    "question": question,
+                    "answer": _ensure_qa_required_note(answer),
+                }
+            )
+        sanitized["qa_blocks"] = safe_blocks
+
+    for key in ("post_title", "post_subtitle"):
+        value = str(sanitized.get(key) or "").strip()
+        if not value or _contains_risky_claim(value):
+            sanitized[key] = fallback.get(key, "")
+
+    seo_tags = sanitized.get("seo_tags")
+    if not isinstance(seo_tags, list) or not seo_tags:
+        sanitized["seo_tags"] = fallback["seo_tags"]
+
+    return sanitized
 async def agent_fact_extraction(notice_text: str) -> dict:
     """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
@@ -999,6 +1086,7 @@ async def agent_content_generation(facts: dict) -> dict:
     if not OPENAI_API_KEY.strip():
         print("  [Agent 4] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
         content = _fallback_content_generation(facts, {})
+        content = _sanitize_generated_content(content, facts, {})
         print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
         return content
     raw = await _call_openai_json(
@@ -1022,6 +1110,7 @@ async def agent_content_generation(facts: dict) -> dict:
         if not content:
             print("  [Agent 4] JSON 파싱 실패 → 결정론적 폴백 사용")
             content = _fallback_content_generation(facts, {})
+    content = _sanitize_generated_content(content, facts, {})
     print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
@@ -1073,7 +1162,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
 
     if not OPENAI_API_KEY:
         print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
-        return content
+        return _sanitize_generated_content(content, facts, {})
 
     try:
         user_msg = FACTCHECK_USER_TPL.format(
@@ -1097,7 +1186,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
 
         if not result:
             print("  [Agent 5] 팩트체크 JSON 파싱 실패 → 원본 유지")
-            return content
+            return _sanitize_generated_content(content, facts, {})
 
         corrected = result.get("qa_blocks", [])
         corrected_count = sum(1 for qa in corrected if qa.get("status") == "corrected")
@@ -1112,7 +1201,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
     except Exception as e:
         print(f"  [Agent 5] 팩트체크 오류 ({e}) → 원본 유지")
 
-    return content
+    return _sanitize_generated_content(content, facts, {})
 
 
 # ──────────────────────────────────────────────────

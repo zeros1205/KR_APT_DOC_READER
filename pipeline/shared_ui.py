@@ -133,10 +133,65 @@ _PALETTE_BTN_SVG = (
 )
 
 
-def shared_nav(home_href: str = "/") -> str:
+def _logo_src(home_href: str) -> str:
+    if home_href == "/":
+        return "jung_reader_logo.png"
+    return f"{home_href}jung_reader_logo.png"
+
+
+def shared_nav(
+    home_href: str = "/",
+    include_palette: bool = True,
+    include_search: bool = False,
+    include_applyhome: bool = True,
+) -> str:
     """공유 네비게이션 바 HTML.
     home_href: 프론트페이지 링크 경로 (index: '/', detail: '../../')
     """
+    palette_btn = ""
+    if include_palette:
+        palette_btn = (
+            f'<button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" '
+            f'style="display:inline-flex;align-items:center;gap:5px;background:transparent;'
+            f'border:1px solid #fff;border-radius:6px;padding:5px 11px;'
+            f'cursor:pointer;font-size:12px;color:#fff;font-family:inherit;'
+            f'transition:all 150ms;"'
+            f' onmouseover="this.style.borderColor=\'rgba(255,255,255,0.7)\';this.style.color=\'rgba(255,255,255,0.7)\'"'
+            f' onmouseout="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'">'
+            f'{_PALETTE_BTN_SVG}'
+            f'<span id="palette-label">A</span>'
+            f'</button>'
+        )
+
+    search_html = ""
+    if include_search:
+        search_html = (
+            f'<div class="search-wrap search-wrap-header" style="margin-right:0;">'
+            f'<span class="search-icon">'
+            f'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            f'stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
+            f'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'
+            f'</svg>'
+            f'</span>'
+            f'<input class="search-input js-apt-search" type="text" placeholder="단지명 검색" autocomplete="off">'
+            f'<div class="search-suggestions"></div>'
+            f'</div>'
+        )
+
+    applyhome_html = ""
+    if include_applyhome:
+        applyhome_html = (
+            f'<a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" '
+            f'style="font-size:12px;color:#fff;text-decoration:none;'
+            f'border:1px solid #fff;border-radius:6px;padding:5px 12px;'
+            f'white-space:nowrap;transition:all 150ms;"'
+            f' onmouseover="this.style.color=\'rgba(255,255,255,0.7)\';this.style.borderColor=\'rgba(255,255,255,0.7)\'"'
+            f' onmouseout="this.style.color=\'#fff\';this.style.borderColor=\'#fff\'">'
+            f'청약홈 ↗</a>'
+        )
+
+    logo_src = _logo_src(home_href)
+
     return (
         f'<header id="site-nav" style="background:var(--c-nav-bg);padding:0 24px;'
         f'position:sticky;top:0;z-index:50;border-bottom:2px solid var(--c-primary);">'
@@ -145,37 +200,37 @@ def shared_nav(home_href: str = "/") -> str:
 
         # 로고 (홈 링크)
         f'<a href="{home_href}" style="text-decoration:none;display:flex;align-items:center;gap:10px;">'
-        f'<span style="display:inline-flex;align-items:center;justify-content:center;'
-        f'width:30px;height:30px;background:var(--c-primary);border-radius:6px;font-size:15px;flex-shrink:0;">📝</span>'
+        f'<img src="{logo_src}" alt="정과장의 청약노트 로고" '
+        f'style="width:30px;height:30px;border-radius:8px;object-fit:cover;flex-shrink:0;display:block;">'
         f'<span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">'
         f'정과장의 청약노트</span>'
         f'</a>'
 
         # 우측 버튼 그룹
         f'<div style="display:flex;align-items:center;gap:10px;">'
-
-        # 팔레트 토글 버튼
-        f'<button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" '
-        f'style="display:inline-flex;align-items:center;gap:5px;background:transparent;'
-        f'border:1px solid #fff;border-radius:6px;padding:5px 11px;'
-        f'cursor:pointer;font-size:12px;color:#fff;font-family:inherit;'
-        f'transition:all 150ms;"'
-        f' onmouseover="this.style.borderColor=\'rgba(255,255,255,0.7)\';this.style.color=\'rgba(255,255,255,0.7)\'"'
-        f' onmouseout="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'">'
-        f'{_PALETTE_BTN_SVG}'
-        f'<span id="palette-label">A</span>'
-        f'</button>'
-
-        # 청약홈 링크
-        f'<a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" '
-        f'style="font-size:12px;color:#fff;text-decoration:none;'
-        f'border:1px solid #fff;border-radius:6px;padding:5px 12px;'
-        f'white-space:nowrap;transition:all 150ms;"'
-        f' onmouseover="this.style.color=\'rgba(255,255,255,0.7)\';this.style.borderColor=\'rgba(255,255,255,0.7)\'"'
-        f' onmouseout="this.style.color=\'#fff\';this.style.borderColor=\'#fff\'">'
-        f'청약홈 ↗</a>'
+        f'{search_html}'
+        f'{palette_btn}'
+        f'{applyhome_html}'
 
         f'</div>'
         f'</div>'
         f'</header>'
+    )
+
+
+def index_nav(home_href: str = "/") -> str:
+    return shared_nav(
+        home_href=home_href,
+        include_palette=False,
+        include_search=True,
+        include_applyhome=False,
+    )
+
+
+def detail_nav(home_href: str = "../../") -> str:
+    return shared_nav(
+        home_href=home_href,
+        include_palette=False,
+        include_search=False,
+        include_applyhome=True,
     )

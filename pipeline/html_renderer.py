@@ -204,10 +204,11 @@ def _supply_label(supply_type: str, apt_name: str = "") -> str:
 
 def _render_header_tag(label: str, radius: str) -> str:
     return (
-        f'<span style="display:inline-block; background:rgba(255,255,255,0.18);'
-        f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
+        f'<span style="display:inline-flex;align-items:center;justify-content:center;'
         f' padding:5px 14px; border-radius:{radius};'
-        f' border:1px solid rgba(255,255,255,0.28);">{label}</span>'
+        f' border:1px solid rgba(255,255,255,0.28); background:rgba(255,255,255,0.18);'
+        f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
+        f' line-height:1;">{label}</span>'
     )
 
 
@@ -436,11 +437,10 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
 def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
     """헤더 하단 메타 정보 세로 배치. 빈 값 행 자동 숨김."""
     fields = [
-        ("모집공고일", data.notice_date),
+        ("모집공고", data.notice_date),
         ("특별공급", data.special_supply_date),
         ("일반공급(1순위)", data.rank1_date),
         ("일반공급(2순위)", data.rank2_date),
-        ("주소", data.supply_location or data.location),
     ]
     rows = []
     for label, value in fields:
@@ -452,7 +452,18 @@ def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
             f'<strong style="color:{text_color};font-size:14px;">{value}</strong>'
             f'</div>'
         )
-    return "\n    ".join(rows)
+    if not rows:
+        return ""
+    return (
+        f'<div style="margin-top:22px;padding-top:22px;">'
+        + "\n    ".join(rows)
+        + "</div>"
+    )
+
+
+def _header_subtitle(data: "PostData") -> str:
+    """상세페이지 히어로 서브타이틀은 주소를 우선 노출."""
+    return data.supply_location or data.location or data.post_subtitle
 
 
 def _apply_theme(html: str, t: dict) -> str:
@@ -544,7 +555,7 @@ class BlogHTMLRenderer:
             "{{HEADER_META_ROWS}}": _header_meta_rows(data, t["header_text"], t["header_sub"]),
             # 포스팅 메타
             "{{POST_TITLE}}":     data.post_title,
-            "{{POST_SUBTITLE}}":  data.post_subtitle,
+            "{{POST_SUBTITLE}}":  _header_subtitle(data),
             "{{RANK1_DATE}}":     data.rank1_date,
             "{{LOCATION}}":       data.location,
             "{{READ_TIME}}":      str(data.read_time),
@@ -661,13 +672,13 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     from config import SITE_URL
     from shared_ui import (
         FONT_LINK, FONT_FAMILY, PALETTE_CSS,
-        PALETTE_INIT_JS, PALETTE_SWITCH_JS, shared_nav,
+        PALETTE_INIT_JS, detail_nav,
     )
 
     post_slug = f"{date_str}_{safe}"
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
-    nav_html = shared_nav("../../")
+    nav_html = detail_nav("../../")
 
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
@@ -698,9 +709,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
 <div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
 {html}
 </div>
-<script>
-{PALETTE_SWITCH_JS}
-</script>
 </body>
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
