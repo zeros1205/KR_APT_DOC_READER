@@ -47,6 +47,55 @@ async def _call_openai_json(system: str, user: str, model: str, max_tokens: int 
 
 
 # ──────────────────────────────────────────────────
+# Agent 0: 청약규제정보 추출 (별도 전문 에이전트)
+# ──────────────────────────────────────────────────
+REGULATORY_EXTRACTION_PROMPT = """당신은 청약공고 규제정보 추출 전문가입니다.
+아래 [공고 원문]에서 다음 5가지 규제 정보만 정확하게 추출하세요.
+
+추출 대상:
+1. regulated_zone: 규제지역 유형
+   - 투기과열지구 / 청약과열지역 / 조정대상지역 / 비규제지역 / 해당없음 중 해당하는 것 모두 쉼표로 나열
+   - 공고에 명시 안 되면 null
+
+2. readmission_limit: 재당첨 제한 기간
+   - "N년" 형식 또는 "없음" / "해당없음"
+   - 검색 키워드: "재당첨", "재청약", "재입주" 제한/금지 관련 항목
+   - 공고에 명시 안 되면 null
+
+3. live_requirement: 거주의무기간
+   - "N년" 형식 또는 "없음" / "해당없음"
+   - 검색 키워드: "거주의무", "실거주", "실거주기간", "거주기간" 관련 항목
+   - 공고에 명시 안 되면 null
+
+4. price_cap: 분양가상한제 적용 여부
+   - "적용" 또는 "미적용" 또는 null
+   - 검색 키워드: "분양가상한제" / "분양가상한" 항목
+   - 공고에 명시 안 되면 null
+
+5. land_type: 택지 유형
+   - "민간택지" / "공공택지" / "공공주택지구" / "택지" 등
+   - 검색 키워드: "택지유형", "토지 구분", "택지" 관련 항목
+   - 공고에 명시 안 되면 null
+
+[핵심 규칙]
+- 공고문에 명확하게 명시된 정보만 추출하세요
+- 추측, 생성, 해석은 절대 금지
+- null은 따옴표 없이 null로 표기
+- JSON만 출력하세요
+
+[공고 원문]:
+{notice_text}
+
+JSON 응답:
+{{
+  "regulated_zone": null,
+  "readmission_limit": null,
+  "live_requirement": null,
+  "price_cap": null,
+  "land_type": null
+}}"""
+
+# ──────────────────────────────────────────────────
 # Agent 1: 팩트 추출
 # ──────────────────────────────────────────────────
 FACT_EXTRACTION_PROMPT = """
@@ -890,6 +939,35 @@ def _sanitize_generated_content(content: dict, facts: dict, location_data: dict)
         sanitized["seo_tags"] = fallback["seo_tags"]
 
     return sanitized
+async def agent_regulatory_extraction(notice_text: str) -> dict:
+    """Agent 0: 청약규제정보 전문 추출 (GPT-5.4)"""
+    print("  [Agent 0] 청약규제정보 추출 시작...")
+    try:
+        raw = await _call_openai_json(
+            system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
+            user=REGULATORY_EXTRACTION_PROMPT.format(notice_text=notice_text),
+            model=LLM_EXTRACT_MODEL,
+            max_tokens=1500,
+        )
+        try:
+            regulatory = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            regulatory = json.loads(m.group()) if m else {}
+
+        # 추출된 값 로깅
+        non_null = {k: v for k, v in regulatory.items() if v is not None}
+        if non_null:
+            print(f"  [Agent 0] 추출됨: {non_null}")
+        else:
+            print(f"  [Agent 0] 추출된 규제정보 없음 (공고에 명시 안 됨)")
+        return regulatory
+    except Exception as e:
+        print(f"  [Agent 0] 규제정보 추출 실패 ({e})")
+        return {}
+
+
 async def agent_fact_extraction(notice_text: str) -> dict:
     """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
@@ -1649,9 +1727,17 @@ async def run_pipeline(
     print("🚀 블로그 포스팅 파이프라인 시작")
     print("="*55)
 
+    # Step 0: 청약규제정보 추출 (전문 에이전트)
+    regulatory = await agent_regulatory_extraction(notice_text)
+
     # Step 1: 팩트 추출
     facts = await agent_fact_extraction(notice_text)
     facts = _merge_pdf_policy(facts, pdf_policy_text or (doc.pdf_policy_text if doc else ""))
+
+    # 규제정보를 팩트에 병합 (null이 아닌 값만)
+    for key in ("regulated_zone", "readmission_limit", "live_requirement", "price_cap", "land_type"):
+        if regulatory.get(key) is not None:
+            facts[key] = regulatory[key]
 
     if not facts.get("apt_name") and doc and doc.apt_name:
         facts["apt_name"] = doc.apt_name
