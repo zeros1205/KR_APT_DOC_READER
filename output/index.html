@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko" data-palette="A">
 <head>
 <meta charset="UTF-8">
@@ -51,29 +51,34 @@ html {
 
 /* ─── 팔레트 B : Neutral Elegance ─── */
 html[data-palette="B"] {
-  --c-primary:        #e0afa0;
-  --c-primary-dark:   #c49080;
-  --c-primary-light:  #f9f1ef;
-  --c-primary-stripe: rgba(224,175,160,0.07);
-  --c-accent:         #8a817c;
-  --c-bg:             #f4f3ee;
+  --hunter-green:     #386641ff;
+  --sage-green:       #6a994eff;
+  --yellow-green:     #a7c957ff;
+  --vanilla-cream:    #f2e8cfff;
+  --blushed-brick:    #bc4749ff;
+  --c-primary:        #386641;
+  --c-primary-dark:   #2f5236;
+  --c-primary-light:  #edf4e9;
+  --c-primary-stripe: rgba(56,102,65,0.08);
+  --c-accent:         #6a994e;
+  --c-bg:             #f2e8cf;
   --c-surface:        #ffffff;
-  --c-dark:           #2e2924;
-  --c-mid:            #7a7370;
-  --c-light-gray:     #bcb8b1;
-  --c-hero-bg:        #eeebe4;
-  --c-nav-bg:         #463f3a;
-  --c-green:          #8a817c;
-  --c-green-dark:     #635d59;
-  --c-green-light:    #f0eeea;
-  --c-card-grad-new:        linear-gradient(145deg,#e0afa0 0%,#c49080 100%);
-  --c-card-grad-resupply:   linear-gradient(145deg,#8a817c 0%,#635d59 100%);
-  --c-cta-bg:               #635d59;
-  --c-cta-hover:            #52504c;
-  --c-tag-new-bg:           #f9f1ef;
-  --c-tag-new-text:         #c49080;
-  --c-tag-resupply-bg:      #f0eeea;
-  --c-tag-resupply-text:    #635d59;
+  --c-dark:           #2c2925;
+  --c-mid:            #6a994e;
+  --c-light-gray:     rgba(56,102,65,0.20);
+  --c-hero-bg:        #f2e8cf;
+  --c-nav-bg:         #2f5236;
+  --c-green:          #a7c957;
+  --c-green-dark:     #386641;
+  --c-green-light:    #edf4e9;
+  --c-card-grad-new:        linear-gradient(145deg,#6a994e 0%,#386641 100%);
+  --c-card-grad-resupply:   linear-gradient(145deg,#a7c957 0%,#6a994e 100%);
+  --c-cta-bg:               #386641;
+  --c-cta-hover:            #2f5236;
+  --c-tag-new-bg:           #edf4e9;
+  --c-tag-new-text:         #386641;
+  --c-tag-resupply-bg:      #edf4e9;
+  --c-tag-resupply-text:    #6a994e;
 }
 
 /* ─── 팔레트 C : Pastel Dreamland ─── */
@@ -143,14 +148,43 @@ body {
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }
-.intro-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
-  gap: 22px;
-}
 @media (max-width: 960px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 960px) { .intro-grid { grid-template-columns: 1fr; } }
 @media (max-width: 580px) { .cards-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 900px) {
+  .featured-shell {
+    grid-template-columns: 1fr !important;
+  }
+  .featured-list {
+    grid-template-columns: 1fr !important;
+  }
+  .guide-headline {
+    font-size: 24px !important;
+    line-height: 1.22 !important;
+    max-width: none !important;
+  }
+  .guide-body {
+    font-size: 13px !important;
+    line-height: 1.75 !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .guide-card,
+  .picks-card {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .guide-headline {
+    font-size: 22px !important;
+  }
+  .featured-title {
+    font-size: 16px !important;
+  }
+  .featured-meta {
+    font-size: 11px !important;
+  }
+}
 
 /* ── 카드 ── */
 .post-card {
@@ -212,6 +246,18 @@ body {
   flex-shrink: 0;
   margin-right: 4px;
 }
+.search-wrap-header {
+  margin-right: 0;
+}
+.search-wrap-header::after {
+  display: none;
+}
+.search-wrap-header #search-input {
+  width: 140px;
+}
+.search-wrap-header #search-input:focus {
+  width: 180px;
+}
 .search-wrap::after {
   content: '';
   position: absolute;
@@ -260,7 +306,18 @@ body {
 </head>
 <body>
 
-<header id="site-nav" style="background:var(--c-nav-bg);padding:0 24px;position:sticky;top:0;z-index:50;border-bottom:2px solid var(--c-primary);"><div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;"><a href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--c-primary);border-radius:6px;font-size:15px;flex-shrink:0;">📝</span><span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">정과장의 청약노트</span></a><div style="display:flex;align-items:center;gap:10px;"><button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" style="display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid #fff;border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px;color:#fff;font-family:inherit;transition:all 150ms;" onmouseover="this.style.borderColor='rgba(255,255,255,0.7)';this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.borderColor='#fff';this.style.color='#fff'"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zM6.5 12C5.67 12 5 11.33 5 10.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zM9.5 8C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5 11 5.67 11 6.5 10.33 8 9.5 8zM14.5 8c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5 16 5.67 16 6.5 15.33 8 14.5 8zM17.5 12c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9 19 9.67 19 10.5 18.33 12 17.5 12z"/></svg><span id="palette-label">A</span></button><a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" style="font-size:12px;color:#fff;text-decoration:none;border:1px solid #fff;border-radius:6px;padding:5px 12px;white-space:nowrap;transition:all 150ms;" onmouseover="this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.7)'" onmouseout="this.style.color='#fff';this.style.borderColor='#fff'">청약홈 ↗</a></div></div></header>
+<header id="site-nav" style="background:var(--c-nav-bg);padding:0 24px;position:sticky;top:0;z-index:50;border-bottom:2px solid var(--c-primary);"><div style="max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:54px;"><a href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--c-primary);border-radius:6px;font-size:15px;flex-shrink:0;">📝</span><span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">정과장의 청약노트</span></a><div style="display:flex;align-items:center;gap:10px;">
+<div class="search-wrap search-wrap-header" style="margin-right:0;">
+  <span class="search-icon">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  </span>
+  <input id="search-input" type="text" placeholder="단지명 검색"
+         oninput="filterSearch(this.value)" autocomplete="off">
+</div>
+<a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" style="font-size:12px;color:#fff;text-decoration:none;border:1px solid #fff;border-radius:6px;padding:5px 12px;white-space:nowrap;transition:all 150ms;" onmouseover="this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.7)'" onmouseout="this.style.color='#fff';this.style.borderColor='#fff'">청약홈 ↗</a></div></div></header>
 
 
 <!-- ══ 히어로 ══ -->
@@ -285,9 +342,9 @@ body {
       <span style="color:var(--c-primary);">정과장이 쉽게</span> 정리해 드립니다
     </h1>
 
-    <p style="font-size:16px;color:var(--c-dark);opacity:0.65;line-height:1.75;
+    <p style="font-size:16px;color:#2c2925;opacity:1;line-height:1.75;
               max-width:460px;margin-bottom:44px;word-break:keep-all;">
-      한국부동산원 청약홈 공개 데이터를 AI로 분석하여<br>
+      한국부동산원 청약홈 공개 데이터를 분석하여<br>
       분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인하세요.
     </p>
 
@@ -295,158 +352,112 @@ body {
       <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
                    background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
                    font-size:13px;font-weight:700;color:var(--c-dark);">
-        2026.04.23 업데이트
-      </span>
-      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
-                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
-                   font-size:13px;font-weight:700;color:var(--c-dark);">
-        곧 1순위 접수 17건
+        최근 업데이트 2026년 4월 22일
       </span>
     </div>
 
-    <!-- 통계 카드 -->
-    <div style="display:flex;flex-wrap:wrap;gap:12px;">
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-primary);letter-spacing:-1px;">54</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">분석 공고</div>
-      </div>
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-accent);letter-spacing:-1px;">15</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">커버 지역</div>
-      </div>
-      <div style="background:var(--c-surface);border:1px solid var(--c-light-gray);
-                  border-radius:10px;padding:18px 32px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:var(--c-green-dark);letter-spacing:-1px;">22</div>
-        <div style="font-size:12px;font-weight:600;color:var(--c-dark);margin-top:4px;letter-spacing:0.3px;">서울·경기 공고</div>
-      </div>
-    </div>
   </div>
 </section>
 
 <div style="height:3px;background:linear-gradient(90deg,var(--c-primary),var(--c-accent),transparent);"></div>
 
 
-<!-- ══ 메인 ══ -->
-<main style="max-width:1160px;margin:0 auto;padding:44px 24px 100px;">
+<section style="padding:36px 24px 8px;">
+  <div class="featured-shell" style="max-width:1160px;margin:0 auto;display:grid;grid-template-columns:minmax(0,0.78fr) minmax(0,1.22fr);gap:20px;">
+    
+<div class="section-card guide-card" style="padding:26px 22px 24px;">
+  <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+            letter-spacing:2px;margin-bottom:10px;">USER GUIDE</p>
+  <p class="guide-headline" style="font-size:31px;color:#1f1d1a;line-height:1.18;font-weight:900;
+            letter-spacing:-1.2px;max-width:460px;word-break:keep-all;margin-bottom:14px;">
+    <span style="color:var(--c-primary);">입주자모집공고</span>를 빠르게 확인하고<br>
+    내 집 마련에 성공하세요
+  </p>
+  <p class="guide-body" style="font-size:14px;line-height:1.85;color:var(--c-mid);word-break:keep-all;">
+    관심지역, 공급유형 필터 또는 단지명 검색으로<br>
+    원하는 단지를 쉽게 찾아볼 수 있어요.
+  </p>
+</div>
 
-  <section class="intro-grid" style="margin-bottom:36px;">
-    <div class="section-card" style="padding:28px;">
-      <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:10px;">START HERE</p>
-      <h2 style="font-size:28px;font-weight:900;line-height:1.28;letter-spacing:-0.9px;color:var(--c-dark);margin-bottom:12px;word-break:keep-all;">
-        이번 주 청약 흐름을 빠르게 훑고<br>원하는 단지로 바로 들어가세요
-      </h2>
-      <p style="font-size:15px;line-height:1.8;color:var(--c-mid);margin-bottom:20px;max-width:560px;word-break:keep-all;">
-        지역 탭과 공급 유형 필터를 같이 쓰면 재공급 공고, 공공분양 공고, 서울권 신규 공고만 빠르게 압축해서 볼 수 있습니다.
-      </p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          지역 탐색 15개 권역
-        </span>
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          공급 유형 2개
-        </span>
-        <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;background:var(--c-bg);font-size:13px;color:var(--c-dark);">
-          검색으로 단지명 바로 찾기
-        </span>
-      </div>
+    
+<div class="section-card picks-card" style="padding:26px 22px 18px;">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:8px;">
+    <div>
+      <p style="font-size:10px;font-weight:700;color:var(--c-primary);
+                letter-spacing:2px;margin-bottom:10px;">LATEST UPDATES</p>
     </div>
+  </div>
+  <div class="featured-list" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;">
+    
+            <a href="posts/2026-04-20_용인_양지_서희스타힐스_하이뷰/post.html" class="featured-item" data-name="용인 양지 서희스타힐스 하이뷰" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                용인 양지 서희스타힐스 하이뷰
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 547세대<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+            <a href="posts/2026-04-20_PH159/post.html" class="featured-item" data-name="ph159" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                PH159
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 49세대<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+            <a href="posts/2026-04-20_두산위브더제니스_구미_조합원취소분_/post.html" class="featured-item" data-name="두산위브더제니스 구미(조합원취소분)" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                두산위브더제니스 구미(조합원취소분)
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 정보 없음<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+            <a href="posts/2026-04-20_고덕신도시_아테라_A_63블록_공공분양주택/post.html" class="featured-item" data-name="고덕신도시 아테라 a-63블록 공공분양주택" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                고덕신도시 아테라 A-63블록 공공분양주택
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 정보 없음<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+            <a href="posts/2026-04-20_인천가정2지구_B2블록_공공분양주택_후속사업_/post.html" class="featured-item" data-name="인천가정2지구 b2블록 공공분양주택(후속사업)" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                인천가정2지구 B2블록 공공분양주택(후속사업)
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 308세대<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+            <a href="posts/2026-04-20_동탄_그웬_160__동탄2_B11BL_/post.html" class="featured-item" data-name="동탄 그웬 160 (동탄2 b11bl)" style="display:block;text-decoration:none;">
+              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);
+                        word-break:keep-all;margin-bottom:6px;">
+                동탄 그웬 160 (동탄2 B11BL)
+              </p>
+              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+                공급규모 정보 없음<br>모집공고일 2026년 4월 20일
+              </p>
+            </a>
+            
+  </div>
+</div>
 
-    <aside class="section-card" style="padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
-        <div>
-          <p style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--c-primary);margin-bottom:8px;">LATEST PICKS</p>
-          <h3 style="font-size:22px;font-weight:900;letter-spacing:-0.6px;color:var(--c-dark);">최근 분석 공고</h3>
-        </div>
-        <span style="font-size:12px;font-weight:700;color:var(--c-mid);">TOP 3</span>
-      </div>
-      
-            <a href="posts/2026-04-23_힐스테이트_판교역/post.html" style="display:flex;gap:16px;align-items:flex-start;
-               padding:18px 0;text-decoration:none;border-top:0 solid var(--c-light-gray);">
-              <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                          flex-shrink:0;background:var(--c-primary-light);color:var(--c-primary);font-size:16px;font-weight:900;">
-                1
-              </div>
-              <div style="min-width:0;flex:1;">
-                <p style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--c-primary);margin-bottom:7px;">민간분양</p>
-                <p style="font-size:18px;font-weight:800;line-height:1.45;color:var(--c-dark);word-break:keep-all;margin-bottom:6px;">
-                  힐스테이트 판교역
-                </p>
-                <p style="font-size:13px;color:var(--c-mid);line-height:1.6;margin-bottom:9px;">
-                  경기도 성남시 분당구 삼평동
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    7억 5,000만원 ~ 11억 2,000만원
-                  </span>
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    4월 28일 1순위
-                  </span>
-                </div>
-              </div>
-            </a>
-            
-            <a href="posts/2026-04-22_힐스테이트_판교역/post.html" style="display:flex;gap:16px;align-items:flex-start;
-               padding:18px 0;text-decoration:none;border-top:1px solid var(--c-light-gray);">
-              <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                          flex-shrink:0;background:var(--c-primary-light);color:var(--c-primary);font-size:16px;font-weight:900;">
-                2
-              </div>
-              <div style="min-width:0;flex:1;">
-                <p style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--c-primary);margin-bottom:7px;">민간분양</p>
-                <p style="font-size:18px;font-weight:800;line-height:1.45;color:var(--c-dark);word-break:keep-all;margin-bottom:6px;">
-                  힐스테이트 판교역
-                </p>
-                <p style="font-size:13px;color:var(--c-mid);line-height:1.6;margin-bottom:9px;">
-                  경기도 성남시 분당구 삼평동
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    7억 5,000만원 ~ 11억 2,000만원
-                  </span>
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    4월 28일 1순위
-                  </span>
-                </div>
-              </div>
-            </a>
-            
-            <a href="posts/2026-04-22_용인_양지_서희스타힐스_하이뷰/post.html" style="display:flex;gap:16px;align-items:flex-start;
-               padding:18px 0;text-decoration:none;border-top:1px solid var(--c-light-gray);">
-              <div style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-                          flex-shrink:0;background:var(--c-primary-light);color:var(--c-primary);font-size:16px;font-weight:900;">
-                3
-              </div>
-              <div style="min-width:0;flex:1;">
-                <p style="font-size:11px;font-weight:800;letter-spacing:1px;color:var(--c-primary);margin-bottom:7px;">민간분양</p>
-                <p style="font-size:18px;font-weight:800;line-height:1.45;color:var(--c-dark);word-break:keep-all;margin-bottom:6px;">
-                  용인 양지 서희스타힐스 하이뷰
-                </p>
-                <p style="font-size:13px;color:var(--c-mid);line-height:1.6;margin-bottom:9px;">
-                  경기도 용인시 처인구 양지읍 양지리
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    4억 2,100만원 ~ 5억 4,400만원
-                  </span>
-                  <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;
-                               background:var(--c-bg);font-size:12px;color:var(--c-dark);">
-                    5월 7일 1순위
-                  </span>
-                </div>
-              </div>
-            </a>
-            
-    </aside>
-  </section>
+  </div>
+</section>
 
-  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;
+
+<main style="max-width:1160px;margin:0 auto;padding:22px 24px 96px;">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;
               justify-content:space-between;gap:16px;margin-bottom:22px;">
     <div>
       <p style="font-size:10px;font-weight:700;color:var(--c-mid);
@@ -4159,7 +4170,6 @@ body {
 
   <div id="pagination" style="display:flex;justify-content:center;align-items:center;
        gap:6px;margin-top:48px;flex-wrap:wrap;"></div>
-
 </main>
 
 
@@ -4192,107 +4202,7 @@ body {
 </footer>
 
 
-<script>
-var _PALETTES = ['A','B','C'];
-function cyclePalette() {
-  var cur = document.documentElement.getAttribute('data-palette') || 'A';
-  var next = _PALETTES[(_PALETTES.indexOf(cur) + 1) % _PALETTES.length];
-  document.documentElement.setAttribute('data-palette', next);
-  localStorage.setItem('apt-palette', next);
-  var lbl = document.getElementById('palette-label');
-  if (lbl) lbl.textContent = next;
-}
-document.addEventListener('DOMContentLoaded', function() {
-  var lbl = document.getElementById('palette-label');
-  if (lbl) lbl.textContent = document.documentElement.getAttribute('data-palette') || 'A';
-});
-
-var POSTS_PER_PAGE = 12;
-var _currentPage = 1;
-var _activeFilters = {
-  region: '전체',
-  supply: '전체'
-};
-
-function _getMatchedCards() {
-  var q = ((document.getElementById('search-input') || {}).value || '').toLowerCase().trim();
-  var all = Array.from(document.querySelectorAll('.post-card'));
-  return all.filter(function(card) {
-    var regionMatch = _activeFilters.region === '전체' || card.dataset.region === _activeFilters.region;
-    var supplyMatch = _activeFilters.supply === '전체' || card.dataset.supply === _activeFilters.supply;
-    var nameMatch   = !q || (card.dataset.name || '').toLowerCase().includes(q);
-    return regionMatch && supplyMatch && nameMatch;
-  });
-}
-
-function _renderPage(matched, page) {
-  var start = (page - 1) * POSTS_PER_PAGE;
-  var end   = start + POSTS_PER_PAGE;
-  var all   = document.querySelectorAll('.post-card');
-  all.forEach(function(c) { c.style.display = 'none'; });
-  matched.slice(start, end).forEach(function(c) { c.style.display = ''; });
-}
-
-function _renderPagination(matched) {
-  var box = document.getElementById('pagination');
-  if (!box) return;
-  var total = matched.length;
-  var pages = Math.ceil(total / POSTS_PER_PAGE);
-  if (pages <= 1) { box.innerHTML = ''; return; }
-  var html = '';
-  var btnBase = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-light-gray);'
-    + 'background:var(--c-surface);color:var(--c-dark);font-size:13px;font-weight:600;'
-    + 'cursor:pointer;font-family:inherit;transition:all 150ms;padding:0 10px;"';
-  var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
-    + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
-    + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
-  for (var i = 1; i <= pages; i++) {
-    if (i === _currentPage) {
-      html += '<button ' + btnActive + '>' + i + '</button>';
-    } else {
-      html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
-    }
-  }
-  box.innerHTML = html;
-}
-
-function _applyFilters() {
-  _currentPage = 1;
-  var matched = _getMatchedCards();
-  _renderPage(matched, _currentPage);
-  _renderPagination(matched);
-  document.getElementById('result-count').innerHTML =
-    '총 <strong style="color:var(--c-dark);">' + matched.length + '</strong>건';
-  document.getElementById('no-result').classList.toggle('show', matched.length === 0);
-}
-
-function goPage(page) {
-  _currentPage = page;
-  var matched = _getMatchedCards();
-  _renderPage(matched, _currentPage);
-  _renderPagination(matched);
-  if (window.scrollY > document.getElementById('cards-grid').offsetTop - 120) {
-    window.scrollTo({top: document.getElementById('cards-grid').offsetTop - 80, behavior: 'smooth'});
-  }
-}
-
-function filterGroup(btn, group, value) {
-  document.querySelectorAll('.tab-btn[data-group="' + group + '"]').forEach(function(b) {
-    b.classList.remove('active');
-  });
-  btn.classList.add('active');
-  _activeFilters[group] = value;
-  _applyFilters();
-}
-
-function filterSearch(val) {
-  _applyFilters();
-}
-
-document.querySelector('.tab-btn[data-group="region"][data-value="전체"]').classList.add('active');
-document.querySelector('.tab-btn[data-group="supply"][data-value="전체"]').classList.add('active');
-_applyFilters();
-</script>
+<script>(function(){var p=localStorage.getItem("apt-palette")||"A";document.documentElement.setAttribute("data-palette",p);})();</script>
 
 </body>
 </html>
