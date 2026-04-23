@@ -515,13 +515,38 @@ body {
 
   <div id="filter-dock">
     <div class="mobile-tab-scroll" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">
-      <button class="tab-btn" data-group="region" data-value="전체" onclick="filterGroup(this,'region','전체')">전체</button>
+      <button class="tab-btn" data-group="region" data-value="전체" onclick="filterGroup(this,'region','전체')">전체</button><button class="tab-btn" data-group="region" data-value="서울" onclick="filterGroup(this,'region','서울')">서울</button>
     </div>
     <div id="filter-dock-progress"></div>
   </div>
 
   <div class="cards-grid" id="cards-grid">
-    
+    <article class="post-card" data-region="서울" data-supply="민간분양" data-name="공덕역자이르네" data-url="posts/2026-04-23_공덕역자이르네/post.html" onclick="location.href='posts/2026-04-23_공덕역자이르네/post.html'">
+  <div class="card-header" style="background:var(--c-card-grad-new);">
+    <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
+    <div style="position:relative;margin-bottom:10px;">
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">민간분양</span>
+    </div>
+    <p class="card-title">
+      <span class="card-title-track">공덕역자이르네</span>
+    </p>
+    <div style="position:relative;margin-top:auto;padding-top:12px;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        12억 7,200만원 ~ 17억 6,900만원
+      </span>
+    </div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--c-light-gray);">
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">특별공급</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 27일</p></div>
+    <div style="width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;"></div>
+    <div style="flex:1;padding:12px 14px;text-align:center;"><p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">1순위</p><p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">4월 28일</p></div>
+  </div>
+  <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 서울특별시 마포구 도화동</p>
+  </div>
+  <div style="padding:12px 16px 9px;flex:1;"><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#공덕역자이르네</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#마포구분양</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#도화동청약</span><span style="display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#서울청약</span></div>
+  <a href="posts/2026-04-23_공덕역자이르네/post.html" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+</article>
   </div>
   <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
 
