@@ -398,7 +398,7 @@ def build_post_data(
         qa_blocks=qa_blocks,
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
         images={},
-        source_date=_display_date(facts.get("rank1_date")),
+        source_date=_display_date(facts.get("notice_date")),  # 모집공고일
         notice_date=_display_date(facts.get("notice_date")),
         read_time=max(6, len(str(content)) // 450),
         theme=theme,
