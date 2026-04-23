@@ -984,45 +984,36 @@ async def agent_fact_extraction(notice_text: str) -> dict:
 # Agent 2: 입지 분석 (Gemini)
 # ──────────────────────────────────────────────────
 
-LOCATION_ANALYSIS_PROMPT = """당신은 아파트를 분양해야 하는 시행사 세일즈맨이자, 문장을 잘 쓰는 부동산 카피라이터입니다.
-아래 단지 정보를 바탕으로 장점 중심의 입지 분석을 작성하세요.
+LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
+Google Search Grounding으로 수집한 실제 데이터를 바탕으로, 다음 4가지 항목으로 입지를 분석하세요.
 
-문체 기준:
-- 첨부된 구글 AI 모드 요약처럼 단정하고 설명적인 문장으로 작성
-- 과장된 감탄사, 이모지, 광고 문구, CTA 금지
-- 장점을 강조하되 사실처럼 단정할 수 없는 내용은 "기대된다", "매력으로 읽힌다" 수준으로만 표현
-- 투자수익, 시세차익, 가격상승 전망, 당첨 가능성 예측 금지
+[분석 항목]
+1. 총평: 위치·교통·생활 환경의 종합 평가 (1문장~2문장, 핵심 강점만)
+2. 교통 및 입지: 지하철·버스 등 대중교통 접근성, 주요 거점까지의 거리/시간
+3. 교육 및 주거 환경: 학교 배정, 학군 수준, 주거 인프라 (병원, 은행 등)
+4. 단지 특징: 단지 규모, 신축/재개발 특성, 주변 생활권 특성
 
-출력 구조:
-1. location_intro: 요약 3문장 이내
-2. subway_detail: "1. 교통 및 입지 여건" 섹션용 HTML 목록
-3. school_detail: "2. 교육 및 주거 환경" 섹션용 HTML 목록
-4. life_detail: "3. 단지 특징" 섹션용 HTML 목록
+[작성 기준]
+- Google Search에서 수집한 '사실'을 기반으로 분석 관점에서 재작성
+- 단순 나열이 아닌 "분석적 평가" 형식
+  예: "지하철역까지 도보 5분" → "신분당선과 수도권 주요 거점이 20~30분 이내 접근 가능해, 직장 출근과 지역 이동이 수월합니다"
+- 사실에 근거하되, 해석·평가는 긍정적 관점으로 전개
+- 고유명사(역명, 학교명, 시설명)는 Google Search 결과에서 확인된 것만 사용
+- 과장 금지: "강남급 학군" 같은 표현 X, "학교 수와 위치를 고려할 때" 같은 중립적 표현 O
 
-반드시 지킬 것:
-- JSON만 출력
-- subway_detail / school_detail / life_detail 는 반드시 <ul>...</ul> 형식의 HTML 문자열
-- 각 섹션은 2~4개의 <li>로 구성
-- 실제 확인된 facts만 기반으로 쓰고, facts에 없는 고유명사·역명·학교명·시설명은 새로 만들지 말 것
-- 생활·교육·교통이 부족하면 장점 중심의 일반화 문장으로 안전하게 작성할 것
-- medical_detail은 빈 문자열로 둘 것
-- score 계열 필드는 빈 문자열로 둘 것
+[출력 구조 - 반드시 JSON]
+{{
+  "location_summary": "총평: 1~2문장",
+  "location_intro": "위치 기본 설명 (1문장)",
+  "subway_detail": "<ul><li>교통항목1</li><li>교통항목2</li><li>교통항목3</li></ul>",
+  "school_detail": "<ul><li>교육항목1</li><li>교육항목2</li><li>교육항목3</li></ul>",
+  "life_detail": "<ul><li>특징항목1</li><li>특징항목2</li><li>특징항목3</li></ul>"
+}}
 
 [단지 정보]:
 {facts_json}
 
-JSON만 출력:
-{{
-  "location_intro": "요약 3문장 이내",
-  "subway_score": "",
-  "subway_detail": "<ul><li>...</li><li>...</li></ul>",
-  "school_score": "",
-  "school_detail": "<ul><li>...</li><li>...</li></ul>",
-  "life_score": "",
-  "life_detail": "<ul><li>...</li><li>...</li></ul>",
-  "medical_score": "",
-  "medical_detail": ""
-}}"""
+주의: JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."""
 
 LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
 사실관계와 문장 구조를 검토하고, 부정확하거나 과한 표현이 있으면 수정하세요.
@@ -1043,9 +1034,8 @@ LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
 수정 필요 시 수정된 JSON 반환. 수정 없으면 원본 그대로 반환. JSON만 출력."""
 
 _LOCATION_KEYS = (
-    "location_intro", "subway_score", "subway_detail",
-    "school_score", "school_detail", "life_score", "life_detail",
-    "medical_score", "medical_detail",
+    "location_summary", "location_intro", "subway_detail",
+    "school_detail", "life_detail",
 )
 
 

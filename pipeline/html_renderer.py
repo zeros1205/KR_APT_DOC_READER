@@ -137,6 +137,7 @@ class PostData:
 
     # 내러티브 산문 (LLM 생성) — 섹션 도입부
     apt_intro: str = ""          # 첫인사 + 단지 소개
+    location_summary: str = ""   # 입지 총평 (Google Grounding 기반)
     location_intro: str = ""     # 입지 설명
     financial_intro: str = ""    # 자금 계획 도입
     qa_intro: str = ""           # Q&A 도입
@@ -755,6 +756,7 @@ class BlogHTMLRenderer:
             "{{READ_TIME}}":      str(data.read_time),
             # 내러티브
             "{{APT_INTRO}}":       data.apt_intro or f"{data.apt_name} 분양 정보를 안내해 드립니다.",
+            "{{LOCATION_SUMMARY}}": data.location_summary or "",
             "{{LOCATION_INTRO}}":  data.location_intro or f"{data.location} 입지를 살펴보겠습니다.",
             "{{FINANCIAL_INTRO}}": data.financial_intro or "자금 계획을 미리 세워두는 것이 중요합니다.",
             "{{QA_INTRO}}":        data.qa_intro or "자주 받는 질문에 답해드릴게요.",
