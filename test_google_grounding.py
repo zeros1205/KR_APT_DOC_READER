@@ -5,6 +5,7 @@ Google Gemini Grounding with Google Search 테스트
 """
 
 import os
+import sys
 import json
 import asyncio
 from pathlib import Path
@@ -12,7 +13,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+sys.path.insert(0, str(Path(__file__).parent / "pipeline"))
+from config import GEMINI_API_KEY, LLM_LOCATION_MODEL
 
 async def test_google_grounding():
     """Google Search Grounding 테스트"""
@@ -60,7 +62,7 @@ Google Search를 통해 실시간 정보를 수집하여 작성하세요.
         print("\n[1단계] Google Search Grounding 호출...\n")
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model=LLM_LOCATION_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
