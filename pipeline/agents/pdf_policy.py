@@ -88,15 +88,34 @@ def _pick_value_after_header(lines: list[str], header_needles: tuple[str, ...]) 
 
 
 def _extract_table_tokens(text: str) -> list[str]:
+    inline_match = re.search(
+        r"재당첨제한\s*(?P<readmission>\S+)\s+전매제한\s*(?P<resale>\S+)\s+거주의무기간\s*(?P<live>\S+)\s+분양가상한제\s*(?P<price_cap>\S+)\s+택지유형\s*(?P<land_type>\S+)",
+        text,
+    )
+    if inline_match:
+        return [
+            inline_match.group("readmission"),
+            inline_match.group("resale"),
+            inline_match.group("live"),
+            inline_match.group("price_cap"),
+            inline_match.group("land_type"),
+        ]
+
     lines = [line for line in text.splitlines() if line.strip()]
     header_idx = _find_first_line(lines, "재당첨제한", "전매제한", "거주의무기간", "분양가상한제", "택지유형")
     if header_idx < 0:
         return []
+    collected: list[str] = []
     for line in lines[header_idx + 1 : header_idx + 5]:
-        tokens = line.split()
-        if len(tokens) >= 5:
-            return tokens
-    return []
+        tokens = [
+            token
+            for token in line.split()
+            if token not in {"재당첨제한", "전매제한", "거주의무기간", "분양가상한제", "택지유형"}
+        ]
+        collected.extend(tokens)
+        if len(collected) >= 5:
+            return collected[:5]
+    return collected[:5]
 
 
 def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
@@ -137,7 +156,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     ]
     for pat in readmission_patterns:
         m = re.search(pat, normalized)
-        if m:
+        if m and not result["readmission_limit"]:
             result["readmission_limit"] = _clean_value(m.group(1))
             break
     if any(phrase in normalized for phrase in ("재당첨 제한을 적용받지", "재당첨제한을 적용받지", "재당첨 제한 없음", "재당첨제한 없음")):
@@ -151,7 +170,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     ]
     for pat in resale_patterns:
         m = re.search(pat, normalized)
-        if m:
+        if m and not result["resale_restriction"]:
             result["resale_restriction"] = _clean_value(m.group(1))
             break
     if any(phrase in normalized for phrase in ("전매제한 없음", "전매 제한 없음", "전매제한기간 전매제한 없음")):
@@ -165,7 +184,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     ]
     for pat in live_patterns:
         m = re.search(pat, normalized)
-        if m:
+        if m and not result["live_requirement"]:
             result["live_requirement"] = _clean_value(m.group(1))
             break
     if any(phrase in normalized for phrase in ("거주의무 없음", "실거주 의무 없음", "거주의무기간 없음", "실거주 의무 없음", "거주의무 없음")):

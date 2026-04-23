@@ -288,10 +288,7 @@ def _normalize_contract_amount(contract_amount: str, contract_ratio: str, unit_t
     amount = _stringify(contract_amount)
     if amount and amount not in {"-", "None", "null"}:
         return amount
-    min_price = min((u.price_min for u in unit_types if u.price_min > 0), default=0)
-    if min_price > 0:
-        return f"약 {int(min_price * _safe_int(contract_ratio or 10) / 100):,}만원"
-    return "공고문 확인 필요"
+    return "실제 납부금액은 공고문 기준 별도 확인"
 
 
 def build_post_data(

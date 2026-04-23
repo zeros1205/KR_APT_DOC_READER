@@ -73,7 +73,7 @@ FACT_EXTRACTION_PROMPT = """
   예: "소유권이전등기일로부터 3년", "입주 후 6개월", "분양가상한제 적용 10년", "없음".
   공고에 없으면 null. 조건별로 다를 경우 가장 긴 기간 기준으로 요약.
 - contract_ratio: 계약금 비율 (숫자만, 예: 10)
-- contract_amount: 최저 분양가 기준 계약금 금액 (예: "약 3,000만원"), 공고에 없으면 null
+- contract_amount: 공고문에 실제 납부금액이 명시된 경우에만 계약금 금액 문자열 반환. 비율을 근거로 계산하지 말 것. 없으면 null
 - midterm_ratio: 중도금 비율 (숫자만, 예: 60)
 - midterm_count: 중도금 납부 횟수 (숫자만, 예: 6), 공고에 없으면 6
 - balance_ratio: 잔금 비율 (숫자만, 예: 30)
@@ -127,7 +127,8 @@ FINANCIAL_EXTRACTION_PROMPT = """
 추출 규칙:
 - 공고문에 실제로 적힌 내용만 사용하고, 추측은 금지합니다.
 - 비율은 숫자만 반환하세요. 예: 10, 60, 30
-- 계약금 금액은 공고문에 있는 표현을 최대한 그대로 반환하세요.
+- 계약금 금액은 공고문에 실제 납부금액이 적힌 경우에만 그대로 반환하세요.
+- 비율(예: 5%, 10%)만 보고 실제 금액을 계산하지 마세요.
 - 중도금 대출이 없거나 조건이 불명확하면 loan_info에 "공고문 확인 필요"를 반환하세요.
 - 정보가 없으면 null 또는 기본값을 사용하지 말고 빈 값으로 두세요.
 
@@ -156,7 +157,7 @@ def _has_financial_data(facts: dict) -> bool:
     """자금 계획 정보가 하나라도 채워졌는지 확인."""
     return any(
         facts.get(key)
-        for key in ("contract_ratio", "contract_amount", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info")
+        for key in ("contract_ratio", "midterm_ratio", "midterm_count", "balance_ratio", "loan_info")
     )
 
 
@@ -431,13 +432,6 @@ def _fallback_fact_extraction(notice_text: str) -> dict:
         )
         if not facts.get("supply_scale") and facts.get("supply_total_units"):
             facts["supply_scale"] = f"총 {facts['supply_total_units']}세대"
-        if not facts.get("contract_amount"):
-            min_price = min(
-                (_parse_price_manwon(ut.get("price_min", 0)) for ut in unit_types),
-                default=0,
-            )
-            if min_price > 0:
-                facts["contract_amount"] = f"약 {int(min_price * int(facts['contract_ratio']) / 100):,}만원"
     else:
         facts["price_range"] = price_range or ""
         facts["supply_total_units"] = 0
@@ -733,9 +727,9 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
             "question": "자금계획은 어떻게 준비해야 하나요?",
             "answer": (
                 f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}%라는 흐름으로 이해하면 됩니다. "
-                f"최소 분양가를 기준으로 계약금 규모를 계산한 뒤, 중도금 대출 가능 여부와 이자 조건, 잔금 시점의 현금 흐름을 따로 점검해야 합니다. "
-                f"특히 {apt_name}처럼 타입별 분양가 차이가 있는 단지는 같은 단지 안에서도 실제 필요 자금이 달라질 수 있으니, "
-                f"희망 평형을 정한 다음 숫자를 다시 산출하는 방식이 가장 효율적입니다."
+                f"여기서는 비율과 납부 시점만 먼저 이해하고, 실제 납부금액은 선택 타입과 옵션, 대출 조건을 반영해 공고문 기준으로 다시 확인하는 것이 안전합니다. "
+                f"특히 {apt_name}처럼 타입별 분양가 차이가 있는 단지는 동일 단지 안에서도 실제 필요 현금이 달라질 수 있으므로, "
+                f"희망 평형을 정한 뒤 분양사 안내와 금융 조건을 함께 대조해야 합니다."
             ),
         },
     ]
@@ -761,7 +755,7 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         or f"{apt_name}의 입지는 {location or '공고문상 공급위치'}를 중심으로 교통과 생활권을 함께 보는 것이 핵심입니다.",
         "financial_intro": (
             f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 구조로 이해하면 됩니다. "
-            f"분양가 범위는 {price_range or '공고문 확인 필요'}이므로 희망 타입별로 실제 필요 자금을 따로 계산해야 합니다."
+            f"실제 납부금액은 선택 타입과 옵션, 대출 조건에 따라 달라지므로 비율과 일정부터 먼저 확인하는 편이 안전합니다."
         ),
         "qa_intro": "아래 Q&A에서는 일정, 규제, 자금계획 순서로 실무적으로 필요한 포인트만 다시 정리합니다.",
         "schedule_desc": (
@@ -805,6 +799,12 @@ _RISKY_CONTENT_PATTERNS = (
     r"적합합",
 )
 
+_FINANCIAL_CONFLICT_PATTERNS = (
+    r"명시되지\s*않",
+    r"확인되지\s*않",
+    r"알\s*수\s*없",
+)
+
 
 def _contains_risky_claim(text: str) -> bool:
     if not text:
@@ -819,6 +819,21 @@ def _ensure_qa_required_note(answer: str) -> str:
     if "※ 개인 조건" in answer:
         return answer
     return f"{answer}{_QA_REQUIRED_NOTE}"
+
+
+def _has_financial_conflict(answer: str, facts: dict) -> bool:
+    text = (answer or "").strip()
+    if not text:
+        return False
+    if not any(re.search(pattern, text, re.IGNORECASE) for pattern in _FINANCIAL_CONFLICT_PATTERNS):
+        return False
+    financial_fields = (
+        facts.get("contract_ratio"),
+        facts.get("midterm_ratio"),
+        facts.get("balance_ratio"),
+        facts.get("loan_info"),
+    )
+    return any(str(value or "").strip() for value in financial_fields)
 
 
 def _sanitize_generated_content(content: dict, facts: dict, location_data: dict) -> dict:
@@ -848,7 +863,13 @@ def _sanitize_generated_content(content: dict, facts: dict, location_data: dict)
         for qa in qa_blocks:
             question = str((qa or {}).get("question") or "").strip()
             answer = str((qa or {}).get("answer") or "").strip()
-            if not question or not answer or _contains_risky_claim(question) or _contains_risky_claim(answer):
+            if (
+                not question
+                or not answer
+                or _contains_risky_claim(question)
+                or _contains_risky_claim(answer)
+                or _has_financial_conflict(answer, facts)
+            ):
                 safe_blocks = fallback["qa_blocks"]
                 break
             safe_blocks.append(
@@ -1241,6 +1262,13 @@ CONTENT_GEN_PROMPT = """
    - 모든 Q&A 답변 마지막에 반드시 다음 문구 포함:
      <br><span style="font-size:13px; color:#999;">※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span>
 
+⑤ 자금 계획 작성 절대 원칙
+   - 계약금/중도금/잔금은 비율과 납부 구조만 설명
+   - 분양가에 비율을 곱해 실제 납부금액을 계산하지 말 것
+   - "약 8,000만원", "약 1.2억원" 같은 계산형 금액 문구 생성 금지
+   - 공고문에 실제 납부금액이 명시된 경우에만 그 금액을 그대로 인용 가능
+   - 실제 대출 가능 금액, 세금 액수, 실수령액 계산 금지
+
 [단지 정보]:
 {facts_json}
 
@@ -1254,7 +1282,7 @@ CONTENT_GEN_PROMPT = """
 
   "location_intro": "100~150자. 해당 지역의 분위기와 생활 환경을 친근하게 설명. 지역 특색과 장점 중심. 독자가 그 동네를 떠올릴 수 있도록 묘사.",
 
-  "financial_intro": "80~100자. 자금 계획의 중요성을 공감 가는 방식으로 도입. '청약 당첨만큼 중요한 게 자금 준비인데요~' 같은 톤.",
+  "financial_intro": "80~100자. 자금 계획의 중요성을 공감 가는 방식으로 도입. 단, 실제 납부금액 계산은 하지 말고 비율과 일정 확인이 중요하다는 방향으로만 작성.",
 
   "qa_intro": "60~80자. '청약 준비하면서 많은 분들이 공통으로 궁금해 하는 내용들을 모았어요' 같은 톤. 댓글 유도·구독 유도·공유 요청 등 일체 금지. 순수하게 정보 안내로만 마무리.",
 
@@ -1273,7 +1301,7 @@ CONTENT_GEN_PROMPT = """
     }},
     {{
       "question": "취득세/세금/자금계획 관련 (취득세/DTI 키워드)",
-      "answer": "300~500자. 세율·한도 단정 금지. '일반적인 기준' 수준으로만 안내. 답변 말미 ※ 문구 필수."
+      "answer": "300~500자. 세율·한도 단정 금지. '일반적인 기준' 수준으로만 안내. 계약금/중도금/잔금을 실제 금액으로 계산하지 말 것. 답변 말미 ※ 문구 필수."
     }},
     {{
       "question": "인테리어/발코니 확장 관련 (아파트인테리어 키워드)",

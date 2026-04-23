@@ -37,7 +37,7 @@ import pdfplumber
 
 sys.path.append(str(Path(__file__).parent.parent))
 from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
-from agents.pdf_policy import find_local_pdf, normalize_pdf_text
+from agents.pdf_policy import normalize_pdf_text
 
 
 # ══════════════════════════════════════════════════
@@ -597,18 +597,17 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # PDF 공고문 (로컬 우선, 없으면 URL 다운로드)
-        pdf_dir = Path(__file__).resolve().parents[2] / "PDF"
-        pdf_file = find_local_pdf(pdf_dir, doc.notice_id, doc.apt_name)
-        if pdf_file:
-            print(f"  [PDF] 로컬 발견: {pdf_file.name}")
-        elif doc.notice_url:
+        # PDF 공고문은 notice_url 원문 다운로드를 기본 경로로 사용한다.
+        pdf_file = None
+        if doc.notice_url:
             safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
             pdf_file = await download_pdf(
                 doc.notice_url,
                 OUTPUT_DIR / "pdfs",
                 f"{safe}_{doc.notice_id}.pdf",
             )
+        else:
+            print(f"  [PDF] URL 없음: {doc.apt_name}")
 
         if pdf_file:
             pdf_text, pdf_tables = parse_pdf(pdf_file)
