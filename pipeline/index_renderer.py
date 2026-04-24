@@ -146,13 +146,16 @@ function renderCards() {
   var page_posts = filtered.slice(start, end);
 
   grid.innerHTML = page_posts.map(function(post) {
-    return '<div class="post-card" data-region="' + post.region + '">' +
-           '<a href="./posts/' + post._dir + '/post.html" style="text-decoration:none;color:inherit;">' +
-           '<h3 style="margin:0 0 8px;font-size:16px;font-weight:600;">' + post.apt_name + '</h3>' +
-           '<p style="margin:0 0 6px;font-size:13px;color:#666;">' + post.location + '</p>' +
-           '<p style="margin:0;font-size:12px;color:#999;">생성일: ' + post.created_at + '</p>' +
-           '</a>' +
-           '</div>';
+    var regionTag = post.region !== '기타' ? '<span style="display:inline-block;font-size:11px;font-weight:700;color:var(--c-primary);background:var(--c-primary-light);padding:4px 8px;border-radius:4px;margin-bottom:8px;">' + post.region + '</span>' : '';
+    var priceTag = post.price_range ? '<span style="display:inline-block;font-size:11px;font-weight:700;color:var(--c-primary);background:var(--c-primary-light);padding:4px 8px;border-radius:4px;margin-left:4px;">' + post.price_range + '</span>' : '';
+    return '<a href="./posts/' + post._dir + '/post.html" style="text-decoration:none;color:inherit;display:block;height:100%;">' +
+           '<div class="post-card" data-region="' + post.region + '" style="height:100%;padding:20px;display:flex;flex-direction:column;">' +
+           (regionTag ? '<div style="margin-bottom:10px;">' + regionTag + priceTag + '</div>' : '') +
+           '<h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:var(--c-dark);line-height:1.4;">' + post.apt_name + '</h3>' +
+           '<p style="margin:0 0 10px;font-size:14px;color:var(--c-mid);">' + post.location + '</p>' +
+           '<p style="margin-top:auto;padding-top:10px;border-top:1px solid var(--c-light-gray);font-size:12px;color:var(--c-mid);">📅 ' + post.created_at + '</p>' +
+           '</div>' +
+           '</a>';
   }).join('');
 
   var resultCount = document.getElementById('result-count');
