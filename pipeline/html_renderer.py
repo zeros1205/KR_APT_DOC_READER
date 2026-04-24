@@ -85,7 +85,7 @@ class PostData:
     post_title: str
     post_subtitle: str
     location: str
-    supply_location: str
+    supply_address: str
     supply_scale: str
 
     # 선택 식별 필드 (기본값 있음)
@@ -269,8 +269,8 @@ def _parse_price_manwon(value: object) -> int:
     return total
 
 
-def _canonical_subtitle(post_subtitle: str, supply_location: str, location: str) -> str:
-    return _stringify(supply_location) or _stringify(location) or _stringify(post_subtitle)
+def _canonical_subtitle(post_subtitle: str, supply_address: str, location: str) -> str:
+    return _stringify(supply_address) or _stringify(location) or _stringify(post_subtitle)
 
 
 def _canonical_supply_scale(supply_scale: str, total_households: str, unit_types: list["UnitType"]) -> str:
@@ -324,7 +324,7 @@ def build_post_data(
 
     apt_name = _stringify(facts.get("apt_name")) or _stringify(getattr(doc, "apt_name", ""))
     location = _stringify(facts.get("location"))
-    supply_location = _stringify(facts.get("supply_location")) or _stringify(getattr(doc, "supply_address", ""))
+    supply_address = _stringify(facts.get("supply_address")) or _stringify(getattr(doc, "supply_address", ""))
     total_households = _stringify(
         facts.get("total_households")
         or getattr(doc, "total_units", "")
@@ -343,11 +343,11 @@ def build_post_data(
         post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
         post_subtitle=_canonical_subtitle(
             _stringify(content.get("post_subtitle", "")),
-            supply_location,
+            supply_address,
             location,
         ),
         location=location,
-        supply_location=supply_location,
+        supply_address=supply_address,
         supply_scale=supply_scale,
         total_households=total_households,
         is_hot_zone=_display_value(_stringify(facts.get("is_hot_zone")) or api_is_hot_zone, default="해당없음"),
@@ -643,7 +643,7 @@ def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
 
 def _header_subtitle(data: "PostData") -> str:
     """상세페이지 히어로 서브타이틀은 주소를 우선 노출."""
-    return _canonical_subtitle(data.post_subtitle, data.supply_location, data.location)
+    return _canonical_subtitle(data.post_subtitle, data.supply_address, data.location)
 
 
 def _apply_theme(html: str, t: dict) -> str:
@@ -750,8 +750,8 @@ class BlogHTMLRenderer:
             "{{TAX_DESC}}":        data.tax_desc or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
             # 단지 기본
             "{{APT_NAME}}":         data.apt_name,
-            "{{SUPPLY_LOCATION}}":  data.supply_location,
-            "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_location or data.location),
+            "{{SUPPLY_LOCATION}}":  data.supply_address,
+            "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_address or data.location),
             "{{SUPPLY_SCALE_BLOCK}}": (
                 f'<div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {t["text2"]}); margin-bottom: 10px;">'
                 f'{data.supply_scale}</div>'
@@ -914,7 +914,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "rank2_date":           data.rank2_date,
         "notice_date":          data.notice_date,
         "move_in_date":         data.move_in_date,
-        "supply_location":      data.supply_location,
+        "supply_address":      data.supply_address,
         "total_households":     data.total_households,
         "is_hot_zone":          data.is_hot_zone,
         "regulated_zone":       data.regulated_zone,

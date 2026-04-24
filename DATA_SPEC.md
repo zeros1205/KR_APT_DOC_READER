@@ -35,7 +35,7 @@ blog_template.html (렌더링)
 | **분양가 범위** | `{{PRICE_RANGE_TYPED}}` | `price_range` / `unit_types[]` | API | `getAPTLttotPblancMdl.SPSPLY_PRIC` (유닛별) |
 | **총 공급** | `{{TOTAL_UNITS}}` | `unit_types[]` 합계 | API | `getAPTLttotPblancMdl` 행 개수 |
 | **입주 예정** | `{{MOVE_IN_DATE}}` | `move_in_date` | API | `getAPTLttotPblancDetail.MVNIN_SCHDUL_MO` |
-| **공급 위치** | `{{SUPPLY_LOCATION}}` | `supply_location` | API | `getAPTLttotPblancDetail.SPLY_ADRES` |
+| **공급 위치** | `{{SUPPLY_LOCATION}}` | `supply_address` | API | `getAPTLttotPblancDetail.SPLY_ADRES` |
 | **공급 규모** | `{{SUPPLY_SCALE}}` | `supply_scale` | 계산 | 유닛타입 수 + 세대 수 |
 | **규제지역** | `{{REGULATED_ZONE}}` | `regulated_zone` | LLM + API | orchestrator.py (PDF 추출) |
 | **재당첨제한** | `{{READMISSION_LIMIT}}` | `readmission_limit` | LLM + API | orchestrator.py (PDF 추출) |
@@ -151,7 +151,7 @@ blog_template.html (렌더링)
 # agents/collector.py - CheongYakAPI.get_detail()
 {
     "HOUSE_NM": apt_name,                           # 단지명
-    "SPLY_ADRES": supply_location,                  # 공급 위치
+    "SPLY_ADRES": supply_address,                  # 공급 위치
     "MVNIN_SCHDUL_MO": move_in_date,               # 입주예정
     "SPCL_CNTRCT_RQEST_STRT_DE": special_date,     # 특별공급
     "GNRL_CNTRCT_RQEST_STRT_DE": rank1_date,       # 1순위
@@ -199,7 +199,7 @@ blog_template.html (렌더링)
 
 ### **Agent 3: 입지 분석**
 ```
-입력: supply_location + Google Grounding
+입력: supply_address + Google Grounding
 출력: subway_detail, school_detail, life_detail, medical_detail
 모델: Google Gemini 3.1 Pro
 ```

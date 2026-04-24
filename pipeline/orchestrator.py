@@ -61,7 +61,7 @@ FACT_EXTRACTION_PROMPT = """
 - notice_id: 공고번호 (예: 2026000001, 분양공고번호 항목에서 추출)
 - apt_name: 단지명
 - location: 시/구/동 (예: 서울시 강남구 개포동)
-- supply_location: 전체 공급위치 (공고문 그대로)
+- supply_address: 전체 공급위치 (공고문 그대로)
 - supply_scale: 공급규모 요약
 - unit_types: 배열 (type_name, area_sqm, general_units, special_units, price_min, price_max 키를 가진 객체 목록)
 - price_range: "X억~Y억원" 형식 문자열
@@ -1016,7 +1016,7 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_location: str = "") -> Path | None:
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_address: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -1040,8 +1040,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     apt_name = facts["apt_name"]
 
     # API에서 공급 위치를 받으면 facts에 설정 (Gemini가 추출하지 못한 경우 대비)
-    if api_supply_location and not facts.get("supply_location"):
-        facts["supply_location"] = api_supply_location
+    if api_supply_address and not facts.get("supply_address"):
+        facts["supply_address"] = api_supply_address
 
     # Step 1.5: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
     eligibility_check = await agent_eligibility_factcheck_gemini(facts, notice_text)
@@ -1128,7 +1128,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
         post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
         location=facts.get("location", ""),
-        supply_location=facts.get("supply_location", ""),
+        supply_address=facts.get("supply_address", ""),
         supply_scale=facts.get("supply_scale", ""),
         total_households=str(facts.get("total_households") or ""),
         is_hot_zone=_fmt_hot_zone(facts.get("is_hot_zone") or api_is_hot_zone or ""),
@@ -1233,7 +1233,7 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone, api_supply_location=doc.supply_location)
+    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone, api_supply_address=doc.supply_address)
 
 
 # ──────────────────────────────────────────────────

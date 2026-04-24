@@ -181,8 +181,8 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
             result.errors.append("필수 필드 누락: apt_name (단지명)")
         if not content.get("post_title"):
             result.errors.append("필수 필드 누락: post_title (포스트 제목)")
-        if not facts.get("supply_location"):
-            result.errors.append("필수 필드 누락: supply_location (공급 위치)")
+        if not facts.get("supply_address"):
+            result.errors.append("필수 필드 누락: supply_address (공급 위치)")
 
     # PostData 객체 입력인 경우 처리
     elif data is not None:
@@ -207,7 +207,7 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
         required_fields = {
             "apt_name": "단지명",
             "post_title": "포스트 제목",
-            "supply_location": "공급 위치",
+            "supply_address": "공급 위치",
         }
         for field, label in required_fields.items():
             if not getattr(data, field, ""):
