@@ -100,6 +100,12 @@ jobs:
             echo "📝 생성된 포스팅: 0개"
           fi
 
+      - name: 프론트 페이지 생성
+        if: success()
+        run: |
+          cd pipeline
+          python build_index.py
+
       - name: 포스팅 커밋 및 푸시
         if: success()
         run: |
@@ -115,17 +121,17 @@ jobs:
       - name: Cloudflare Pages 배포
         if: success()
         run: |
-          if [ -d "output/posts" ]; then
-            FILE_COUNT=$(find output/posts -name "post.html" | wc -l)
-            if [ "$FILE_COUNT" -gt 0 ]; then
-              npx wrangler pages deploy output/posts \
+          if [ -d "output" ]; then
+            FILE_COUNT=$(find output/posts -name "post.html" 2>/dev/null | wc -l)
+            if [ "$FILE_COUNT" -gt 0 ] || [ -f "output/index.html" ]; then
+              npx wrangler pages deploy output \
                 --project-name=kr-apt-doc-reader
-              echo "✅ 배포 완료: $FILE_COUNT개 포스팅"
+              echo "✅ 배포 완료: $FILE_COUNT개 포스팅 + index.html"
             else
-              echo "⚠️  post.html 파일 없음 - 배포 스킵"
+              echo "⚠️  배포할 파일 없음 - 배포 스킵"
             fi
           else
-            echo "⚠️  output/posts 디렉토리 없음 - 배포 스킵"
+            echo "⚠️  output 디렉토리 없음 - 배포 스킵"
           fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
