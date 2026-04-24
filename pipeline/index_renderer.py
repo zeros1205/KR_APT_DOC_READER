@@ -73,6 +73,8 @@ def build_front_index_once() -> None:
     html = html.replace("{{INDEX_NAV}}", index_nav("/"))
     html = html.replace("{{LATEST_UPDATE_DATE}}", latest_update_date)
     html = html.replace("{{INDEX_RUNTIME_SCRIPT}}", _render_runtime_script())
+    html = html.replace("{{REGION_TABS}}", "<!-- 동적 로드됨 -->")
+    html = html.replace("{{CARDS_HTML}}", "<!-- 동적 로드됨 -->")
 
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"✅ index.html 초기 생성 완료: {OUT_FILE}")
