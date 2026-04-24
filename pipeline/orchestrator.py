@@ -306,7 +306,48 @@ ELIGIBILITY_FACTCHECK_PROMPT = """당신은 2026년 청약 제도 전문가입�
 }}"""
 
 # ──────────────────────────────────────────────────
-# Agent 2b: 입지 분석 (Gemini)
+# Agent 2b: 자금계획 세부 내용 생성 (Gemini 3.1 + Google Grounding)
+# ──────────────────────────────────────────────────
+FINANCIAL_DETAIL_PROMPT = """당신은 부동산 자금계획 전문가입니다.
+청약 구매자가 실제로 필요한 자금 준비 정보를 일반적인 팩트 기반으로 작성하세요.
+
+【자금 정보】
+- 계약금 비율: {contract_ratio}%
+- 중도금 비율: {midterm_ratio}% (납부 횟수: {midterm_count}회)
+- 잔금 비율: {balance_ratio}%
+- 총 분양가: {price_range}
+
+【작성 규칙 — 반드시 준수】
+1. 최대 3문장 (짧고 명확)
+2. 일반적인 팩트만 기반 (2026년 청약 제도)
+3. 개별 맞춤 조언 절대 금지 ("당신은 ~" 금지)
+4. 구체적 금액 계산 절대 금지 (예시만 가능: "약 7,500만원 → 750만원")
+5. 대출 관련 단정 금지 ("~가능합니다" → "~할 수 있습니다")
+
+【계약금(Contract)】
+- 일반적으로 분양가의 {contract_ratio}% 수준
+- 계약 체결 시 납부 (선금 방식)
+- 취득세·부동산세 등 추가 비용 고려 필요
+
+【중도금(Midterm)】
+- 분양가의 {midterm_ratio}%를 {midterm_count}회에 나눠 납부
+- 일반적으로 건축 진행 상황별 납부 (지정된 기일 준수 필수)
+- 중도금 대출 활용 가능 여부는 분양사·금융기관 확인 필요
+
+【잔금(Balance)】
+- 분양가의 {balance_ratio}% (입주 직전 또는 입주일에 납부)
+- 중도금 대출 상환 시점 고려 필요
+- 등기 이전 전 완납 필수
+
+다음 JSON으로 응답하세요:
+{{
+  "contract_desc": "최대 3문장. 계약금의 일반적 정보와 준비 포인트",
+  "midterm_desc": "최대 3문장. 중도금 납부 일정과 대출 활용 팁",
+  "balance_desc": "최대 3문장. 잔금 납부 시점과 주의사항"
+}}"""
+
+# ──────────────────────────────────────────────────
+# Agent 2c: 입지 분석 (Gemini)
 # ──────────────────────────────────────────────────
 
 LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
@@ -420,6 +461,53 @@ async def agent_eligibility_factcheck_gemini(facts: dict, notice_text: str) -> d
             "eligibility_rank1": facts.get("eligibility_rank1", []),
             "eligibility_rank2": facts.get("eligibility_rank2", []),
         }
+
+
+async def agent_financial_detail_gemini(facts: dict) -> dict:
+    """Agent 2b: Gemini 3.1 + Google Grounding으로 자금계획 세부 내용 생성"""
+    print("  [Agent 2b] 자금계획 세부 내용 생성 (Gemini 3.1 + Google Grounding)...")
+    if not GEMINI_API_KEY:
+        print("  [Agent 2b] GEMINI_API_KEY 미설정 → 기본값 반환")
+        return {}
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+
+        resp = client.models.generate_content(
+            model="gemini-3.1-pro",
+            contents=FINANCIAL_DETAIL_PROMPT.format(
+                contract_ratio=facts.get("contract_ratio", "10"),
+                midterm_ratio=facts.get("midterm_ratio", "60"),
+                midterm_count=facts.get("midterm_count", "6"),
+                balance_ratio=facts.get("balance_ratio", "30"),
+                price_range=facts.get("price_range", ""),
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+                tools=[
+                    genai_types.Tool(
+                        google_search=genai_types.GoogleSearch(),
+                    )
+                ],
+            ),
+        )
+
+        raw = resp.text.strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+
+        print(f"  [Agent 2b] 생성 완료: contract_desc 길이={len(result.get('contract_desc', ''))}")
+        return result
+
+    except Exception as e:
+        print(f"  [Agent 2b] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
+        return {}
 
 
 async def agent_location_analysis_gemini(facts: dict) -> dict:
@@ -891,6 +979,14 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         facts["eligibility_rank2"] = eligibility_check.get("eligibility_rank2", facts.get("eligibility_rank2", []))
         print(f"  [Agent 2] 팩트체크 완료 - 청약자격 정보 검증됨")
 
+    # Step 1.6: 자금계획 세부 내용 생성 (Gemini 3.1 + Google Grounding)
+    financial_detail = await agent_financial_detail_gemini(facts)
+    if financial_detail:
+        facts["contract_desc"] = financial_detail.get("contract_desc", "")
+        facts["midterm_desc"] = financial_detail.get("midterm_desc", "")
+        facts["balance_desc"] = financial_detail.get("balance_desc", "")
+        print(f"  [Agent 2b] 생성 완료 - 자금계획 세부 내용")
+
     # Step 2: 이미지 검색 (병렬)
     print(f"\n  [이미지] '{apt_name}' 관련 이미지 검색...")
     images = await find_images_for_post(
@@ -1013,6 +1109,10 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         unit_type_desc=content.get("unit_type_desc", ""),
         schedule_desc=content.get("schedule_desc", ""),
         tax_desc=content.get("tax_desc", ""),
+        # 자금계획 세부 설명 (Gemini 생성)
+        contract_desc=facts.get("contract_desc", ""),
+        midterm_desc=facts.get("midterm_desc", ""),
+        balance_desc=facts.get("balance_desc", ""),
         qa_blocks=qa_blocks,
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
         images=images,

@@ -116,6 +116,10 @@ class PostData:
     midterm_ratio: str = "60"
     midterm_count: str = "6"
     balance_ratio: str = "30"
+    # 자금계획 세부 설명 (Gemini 3.1 + Grounding 생성)
+    contract_desc: str = ""        # 계약금 세부 설명 (최대 3문장)
+    midterm_desc: str = ""         # 중도금 세부 설명 (최대 3문장)
+    balance_desc: str = ""         # 잔금 세부 설명 (최대 3문장)
 
     # 세금
     acquisition_tax_rate: str = ""
