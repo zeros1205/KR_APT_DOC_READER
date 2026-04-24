@@ -33,6 +33,14 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: ChromaDB 모델 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/chroma
+          key: chroma-models-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            chroma-models-
+
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
