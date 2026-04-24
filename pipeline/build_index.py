@@ -42,6 +42,13 @@ def load_posts() -> list[dict]:
             posts.append(meta)
         except Exception as e:
             print(f"  [경고] {meta_path} 파싱 실패: {e}")
+
+    # 모집공고일(notice_date) 기준으로 정렬 (new to old)
+    def get_notice_date(p: dict) -> str:
+        """notice_date 또는 빈 문자열 (역순 정렬 위해)"""
+        return p.get("notice_date", "") or ""
+
+    posts.sort(key=get_notice_date, reverse=True)
     return posts
 
 
