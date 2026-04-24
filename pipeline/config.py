@@ -20,10 +20,6 @@ LLM_CONTENT_MODEL = "gemini-3.1-pro-preview"        # 서술형 콘텐츠 생성
 LLM_FACTCHECK_MODEL = "gemini-3.1-pro-preview"      # 팩트 체크
 LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"       # 입지 분석 (Google Search Grounding)
 
-# ── OpenAI (레거시 - 제거됨) ──
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")  # 보존용 (향후 제거)
-LLM_EMBED_MODEL = "text-embedding-3-small"        # 임베딩은 아직 미사용
-
 # ── 이미지 API ──
 UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
