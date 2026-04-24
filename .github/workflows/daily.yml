@@ -27,6 +27,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
       - name: 코드 체크아웃
@@ -95,11 +96,18 @@ jobs:
       - name: Wrangler 설치
         run: npm install -g wrangler
 
+      - name: Cloudflare 배포 전 확인
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "⚠️  경고: CLOUDFLARE_API_TOKEN이 설정되지 않았습니다"
+            echo "GitHub Settings → Secrets → CLOUDFLARE_API_TOKEN 추가 필요"
+          else
+            echo "✅ CLOUDFLARE_API_TOKEN 설정됨"
+          fi
+
       - name: Cloudflare에 배포
-        if: ${{ success() && github.ref_name == 'main' }}
+        if: ${{ success() && github.ref_name == 'main' && env.CLOUDFLARE_API_TOKEN != '' }}
         run: wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: 생성된 포스팅 업로드 (아티팩트 백업)
         uses: actions/upload-artifact@v4
