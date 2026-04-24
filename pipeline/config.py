@@ -15,10 +15,10 @@ CHROMA_DIR = BASE_DIR / "chroma_db"
 
 # ── Google Gemini (모든 LLM 작업 통합) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_EXTRACT_MODEL = "gemini-3.1-pro-preview"        # 팩트 추출 (Google Grounding 포함)
-LLM_CONTENT_MODEL = "gemini-3.1-pro-preview"        # 서술형 콘텐츠 생성·검증
-LLM_FACTCHECK_MODEL = "gemini-3.1-pro-preview"      # 팩트 체크
-LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"       # 입지 분석 (Google Search Grounding)
+LLM_EXTRACT_MODEL = "gemini-3.1-flash-lite-preview"        # 팩트 추출 (Google Grounding 포함)
+LLM_CONTENT_MODEL = "gemini-3.1-flash-lite-preview"        # 서술형 콘텐츠 생성·검증
+LLM_FACTCHECK_MODEL = "gemini-3.1-flash-lite-preview"      # 팩트 체크
+LLM_LOCATION_MODEL = "gemini-3.1-flash-lite-preview"       # 입지 분석 (Google Search Grounding)
 
 # ── 청약홈 공공데이터 API ──
 PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
@@ -35,7 +35,7 @@ CTA_TAX = os.getenv("CTA_TAX", "https://www.nts.go.kr/")
 CTA_KAKAO_CHANNEL = os.getenv("CTA_KAKAO_CHANNEL", "https://pf.kakao.com/")
 
 # ── 품질 게이트 ──
-MIN_QUALITY_SCORE = 70       # 이하 시 재생성
+MIN_QUALITY_SCORE = 60       # 이상 시 통과 / 미만 시 드랍
 MAX_CTA_PER_POST = 3         # 저품질 방어: 외부 링크 최대 3개
 MIN_CHAR_COUNT = 6000        # 최소 글자 수
 

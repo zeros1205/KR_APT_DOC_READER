@@ -57,6 +57,7 @@ FACT_EXTRACTION_PROMPT = """
 [공고 원문]에 없는 수치는 절대 추측하거나 생성하지 마세요. 없으면 null로 표기.
 
 추출할 필드 (JSON 키명 고정):
+- notice_id: 공고번호 (예: 2026000001, 분양공고번호 항목에서 추출)
 - apt_name: 단지명
 - location: 시/구/동 (예: 서울시 강남구 개포동)
 - supply_location: 전체 공급위치 (공고문 그대로)
@@ -434,7 +435,7 @@ async def agent_eligibility_factcheck_gemini(facts: dict, notice_text: str) -> d
         }
 
         resp = client.models.generate_content(
-            model="gemini-3.1-pro-preview",  # Grounding 지원 모델
+            model="gemini-3.1-flash-lite-preview",  # Grounding 지원 모델
             contents=ELIGIBILITY_FACTCHECK_PROMPT.format(
                 notice_text=notice_text[:3000],  # 공고문 텍스트 (처음 3000자)
                 extracted_eligibility=json.dumps(extracted_eligibility, ensure_ascii=False, indent=2)
@@ -482,7 +483,7 @@ async def agent_financial_detail_gemini(facts: dict) -> dict:
         client = google_genai.Client(api_key=GEMINI_API_KEY)
 
         resp = client.models.generate_content(
-            model="gemini-3.1-pro-preview",
+            model="gemini-3.1-flash-lite-preview",
             contents=FINANCIAL_DETAIL_PROMPT.format(
                 contract_ratio=facts.get("contract_ratio", "10"),
                 midterm_ratio=facts.get("midterm_ratio", "60"),
@@ -1039,8 +1040,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
             break
 
         if attempt >= max_retries + 1:
-            print(f"\n  ⚠️  최대 재시도 횟수 초과. 현재 점수({score})로 진행.")
-            break
+            print(f"\n  ❌ 품질 미달로 드랍 ({score}점 < {MIN_QUALITY_SCORE}점)")
+            return None
 
         print(f"\n  🔄 품질 미달 ({score}점) - 재생성...")
 
@@ -1079,6 +1080,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         contract_amount = "공고문 확인 필요"
 
     post_data = PostData(
+        notice_id=facts.get("notice_id", "unknown"),
         apt_name=apt_name,
         post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
         post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
