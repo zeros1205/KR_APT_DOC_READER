@@ -80,6 +80,13 @@ jobs:
           LIMIT=${{ github.event.inputs.limit || '1' }}
           python run.py --days $DAYS --limit $LIMIT
 
+      - name: 배포 디렉토리 준비 (Cloudflare Pages용)
+        run: |
+          mkdir -p public
+          if [ -d "output/posts" ]; then
+            cp -r output/posts/* public/ || true
+          fi
+
       - name: 결과 확인
         if: always()
         run: |
