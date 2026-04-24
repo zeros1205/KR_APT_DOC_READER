@@ -5,7 +5,7 @@ ChromaDB 기반 Vector DB 구성 및 RAG 검색
 
 구조:
   - Collection: apartment_notices
-  - Embedding: OpenAI text-embedding-3-small
+  - Embedding: ChromaDB 기본 embedding
   - 청크 분할: 섹션별 (기본정보 / 자격조건 / 금융 / 입지)
 ────────────────────────────────────────────────────
 """
@@ -16,10 +16,9 @@ from pathlib import Path
 from dataclasses import dataclass
 
 import chromadb
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 sys.path.append(str(Path(__file__).parent.parent))
-from config import OPENAI_API_KEY, CHROMA_DIR
+from config import CHROMA_DIR
 from agents.collector import NoticeDocument
 
 
@@ -130,15 +129,8 @@ class ApartmentRAGStore:
 
         self.client = chromadb.PersistentClient(path=str(persist_dir))
 
-        # OpenAI 임베딩 함수
-        self.embed_fn = OpenAIEmbeddingFunction(
-            api_key=OPENAI_API_KEY,
-            model_name="text-embedding-3-small",
-        )
-
         self.collection = self.client.get_or_create_collection(
             name=self.COLLECTION_NAME,
-            embedding_function=self.embed_fn,
             metadata={"hnsw:space": "cosine"},
         )
 
@@ -303,11 +295,6 @@ if __name__ == "__main__":
     print("=" * 50)
     print("RAG Store 테스트 (샘플 공고)")
     print("=" * 50)
-
-    if not OPENAI_API_KEY or OPENAI_API_KEY == "":
-        print("⚠️  OPENAI_API_KEY 미설정 - 임베딩 테스트 건너뜀")
-        print("   .env 파일에 OPENAI_API_KEY를 설정하세요.")
-        sys.exit(0)
 
     doc = get_sample_document()
     store = ApartmentRAGStore()

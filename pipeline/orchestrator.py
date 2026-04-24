@@ -785,10 +785,6 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
     """Agent 5: Gemini 3.1 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
     print("  [Agent 5] Q&A 팩트체크 시작 (Gemini 3.1)...")
 
-    if not OPENAI_API_KEY:
-        print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
-        return content
-
     try:
         user_msg = FACTCHECK_USER_TPL.format(
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
