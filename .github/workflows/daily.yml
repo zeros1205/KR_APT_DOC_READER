@@ -1,4 +1,4 @@
-name: 청약 공고 자동 수집 및 포스팅 생성
+name: 청약 공고 자동 수집 및 포스팅 생성 (Gemini 3.1)
 
 on:
   schedule:
@@ -37,32 +37,79 @@ jobs:
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
-      - name: .env 파일 생성 (GitHub Secrets → .env)
+      - name: .env 파일 생성 (Gemini API만 필수)
         run: |
           cat <<EOF > .env
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
           EOF
+
+      - name: 필수 Secrets 확인
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "❌ GEMINI_API_KEY가 설정되지 않았습니다"
+            exit 1
+          fi
+          echo "✓ GEMINI_API_KEY 확인됨"
+
+      - name: Gemini 모델 설정 검증
+        run: |
+          python -c "
+          from pipeline.config import LLM_EXTRACT_MODEL, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL
+          models = {
+              'LLM_EXTRACT_MODEL': LLM_EXTRACT_MODEL,
+              'LLM_CONTENT_MODEL': LLM_CONTENT_MODEL,
+              'LLM_FACTCHECK_MODEL': LLM_FACTCHECK_MODEL,
+              'LLM_LOCATION_MODEL': LLM_LOCATION_MODEL
+          }
+          for name, model in models.items():
+              if 'gemini-3.1' in model.lower():
+                  print(f'✓ {name}: {model}')
+              else:
+                  print(f'❌ {name}: {model} (gemini-3.1이 아님)')
+                  exit(1)
+          "
 
       - name: 파이프라인 실행
         run: |
           DAYS=${{ github.event.inputs.days || '7' }}
           LIMIT=${{ github.event.inputs.limit || '3' }}
-          python run.py --days $DAYS --limit $LIMIT
+          echo "📊 파이프라인 시작: 최근 ${DAYS}일, 최대 ${LIMIT}개"
+          python run.py --days $DAYS --limit $LIMIT 2>&1 | tee pipeline.log
+
+      - name: 파이프라인 결과 확인
+        if: always()
+        run: |
+          if [ -f pipeline.log ]; then
+            echo "=== 파이프라인 로그 (마지막 50줄) ==="
+            tail -50 pipeline.log
+          fi
+
+          # 생성된 포스팅 수 확인
+          if [ -d "output/posts" ]; then
+            COUNT=$(find output/posts -name "post_*.html" | wc -l)
+            echo "📝 생성된 포스팅: ${COUNT}개"
+          fi
 
       - name: 프론트페이지(index.html) 재생성
+        if: success()
         run: python pipeline/build_index.py
 
       - name: 생성된 포스팅 repo에 커밋
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add output/posts/ output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json 2>/dev/null || true
-          git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
+
+          if ! git diff --cached --quiet; then
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
-          git push origin ${{ github.ref_name }}
+            git push origin ${{ github.ref_name }}
+            echo "✓ 포스팅 커밋 및 푸시 완료"
+          else
+            echo "ℹ️  커밋할 변경사항 없음"
+          fi
 
       - name: 생성된 포스팅 업로드 (아티팩트 백업)
         uses: actions/upload-artifact@v4
@@ -72,3 +119,14 @@ jobs:
           path: output/posts/
           retention-days: 7
           if-no-files-found: ignore
+
+      - name: 워크플로우 요약
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏁 워크플로우 완료"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✓ LLM: Gemini 3.1 Pro Preview"
+          echo "✓ 실행 시간: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "✓ 아티팩트: posts-${{ github.run_id }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
