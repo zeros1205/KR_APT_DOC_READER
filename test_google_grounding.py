@@ -30,8 +30,8 @@ async def test_google_grounding():
         client = genai.Client(api_key=GEMINI_API_KEY)
 
         # 테스트 아파트
-        apt_name = "판교역 힐스테이트"
-        location = "경기도 성남시 분당구 삼평동"
+        apt_name = "오티에르 반포"
+        location = "서울특별시 서초구 잠원동"
 
         print("=" * 70)
         print(f"🔍 Google Search Grounding 테스트")

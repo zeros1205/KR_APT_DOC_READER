@@ -487,48 +487,48 @@ def _units_to_text(units: list[dict]) -> str:
 
 def get_sample_document() -> NoticeDocument:
     """
-    테스트용 샘플 공고
+    테스트용 샘플 공고 - 오티에르 반포 (실제 공공데이터)
     실제 데이터 구조(필드명)와 동일하게 구성
     """
     doc = NoticeDocument(
-        notice_id           = "2026-SAMPLE-001",
-        house_manage_no     = "2026000001",
-        apt_name            = "힐스테이트 판교역",
+        notice_id           = "2026000058",
+        house_manage_no     = "2026000058",
+        apt_name            = "오티에르 반포",
         house_type          = "민영",
         house_detail_type   = "아파트",
         supply_type         = "분양",
-        region_code         = "41",
-        region_name         = "경기",
-        supply_address      = "경기도 성남시 분당구 삼평동 123",
-        total_units         = "842",
-        notice_date         = "2026-04-15",
-        special_supply_start= "2026-04-25",
-        special_supply_end  = "2026-04-25",
-        rank1_local_start   = "2026-04-28",
-        rank1_local_end     = "2026-04-28",
-        rank1_near_start    = "2026-04-29",
-        rank1_near_end      = "2026-04-29",
-        rank1_etc_start     = "2026-04-30",
-        rank1_etc_end       = "2026-04-30",
-        rank2_local_start   = "2026-05-01",
-        rank2_local_end     = "2026-05-01",
+        region_code         = "100",
+        region_name         = "서울",
+        supply_address      = "서울특별시 서초구 잠원동 59-10번지 외 3필지",
+        total_units         = "86",
+        notice_date         = "2026-03-31",
+        special_supply_start= "2026-04-10",
+        special_supply_end  = "2026-04-10",
+        rank1_local_start   = "2026-04-13",
+        rank1_local_end     = "2026-04-13",
+        rank1_near_start    = "2026-04-14",
+        rank1_near_end      = "2026-04-14",
+        rank1_etc_start     = "2026-04-15",
+        rank1_etc_end       = "2026-04-15",
+        rank2_local_start   = "2026-04-15",
+        rank2_local_end     = "2026-04-15",
         rank2_near_start    = "",
         rank2_near_end      = "",
         rank2_etc_start     = "",
         rank2_etc_end       = "",
-        winner_date         = "2026-05-08",
-        contract_start      = "2026-05-15",
-        contract_end        = "2026-05-17",
-        move_in_month       = "2028-12",
-        constructor         = "현대건설",
-        developer           = "현대엔지니어링",
-        contact             = "1600-0000",
-        homepage            = "https://www.applyhome.co.kr",
-        notice_url          = "https://www.applyhome.co.kr",
-        is_hot_zone         = "N",
-        is_adj_zone         = "N",
+        winner_date         = "2026-04-21",
+        contract_start      = "2026-05-06",
+        contract_end        = "2026-05-08",
+        move_in_month       = "2026-07",
+        constructor         = "㈜포스코이앤씨",
+        developer           = "신반포21차아파트주택재건축정비사업조합",
+        contact             = "15992510",
+        homepage            = "https://오티에르반포.kr",
+        notice_url          = "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000058&pblancNo=2026000058",
+        is_hot_zone         = "Y",
+        is_adj_zone         = "Y",
         is_price_cap        = "N",
-        is_redevelop        = "N",
+        is_redevelop        = "Y",
         is_public_dist      = "N",
         is_large_dev        = "N",
         is_metro_private    = "N",
@@ -536,33 +536,33 @@ def get_sample_document() -> NoticeDocument:
 
     doc.raw_text = """
 [분양가 정보]
-59타입(59.99㎡) 전용: 분양가 7억5천~8억2천만원 / 3.3㎡당 약 4,100만원
-84A타입(84.97㎡) 전용: 분양가 9억5천~11억만원 / 3.3㎡당 약 3,700만원
-84B타입(84.98㎡) 전용: 분양가 9억7천~11억2천만원 / 3.3㎡당 약 3,700만원
+44.0000㎡ 전용: 분양가 1억4264만원 / 3.3㎡당 약 4,750만원
+44.8507B㎡ 전용: 분양가 1억4416만원 / 3.3㎡당 약 4,750만원
+45.0000㎡ 전용: 분양가 1억4453만원 / 3.3㎡당 약 4,750만원
 
 [중도금 대출]
-중도금 집단대출 가능 (분양가의 60%, 무이자, 6회 분납)
-DSR 40% 규제 적용 대상
+중도금 무이자 집단대출 가능 (분양가의 60%)
 
 [전매 제한]
-비투기과열지구 → 전매제한 3년 (입주 시 해제)
+전매제한 3년
 
 [주택형별 공급]
-59A타입 | 전용 59.99㎡ | 일반 120세대 | 특별 80세대 | 분양가상한 82000만원
-84A타입 | 전용 84.97㎡ | 일반 200세대 | 특별 130세대 | 분양가상한 110000만원
-84B타입 | 전용 84.98㎡ | 일반 180세대 | 특별 132세대 | 분양가상한 112000만원
+44.0000㎡ | 일반 5세대 | 특별 5세대 | 분양가 142,640만원
+44.8507B㎡ | 일반 2세대 | 특별 1세대 | 분양가 144,160만원
+45.0000㎡ 이상 | 일반 69세대 | 특별 (계속)
 
 [입지 정보]
-신분당선 판교역 도보 5분 / 판교테크노밸리 인근
-배정학교: 판교초등학교 (도보 7분)
-인근: 현대백화점 판교점 도보 10분, 분당서울대병원 차량 10분
+신분당선 반포역 인근 / 서초구 강남권 중심지
+강남대로 접근성 우수
+배정학교: (확인 필요)
+인근: 신세계백화점 강남점 인근, 서울성모병원 인근
 """.strip()
 
     doc.tables = [
-        [["타입", "전용(㎡)", "일반공급", "특별공급", "분양가 범위"],
-         ["59A", "59.99", "120", "80", "7.5억~8.2억"],
-         ["84A", "84.97", "200", "130", "9.5억~11억"],
-         ["84B", "84.98", "180", "132", "9.7억~11.2억"]]
+        [["타입", "전용(㎡)", "일반공급", "특별공급", "분양가"],
+         ["44.00", "44.00", "5", "5", "1.426억"],
+         ["44.85B", "44.85", "2", "1", "1.441억"],
+         ["45.00+", "45.00+", "69", "7", "1.445억+"]]
     ]
     return doc
 
