@@ -29,7 +29,6 @@ try:
     )
     from pipeline.database import SessionLocal
     from pipeline.models import Apartment, Posting, PostingContent, PostingMeta
-    from pipeline.html_renderer import render_blog_post
     from pipeline.index_renderer import build_manifest
 except ImportError:
     from config import (
@@ -38,7 +37,6 @@ except ImportError:
     )
     from database import SessionLocal
     from models import Apartment, Posting, PostingContent, PostingMeta
-    from html_renderer import render_blog_post
     from index_renderer import build_manifest
 
 # ──────────────────────────────────────────────────
