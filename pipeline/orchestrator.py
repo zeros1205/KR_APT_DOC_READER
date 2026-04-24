@@ -15,11 +15,10 @@ import asyncio
 import json
 import re
 from pathlib import Path
-from openai import AsyncOpenAI
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
-    OPENAI_API_KEY, GEMINI_API_KEY,
+    GEMINI_API_KEY,
     LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
     OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
     CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
@@ -29,19 +28,37 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+try:
+    from google import genai
+    from google.genai import types
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+except Exception as e:
+    print(f"⚠️  Gemini 클라이언트 초기화 실패: {e}")
+    gemini_client = None
 
 
-async def _call_openai_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
-    """OpenAI Responses API 호출 헬퍼 — JSON 객체 출력 전용"""
-    resp = await openai_client.responses.create(
-        model=model,
-        instructions=system,
-        input=user,
-        max_output_tokens=max_tokens,
-        text={"format": {"type": "json_object"}},
-    )
-    return (resp.output_text or "").strip()
+async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
+    """Gemini API 호출 헬퍼 — JSON 객체 출력 전용 (Google Grounding 포함)"""
+    if not gemini_client:
+        raise RuntimeError("Gemini 클라이언트가 초기화되지 않음. GEMINI_API_KEY를 확인하세요.")
+
+    prompt = f"""{system}
+
+{user}"""
+
+    try:
+        response = gemini_client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system,
+                temperature=0,
+                max_output_tokens=max_tokens,
+            ),
+        )
+        return (response.text or "").strip()
+    except Exception as e:
+        raise RuntimeError(f"Gemini API 호출 실패: {e}")
 
 
 # ──────────────────────────────────────────────────
@@ -161,7 +178,7 @@ def _has_financial_data(facts: dict) -> bool:
 async def agent_fact_extraction(notice_text: str) -> dict:
     """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
-    raw = await _call_openai_json(
+    raw = await _call_gemini_json(
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
         model=LLM_EXTRACT_MODEL,
@@ -179,7 +196,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
     if facts and not _has_eligibility_data(facts):
         print("  [Agent 1] 신청자격 누락 감지 → 전용 재추출...")
         try:
-            raw_eligibility = await _call_openai_json(
+            raw_eligibility = await _call_gemini_json(
                 system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
                 user=ELIGIBILITY_EXTRACTION_PROMPT.format(notice_text=notice_text),
                 model=LLM_EXTRACT_MODEL,
@@ -217,7 +234,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
     if facts and not _has_financial_data(facts):
         print("  [Agent 1] 자금계획 누락 감지 → 전용 재추출...")
         try:
-            raw_financial = await _call_openai_json(
+            raw_financial = await _call_gemini_json(
                 system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
                 user=FINANCIAL_EXTRACTION_PROMPT.format(notice_text=notice_text),
                 model=LLM_EXTRACT_MODEL,
@@ -549,7 +566,7 @@ async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
     if not location_data:
         return location_data
     try:
-        raw = await _call_openai_json(
+        raw = await _call_gemini_json(
             system=(
                 "당신은 한국 지리·부동산 전문가입니다.\n"
                 "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
@@ -681,7 +698,7 @@ CONTENT_GEN_PROMPT = """
 async def agent_content_generation(facts: dict) -> dict:
     """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
     print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
-    raw = await _call_openai_json(
+    raw = await _call_gemini_json(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
             "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
@@ -757,7 +774,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
             qa_json=json.dumps(content.get("qa_blocks", []), ensure_ascii=False, indent=2),
         )
-        raw = await _call_openai_json(
+        raw = await _call_gemini_json(
             system=FACTCHECK_SYSTEM,
             user=user_msg,
             model=LLM_FACTCHECK_MODEL,
