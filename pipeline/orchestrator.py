@@ -52,36 +52,39 @@ async def _call_openai_json(system: str, user: str, model: str, max_tokens: int 
 REGULATORY_EXTRACTION_PROMPT = """당신은 청약공고 규제정보 추출 전문가입니다.
 아래 [공고 원문]에서 다음 5가지 규제 정보만 정확하게 추출하세요.
 
-추출 대상:
-1. regulated_zone: 규제지역 유형
-   - 투기과열지구 / 청약과열지역 / 조정대상지역 / 비규제지역 / 해당없음 중 해당하는 것 모두 쉼표로 나열
+추출 대상 (5가지):
+1. regulated_zone: 규제지역 여부
+   - 투기과열지구 / 청약과열지역 / 조정대상지역 등 해당하는 모든 항목을 쉼표로 나열
+   - 예: "투기과열지구, 조정대상지역"
    - 공고에 명시 안 되면 null
 
-2. readmission_limit: 재당첨 제한 기간
-   - "N년" 형식 또는 "없음" / "해당없음"
-   - 검색 키워드: "재당첨", "재청약", "재입주" 제한/금지 관련 항목
+2. readmission_limit: 재당첨 제한 (몇 년 동안 청약 불가)
+   - "N년" 형식 또는 "없음" / "제한없음"
+   - 검색 키워드: "재당첨", "재청약", "재입주" 제한/금지
    - 공고에 명시 안 되면 null
 
-3. live_requirement: 거주의무기간
-   - "N년" 형식 또는 "없음" / "해당없음"
-   - 검색 키워드: "거주의무", "실거주", "실거주기간", "거주기간" 관련 항목
+3. resale_restriction: 전매 제한 (매매 가능 시점)
+   - "N년" 또는 "입주 후 N년" 또는 "없음" / "제한없음"
+   - 검색 키워드: "전매", "매매", "재판매" 제한 관련 항목
+   - 예: "입주 후 3년", "소유권이전등기일로부터 2년"
    - 공고에 명시 안 되면 null
 
-4. price_cap: 분양가상한제 적용 여부
+4. live_requirement: 거주의무기간 (실거주해야 하는 기간)
+   - "N년" 형식 또는 "없음" / "의무없음"
+   - 검색 키워드: "거주의무", "실거주", "거주기간" 관련 항목
+   - 예: "2년", "의무없음"
+   - 공고에 명시 안 되면 null
+
+5. price_cap: 분양가 상한제 (정부가 가격 상한 지정)
    - "적용" 또는 "미적용" 또는 null
-   - 검색 키워드: "분양가상한제" / "분양가상한" 항목
-   - 공고에 명시 안 되면 null
-
-5. land_type: 택지 유형
-   - "민간택지" / "공공택지" / "공공주택지구" / "택지" 등
-   - 검색 키워드: "택지유형", "토지 구분", "택지" 관련 항목
+   - 검색 키워드: "분양가상한제", "분양가상한" 항목
    - 공고에 명시 안 되면 null
 
 [핵심 규칙]
-- 공고문에 명확하게 명시된 정보만 추출하세요
-- 추측, 생성, 해석은 절대 금지
+- 공고문에 명확하게 명시된 정보만 추출
+- 추측, 생성, 해석 절대 금지
 - null은 따옴표 없이 null로 표기
-- JSON만 출력하세요
+- JSON만 출력
 
 [공고 원문]:
 {notice_text}
@@ -90,9 +93,9 @@ JSON 응답:
 {{
   "regulated_zone": null,
   "readmission_limit": null,
+  "resale_restriction": null,
   "live_requirement": null,
-  "price_cap": null,
-  "land_type": null
+  "price_cap": null
 }}"""
 
 # ──────────────────────────────────────────────────
@@ -1735,7 +1738,7 @@ async def run_pipeline(
     facts = _merge_pdf_policy(facts, pdf_policy_text or (doc.pdf_policy_text if doc else ""))
 
     # 규제정보를 팩트에 병합 (null이 아닌 값만)
-    for key in ("regulated_zone", "readmission_limit", "live_requirement", "price_cap", "land_type"):
+    for key in ("regulated_zone", "readmission_limit", "resale_restriction", "live_requirement", "price_cap"):
         if regulatory.get(key) is not None:
             facts[key] = regulatory[key]
 
