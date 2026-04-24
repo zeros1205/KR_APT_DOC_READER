@@ -82,7 +82,7 @@ jobs:
         run: |
           echo "=== 생성 결과 ==="
           if [ -d "output/posts" ]; then
-            COUNT=$(find output/posts -name "post_*.html" | wc -l)
+            COUNT=$(find output/posts -name "post.html" | wc -l)
             echo "📝 생성된 포스팅: $COUNT개"
           else
             echo "📝 생성된 포스팅: 0개"
@@ -91,9 +91,14 @@ jobs:
       - name: Cloudflare Pages 배포
         if: success()
         run: |
-          if [ -d "output/posts" ] && [ -n "$(find output/posts -type f)" ]; then
-            npx wrangler pages deploy output/posts \
-              --project-name=kr-apt-doc-reader
+          if [ -d "output/posts" ]; then
+            FILE_COUNT=$(find output/posts -type f | wc -l)
+            if [ "$FILE_COUNT" -gt 0 ]; then
+              npx wrangler pages deploy output/posts \
+                --project-name=kr-apt-doc-reader
+            else
+              echo "⚠️  output/posts 파일 없음 - 배포 스킵"
+            fi
           else
             echo "⚠️  output/posts 디렉토리 없음 - 배포 스킵"
           fi
