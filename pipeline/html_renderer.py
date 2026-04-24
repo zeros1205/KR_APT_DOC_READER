@@ -73,7 +73,6 @@ class UnitType:
 class QABlock:
     question: str
     answer: str       # 인라인 HTML 허용 (<strong> <br> 등)
-    image: Optional[ImageResult] = None
     # 추후 CTA 활성화
     cta_url: str = ""
     cta_text: str = ""
@@ -488,16 +487,6 @@ def _render_unit_rows(unit_types: list[UnitType], t: dict) -> str:
 
 
 def _render_qa_block(qa: QABlock, idx: int, t: dict) -> str:
-    img_html = ""
-    if qa.image:
-        credit = build_credit_html(qa.image)
-        img_html = f"""
-      <div style="margin: 12px 0; border-radius: {t['radius_sm']}; overflow: hidden;">
-        <img src="{qa.image.url}" alt="Q{idx+1} 관련 이미지"
-             style="width: 100%; max-height: 200px; object-fit: cover; display: block;" />
-        <p style="font-size: 11px; color: {t['muted']}; margin: 4px 8px; font-style: italic;">📷 {credit}</p>
-      </div>"""
-
     return f"""
   <div style="
     border: 1px solid {t['border']}; border-radius: {t['radius_lg']};
@@ -528,7 +517,7 @@ def _render_qa_block(qa: QABlock, idx: int, t: dict) -> str:
           padding: 2px 9px; border-radius: {t['radius_sm']}; flex-shrink: 0;
         ">A</span>
         <div style="color: {t['text']}; font-size: 16px; line-height: 1.6; word-break: keep-all;">{qa.answer}</div>
-      </div>{img_html}
+      </div>
     </div>
   </div>"""
 
