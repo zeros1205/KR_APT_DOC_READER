@@ -15,7 +15,7 @@ import asyncio
 import json
 import re
 from pathlib import Path
-import google.generativeai as genai
+import google.genai as genai
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
@@ -34,13 +34,12 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
     """Google Gemini API 호출 헬퍼 — JSON 객체 출력 전용"""
-    client = genai.GenerativeModel(model)
+    client = genai.Client(api_key=GEMINI_API_KEY)
     resp = await asyncio.to_thread(
-        client.generate_content,
-        contents=[
-            {"role": "user", "parts": [{"text": system + "\n\n" + user}]}
-        ],
-        generation_config=genai.types.GenerationConfig(
+        client.models.generate_content,
+        model=model,
+        contents=system + "\n\n" + user,
+        config=genai.GenerateContentConfig(
             max_output_tokens=max_tokens,
             temperature=0,
             response_mime_type="application/json"
