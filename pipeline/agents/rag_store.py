@@ -245,6 +245,24 @@ class ApartmentRAGStore:
         docs = results.get("documents", [])
         metas = results.get("metadatas", [])
 
+        if not metas:
+            return ""
+
+        # 메타데이터에서 기본 정보 추출
+        first_meta = metas[0]
+        apt_name = first_meta.get("apt_name", "")
+        region = first_meta.get("region", "")
+        supply_date = first_meta.get("supply_date", "")
+
+        # 기본 정보 헤더 생성 (Agent 1이 apt_name을 추출할 수 있도록)
+        header_parts = []
+        if apt_name:
+            header_parts.append(f"【단지명】\n{apt_name}")
+        if region:
+            header_parts.append(f"【지역】\n{region}")
+        if supply_date:
+            header_parts.append(f"【공급일】\n{supply_date}")
+
         # 섹션 순서대로 정렬
         SECTION_ORDER = ["기본정보", "청약일정", "분양가", "자격조건", "금융", "제한사항", "입지", "기타"]
         sorted_pairs = sorted(
@@ -253,7 +271,7 @@ class ApartmentRAGStore:
             if x[0].get("section", "기타") in SECTION_ORDER else 99
         )
 
-        context_parts = [doc for _, doc in sorted_pairs]
+        context_parts = header_parts + [doc for _, doc in sorted_pairs]
         return "\n\n".join(context_parts)
 
     def list_notices(self) -> list[dict]:
