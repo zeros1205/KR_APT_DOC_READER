@@ -804,6 +804,15 @@ async def run_pipeline_v2(notice_id: str) -> bool:
     print(f"\n🔄 Pipeline V2 시작: {notice_id}")
     print("="*60)
 
+    # DB 초기화 (테이블 생성)
+    try:
+        from pipeline.database import engine
+        from pipeline.models import Base
+        Base.metadata.create_all(engine)
+        print("  [DB Init] 테이블 생성 완료")
+    except Exception as e:
+        print(f"  [DB Init] 테이블 생성 실패: {e}")
+
     try:
         # ===== Stage 1: 데이터 추출 =====
         stage1_result = await stage_1_data_extraction(notice_id)
@@ -878,6 +887,94 @@ async def run_pipeline_v2(notice_id: str) -> bool:
         if not db_success:
             print("❌ DB 저장 실패")
             return False
+
+        # ===== HTML 렌더링 및 저장 =====
+        try:
+            from pipeline.html_renderer import build_post_data, save_post
+
+            # facts: Stage 1-7의 팩트 데이터
+            facts = {
+                "apt_name": apartment_data.get("apt_name", "-"),
+                "location": apartment_data.get("location", "-"),
+                "supply_location": apartment_data.get("supply_address", "-"),
+                "supply_scale": apartment_data.get("supply_scale", "-"),
+                "total_households": apartment_data.get("total_units", "-"),
+                "unit_types": [{"type_name": ut, "area_sqm": 0, "general_units": 0, "special_units": 0, "price_min": 0, "price_max": 0} for ut in apartment_data.get("unit_types", [])],
+                "price_range": apartment_data.get("price_range", "-"),
+                "special_supply_date": stage2_result.get("dates", {}).get("special_supply_date", "-"),
+                "rank1_date": stage2_result.get("dates", {}).get("rank1_date", "-"),
+                "rank2_date": stage2_result.get("dates", {}).get("rank2_date", "-"),
+                "winner_date": apartment_data.get("schedule_dates", {}).get("winner", "-"),
+                "move_in_date": apartment_data.get("schedule_dates", {}).get("move_in", "-"),
+                "is_hot_zone": stage3_result.get("is_hot_zone", "-"),
+                "regulated_zone": stage3_result.get("regulated_zone", "-"),
+                "readmission_limit": stage3_result.get("readmission_limit", "-"),
+                "live_requirement": stage3_result.get("live_requirement", "-"),
+                "price_cap": stage3_result.get("price_cap", "-"),
+                "resale_restriction": stage3_result.get("resale_restriction", "-"),
+                "acquisition_tax_rate": stage3_result.get("acquisition_tax_rate", "-"),
+                "contract_ratio": stage6_result.get("contract_ratio", "10"),
+                "contract_amount": stage6_result.get("contract_amount", "-"),
+                "midterm_ratio": stage6_result.get("midterm_ratio", "60"),
+                "midterm_count": stage6_result.get("midterm_count", "6"),
+                "balance_ratio": stage6_result.get("balance_ratio", "30"),
+                "loan_info": stage6_result.get("loan_info", "-"),
+                "eligibility_special": stage2_result.get("eligibility_special", []),
+                "eligibility_rank1": stage2_result.get("eligibility_rank1", []),
+                "eligibility_rank2": stage2_result.get("eligibility_rank2", []),
+                "notice_date": apartment_data.get("schedule_dates", {}).get("announcement", "-"),
+            }
+
+            # content: Stage 4-6의 콘텐츠 데이터
+            content = {
+                "post_title": stage4_result.get("title", f"{apartment_data.get('apt_name')} 청약 완벽 분석"),
+                "post_subtitle": apartment_data.get("supply_address", "-"),
+                "apt_intro": stage4_result.get("apartment_intro", "-"),
+                "location_intro": stage5_result.get("location_intro", "-"),
+                "financial_intro": stage6_result.get("financial_intro", "-"),
+                "qa_intro": stage6_result.get("qa_intro", "-"),
+                "tax_desc": stage6_result.get("tax_desc", "-"),
+                "subway_score": stage5_result.get("subway_score", "★★★☆☆"),
+                "subway_detail": stage5_result.get("subway_detail", "-"),
+                "school_score": stage5_result.get("school_score", "★★★☆☆"),
+                "school_detail": stage5_result.get("school_detail", "-"),
+                "life_score": stage5_result.get("life_score", "★★★☆☆"),
+                "life_detail": stage5_result.get("life_detail", "-"),
+                "medical_score": stage5_result.get("medical_score", "★★★☆☆"),
+                "medical_detail": stage5_result.get("medical_detail", "-"),
+                "qa_blocks": stage6_result.get("qa_blocks", []),
+                "seo_tags": [apartment_data.get("apt_name", ""), "청약", "분양"],
+            }
+
+            # PostData 생성
+            post_data = build_post_data(
+                facts=facts,
+                content=content,
+                theme=BLOG_THEME,
+                supply_type="일반공급",
+                notice_url=apartment_data.get("notice_url", ""),
+                api_is_hot_zone=stage3_result.get("is_hot_zone", "")
+            )
+
+            # 저장할 때 notice_id 설정
+            post_data.notice_id = notice_id
+
+            # save_post가 HTML 렌더링 포함
+            output_path = save_post(post_data, "", Path("output"))
+            print(f"✅ HTML 렌더링 완료: {output_path}")
+
+        except Exception as e:
+            print(f"⚠️  HTML 렌더링 실패: {e}")
+            import traceback
+            traceback.print_exc()
+
+        # ===== index.html 생성 (첫 실행만) =====
+        try:
+            from pipeline.index_renderer import build_front_index_once
+            build_front_index_once()
+            print("✅ index.html 생성 완료")
+        except Exception as e:
+            print(f"⚠️  index.html 생성 실패: {e}")
 
         # ===== manifest.json 업데이트 =====
         try:
