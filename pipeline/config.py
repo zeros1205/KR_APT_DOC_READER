@@ -43,7 +43,7 @@ CTA_TAX = os.getenv("CTA_TAX", "https://www.nts.go.kr/")
 CTA_KAKAO_CHANNEL = os.getenv("CTA_KAKAO_CHANNEL", "https://pf.kakao.com/")
 
 # ── 품질 게이트 ──
-MIN_QUALITY_SCORE = 70       # 이하 시 재생성
+MIN_QUALITY_SCORE = 60       # 이상 시 통과 / 미만 시 드랍
 MAX_CTA_PER_POST = 3         # 저품질 방어: 외부 링크 최대 3개
 MIN_CHAR_COUNT = 6000        # 최소 글자 수
 

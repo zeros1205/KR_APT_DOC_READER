@@ -1055,8 +1055,8 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
             break
 
         if attempt >= max_retries + 1:
-            print(f"\n  ⚠️  최대 재시도 횟수 초과. 현재 점수({score})로 진행.")
-            break
+            print(f"\n  ❌ 품질 미달로 드랍 ({score}점 < {MIN_QUALITY_SCORE}점)")
+            return None
 
         print(f"\n  🔄 품질 미달 ({score}점) - 재생성...")
 
