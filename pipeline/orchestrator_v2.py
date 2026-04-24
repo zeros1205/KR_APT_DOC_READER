@@ -124,6 +124,20 @@ async def stage_2_eligibility(
     """
     print("  [Stage 2] 청약자격 확인 시작...")
 
+    # API 키 없으면 더미 응답
+    if not GEMINI_API_KEY:
+        print("  [Stage 2] API 키 없음 - 더미 응답 반환")
+        return {
+            "eligibility_special": ["1순위 자격 요건: 해당 지역에 1년 이상 거주", "무주택 요건"],
+            "eligibility_rank1": ["2년 이상 거주", "무주택 세대주"],
+            "eligibility_rank2": ["거주 기간 제한 없음"],
+            "dates": {
+                "special_supply_date": schedule_dates.get("special_supply"),
+                "rank1_date": schedule_dates.get("rank1"),
+                "rank2_date": schedule_dates.get("rank2"),
+            }
+        }
+
     prompt = f"""당신은 대한민국 청약자격 전문가입니다.
 최신 정부 정책(2024년)을 기반으로 청약자격 요건을 정리합니다.
 
@@ -238,6 +252,15 @@ async def stage_4_apartment_intro(
     """
     print("  [Stage 4] 단지 소개 작성 시작...")
 
+    # API 키 없으면 더미 응답
+    if not GEMINI_API_KEY:
+        print("  [Stage 4] API 키 없음 - 더미 응답 반환")
+        return {
+            "title": f"{apt_name} 청약안내",
+            "apartment_intro": f"{apt_name}은 {location}에 위치한 신규 아파트단지입니다. {total_units}세대 규모로 {supply_scale} 다양한 평형이 공급됩니다.",
+            "price_info": f"분양가: {price_range}"
+        }
+
     prompt = f"""당신은 아파트 마케팅 담당자입니다.
 고객과 친근하게 대화하듯 단지를 소개합니다.
 
@@ -319,6 +342,21 @@ async def stage_5_location_analysis(
     모델: Gemini 3.1 Flash + Google Grounding + Google Maps API
     """
     print("  [Stage 5] 입지 분석 시작...")
+
+    # API 키 없으면 더미 응답
+    if not GEMINI_API_KEY:
+        print("  [Stage 5] API 키 없음 - 더미 응답 반환")
+        return {
+            "location_intro": f"{location}은 대도시권의 주요 거점으로, 교통과 교육 여건이 우수합니다.",
+            "subway_score": "★★★★★",
+            "subway_detail": "• 역세권 위치\n  - 지하철역 도보 5분\n  - 다중 노선 교점",
+            "school_score": "★★★★☆",
+            "school_detail": "• 우수한 교육환경\n  - 초중고 밀집지역\n  - 학군 평판 우수",
+            "life_score": "★★★★★",
+            "life_detail": "• 상권 발달\n  - 대형마트 인근\n  - 음식점/카페 충실",
+            "medical_score": "★★★★☆",
+            "medical_detail": "• 의료시설\n  - 종합병원 인근\n  - 의원/약국 풍부"
+        }
 
     prompt = f"""당신은 부동산 입지 분석 전문가입니다.
 해당 지역의 장점을 객관적 팩트 기반으로 분석합니다.
@@ -410,6 +448,25 @@ async def stage_6_faq_generation(
     모델: Gemini 3.1 Flash + Google Grounding
     """
     print("  [Stage 6] Q&A 작성 시작...")
+
+    # API 키 없으면 더미 응답
+    if not GEMINI_API_KEY:
+        print("  [Stage 6] API 키 없음 - 더미 응답 반환")
+        return {
+            "qa_intro": "청약 신청 전 꼭 알아야 할 기본 정보들을 정리했습니다.",
+            "qa_blocks": [
+                {"q": "청약 자격이 있는지 어떻게 확인하나요?", "a": "주민등록등본을 통해 거주기간을 확인하고, 무주택자 여부를 확인해야 합니다. 각 지역별 자격요건이 다르므로 공고문을 참조하세요."},
+                {"q": "청약통장은 어떻게 만드나요?", "a": "주거래 은행에서 청약통장을 개설할 수 있습니다. 월 6만원 이상 정기적으로 납입해야 가입 요건이 만족됩니다."}
+            ],
+            "financial_intro": "분양가 결정부터 입주까지 자금 납부 일정과 방식을 안내합니다.",
+            "tax_desc": "• 취득세: 부동산 소유권 이전 시 과세\n• 재산세: 매년 부과\n• 종부세: 종합부동산세",
+            "contract_ratio": "10%",
+            "contract_amount": "계약금",
+            "midterm_ratio": "60%",
+            "midterm_count": "6개월",
+            "balance_ratio": "30%",
+            "loan_info": "신청자격자는 주택담보대출 신청이 가능합니다. 대출 한도는 평가액의 60~80% 범위이며, 금리는 시장금리에 따릅니다."
+        }
 
     prompt = f"""당신은 청약 제도 및 주택 금융 전문가입니다.
 일반인이 이해하기 쉽게 Q&A를 작성합니다.
