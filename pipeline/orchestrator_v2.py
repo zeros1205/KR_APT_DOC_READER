@@ -846,7 +846,11 @@ async def run_pipeline_v2(notice_id: str) -> bool:
 if __name__ == "__main__":
     import sys
 
-    notice_id = sys.argv[1] if len(sys.argv) > 1 else "2024-sample-001"
+    if len(sys.argv) > 1 and sys.argv[1] == "--sample":
+        notice_id = "2024-sample-001"
+    else:
+        notice_id = sys.argv[1] if len(sys.argv) > 1 else "2024-sample-001"
 
+    print(f"🚀 Starting orchestrator_v2 with notice_id: {notice_id}")
     success = asyncio.run(run_pipeline_v2(notice_id))
     sys.exit(0 if success else 1)
