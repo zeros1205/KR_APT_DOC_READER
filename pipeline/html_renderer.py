@@ -358,14 +358,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     sp_cards = ""
     for sp in data.eligibility_special:
         type_name = sp.get("type_name", "")
-        quota     = sp.get("quota", "")
         reqs      = sp.get("requirements", [])
-        quota_html = (
-            f'<span style="font-size:11px;font-weight:600;background:{t["accent_light"]};'
-            f'color:{t["accent"]};padding:2px 8px;border-radius:{t["radius_pill"]};'
-            f'margin-left:6px;">{quota}</span>'
-            if quota else ""
-        )
         req_items = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.7;'
             f'padding:2px 0;">{r}</li>'
@@ -376,7 +369,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;">'
             f'<div style="font-size:14px;font-weight:800;color:{t["text"]};'
-            f'margin-bottom:10px;">{type_name}{quota_html}</div>'
+            f'margin-bottom:10px;">{type_name}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
             f'</div>'
         )
@@ -743,14 +736,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "loan_info":             data.loan_info,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
-        "naver_blog_guide": {
-            "step1": "네이버 블로그 → 글쓰기",
-            "step2": "스마트에디터 ONE → [HTML] 버튼",
-            "step3": "post.html 전체 붙여넣기",
-            "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-            "step5": f"태그 입력: {', '.join(data.seo_tags[:10])}",
-            "step6": "카테고리 설정 후 발행",
-        },
     }
     import json
     (post_dir / "post_meta.json").write_text(
@@ -762,7 +747,4 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
     print(f"   📄 HTML  : post.html ({len(html):,}자) | 테마: {data.theme}")
     print(f"   📋 메타  : post_meta.json")
     print(f"{'='*50}")
-    print("\n📌 네이버 블로그 등록 방법:")
-    for k, v in meta["naver_blog_guide"].items():
-        print(f"   {k.upper()}: {v}")
     return post_dir
