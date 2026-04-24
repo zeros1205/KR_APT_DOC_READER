@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 load_dotenv(BASE_DIR / ".env")
 
 from orchestrator_v2 import run_pipeline_v2, run_batch_pipeline
+from api_collector import get_notice_ids
 
 
 def print_header(text: str):
@@ -56,9 +57,11 @@ async def main():
         print_header("공공API에서 공고 수집")
         print(f"수집 기간: 최근 {args.days}일")
         print(f"최대 처리 건수: {args.limit}")
-        # TODO: 공공API에서 공고 ID 수집 (현재는 구현 예정)
-        notice_ids = ["2024-sample-001"]
-        print(f"⚠️  API 연동 미완성 - 샘플 데이터로 실행")
+        notice_ids = await get_notice_ids(days=args.days, limit=args.limit)
+        if not notice_ids:
+            print("❌ 수집된 공고가 없습니다")
+            return 1
+        print(f"✅ {len(notice_ids)}개 공고 수집")
     elif args.batch and args.notice_ids:
         notice_ids = args.notice_ids
         print(f"모드: 배치 처리")
