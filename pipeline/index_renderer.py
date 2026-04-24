@@ -174,7 +174,7 @@ def build_manifest() -> None:
 
     regions_map = {}
     for post in posts:
-        location = post.get("facts", {}).get("location", "")
+        location = post.get("location", "")
         region = _extract_region(location)
         if region not in regions_map:
             regions_map[region] = 0
