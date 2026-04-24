@@ -30,3 +30,6 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# ⚠️ 구버전 프론트 페이지 렌더러 (index_renderer.py 사용)
+pipeline/build_index.py
