@@ -318,18 +318,9 @@ def build() -> None:
     cards_html  = "".join(_render_card(p, i + 1) for i, p in enumerate(posts))
     nav_html    = shared_nav("/")
     featured_html = _render_featured(posts)
-    latest_generated = max((p.get("generated_at", "") for p in posts), default="")
-    latest_dt = None
-    if latest_generated:
-        try:
-            latest_dt = datetime.fromisoformat(latest_generated)
-        except Exception:
-            latest_dt = None
-    latest_label = (
-        f"{latest_dt.year}.{latest_dt.month:02d}.{latest_dt.day:02d} 업데이트"
-        if latest_dt else "최근 업데이트 정보 없음"
-    )
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # 최근 업데이트 일자 — 항상 오늘 날짜로 표기
+    latest_label = f"{today.year}.{today.month:02d}.{today.day:02d} 업데이트"
     upcoming_rank1 = sum(
         1 for p in posts
         if (dt := _parse_date(p.get("rank1_date", ""))) and dt >= today
