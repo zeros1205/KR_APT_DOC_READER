@@ -690,7 +690,8 @@ def _save_to_database_v2(
             apartment.readmission_limit = stage3_result.get("readmission_limit", apartment.readmission_limit)
 
         # 2. Posting 레코드 생성
-        post_slug = stage4_result.get("post_title", apartment.apt_name)
+        # post_slug: notice_id 기반 (고유성 보장)
+        post_slug = apartment_data.get("api_notice_id", "unknown")
         post_slug = re.sub(r'[^\w\s-]', '', post_slug.lower())
         post_slug = re.sub(r'[-\s]+', '-', post_slug).strip('-')
 
@@ -975,6 +976,42 @@ async def run_pipeline_v2(notice_id: str) -> bool:
 
 
 # ──────────────────────────────────────────────────
+# 배치 처리 함수
+# ──────────────────────────────────────────────────
+
+async def run_batch_pipeline(notice_ids: List[str]) -> Dict[str, Any]:
+    """여러 공고를 순차적으로 처리"""
+    results = {
+        "total": len(notice_ids),
+        "success": 0,
+        "failed": 0,
+        "processed": []
+    }
+
+    for notice_id in notice_ids:
+        try:
+            print(f"\n{'='*60}")
+            print(f"처리 중: {notice_id}")
+            print('='*60)
+            success = await run_pipeline_v2(notice_id)
+            if success:
+                results["success"] += 1
+                results["processed"].append({"notice_id": notice_id, "status": "success"})
+            else:
+                results["failed"] += 1
+                results["processed"].append({"notice_id": notice_id, "status": "failed"})
+        except Exception as e:
+            print(f"❌ {notice_id} 처리 중 오류: {e}")
+            results["failed"] += 1
+            results["processed"].append({"notice_id": notice_id, "status": "error", "error": str(e)})
+
+    print(f"\n{'='*60}")
+    print(f"배치 처리 완료: {results['success']}/{results['total']} 성공")
+    print('='*60)
+    return results
+
+
+# ──────────────────────────────────────────────────
 # 진입점
 # ──────────────────────────────────────────────────
 
@@ -982,10 +1019,21 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) > 1 and sys.argv[1] == "--sample":
-        notice_id = "2024-sample-001"
+        notice_ids = ["2024-sample-001"]
+    elif len(sys.argv) > 1 and sys.argv[1] == "--batch":
+        # 배치 모드: 여러 공고 ID 처리 (예: python orchestrator_v2.py --batch ID1 ID2 ID3)
+        notice_ids = sys.argv[2:] if len(sys.argv) > 2 else ["2024-sample-001"]
     else:
-        notice_id = sys.argv[1] if len(sys.argv) > 1 else "2024-sample-001"
+        # 단일 공고 처리
+        notice_ids = [sys.argv[1] if len(sys.argv) > 1 else "2024-sample-001"]
 
-    print(f"🚀 Starting orchestrator_v2 with notice_id: {notice_id}")
-    success = asyncio.run(run_pipeline_v2(notice_id))
-    sys.exit(0 if success else 1)
+    print(f"🚀 orchestrator_v2 시작")
+    print(f"   모드: {'배치' if len(notice_ids) > 1 else '단일'}")
+    print(f"   공고: {notice_ids}")
+
+    if len(notice_ids) == 1:
+        success = asyncio.run(run_pipeline_v2(notice_ids[0]))
+        sys.exit(0 if success else 1)
+    else:
+        results = asyncio.run(run_batch_pipeline(notice_ids))
+        sys.exit(0 if results["failed"] == 0 else 1)
