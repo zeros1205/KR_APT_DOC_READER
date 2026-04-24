@@ -8,8 +8,8 @@
 ## ✅ 최종 체크리스트
 
 ### 코드 준비
-- [x] OpenAI → Gemini 3.1 Pro Preview 전환
-- [x] 모델 코드: `gemini-3.1-pro-preview` 검증
+- [x] OpenAI → Gemini 3.1 Flash Lite Preview 전환
+- [x] 모델 코드: `gemini-3.1-flash-lite-preview` 검증
 - [x] 샘플 데이터: 오티에르 반포 (실데이터)
 - [x] daily.yml 워크플로우 구성 (14단계)
 - [x] Cloudflare Workers 배포 통합
@@ -84,7 +84,7 @@ Repository → Settings → Secrets and variables → Actions
 | 3 | 의존성 설치 | 필수 라이브러리 설치 |
 | 4 | 환경 확인 | API 키 검증 |
 | 5 | Grounding 테스트 | Google 검색 테스트 |
-| 6 | 모델 검증 | gemini-3.1-pro-preview 확인 |
+| 6 | 모델 검증 | gemini-3.1-flash-lite-preview 확인 |
 | 7 | 파이프라인 실행 | 포스팅 자동 생성 |
 | 8 | 프론트페이지 재생성 | index.html 업데이트 |
 | 9 | 결과 커밋 | main 브랜치에 푸시 |
