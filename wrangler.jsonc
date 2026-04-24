@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "kraptdocreader",
+  "name": "doc-reader-new",
   "compatibility_date": "2026-04-21",
   "observability": {
     "enabled": true
