@@ -856,7 +856,7 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
             issues.append(f"Q{i+1} 답변이 너무 짧음 ({answer_len}자)")
 
     # 2. 필수 팩트 존재 여부
-    required_facts = ["apt_name", "rank1_date", "price_range", "unit_types"]
+    required_facts = ["apt_name", "price_range", "unit_types"]
     for fact_key in required_facts:
         if not facts.get(fact_key):
             score -= 20
@@ -884,7 +884,7 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
         score -= 10
         issues.append(f"제목 길이 부적절 ({title_len}자 / 권장 15~50자)")
 
-    # 5. 최소 글자 수 검증
+    # 5. 글자 수 검증 (800~3000자 범위)
     total_text = " ".join([
         content.get("apt_intro", ""),
         content.get("location_intro", ""),
@@ -893,9 +893,12 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
         " ".join(qa.get("answer", "") for qa in content.get("qa_blocks", [])),
     ])
     total_chars = len(total_text.replace(" ", ""))
-    if total_chars < MIN_CHAR_COUNT:
+    if total_chars < 800:
         score -= 15
-        issues.append(f"글자 수 부족 ({total_chars}자 / 최소 {MIN_CHAR_COUNT}자)")
+        issues.append(f"글자 수 부족 ({total_chars}자 / 최소 800자)")
+    elif total_chars > 3000:
+        score -= 8
+        issues.append(f"글자 수 초과 ({total_chars}자 / 최대 3000자)")
 
     # 6. 환각 감지: 답변에 실제 단지명 포함 여부
     apt_name = facts.get("apt_name", "")
