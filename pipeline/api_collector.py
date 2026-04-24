@@ -1,22 +1,25 @@
 """
 api_collector.py
-────────────────────────────────────────────────
+────────────────────────────────────────────────────
 청약홈 공공데이터 API에서 분양공고 수집
 
-API: https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1/getAPTLists
-────────────────────────────────────────────────
+API: https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1/getAPTLttotPblancDetail
+────────────────────────────────────────────────────
 """
 
 import asyncio
-import requests
+import sys
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent / "agents"))
+
 try:
-    from pipeline.config import PUBLIC_DATA_API_KEY, APARTMENT_API_BASE
+    from agents.collector import CheongYakAPI
 except ImportError:
-    from config import PUBLIC_DATA_API_KEY, APARTMENT_API_BASE
+    from pipeline.agents.collector import CheongYakAPI
 
 
 async def collect_recent_notices(
@@ -37,37 +40,26 @@ async def collect_recent_notices(
     print(f"   수집 기간: 최근 {days}일")
     print(f"   최대 건수: {limit}개")
 
-    if not PUBLIC_DATA_API_KEY:
+    api = CheongYakAPI()
+
+    if not api.api_key:
         print("❌ PUBLIC_DATA_API_KEY가 설정되지 않았습니다")
         return []
 
     try:
-        api_url = f"{APARTMENT_API_BASE}/getAPTLists"
-
         # 날짜 범위 계산
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
+        start_date_str = start_date.strftime("%Y-%m-%d")
 
-        params = {
-            "serviceKey": PUBLIC_DATA_API_KEY,
-            "pageIndex": 1,
-            "numOfRows": limit,
-            "noticeDate": start_date.strftime("%Y-%m-%d"),
-        }
-
-        print(f"   API URL: {api_url}")
+        print(f"   조회 기간: {start_date_str} ~ {end_date.strftime('%Y-%m-%d')}")
         print(f"   요청 중...")
 
-        response = await asyncio.to_thread(
-            lambda: requests.get(api_url, params=params, timeout=30)
+        # CheongYakAPI 사용
+        items = await api.get_list(
+            per_page=limit,
+            start_date=start_date_str
         )
-
-        if response.status_code != 200:
-            print(f"❌ API 요청 실패: {response.status_code}")
-            return []
-
-        data = response.json()
-        items = data.get("response", {}).get("body", {}).get("items", [])
 
         if not items:
             print(f"⚠️  수집된 공고 없음")
@@ -77,32 +69,28 @@ async def collect_recent_notices(
         notices = []
         for item in items:
             notice = {
-                "notice_id": f"{item.get('noticeDate', '').replace('-', '')}-{item.get('apartmentName', 'unknown')[:10]}",
-                "apt_name": item.get("apartmentName", ""),
-                "location": item.get("location", ""),
-                "supply_address": item.get("supplyLocation", ""),
-                "supply_scale": item.get("supplyScale", ""),
-                "total_units": int(item.get("totalHouseholds", 0)) or 0,
-                "price_range": f"{item.get('priceMin', 0)}~{item.get('priceMax', 0)}",
-                "notice_date": item.get("noticeDate", ""),
-                "special_supply_date": item.get("specialSupplyDate", ""),
-                "rank1_date": item.get("rank1Date", ""),
-                "rank2_date": item.get("rank2Date", ""),
-                "constructor": item.get("constructor", ""),
+                "notice_id": item.get("PBLANC_NO", ""),
+                "apt_name": item.get("HOUSE_NM", ""),
+                "location": item.get("SUBSCRPT_AREA_CODE_NM", ""),
+                "supply_address": item.get("HSSPLY_ADRES", ""),
+                "supply_scale": item.get("SUBSCRPT_TYCD_NM", ""),
+                "total_units": int(item.get("TOT_SUPLY_HSHLDCO", 0)) or 0,
+                "price_range": "",
+                "notice_date": item.get("RCRIT_PBLANC_DE", ""),
+                "special_supply_date": item.get("SPSPLY_RCEPT_BGNDE", ""),
+                "rank1_date": item.get("GNRL_RNK1_CRSPAREA_RCPTDE", ""),
+                "rank2_date": item.get("GNRL_RNK2_CRSPAREA_RCPTDE", ""),
+                "constructor": item.get("CNSTRCT_ENTRPS_NM", ""),
             }
             notices.append(notice)
 
         print(f"✅ {len(notices)}개 공고 수집 완료")
         return notices[:limit]
 
-    except requests.exceptions.Timeout:
-        print("❌ API 요청 시간 초과")
-        return []
-    except requests.exceptions.ConnectionError:
-        print("❌ 네트워크 연결 실패")
-        return []
     except Exception as e:
         print(f"❌ API 수집 오류: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 

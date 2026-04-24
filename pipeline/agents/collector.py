@@ -334,9 +334,20 @@ class CheongYakAPI:
                 print(f"  [API] 상태 코드: {resp.status_code}")
                 resp.raise_for_status()
                 data = resp.json()
+                print(f"  [API] 응답 구조: {list(data.keys())}")
+
+                # 응답 구조 1: data 필드
                 items = data.get("data", [])
                 total = data.get("totalCount", len(items))
+
+                # 응답 구조 2: response.body.items (구 포맷)
+                if not items:
+                    items = data.get("response", {}).get("body", {}).get("items", [])
+                    total = len(items)
+
                 print(f"  [API] {len(items)}건 조회 (전체 {total}건)")
+                if not items:
+                    print(f"  [API] 응답 전체: {str(data)[:500]}")
                 return items
             except httpx.HTTPStatusError as e:
                 print(f"  [API] HTTP 오류 {e.response.status_code}: {url}")
