@@ -1022,9 +1022,9 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     # Step 1.5: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
     eligibility_check = await agent_eligibility_factcheck_gemini(facts, notice_text)
     if eligibility_check:
-        facts["eligibility_special"] = eligibility_check.get("eligibility_special", facts.get("eligibility_special", []))
-        facts["eligibility_rank1"] = eligibility_check.get("eligibility_rank1", facts.get("eligibility_rank1", []))
-        facts["eligibility_rank2"] = eligibility_check.get("eligibility_rank2", facts.get("eligibility_rank2", []))
+        facts["eligibility_special"] = eligibility_check.get("eligibility_special") or facts.get("eligibility_special") or []
+        facts["eligibility_rank1"] = eligibility_check.get("eligibility_rank1") or facts.get("eligibility_rank1") or []
+        facts["eligibility_rank2"] = eligibility_check.get("eligibility_rank2") or facts.get("eligibility_rank2") or []
         print(f"  [Agent 2] 팩트체크 완료 - 청약자격 정보 검증됨")
 
     # Step 1.6: 자금계획 세부 내용 생성 (Gemini 3.1 + Google Grounding)

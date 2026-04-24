@@ -543,7 +543,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
 
     # ── 특별공급 카드들 ──
     sp_cards = ""
-    for sp in data.eligibility_special:
+    for sp in (data.eligibility_special or []):
         type_name = sp.get("type_name", "")
         reqs      = sp.get("requirements", [])
         req_items = "".join(
