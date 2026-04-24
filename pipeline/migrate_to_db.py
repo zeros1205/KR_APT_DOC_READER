@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal, init_db
-from models import Apartment, Posting, PostingContent, PostingMetadata
+from models import Apartment, Posting, PostingContent, PostingMeta
 
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
 
@@ -119,8 +119,8 @@ def migrate_existing_data():
             db.add(posting_content)
             db.flush()
 
-            # 4. PostingMetadata 생성
-            posting_metadata = PostingMetadata(
+            # 4. PostingMeta 생성
+            posting_metadata = PostingMeta(
                 posting_id=posting.id,
                 special_supply_date=apt_data.get("special_supply_date", "-"),
                 rank1_date=apt_data.get("rank1_date", "-"),

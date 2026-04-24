@@ -18,7 +18,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from database import SessionLocal, init_db, engine
-from models import Base, Apartment, Posting, PostingContent, PostingMetadata
+from models import Base, Apartment, Posting, PostingContent, PostingMeta
 
 # DB 초기화
 Base.metadata.create_all(bind=engine)

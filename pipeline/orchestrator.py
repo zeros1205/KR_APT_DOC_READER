@@ -30,7 +30,7 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from data_validators import validate_post_data, get_validation_score_penalties
 from agents.collector import NoticeDocument
 from database import SessionLocal
-from models import Apartment, Posting, PostingContent, PostingMetadata
+from models import Apartment, Posting, PostingContent, PostingMeta
 
 import re as _re
 
@@ -1291,8 +1291,8 @@ def _save_to_database(post_data: PostData, content: dict, facts: dict) -> None:
         )
         db.add(posting_content)
 
-        # 4. PostingMetadata 저장
-        posting_metadata = PostingMetadata(
+        # 4. PostingMeta 저장
+        posting_meta = PostingMeta(
             posting_id=posting.id,
             special_supply_date=post_data.special_supply_date,
             rank1_date=post_data.rank1_date,
@@ -1308,7 +1308,7 @@ def _save_to_database(post_data: PostData, content: dict, facts: dict) -> None:
             resale_restriction=post_data.resale_restriction,
             acquisition_tax_rate=post_data.acquisition_tax_rate,
         )
-        db.add(posting_metadata)
+        db.add(posting_meta)
 
         db.commit()
     except Exception as e:
