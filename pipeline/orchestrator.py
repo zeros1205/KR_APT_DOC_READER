@@ -180,7 +180,7 @@ def _has_financial_data(facts: dict) -> bool:
 
 
 async def agent_fact_extraction(notice_text: str) -> dict:
-    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
+    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (Gemini 3.1)"""
     print("  [Agent 1] 팩트 추출 시작...")
     raw = await _call_gemini_json(
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
@@ -568,7 +568,7 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
 
 async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
     """Agent 4: GPT-5.4로 입지 분석 검증·교정"""
-    print("  [Agent 4] 입지 분석 검증 시작 (GPT-5.4)...")
+    print("  [Agent 4] 입지 분석 검증 시작 (Gemini 3.1)...")
     if not location_data:
         return location_data
     try:
@@ -594,7 +594,7 @@ async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
         print(f"  [Agent 4] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 4] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        print(f"  [Agent 4] Gemini 3.1 검증 오류 ({e}) → Gemini 결과 그대로 사용")
         return location_data
 
 
@@ -702,8 +702,8 @@ CONTENT_GEN_PROMPT = """
 
 
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
-    print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
+    """Agent 4: Gemini 3.1로 입지 분석 검증·교정"""
+    print("  [Agent 4] 콘텐츠 생성 시작 (Gemini 3.1)...")
     raw = await _call_gemini_json(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
@@ -727,7 +727,7 @@ async def agent_content_generation(facts: dict) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 5: Q&A 팩트체크 (GPT-5.4 mini)
+# Agent 5: Q&A 팩트체크 (Gemini 3.1)
 # ──────────────────────────────────────────────────
 
 FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니다.
@@ -768,12 +768,8 @@ FACTCHECK_USER_TPL = """[단지 팩트]
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 5: GPT-5.4 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
-    print("  [Agent 5] Q&A 팩트체크 시작 (GPT-5.4 mini)...")
-
-    if not OPENAI_API_KEY:
-        print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
-        return content
+    """Agent 5: Gemini 3.1로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    print("  [Agent 5] Q&A 팩트체크 시작 (Gemini 3.1)...")
 
     try:
         user_msg = FACTCHECK_USER_TPL.format(
