@@ -24,7 +24,7 @@ from config import (
     LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
     OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
     CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
-    PREFERRED_IMAGE_SOURCE, BLOG_THEME,
+    BLOG_THEME,
 )
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
 from agents.collector import NoticeDocument
