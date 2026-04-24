@@ -435,7 +435,7 @@ async def agent_eligibility_factcheck_gemini(facts: dict, notice_text: str) -> d
         }
 
         resp = client.models.generate_content(
-            model="gemini-3.1-flash-lite-preview",  # Grounding 지원 모델
+            model=LLM_FACTCHECK_MODEL,
             contents=ELIGIBILITY_FACTCHECK_PROMPT.format(
                 notice_text=notice_text[:3000],  # 공고문 텍스트 (처음 3000자)
                 extracted_eligibility=json.dumps(extracted_eligibility, ensure_ascii=False, indent=2)
@@ -483,7 +483,7 @@ async def agent_financial_detail_gemini(facts: dict) -> dict:
         client = google_genai.Client(api_key=GEMINI_API_KEY)
 
         resp = client.models.generate_content(
-            model="gemini-3.1-flash-lite-preview",
+            model=LLM_CONTENT_MODEL,
             contents=FINANCIAL_DETAIL_PROMPT.format(
                 contract_ratio=facts.get("contract_ratio", "10"),
                 midterm_ratio=facts.get("midterm_ratio", "60"),
@@ -884,7 +884,20 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
         score -= 10
         issues.append(f"제목 길이 부적절 ({title_len}자 / 권장 15~50자)")
 
-    # 5. 환각 감지: 답변에 실제 단지명 포함 여부
+    # 5. 최소 글자 수 검증
+    total_text = " ".join([
+        content.get("apt_intro", ""),
+        content.get("location_intro", ""),
+        content.get("financial_intro", ""),
+        content.get("qa_intro", ""),
+        " ".join(qa.get("answer", "") for qa in content.get("qa_blocks", [])),
+    ])
+    total_chars = len(total_text.replace(" ", ""))
+    if total_chars < MIN_CHAR_COUNT:
+        score -= 15
+        issues.append(f"글자 수 부족 ({total_chars}자 / 최소 {MIN_CHAR_COUNT}자)")
+
+    # 6. 환각 감지: 답변에 실제 단지명 포함 여부
     apt_name = facts.get("apt_name", "")
     for i, qa in enumerate(content.get("qa_blocks", [])):
         answer = qa.get("answer", "")
@@ -1002,7 +1015,6 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         return None
 
     apt_name = facts["apt_name"]
-    post_dir = OUTPUT_DIR / "posts" / f"temp_{apt_name}"
 
     # Step 1.5: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
     eligibility_check = await agent_eligibility_factcheck_gemini(facts, notice_text)
@@ -1079,8 +1091,12 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     if not contract_amount:
         contract_amount = "공고문 확인 필요"
 
+    # notice_id 정제: 빈 값이나 특수문자 제거
+    raw_notice_id = facts.get("notice_id") or ""
+    safe_notice_id = re.sub(r'[^\w\-]', '_', str(raw_notice_id)).strip('_') or f"unknown_{apt_name[:15]}"
+
     post_data = PostData(
-        notice_id=facts.get("notice_id", "unknown"),
+        notice_id=safe_notice_id,
         apt_name=apt_name,
         post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
         post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
