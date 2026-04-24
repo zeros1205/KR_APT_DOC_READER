@@ -103,6 +103,16 @@ jobs:
             git push
           fi
 
+      - name: Cloudflare Pages 배포
+        if: success()
+        run: |
+          npm install -g wrangler
+          wrangler pages deploy output/posts \
+            --project-name=apt-note \
+            --account-id=caf6650f6379b4b7230c317a1d16badf
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
       - name: 아티팩트 백업
         if: always()
         uses: actions/upload-artifact@v4
