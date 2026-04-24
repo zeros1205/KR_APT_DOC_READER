@@ -67,6 +67,20 @@ jobs:
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
           git push origin ${{ github.ref_name }}
 
+      - name: Node.js 설정 (Cloudflare 배포용)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wrangler 설치
+        run: npm install -g wrangler
+
+      - name: Cloudflare에 배포
+        if: ${{ success() && github.ref_name == 'main' }}
+        run: wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
       - name: 생성된 포스팅 업로드 (아티팩트 백업)
         uses: actions/upload-artifact@v4
         if: always()
