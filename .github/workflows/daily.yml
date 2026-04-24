@@ -27,7 +27,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
       - name: 코드 체크아웃
@@ -121,30 +120,6 @@ jobs:
             echo "✅ 커밋 및 푸시 완료"
           fi
 
-      - name: Node.js 설정 (Cloudflare 배포용)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Wrangler 설치
-        run: npm install -g wrangler
-
-      - name: Cloudflare 배포 확인
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "⚠️  Cloudflare 토큰 없음 (스킵)"
-            echo "배포 필요 시: GitHub Settings → Secrets → CLOUDFLARE_API_TOKEN 추가"
-          else
-            echo "✅ Cloudflare 배포 준비 완료"
-          fi
-
-      - name: Cloudflare Workers 배포
-        if: ${{ success() && github.ref_name == 'main' && env.CLOUDFLARE_API_TOKEN != '' }}
-        run: |
-          echo "🚀 Cloudflare에 배포 중..."
-          wrangler deploy
-          echo "✅ Cloudflare 배포 완료"
-
       - name: 워크플로우 완료 요약
         if: always()
         run: |
@@ -152,6 +127,7 @@ jobs:
           echo "════════════════════════════════════════"
           if [ "${{ job.status }}" == "success" ]; then
             echo "✅ 워크플로우 성공적으로 완료"
+            echo "📤 Cloudflare Pages에 자동 배포 중..."
           else
             echo "❌ 워크플로우 실패"
           fi
