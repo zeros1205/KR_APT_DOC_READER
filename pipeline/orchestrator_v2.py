@@ -47,10 +47,9 @@ except ImportError:
 # LLM 클라이언트 초기화
 # ──────────────────────────────────────────────────
 
-import google.generativeai as genai
-from google.generativeai import caching
+from google.genai import Client
 
-genai.configure(api_key=GEMINI_API_KEY)
+gemini_client = Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
 
 # ──────────────────────────────────────────────────
@@ -214,10 +213,12 @@ Google Grounding을 통해 최신 정책 정보를 확인하세요.
 }}"""
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
         # TODO: Google Grounding 설정 추가
         response = await asyncio.to_thread(
-            lambda: model.generate_content(prompt)
+            lambda: gemini_client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
         )
 
         # JSON 파싱
@@ -348,9 +349,11 @@ async def stage_4_apartment_intro(
 }}"""
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
         response = await asyncio.to_thread(
-            lambda: model.generate_content(prompt)
+            lambda: gemini_client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
         )
 
         response_text = response.text
@@ -442,9 +445,11 @@ Google Grounding과 Google Maps API를 이용해 다음을 작성하세요.
 }}"""
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
         response = await asyncio.to_thread(
-            lambda: model.generate_content(prompt)
+            lambda: gemini_client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
         )
 
         response_text = response.text
@@ -575,9 +580,11 @@ async def stage_6_faq_generation(
 }}"""
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
         response = await asyncio.to_thread(
-            lambda: model.generate_content(prompt)
+            lambda: gemini_client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
         )
 
         response_text = response.text
