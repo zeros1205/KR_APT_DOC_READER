@@ -58,6 +58,7 @@ FACT_EXTRACTION_PROMPT = """
 [공고 원문]에 없는 수치는 절대 추측하거나 생성하지 마세요. 없으면 null로 표기.
 
 추출할 필드 (JSON 키명 고정):
+- notice_id: 공고번호 (예: 2026000001, 분양공고번호 항목에서 추출)
 - apt_name: 단지명
 - location: 시/구/동 (예: 서울시 강남구 개포동)
 - supply_location: 전체 공급위치 (공고문 그대로)
@@ -1095,6 +1096,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         contract_amount = "공고문 확인 필요"
 
     post_data = PostData(
+        notice_id=facts.get("notice_id", "unknown"),
         apt_name=apt_name,
         post_title=content.get("post_title", f"{apt_name} 청약 완벽 분석"),
         post_subtitle=content.get("post_subtitle", "청약 전 반드시 확인하세요"),
