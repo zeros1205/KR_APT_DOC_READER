@@ -15,18 +15,16 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 
-# ── OpenAI ──
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-LLM_EXTRACT_MODEL = "gpt-5.4"      # 팩트 추출
-LLM_CONTENT_MODEL = "gpt-5.4"  # 서술형 콘텐츠 생성·검증
-LLM_EMBED_MODEL = "text-embedding-3-small"
-
-# ── Google Gemini (입지 분석 전용) ──
+# ── Google Gemini (모든 LLM 작업 통합) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = "gemini-2.0-flash"
+LLM_EXTRACT_MODEL = "gemini-3.1-pro-preview"        # 팩트 추출 (Google Grounding 포함)
+LLM_CONTENT_MODEL = "gemini-3.1-pro-preview"        # 서술형 콘텐츠 생성·검증
+LLM_FACTCHECK_MODEL = "gemini-3.1-pro-preview"      # 팩트 체크
+LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"       # 입지 분석 (Google Search Grounding)
 
-# ── OpenAI 팩트체크 ──
-LLM_FACTCHECK_MODEL = "gpt-5.4-mini"
+# ── OpenAI (레거시 - 제거됨) ──
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")  # 보존용 (향후 제거)
+LLM_EMBED_MODEL = "text-embedding-3-small"        # 임베딩은 아직 미사용
 
 # ── 이미지 API ──
 UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")
