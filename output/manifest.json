@@ -1,35 +1,15 @@
 {
   "metadata": {
-    "generated_at": "2026-04-24T12:00:00Z",
-    "total_posts": 5,
+    "generated_at": "2026-04-24T11:28:57.274107",
+    "total_posts": 0,
     "version": "2.0"
   },
   "regions": [
     {
       "code": "all",
       "name": "전체",
-      "count": 5
-    },
-    {
-      "code": "seoul",
-      "name": "서울",
-      "count": 3
-    },
-    {
-      "code": "incheon",
-      "name": "인천",
-      "count": 2
+      "count": 0
     }
   ],
-  "posts": [
-    {
-      "id": "ohtier-banpo",
-      "apt_name": "오티에르 반포",
-      "post_title": "오티에르 반포 청약 완벽 분석",
-      "location": "서울 / 서초구 / 잠원동",
-      "quality_score": 85,
-      "theme": "intercom",
-      "created_at": "2026-04-24T12:00:00Z"
-    }
-  ]
+  "posts": []
 }
