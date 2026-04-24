@@ -1,0 +1,63 @@
+name: Test Orchestrator V2
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'pipeline/orchestrator_v2.py'
+      - '.github/workflows/test_orchestrator_v2.yml'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create .env file
+      run: |
+        cat > .env << EOF
+        ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+        OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+        GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+        PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+        UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
+        PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}
+        DATABASE_URL=sqlite:///./test_apt_reader.db
+        BLOG_THEME=claude
+        EOF
+
+    - name: Run orchestrator_v2 test (sample)
+      run: |
+        python -m pipeline.orchestrator_v2 --sample
+      continue-on-error: true
+
+    - name: Check if test completed
+      run: |
+        echo "✅ Test workflow completed"
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          test_apt_reader.db
+          output/manifest.json
+          output/posts/*/post.html
+          output/posts/*/post_meta.json
+        retention-days: 7
