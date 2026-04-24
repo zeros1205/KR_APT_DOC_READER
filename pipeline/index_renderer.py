@@ -190,17 +190,17 @@ def build_manifest() -> None:
 
     manifest_posts = []
     for post in posts:
-        facts = post.get("facts", {})
-        content = post.get("content", {})
+        location = post.get("location", "")
         manifest_posts.append({
             "id": post.get("_dir", ""),
             "_dir": post.get("_dir", ""),
-            "apt_name": facts.get("apt_name", ""),
-            "location": facts.get("location", ""),
-            "region": _extract_region(facts.get("location", "")),
-            "post_title": content.get("post_title", facts.get("apt_name", "")),
+            "apt_name": post.get("apt_name", ""),
+            "location": location,
+            "price_range": post.get("price_range", ""),
+            "region": _extract_region(location),
+            "post_title": post.get("title", post.get("apt_name", "")),
             "quality_score": post.get("quality_score", 0),
-            "theme": post.get("theme", "intercom"),
+            "theme": post.get("theme", "claude"),
             "created_at": post.get("created_at", datetime.now().isoformat())[:10],
         })
 
