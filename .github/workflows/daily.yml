@@ -105,8 +105,7 @@ jobs:
         run: |
           if [ -d "output/posts" ]; then
             npx wrangler pages deploy output/posts \
-              --project-name=apt-note \
-              --account-id=caf6650f6379b4b7230c317a1d16badf
+              --project-name=apt-note
           else
             echo "⚠️  output/posts 디렉토리 없음 - 배포 스킵"
           fi
