@@ -106,8 +106,8 @@ jobs:
           python -c "
           import sys
           sys.path.insert(0, 'pipeline')
-          from build_index import build
-          build()
+          from index_renderer import build_front_index
+          build_front_index()
           "
 
       - name: 포스팅 커밋 및 푸시
