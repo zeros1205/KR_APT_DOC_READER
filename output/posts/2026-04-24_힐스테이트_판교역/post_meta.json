@@ -1,0 +1,60 @@
+{
+  "apt_name": "힐스테이트 판교역",
+  "title": "힐스테이트 판교역 청약 핵심 정리와 체크포인트",
+  "subtitle": "경기도 성남시 분당구 삼평동 123",
+  "theme": "claude",
+  "tags": [
+    "힐스테이트 판교역",
+    "경기도",
+    "분양",
+    "청약일정",
+    "분양가",
+    "규제지역",
+    "자금계획"
+  ],
+  "location": "경기도 성남시 분당구 삼평동 123",
+  "region_category": "경기도",
+  "supply_type": "분양",
+  "price_range": "7억 5,000만원 ~ 11억 2,000만원",
+  "special_supply_date": "2026-04-25 ~ 2026-04-25",
+  "rank1_date": "해당지역: 2026-04-28 ~ 2026-04-28",
+  "rank2_date": "해당지역: 2026-05-01 ~ 2026-05-01",
+  "notice_date": "2026-04-15",
+  "move_in_date": "2028-12",
+  "supply_location": "경기도 성남시 분당구 삼평동 123",
+  "total_households": "842",
+  "is_hot_zone": "N",
+  "regulated_zone": "미기재",
+  "readmission_limit": "미기재",
+  "live_requirement": "미기재",
+  "price_cap": "미기재",
+  "land_type": "미기재",
+  "resale_restriction": "미기재",
+  "eligibility_special": [
+    {
+      "type_name": "특별공급",
+      "quota": null,
+      "requirements": [
+        "공고문에 명시된 특별공급 자격과 해당 유형별 요건을 모두 충족해야 합니다.",
+        "무주택 세대구성원, 청약통장 가입, 거주지역 요건은 공고문과 청약홈 기준으로 확인합니다.",
+        "세부 가점과 소득·자산 기준은 모집공고 최종본을 기준으로 재확인해야 합니다."
+      ]
+    }
+  ],
+  "eligibility_rank1": [
+    "1순위 자격은 공고문에 적힌 해당지역 거주요건과 청약통장 가입기간을 기준으로 확인합니다.",
+    "세대구성원 및 무주택 요건, 예치금 조건은 모집공고와 청약홈 안내를 함께 확인해야 합니다.",
+    "지역별 1순위 접수일은 공고문 일정표를 기준으로 준비합니다."
+  ],
+  "eligibility_rank2": [
+    "2순위 자격은 1순위 미달 시 접수 가능하며, 공고문 기준으로 별도 확인이 필요합니다."
+  ],
+  "contract_ratio": "10",
+  "contract_amount": "실제 납부금액은 공고문 기준 별도 확인",
+  "midterm_ratio": "60",
+  "midterm_count": "6",
+  "balance_ratio": "30",
+  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
+  "notice_url": "https://www.applyhome.co.kr",
+  "generated_at": "2026-04-24T00:03:40.378882"
+}
