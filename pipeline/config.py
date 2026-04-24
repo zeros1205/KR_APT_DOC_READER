@@ -20,11 +20,6 @@ LLM_CONTENT_MODEL = "gemini-3.1-pro-preview"        # 서술형 콘텐츠 생성
 LLM_FACTCHECK_MODEL = "gemini-3.1-pro-preview"      # 팩트 체크
 LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"       # 입지 분석 (Google Search Grounding)
 
-# ── 이미지 API ──
-UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")
-PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
-PREFERRED_IMAGE_SOURCE = "unsplash"   # "unsplash" | "pexels"
-
 # ── 청약홈 공공데이터 API ──
 PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
 APARTMENT_API_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1"

@@ -27,7 +27,6 @@ from config import (
     PREFERRED_IMAGE_SOURCE, BLOG_THEME,
 )
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
-from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
 
@@ -1020,19 +1019,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         facts["balance_desc"] = financial_detail.get("balance_desc", "")
         print(f"  [Agent 2b] 생성 완료 - 자금계획 세부 내용")
 
-    # Step 2: 이미지 검색 (병렬)
-    print(f"\n  [이미지] '{apt_name}' 관련 이미지 검색...")
-    images = await find_images_for_post(
-        apt_name=apt_name,
-        output_dir=OUTPUT_DIR,
-    )
-
-    # 타입이 1개뿐이면 84타입 평면도 슬롯 불필요
-    if len(facts.get("unit_types", [])) <= 1 and "floor_plan_84" in images:
-        del images["floor_plan_84"]
-        print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
-
-    # Step 3: 입지 분석 (Gemini → Gemini 3.1 검증)
+    # Step 3: 입지 분석 (Gemini 3.1)
     location_data = await agent_location_analysis_gemini(facts)
     location_data = await agent_location_verify_gpt(location_data, facts)
 
@@ -1148,7 +1135,6 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         balance_desc=facts.get("balance_desc", ""),
         qa_blocks=qa_blocks,
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
-        images=images,
         source_date=facts.get("rank1_date", ""),
         notice_date=facts.get("notice_date", ""),
         read_time=max(6, len(str(content)) // 450),

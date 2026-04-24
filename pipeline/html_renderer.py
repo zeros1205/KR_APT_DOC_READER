@@ -19,7 +19,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
-from image_finder import ImageResult, render_image_html, build_credit_html
 from themes import get_theme, THEMES
 
 
@@ -161,9 +160,6 @@ class PostData:
 
     # SEO
     seo_tags: list[str] = field(default_factory=list)
-
-    # 이미지
-    images: dict[str, ImageResult] = field(default_factory=dict)
 
     # 메타
     source_date: str = ""
