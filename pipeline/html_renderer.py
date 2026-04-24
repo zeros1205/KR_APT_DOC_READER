@@ -87,6 +87,7 @@ class PostData:
     location: str
     supply_location: str
     supply_scale: str
+
     # 선택 식별 필드 (기본값 있음)
     notice_id: str = ""              # 공고번호
     total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
