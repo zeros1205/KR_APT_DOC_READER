@@ -514,16 +514,14 @@ body {
   </div>
 
   <div id="filter-dock">
-    <div class="mobile-tab-scroll" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">
-      {{REGION_TABS}}
+    <div class="mobile-tab-scroll" id="region-tabs-container" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">
     </div>
     <div id="filter-dock-progress"></div>
   </div>
 
   <div class="cards-grid" id="cards-grid">
-    {{CARDS_HTML}}
   </div>
-  <p id="no-result">해당 지역의 분석 공고가 없습니다.</p>
+  <p id="no-result" style="display:none;">해당 지역의 분석 공고가 없습니다.</p>
 
   <div id="pagination" style="display:flex;justify-content:center;align-items:center;
        gap:6px;margin-top:48px;flex-wrap:wrap;"></div>
@@ -562,7 +560,134 @@ body {
   </svg>
 </button>
 
-{{INDEX_RUNTIME_SCRIPT}}
+<script>
+/**
+ * 동적 콘텐츠 렌더링 (index.html 고정화)
+ * manifest.json을 로드하여 지역 탭과 카드 목록을 동적으로 렌더링
+ */
+
+let currentRegion = 'all';
+let manifestData = null;
+
+async function loadManifest() {
+  try {
+    const response = await fetch('./manifest.json');
+    if (!response.ok) throw new Error('manifest.json not found');
+    manifestData = await response.json();
+    renderRegionTabs();
+    renderCards();
+  } catch (error) {
+    console.error('manifest.json 로드 실패:', error);
+    document.getElementById('no-result').style.display = 'block';
+  }
+}
+
+function renderRegionTabs() {
+  if (!manifestData || !manifestData.regions) return;
+
+  const container = document.getElementById('region-tabs-container');
+  container.innerHTML = '';
+
+  manifestData.regions.forEach(region => {
+    const btn = document.createElement('button');
+    btn.className = region.code === currentRegion ? 'active' : '';
+    btn.textContent = `${region.name} (${region.count})`;
+    btn.style.cssText = `
+      padding: 6px 12px;
+      border: 1px solid var(--c-border);
+      background: ${region.code === currentRegion ? 'var(--c-primary)' : 'transparent'};
+      color: ${region.code === currentRegion ? '#fff' : 'var(--c-text)'};
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+    `;
+    btn.onclick = () => {
+      currentRegion = region.code;
+      renderRegionTabs();
+      renderCards();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function renderCards() {
+  if (!manifestData || !manifestData.posts) return;
+
+  const grid = document.getElementById('cards-grid');
+  const noResult = document.getElementById('no-result');
+  grid.innerHTML = '';
+
+  let filteredPosts = manifestData.posts;
+  if (currentRegion !== 'all') {
+    const regionMap = {
+      'seoul': 'seoul',
+      'incheon': 'incheon'
+    };
+    filteredPosts = manifestData.posts.filter(p => p.location && p.location.includes('서울'));
+  }
+
+  if (filteredPosts.length === 0) {
+    noResult.style.display = 'block';
+    return;
+  }
+
+  noResult.style.display = 'none';
+  filteredPosts.forEach(post => {
+    const card = document.createElement('a');
+    card.href = `./posts/${post.id}/post.html`;
+    card.style.cssText = `
+      display: block;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--c-card-bg);
+      border: 1px solid var(--c-border);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+    `;
+    card.onmouseover = () => {
+      card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+      card.style.transform = 'translateY(-4px)';
+    };
+    card.onmouseout = () => {
+      card.style.boxShadow = 'none';
+      card.style.transform = 'translateY(0)';
+    };
+
+    const scoreColor = post.quality_score >= 80 ? '#10b981' : post.quality_score >= 60 ? '#f59e0b' : '#ef4444';
+
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--c-text); margin: 0;">
+          ${post.apt_name}
+        </h3>
+        <span style="
+          font-size: 12px;
+          font-weight: 600;
+          padding: 4px 8px;
+          background: ${scoreColor};
+          color: #fff;
+          border-radius: 4px;
+        ">
+          ${post.quality_score}점
+        </span>
+      </div>
+      <p style="font-size: 13px; color: var(--c-text-secondary); margin: 0 0 6px 0;">
+        ${post.location || '위치 정보 없음'}
+      </p>
+      <p style="font-size: 12px; color: var(--c-text-tertiary); margin: 0;">
+        ${new Date(post.created_at).toLocaleDateString('ko-KR')}
+      </p>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// 페이지 로드 시 manifest.json 로드
+document.addEventListener('DOMContentLoaded', loadManifest);
+</script>
 
 </body>
 </html>

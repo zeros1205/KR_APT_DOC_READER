@@ -27,6 +27,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import collect_from_api, get_sample_document
 from orchestrator import run_pipeline_from_doc
+from index_renderer import build_manifest
 
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
@@ -138,6 +139,10 @@ async def main() -> None:
         print("\n생성된 포스팅:")
         for p in results:
             print(f"  {p / 'post.html'}")
+
+        # manifest.json 업데이트 (index.html은 수정 안 함)
+        print("\n[업데이트] manifest.json 갱신 중...")
+        build_manifest()
 
         if not args.open:
             latest = results[-1] / "post.html"

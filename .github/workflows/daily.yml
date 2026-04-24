@@ -98,14 +98,14 @@ jobs:
             echo "📝 생성된 포스팅: 0개"
           fi
 
-      - name: 프론트 페이지 생성
+      - name: manifest.json 업데이트
         if: success()
         run: |
           python -c "
           import sys
           sys.path.insert(0, 'pipeline')
-          from index_renderer import build_front_index
-          build_front_index()
+          from index_renderer import build_manifest
+          build_manifest()
           "
 
       - name: 포스팅 커밋 및 푸시
