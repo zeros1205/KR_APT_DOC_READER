@@ -16,6 +16,7 @@ import json
 import re
 from pathlib import Path
 import google.genai as genai
+from google.genai import types
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
@@ -29,21 +30,21 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-genai.configure(api_key=GEMINI_API_KEY)
-
 
 async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
     """Google Gemini API 호출 헬퍼 — JSON 객체 출력 전용"""
     client = genai.Client(api_key=GEMINI_API_KEY)
+    config = types.GenerateContentConfig(
+        system_instruction=system,
+        max_output_tokens=max_tokens,
+        temperature=0,
+        response_mime_type="application/json"
+    )
     resp = await asyncio.to_thread(
         client.models.generate_content,
         model=model,
-        contents=system + "\n\n" + user,
-        config=genai.GenerateContentConfig(
-            max_output_tokens=max_tokens,
-            temperature=0,
-            response_mime_type="application/json"
-        )
+        contents=user,
+        config=config
     )
     return (resp.text or "").strip()
 
