@@ -191,10 +191,11 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         facts = json.loads(raw)
     except json.JSONDecodeError:
         import re
+        print(f"  [Agent 1] JSON 파싱 오류: {raw[:200]}")
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         facts = json.loads(m.group()) if m else {}
         if not facts:
-            print("  [Agent 1] JSON 파싱 실패")
+            print(f"  [Agent 1] JSON 추출 실패 (응답: {raw[:100]})")
 
     # 자격 정보가 비어 있으면 전용 재추출을 한 번 더 수행한다.
     if facts and not _has_eligibility_data(facts):
