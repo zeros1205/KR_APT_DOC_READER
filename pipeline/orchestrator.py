@@ -15,11 +15,11 @@ import asyncio
 import json
 import re
 from pathlib import Path
-from openai import AsyncOpenAI
+import google.generativeai as genai
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
-    OPENAI_API_KEY, GEMINI_API_KEY,
+    GEMINI_API_KEY,
     LLM_CONTENT_MODEL, LLM_EXTRACT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL,
     OUTPUT_DIR, MIN_QUALITY_SCORE, MAX_CTA_PER_POST, MIN_CHAR_COUNT,
     CTA_LOAN_COMPARE, CTA_INTERIOR, CTA_MOVING, CTA_TAX, CTA_KAKAO_CHANNEL,
@@ -29,19 +29,24 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
 
-async def _call_openai_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
-    """OpenAI Responses API 호출 헬퍼 — JSON 객체 출력 전용"""
-    resp = await openai_client.responses.create(
-        model=model,
-        instructions=system,
-        input=user,
-        max_output_tokens=max_tokens,
-        text={"format": {"type": "json_object"}},
+async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
+    """Google Gemini API 호출 헬퍼 — JSON 객체 출력 전용"""
+    client = genai.GenerativeModel(model)
+    resp = await asyncio.to_thread(
+        client.generate_content,
+        contents=[
+            {"role": "user", "parts": [{"text": system + "\n\n" + user}]}
+        ],
+        generation_config=genai.types.GenerationConfig(
+            max_output_tokens=max_tokens,
+            temperature=0,
+            response_mime_type="application/json"
+        )
     )
-    return (resp.output_text or "").strip()
+    return (resp.text or "").strip()
 
 
 # ──────────────────────────────────────────────────
@@ -159,12 +164,13 @@ def _has_financial_data(facts: dict) -> bool:
 
 
 async def agent_fact_extraction(notice_text: str) -> dict:
-    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
+    """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (Gemini 3.1)"""
     print("  [Agent 1] 팩트 추출 시작...")
-    raw = await _call_openai_json(
+    raw = await _call_gemini_json(
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
         model=LLM_EXTRACT_MODEL,
+        max_tokens=8000,
     )
     try:
         facts = json.loads(raw)
@@ -179,7 +185,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
     if facts and not _has_eligibility_data(facts):
         print("  [Agent 1] 신청자격 누락 감지 → 전용 재추출...")
         try:
-            raw_eligibility = await _call_openai_json(
+            raw_eligibility = await _call_gemini_json(
                 system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
                 user=ELIGIBILITY_EXTRACTION_PROMPT.format(notice_text=notice_text),
                 model=LLM_EXTRACT_MODEL,
@@ -217,7 +223,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
     if facts and not _has_financial_data(facts):
         print("  [Agent 1] 자금계획 누락 감지 → 전용 재추출...")
         try:
-            raw_financial = await _call_openai_json(
+            raw_financial = await _call_gemini_json(
                 system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
                 user=FINANCIAL_EXTRACTION_PROMPT.format(notice_text=notice_text),
                 model=LLM_EXTRACT_MODEL,
@@ -544,12 +550,12 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
 
 
 async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
-    """Agent 4: GPT-5.4로 입지 분석 검증·교정"""
-    print("  [Agent 4] 입지 분석 검증 시작 (GPT-5.4)...")
+    """Agent 4: Gemini 3.1로 입지 분석 검증·교정"""
+    print("  [Agent 4] 입지 분석 검증 시작 (Gemini 3.1)...")
     if not location_data:
         return location_data
     try:
-        raw = await _call_openai_json(
+        raw = await _call_gemini_json(
             system=(
                 "당신은 한국 지리·부동산 전문가입니다.\n"
                 "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다."
@@ -571,7 +577,7 @@ async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
         print(f"  [Agent 4] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 4] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        print(f"  [Agent 4] Gemini 3.1 검증 오류 ({e}) → Gemini 결과 그대로 사용")
         return location_data
 
 
@@ -679,9 +685,9 @@ CONTENT_GEN_PROMPT = """
 
 
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (GPT-5.4)"""
-    print("  [Agent 4] 콘텐츠 생성 시작 (GPT-5.4)...")
-    raw = await _call_openai_json(
+    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (Gemini 3.1)"""
+    print("  [Agent 4] 콘텐츠 생성 시작 (Gemini 3.1)...")
+    raw = await _call_gemini_json(
         system=(
             "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
             "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
@@ -691,20 +697,30 @@ async def agent_content_generation(facts: dict) -> dict:
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
         ),
         model=LLM_CONTENT_MODEL,
-        max_tokens=6000,
+        max_tokens=10000,
     )
     try:
         content = json.loads(raw)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(f"  [Agent 4] JSON 파싱 에러: {e}")
+        print(f"  [Agent 4] 응답 첫 300자: {raw[:300]}")
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
-        content = json.loads(m.group()) if m else {}
+        if m:
+            try:
+                content = json.loads(m.group())
+            except json.JSONDecodeError:
+                print(f"  [Agent 4] 정규식 추출도 실패 → 빈 딕셔너리 반환")
+                content = {}
+        else:
+            print(f"  [Agent 4] JSON 블록 찾을 수 없음 → 빈 딕셔너리 반환")
+            content = {}
     print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
 
 # ──────────────────────────────────────────────────
-# Agent 5: Q&A 팩트체크 (GPT-5.4 mini)
+# Agent 5: Q&A 팩트체크 (Gemini 3.1)
 # ──────────────────────────────────────────────────
 
 FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니다.
@@ -745,8 +761,8 @@ FACTCHECK_USER_TPL = """[단지 팩트]
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 5: GPT-5.4 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
-    print("  [Agent 5] Q&A 팩트체크 시작 (GPT-5.4 mini)...")
+    """Agent 5: Gemini 3.1 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    print("  [Agent 5] Q&A 팩트체크 시작 (Gemini 3.1)...")
 
     if not OPENAI_API_KEY:
         print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
@@ -757,7 +773,7 @@ async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
             facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
             qa_json=json.dumps(content.get("qa_blocks", []), ensure_ascii=False, indent=2),
         )
-        raw = await _call_openai_json(
+        raw = await _call_gemini_json(
             system=FACTCHECK_SYSTEM,
             user=user_msg,
             model=LLM_FACTCHECK_MODEL,
@@ -878,9 +894,9 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # 파이프라인 흐름:
 #   [Agent 1] 팩트 추출 (Haiku)
 #   [Agent 2] 입지 분석 (Gemini) — subway/school/life/medical 별점+설명
-#   [Agent 3] 입지 검증 (GPT-5.4) — 역명·학교명·비수도권 지하철 오류 교정
-#   [Agent 4] 콘텐츠 생성 (GPT-5.4)
-#   [Agent 5] Q&A 팩트체크 (GPT-5.4 mini)
+#   [Agent 3] 입지 검증 (Gemini 3.1) — 역명·학교명·비수도권 지하철 오류 교정
+#   [Agent 4] 콘텐츠 생성 (Gemini 3.1)
+#   [Agent 5] Q&A 팩트체크 (Gemini 3.1)
 #   [Agent 6] CTA 최적화
 #   [Agent 7] 품질 검수
 #   [렌더링] HTML 생성 → 저장
@@ -999,7 +1015,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         del images["floor_plan_84"]
         print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
 
-    # Step 3: 입지 분석 (Gemini → GPT-5.4 검증)
+    # Step 3: 입지 분석 (Gemini → Gemini 3.1 검증)
     location_data = await agent_location_analysis_gemini(facts)
     location_data = await agent_location_verify_gpt(location_data, facts)
 
