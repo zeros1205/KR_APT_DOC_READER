@@ -569,17 +569,12 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'{sp_cards}</div>'
         )
     else:
-        special_block = (
-            f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
-            f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
-            f'font-size:14px;color:{t["muted"]};">특별공급 자격 정보를 공고문에서 찾지 못했습니다. '
-            f'공식 모집공고문을 다시 확인하세요.</div>'
-        )
+        special_block = ""
 
     # ── 1순위 / 2순위 ──
     def _rank_block(label: str, items: list[str], color: str) -> str:
         if not items:
-            items = ["공고문에서 해당 자격 항목을 찾지 못했습니다."]
+            return ""
         li_html = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
@@ -597,18 +592,23 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'</div>'
         )
 
+    rank1_block = _rank_block("1순위 자격", data.eligibility_rank1, t["accent"])
+    rank2_block = _rank_block("2순위 자격", data.eligibility_rank2, t["text2"])
+
+    rank_blocks_content = rank1_block + rank2_block
     rank_blocks = (
         f'<div style="display:flex;flex-wrap:wrap;gap:10px;">'
-        f'{_rank_block("1순위 자격", data.eligibility_rank1, t["accent"])}'
-        f'{_rank_block("2순위 자격", data.eligibility_rank2, t["text2"])}'
+        f'{rank_blocks_content}'
         f'</div>'
-    )
+    ) if rank_blocks_content else ""
 
-    notice = (
-        f'<p style="font-size:13px;color:{t["muted"]};margin-top:16px;line-height:1.6;">'
-        f'※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. '
-        f'반드시 공식 분양사 및 청약홈에서 최종 확인하세요.</p>'
-    )
+    notice = ""
+    if special_block or rank_blocks:
+        notice = (
+            f'<p style="font-size:13px;color:{t["muted"]};margin-top:16px;line-height:1.6;">'
+            f'※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. '
+            f'반드시 공식 분양사 및 청약홈에서 최종 확인하세요.</p>'
+        )
 
     return special_block + rank_blocks + notice
 
