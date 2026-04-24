@@ -33,11 +33,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import httpx
-import pdfplumber
 
 sys.path.append(str(Path(__file__).parent.parent))
 from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
-from agents.pdf_policy import normalize_pdf_text
 
 
 # ══════════════════════════════════════════════════
@@ -103,7 +101,6 @@ class NoticeDocument:
     is_metro_private: str    # 수도권내민영공공주택지구
 
     # 원문 텍스트 (RAG용)
-    pdf_policy_text: str = ""
     raw_text: str = ""
     tables: list = field(default_factory=list)
     pdf_path: str | None = None
@@ -153,8 +150,6 @@ class NoticeDocument:
 [시행사] {self.developer}
 [문의처] {self.contact}
 [규제사항] {', '.join(flags) if flags else '없음'}
-
-{self.pdf_policy_text}
 
 {self.raw_text}
 
@@ -410,146 +405,7 @@ def load_from_csv(csv_path: Path) -> list[NoticeDocument]:
 
 
 # ══════════════════════════════════════════════════
-# 6. PDF 공고문 파싱 (선택적 보완)
-# ══════════════════════════════════════════════════
-
-async def download_pdf(url: str, save_dir: Path, filename: str) -> Path | None:
-    save_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = save_dir / filename
-    if pdf_path.exists():
-        print(f"  [PDF] 캐시: {filename}")
-        return pdf_path
-    async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
-        try:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            pdf_path.write_bytes(resp.content)
-            print(f"  [PDF] 저장: {filename} ({len(resp.content)//1024}KB)")
-            return pdf_path
-        except Exception as e:
-            print(f"  [PDF] 실패: {e}")
-            return None
-
-
-def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
-    """PDF → (텍스트, 표 목록)"""
-    texts, tables = [], []
-    try:
-        with pdfplumber.open(pdf_path) as pdf:
-            print(f"  [PDF] 파싱: {pdf_path.name} ({len(pdf.pages)}p)")
-            for i, page in enumerate(pdf.pages):
-                text = page.extract_text() or ""
-                if text.strip():
-                    texts.append(f"[{i+1}p]\n{text}")
-                for tbl in (page.extract_tables() or []):
-                    cleaned = [[str(c).strip() if c else "" for c in r] for r in tbl]
-                    tables.append(cleaned)
-    except Exception as e:
-        print(f"  [PDF] 파싱 오류: {e}")
-    print(f"  [PDF] 추출: {sum(len(t) for t in texts)}자, 표 {len(tables)}개")
-    return "\n\n".join(texts), tables
-
-def _merge_text_blocks(*blocks: str) -> str:
-    parts = [normalize_pdf_text(block) if block else "" for block in blocks]
-    return "\n\n".join(part for part in parts if part.strip())
-
-
-_POLICY_RESALE_PATTERNS = [
-    r"소유권이전등기일로부터\s*(\d+년)",
-    r"전매제한\s*기간\s*[：:]\s*([^\n,。<]{3,40})",
-    r"전매제한\s*[：:]\s*([^\n,。<]{3,40})",
-    r"입주\s*후\s*(\d+년\s*(?:이상\s*)?전매제한)",
-    r"분양가상한제\s*적용\s*(\d+년)",
-    r"전매\s*제한\s*없음",
-    r"전매제한\s*없음",
-]
-
-_POLICY_LIVE_PATTERNS = [
-    r"거주\s*의무\s*기간\s*[：:]\s*([^\n,。<]{3,30})",
-    r"실거주\s*의무\s*[：:]\s*([^\n,。<]{3,30})",
-    r"실거주\s*의무\s*(\d+년\s*이상)",
-    r"거주\s*의무\s*(\d+년\s*이상)",
-    r"실거주\s*의무\s*(없음|해당\s*없음|비해당)",
-    r"거주\s*의무\s*(없음|해당\s*없음)",
-]
-
-
-def _clean_policy_text(value: str) -> str:
-    return re.sub(r"\s+", " ", value).strip(" :·,.;")
-
-
-def _first_match(text: str, patterns: list[str]) -> str:
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE | re.MULTILINE)
-        if m:
-            value = m.group(1) if m.lastindex else m.group(0)
-            value = _clean_policy_text(value)
-            if value:
-                return value
-    return ""
-
-
-def _extract_policy_summary(pdf_text: str) -> dict[str, str]:
-    """PDF 원문에서 규제 핵심 항목을 구조화한다."""
-    if not pdf_text:
-        return {}
-
-    text = pdf_text
-    summary: dict[str, str] = {}
-
-    if "비규제지역" in text or "비해당" in text or "해당없음" in text:
-        summary["regulated_zone"] = "비규제지역"
-        summary["is_hot_zone"] = "N"
-    else:
-        zones: list[str] = []
-        for label in ("투기과열지구", "청약과열지역", "조정대상지역"):
-            if label in text and label not in zones:
-                zones.append(label)
-        if zones:
-            summary["regulated_zone"] = ", ".join(zones)
-            summary["is_hot_zone"] = "Y"
-
-    resale = _first_match(text, _POLICY_RESALE_PATTERNS)
-    if resale:
-        summary["resale_restriction"] = resale
-
-    live_req = _first_match(text, _POLICY_LIVE_PATTERNS)
-    if live_req:
-        summary["live_requirement"] = live_req
-
-    readmission = _first_match(
-        text,
-        [
-            r"재당첨\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
-            r"재당첨\s*제한\s*(\d+년)",
-            r"재당첨\s*제한\s*(없음|해당\s*없음|비해당)",
-            r"재청약\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
-            r"재청약\s*제한\s*(\d+년)",
-            r"재청약\s*제한\s*(없음|해당\s*없음|비해당)",
-        ],
-    )
-    if readmission:
-        summary["readmission_limit"] = readmission
-
-    price_cap = _first_match(
-        text,
-        [
-            r"분양가상한제\s*[：:]\s*(적용|미적용|없음|해당\s*없음)",
-            r"분양가상한제\s*(적용|미적용)",
-        ],
-    )
-    if not price_cap and "분양가상한제" in text:
-        if "미적용" in text or "없음" in text:
-            price_cap = "미적용"
-        elif "적용" in text:
-            price_cap = "적용"
-    if price_cap:
-        summary["price_cap"] = price_cap
-        summary["is_price_cap"] = "Y" if price_cap == "적용" else "N"
-
-    return summary
-# ══════════════════════════════════════════════════
-# 7. 통합 수집 함수
+# 6. 통합 수집 함수
 # ══════════════════════════════════════════════════
 
 _RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위")
@@ -597,25 +453,6 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # PDF 공고문은 notice_url 원문 다운로드를 기본 경로로 사용한다.
-        pdf_file = None
-        if doc.notice_url:
-            safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
-            pdf_file = await download_pdf(
-                doc.notice_url,
-                OUTPUT_DIR / "pdfs",
-                f"{safe}_{doc.notice_id}.pdf",
-            )
-        else:
-            print(f"  [PDF] URL 없음: {doc.apt_name}")
-
-        if pdf_file:
-            pdf_text, pdf_tables = parse_pdf(pdf_file)
-            doc.pdf_policy_text = pdf_text
-            doc.raw_text = _merge_text_blocks(doc.raw_text, pdf_text)
-            doc.tables = pdf_tables or doc.tables
-            doc.pdf_path = str(pdf_file)
-
         docs.append(doc)
 
     print(f"\n  [수집 완료] {len(docs)}건")
@@ -645,7 +482,7 @@ def _units_to_text(units: list[dict]) -> str:
 
 
 # ══════════════════════════════════════════════════
-# 8. 샘플 데이터 (API 키 없을 때 테스트용)
+# 7. 샘플 데이터 (API 키 없을 때 테스트용)
 # ══════════════════════════════════════════════════
 
 def get_sample_document() -> NoticeDocument:

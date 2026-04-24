@@ -116,6 +116,10 @@ class PostData:
     midterm_ratio: str = "60"
     midterm_count: str = "6"
     balance_ratio: str = "30"
+    # 자금계획 세부 설명 (Gemini 3.1 + Grounding 생성)
+    contract_desc: str = ""        # 계약금 세부 설명 (최대 3문장)
+    midterm_desc: str = ""         # 중도금 세부 설명 (최대 3문장)
+    balance_desc: str = ""         # 잔금 세부 설명 (최대 3문장)
 
     # 세금
     acquisition_tax_rate: str = ""
@@ -554,14 +558,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     sp_cards = ""
     for sp in data.eligibility_special:
         type_name = sp.get("type_name", "")
-        quota     = sp.get("quota", "")
         reqs      = sp.get("requirements", [])
-        quota_html = (
-            f'<span style="font-size:11px;font-weight:600;background:{t["accent_light"]};'
-            f'color:{t["accent"]};padding:2px 8px;border-radius:{t["radius_pill"]};'
-            f'margin-left:6px;">{quota}</span>'
-            if quota else ""
-        )
         req_items = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.7;'
             f'padding:2px 0;">{r}</li>'
@@ -572,7 +569,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;">'
             f'<div style="font-size:14px;font-weight:800;color:{t["text"]};'
-            f'margin-bottom:10px;">{type_name}{quota_html}</div>'
+            f'margin-bottom:10px;">{type_name}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
             f'</div>'
         )
