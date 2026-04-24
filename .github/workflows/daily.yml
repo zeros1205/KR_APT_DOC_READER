@@ -1,4 +1,4 @@
-name: 청약 공고 자동 수집 및 포스팅 생성
+name: 분양공고 포스팅 자동화 (Gemini 3.1)
 
 on:
   schedule:
