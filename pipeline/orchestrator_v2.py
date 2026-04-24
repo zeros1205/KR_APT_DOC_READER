@@ -193,28 +193,19 @@ async def stage_2_eligibility(
             }
         }
 
-    prompt = f"""당신은 대한민국 청약자격 전문가입니다.
-최신 정부 정책(2024년)을 기반으로 청약자격 요건을 정리합니다.
+    prompt = f"""2024년 기준 청약자격 요건을 정리하세요. 정책 기준으로만 작성.
 
-【지역 정보】
-- 지역: {location}
-- 투기과열지구: {is_hot_zone}
-- 청약과열지구: {is_regulated_zone}
-- 공급유형: {supply_type}
+【정보】지역: {location}, 투기과열: {is_hot_zone}, 규제: {is_regulated_zone}, 유형: {supply_type}
 
-【작업】
-아래 정책에 따른 청약자격을 정리하세요.
-Google Grounding을 통해 최신 정책 정보를 확인하세요.
-
-각 자격 구분별로 3~5개 핵심 요건을 명확한 문장으로 작성하세요.
-개인의 재무 상황이 아닌 정책 기준으로만 작성합니다.
-
-【출력 형식】 (JSON)
+【출력】 JSON만 반환
 {{
-    "eligibility_special": ["요건1", "요건2", ...],
-    "eligibility_rank1": ["요건1", "요건2", ...],
-    "eligibility_rank2": ["요건1", "요건2", ...],
-    "notes": "특이사항"
+    "eligibility_special": [
+        {{"type_name": "신혼부부", "quota": "20%", "requirements": ["혼인후7년", "무주택"]}},
+        ...
+    ],
+    "eligibility_rank1": ["2년거주", "무주택세대주", ...],
+    "eligibility_rank2": ["조건없음", "무주택", ...],
+    "dates": {{"special_supply_date": "{schedule_dates.get('special_supply', '-')}", "rank1_date": "{schedule_dates.get('rank1', '-')}", "rank2_date": "{schedule_dates.get('rank2', '-')}"}}
 }}"""
 
     try:
@@ -318,39 +309,15 @@ async def stage_4_apartment_intro(
             "price_info": f"분양가: {price_range}"
         }
 
-    prompt = f"""당신은 아파트 마케팅 담당자입니다.
-고객과 친근하게 대화하듯 단지를 소개합니다.
+    prompt = f"""마케팅톤으로 아파트 소개. JSON만 반환.
 
-【단지 정보】
-- 단지명: {apt_name}
-- 위치: {location}
-- 공급세대수: {total_units}
-- 평형: {', '.join(unit_types)}
-- 공급규모: {supply_scale}
-- 예상 분양가: {price_range}
-- 특별공급: {schedule_dates.get('special_supply', '-')}
+단지: {apt_name}, {location}, {total_units}세대, {supply_scale}, {price_range}
 
-【작업】
-
-1. apt_intro (단지 소개글, 150~200자):
-   - 마케터 어투로 자연스럽게
-   - 단지명, 위치, 규모, 평형 포함
-
-2. post_title (블로그 제목, 15~50자):
-   - 형식: "{{단지명}} {{특징}} 분양 분석"
-
-3. unit_type_desc (타입별 분양가):
-   - 형식: "30평: 4억~5억\\n40평: ..."
-
-4. schedule_desc (청약 일정):
-   - 형식: "특별공급 5/15, 1순위 5/20-22, ..."
-
-【출력 형식】 (JSON)
 {{
-    "apt_intro": "...",
-    "post_title": "...",
-    "unit_type_desc": "...",
-    "schedule_desc": "..."
+    "apt_intro": "150~200자, 마케터톤, 단지명+위치+규모+평형 포함",
+    "post_title": "15~50자, '{apt_name} {{특징}} 분양 분석' 형식",
+    "unit_type_desc": "30평: {price_range[:10]}\\n40평: ...",
+    "schedule_desc": "특별공급 {schedule_dates.get('special_supply', '-')}, 1순위 {schedule_dates.get('rank1', '-')}, ..."
 }}"""
 
     try:
@@ -417,36 +384,18 @@ async def stage_5_location_analysis(
             "medical_detail": "• 의료시설\n  - 종합병원 인근\n  - 의원/약국 풍부"
         }
 
-    prompt = f"""당신은 부동산 입지 분석 전문가입니다.
-해당 지역의 장점을 객관적 팩트 기반으로 분석합니다.
+    prompt = f"""부동산입지분석. {location} 객관적 팩트기반. JSON만반환.
 
-【단지 정보】
-- 단지명: {apt_name}
-- 주소: {address}
-- 지역: {location}
-
-【작업】
-Google Grounding과 Google Maps API를 이용해 다음을 작성하세요.
-
-1. location_intro (지역 총평, 200~500자):
-   - 교통, 교육, 상권 등 핵심 특징
-   - 객관적이고 설득력 있게
-
-2. 4개 별점 분석 (subway, school, life, medical):
-   - 각 항목별 ★★★★★ 형식 점수
-   - 300~2000자 개조식 상세 설명
-
-【출력 형식】 (JSON)
 {{
-    "location_intro": "...",
+    "location_intro": "200~500자, 교통교육상권, 설득력있게",
     "subway_score": "★★★★★",
-    "subway_detail": "• 항목1\\n  - 세부사항",
+    "subway_detail": "• 지하철\\n  - 거리/노선",
     "school_score": "★★★★☆",
-    "school_detail": "...",
+    "school_detail": "• 교육\\n  - 학교정보",
     "life_score": "★★★★★",
-    "life_detail": "...",
+    "life_detail": "• 상권\\n  - 시설정보",
     "medical_score": "★★★★☆",
-    "medical_detail": "..."
+    "medical_detail": "• 의료\\n  - 병원정보"
 }}"""
 
     try:
@@ -529,59 +478,25 @@ async def stage_6_faq_generation(
             "loan_info": "신청자격자는 주택담보대출 신청이 가능합니다. 대출 한도는 평가액의 60~80% 범위이며, 금리는 시장금리에 따릅니다."
         }
 
-    prompt = f"""당신은 청약 제도 및 주택 금융 전문가입니다.
-일반인이 이해하기 쉽게 Q&A를 작성합니다.
+    prompt = f"""청약제도/주택금융 전문가. 일반인 눈높이. 정책기반만. JSON반환.
 
-【배경 정보】
-- 단지명: {apt_name}
-- 지역: {location}
-- 공급유형: {supply_type}
-- 투기과열지구: {regulation_data.get('is_hot_zone', '-')}
+{apt_name}, {location}, {supply_type}
 
-【필수 지침】
-❌ 금지: 개인의 세대구성, 자산, 소득 기반 조언
-✅ 허용: 정책 기준 설명, 일반적 상황
-
-【작업】
-
-1. qa_intro (Q&A 도입부, 60~80자):
-   예: "청약 신청 전 꼭 알아야 할 것들..."
-
-2. qa_blocks (3~7개 Q&A):
-   - 질문 주제: 자격, 지역특성, 프로세스, 대출, 납부, 이의제기
-   - 답변: 300~2000자, 개조식
-   - 정책 기반 팩트만 포함
-
-3. financial_intro (자금계획 도입, 80~100자)
-
-4. tax_desc (세금 정보, 300~1000자):
-   - 취득세, 재산세, 종부세
-   - 개조식 작성
-
-5. 납부 구조:
-   - contract_ratio, contract_amount
-   - midterm_ratio, midterm_count
-   - balance_ratio
-
-6. loan_info (대출 정보, 200~500자):
-   - 주택담보대출 LTV
-   - 금리, 기간, 조건
-
-【출력 형식】 (JSON)
 {{
-    "qa_intro": "...",
+    "qa_intro": "60~80자, '청약 신청 전...'",
     "qa_blocks": [
-        {{"q": "질문1", "a": "답변1"}},
-        ...
+        {{"q": "청약자격?", "a": "정책기반 설명"}},
+        {{"q": "대출조건?", "a": "LTV/금리/기간"}},
+        {{"q": "납부일정?", "a": "계약금/중도금/잔금"}}
     ],
-    "financial_intro": "...",
-    "tax_desc": "...",
+    "financial_intro": "80~100자",
+    "tax_desc": "• 취득세\\n• 재산세\\n• 종부세",
     "contract_ratio": "10%",
-    "contract_amount": "...",
+    "contract_amount": "",
     "midterm_ratio": "60%",
     "midterm_count": "6",
     "balance_ratio": "30%",
-    "loan_info": "..."
+    "loan_info": "주택담보대출 LTV/금리 정책"
 }}"""
 
     try:
