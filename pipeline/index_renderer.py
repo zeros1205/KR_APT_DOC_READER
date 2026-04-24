@@ -147,7 +147,7 @@ function renderCards() {
 
   grid.innerHTML = page_posts.map(function(post) {
     return '<div class="post-card" data-region="' + post.region + '">' +
-           '<a href="/posts/' + post._dir + '/post.html" style="text-decoration:none;color:inherit;">' +
+           '<a href="./posts/' + post._dir + '/post.html" style="text-decoration:none;color:inherit;">' +
            '<h3 style="margin:0 0 8px;font-size:16px;font-weight:600;">' + post.apt_name + '</h3>' +
            '<p style="margin:0 0 6px;font-size:13px;color:#666;">' + post.location + '</p>' +
            '<p style="margin:0;font-size:12px;color:#999;">생성일: ' + post.created_at + '</p>' +
