@@ -361,6 +361,9 @@ class CheongYakAPI:
         return await self._get(f"{API_BASE}/getAPTLttotPblancMdl", params)
 
     async def _get(self, url: str, params: dict) -> list[dict]:
+        print(f"  [API] _get() 호출됨 - URL: {url}")
+        print(f"  [API] 파라미터: {params}")
+
         if not self.api_key or "여기에" in str(self.api_key):
             print(f"  [API] serviceKey 미설정 → 샘플 데이터 사용")
             return []
@@ -373,7 +376,9 @@ class CheongYakAPI:
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
+                print(f"  [API] GET 요청 시작...")
                 resp = await client.get(url, params=params)
+                print(f"  [API] 상태 코드: {resp.status_code}")
                 resp.raise_for_status()
                 data = resp.json()
                 items = data.get("data", [])
@@ -382,10 +387,12 @@ class CheongYakAPI:
                 return items
             except httpx.HTTPStatusError as e:
                 print(f"  [API] HTTP 오류 {e.response.status_code}: {url}")
-                print(f"  [API] 응답: {e.response.text[:200]}")
+                print(f"  [API] 전체 응답: {e.response.text}")
                 return []
             except Exception as e:
                 print(f"  [API] 오류: {e}")
+                import traceback
+                traceback.print_exc()
                 return []
 
 
