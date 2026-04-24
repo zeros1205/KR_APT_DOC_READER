@@ -1,0 +1,88 @@
+name: 오티에르 반포 테스트 데이터 수집
+
+on:
+  workflow_dispatch:
+    inputs:
+      save_as_sample:
+        description: '수집된 데이터를 샘플 포스팅으로 생성'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  fetch-otie:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: .env 파일 생성 (GitHub Secrets → .env)
+        run: |
+          cat <<EOF > .env
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
+          EOF
+
+      - name: 오티에르 반포 데이터 수집
+        run: python fetch_otie_test_data.py
+
+      - name: 데이터 검증
+        run: |
+          if [ -f "output/test_data/otie_banpo/data.json" ]; then
+            echo "✅ 테스트 데이터 저장 성공"
+            echo "## 오티에르 반포 테스트 데이터 수집 완료" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### 저장된 정보:" >> "$GITHUB_STEP_SUMMARY"
+            python -c "
+import json
+with open('output/test_data/otie_banpo/data.json') as f:
+    data = json.load(f)
+    print(f\"- 단지명: {data.get('apt_name')}\")
+    print(f\"- 주택관리번호: {data.get('house_manage_no')}\")
+    print(f\"- 기본 정보 필드: {len(data.get('basic_info', {}))}개\")
+    print(f\"- 유닛 타입: {len(data.get('unit_types', []))}개\")
+            " >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ 테스트 데이터 저장 실패"
+            exit 1
+          fi
+
+      - name: 샘플 포스팅 생성
+        if: ${{ github.event.inputs.save_as_sample == 'true' }}
+        run: |
+          echo "샘플 포스팅 생성 중..."
+          # 이 부분은 향후 포스팅 생성 로직 추가
+
+      - name: 결과 커밋 및 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/test_data/
+          git diff --cached --quiet && echo "커밋할 변경사항 없음" || git commit -m "test: save otie-banpo test data
+
+- 오티에르 반포 공공데이터 저장 완료
+- 경로: output/test_data/otie_banpo/data.json
+- 향후 모든 테스트에서 이 데이터 사용"
+          git push origin main
