@@ -496,6 +496,10 @@ def build_front_index() -> None:
     print(f"  포스트 {len(posts)}건 로드")
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
 
+    # 최근 업데이트 날짜 (오늘)
+    today = datetime.now()
+    latest_update_date = f"{today.year}년 {today.month}월 {today.day}일"
+
     region_counts: dict[str, int] = {}
     supply_counts: dict[str, int] = {}
     for post in posts:
@@ -504,7 +508,7 @@ def build_front_index() -> None:
         supply = _supply_filter_key(post.get("title", post.get("apt_name", "")), post.get("apt_name", ""))
         supply_counts[supply] = supply_counts.get(supply, 0) + 1
 
-    region_order = [
+    _REGION_ORDER = [
         "서울", "경기도", "인천", "부산", "대전", "대구", "광주",
         "세종", "울산", "강원도", "충청북도", "충청남도",
         "전라북도", "전라남도", "경상북도", "경상남도", "제주도",
@@ -519,9 +523,8 @@ def build_front_index() -> None:
         "경상남도": "경남",
         "제주도": "제주",
     }
-    known = [region for region in region_order if region in region_counts]
-    unknown = sorted(region for region in region_counts if region not in region_order)
-    regions = ["전체"] + known + unknown
+    # 항상 모든 지역 탭을 표시 (posts가 없어도)
+    regions = ["전체"] + _REGION_ORDER
     total = len(posts)
 
     region_tabs = "".join(
@@ -540,6 +543,7 @@ def build_front_index() -> None:
     html = html.replace("{{INDEX_NAV}}", index_nav("/"))
     html = html.replace("{{FEATURED_ITEMS}}", _render_featured_items(posts))
     html = html.replace("{{RESULT_COUNT_HTML}}", f'총 <strong style="color:var(--c-dark);">{total}</strong>건')
+    html = html.replace("{{LATEST_UPDATE_DATE}}", latest_update_date)
     html = html.replace("{{LIST_SEARCH_BAR}}", _render_list_search_bar())
     html = html.replace("{{REGION_TABS}}", region_tabs)
     html = html.replace("{{SUPPLY_TABS}}", "")

@@ -869,13 +869,13 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     from config import SITE_URL
     from shared_ui import (
         FONT_LINK, FONT_FAMILY, PALETTE_CSS,
-        PALETTE_INIT_JS, detail_nav,
+        PALETTE_INIT_JS, index_nav,
     )
 
     post_slug = f"{date_str}_{safe}"
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
-    nav_html = detail_nav("../../")
+    nav_html = index_nav("../../")
 
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
