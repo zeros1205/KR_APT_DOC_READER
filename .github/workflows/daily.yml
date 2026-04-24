@@ -32,7 +32,11 @@ jobs:
           cache: 'pip'
 
       - name: 의존성 설치
-        run: pip install -r requirements.txt
+        run: |
+          # 파이썬 캐시 제거 (최신 코드 반영)
+          find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+          find . -type f -name "*.pyc" -delete 2>/dev/null || true
+          pip install -r requirements.txt
 
       - name: .env 파일 생성 (Gemini API만 필수)
         run: |
