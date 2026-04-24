@@ -25,30 +25,18 @@ class ValidationResult:
 
 
 # ──────────────────────────────────────────────────
-# 문자 수 제약 정의 (DATA_SPEC.md 기준)
+# 문자 수 제약 정의 (사용자 지시 기준)
 # ──────────────────────────────────────────────────
 
-NARRATIVE_CONSTRAINTS = {
-    "apt_intro": (150, 200, "첫인사 + 단지 소개"),
-    "location_intro": (100, 150, "입지 설명"),
-    "financial_intro": (80, 100, "자금 계획 도입"),
-    "qa_intro": (60, 80, "Q&A 도입"),
-    "schedule_desc": (80, 120, "청약 일정 타임라인 앞 설명"),
-    "tax_desc": (80, 120, "세금 표 앞 설명"),
-    "unit_type_desc": (80, 120, "타입별 분양가 표 앞 설명"),
-    "subway_detail": (80, 150, "교통 카드 상세"),
-    "school_detail": (80, 150, "학군 카드 상세"),
-    "life_detail": (80, 150, "생활편의 상세"),
-    "medical_detail": (80, 150, "의료 카드 상세"),
-    "contract_desc": (0, 120, "계약금 세부 설명"),  # 선택사항
-    "midterm_desc": (0, 120, "중도금 세부 설명"),   # 선택사항
-    "balance_desc": (0, 120, "잔금 세부 설명"),     # 선택사항
-}
+# 전체 콘텐츠 길이 제약만 사용 (사용자 지시)
+TOTAL_CONTENT_MIN = 800
+TOTAL_CONTENT_MAX = 3000
+
+# 필드별 제약 없음 (사용자가 지시하지 않음)
+NARRATIVE_CONSTRAINTS = {}
 
 COUNT_CONSTRAINTS = {
     "qa_blocks": (6, 6, "Q&A 블록 정확히 6개"),
-    "seo_tags": (5, float('inf'), "SEO 태그 5개 이상"),
-    "unit_types": (1, float('inf'), "유닛타입 1개 이상"),
 }
 
 
@@ -171,15 +159,13 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
         content = content or {}
         facts = facts or {}
 
-        # 1. 내러티브 필드 검증
-        for field_name, (min_ch, max_ch, desc) in NARRATIVE_CONSTRAINTS.items():
-            # content, facts 양쪽에서 찾기
-            value = content.get(field_name, "") or facts.get(field_name, "")
-            is_valid, messages = validate_narrative_field(field_name, value, strict=strict)
-            if not is_valid:
-                result.warnings.extend(messages)
-            elif messages:  # 경고
-                result.warnings.extend(messages)
+        # 1. 전체 콘텐츠 길이 검증 (사용자 지시 기준)
+        post_content = content.get("post_content", "") or ""
+        total_len = len(post_content)
+        if total_len < TOTAL_CONTENT_MIN:
+            result.warnings.append(f"전체 콘텐츠 길이 부족: {total_len}자 (요구: {TOTAL_CONTENT_MIN}~{TOTAL_CONTENT_MAX}자)")
+        elif total_len > TOTAL_CONTENT_MAX:
+            result.warnings.append(f"전체 콘텐츠 길이 초과: {total_len}자 (요구: {TOTAL_CONTENT_MIN}~{TOTAL_CONTENT_MAX}자)")
 
         # 2. 개수 필드 검증
         for field_name, (min_cnt, max_cnt, desc) in COUNT_CONSTRAINTS.items():
@@ -187,7 +173,7 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
             is_valid, messages = validate_count_field(field_name, value, strict=strict)
             if not is_valid:
                 result.errors.extend(messages)
-            elif messages:  # 경고
+            elif messages:
                 result.warnings.extend(messages)
 
         # 3. 필수 필드 존재 여부
@@ -198,25 +184,15 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
         if not facts.get("supply_location"):
             result.errors.append("필수 필드 누락: supply_location (공급 위치)")
 
-        # 4. Q&A 블록 내용 검증
-        for i, qa_block in enumerate(content.get("qa_blocks", [])):
-            q_len = len(qa_block.get("question", "")) if isinstance(qa_block, dict) else len(qa_block.question if hasattr(qa_block, "question") else "")
-            a_len = len(qa_block.get("answer", "")) if isinstance(qa_block, dict) else len(qa_block.answer if hasattr(qa_block, "answer") else "")
-            if q_len < 10:
-                result.warnings.append(f"Q&A 블록 {i+1} 질문이 너무 짧음 ({q_len}자)")
-            if a_len < 80:
-                result.warnings.append(f"Q&A 블록 {i+1} 답변이 너무 짧음 ({a_len}자)")
-
     # PostData 객체 입력인 경우 처리
     elif data is not None:
-        # 1. 내러티브 필드 검증
-        for field_name, (min_ch, max_ch, desc) in NARRATIVE_CONSTRAINTS.items():
-            value = getattr(data, field_name, "")
-            is_valid, messages = validate_narrative_field(field_name, value, strict=strict)
-            if not is_valid:
-                result.warnings.extend(messages)
-            elif messages:  # 경고
-                result.warnings.extend(messages)
+        # 1. 전체 콘텐츠 길이 검증 (사용자 지시 기준)
+        post_content = getattr(data, "post_content", "") or ""
+        total_len = len(post_content)
+        if total_len < TOTAL_CONTENT_MIN:
+            result.warnings.append(f"전체 콘텐츠 길이 부족: {total_len}자 (요구: {TOTAL_CONTENT_MIN}~{TOTAL_CONTENT_MAX}자)")
+        elif total_len > TOTAL_CONTENT_MAX:
+            result.warnings.append(f"전체 콘텐츠 길이 초과: {total_len}자 (요구: {TOTAL_CONTENT_MIN}~{TOTAL_CONTENT_MAX}자)")
 
         # 2. 개수 필드 검증
         for field_name, (min_cnt, max_cnt, desc) in COUNT_CONSTRAINTS.items():
@@ -224,7 +200,7 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
             is_valid, messages = validate_count_field(field_name, value, strict=strict)
             if not is_valid:
                 result.errors.extend(messages)
-            elif messages:  # 경고
+            elif messages:
                 result.warnings.extend(messages)
 
         # 3. 필수 필드 존재 여부
@@ -236,15 +212,6 @@ def validate_post_data(data: "PostData" = None, content: dict = None, facts: dic
         for field, label in required_fields.items():
             if not getattr(data, field, ""):
                 result.errors.append(f"필수 필드 누락: {field} ({label})")
-
-        # 4. Q&A 블록 내용 검증
-        for i, qa_block in enumerate(getattr(data, "qa_blocks", [])):
-            q_len = len(qa_block.question) if hasattr(qa_block, "question") else 0
-            a_len = len(qa_block.answer) if hasattr(qa_block, "answer") else 0
-            if q_len < 10:
-                result.warnings.append(f"Q&A 블록 {i+1} 질문이 너무 짧음 ({q_len}자)")
-            if a_len < 80:
-                result.warnings.append(f"Q&A 블록 {i+1} 답변이 너무 짧음 ({a_len}자)")
 
     # 5. 종합 결과
     result.is_valid = len(result.errors) == 0

@@ -1016,7 +1016,7 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "") -> Path | None:
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_location: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -1038,6 +1038,10 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         return None
 
     apt_name = facts["apt_name"]
+
+    # API에서 공급 위치를 받으면 facts에 설정 (Gemini가 추출하지 못한 경우 대비)
+    if api_supply_location and not facts.get("supply_location"):
+        facts["supply_location"] = api_supply_location
 
     # Step 1.5: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
     eligibility_check = await agent_eligibility_factcheck_gemini(facts, notice_text)
@@ -1229,7 +1233,7 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone)
+    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone, api_supply_location=doc.supply_location)
 
 
 # ──────────────────────────────────────────────────
