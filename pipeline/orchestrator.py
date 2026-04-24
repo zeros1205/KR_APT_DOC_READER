@@ -27,6 +27,8 @@ from config import (
     BLOG_THEME,
 )
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
+from image_finder import find_images_for_post, ImageResult
+from data_validators import validate_post_data, get_validation_score_penalties
 from agents.collector import NoticeDocument
 
 
@@ -843,17 +845,36 @@ def agent_cta_optimization(content: dict, facts: dict) -> dict:
 # Agent 7: 품질 검수
 # ──────────────────────────────────────────────────
 
-def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
-    """품질 점수 계산 (0~100)"""
+def compute_quality_score(content: dict, facts: dict, post_data: "PostData" = None) -> tuple[int, list[str]]:
+    """
+    품질 점수 계산 (0~100)
+
+    DATA_SPEC.md 요구사항 기반 검증 통합
+    - 개별 필드 문자 수 검증
+    - 개수 필드 검증
+    - 필수 팩트 검증
+    """
     score = 100
     issues = []
 
+    # 데이터 검증 (PostData 또는 content/facts dict 기반)
+    if post_data:
+        validation = validate_post_data(data=post_data, strict=False)
+    else:
+        validation = validate_post_data(content=content, facts=facts, strict=False)
+
+    penalty_points, penalty_messages = get_validation_score_penalties(validation)
+    score -= penalty_points
+    issues.extend(penalty_messages)
+
+    # 기본 검증 (하위호환성)
     # 1. Q&A 답변 길이 검증
     for i, qa in enumerate(content.get("qa_blocks", [])):
         answer_len = len(qa.get("answer", ""))
         if answer_len < 150:
-            score -= 15
-            issues.append(f"Q{i+1} 답변이 너무 짧음 ({answer_len}자)")
+            if f"Q&A 블록 {i+1} 답변이 너무 짧음" not in issues:
+                score -= 15
+                issues.append(f"Q{i+1} 답변이 너무 짧음 ({answer_len}자)")
 
     # 2. 필수 팩트 존재 여부
     required_facts = ["apt_name", "price_range", "unit_types"]
