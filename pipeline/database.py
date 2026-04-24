@@ -40,6 +40,9 @@ def get_db():
 
 
 def init_db():
-    from pipeline.models import Base
+    try:
+        from pipeline.models import Base
+    except ImportError:
+        from models import Base
     Base.metadata.create_all(bind=engine)
     print("✅ 데이터베이스 테이블 생성 완료")
