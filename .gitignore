@@ -15,6 +15,7 @@ output/sitemap.xml
 output/robots.txt
 output/posting_stats.json
 output/processed_notices.json
+output/collected_notices.json
 
 # 데이터베이스
 *.db
