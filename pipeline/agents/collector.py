@@ -365,6 +365,12 @@ class CheongYakAPI:
             print(f"  [API] serviceKey 미설정 → 샘플 데이터 사용")
             return []
 
+        # API 키 상태 확인 (처음에만 한 번)
+        if not hasattr(self, '_key_logged'):
+            key_preview = f"{self.api_key[:10]}...{self.api_key[-5:]}" if len(self.api_key) > 15 else "***"
+            print(f"  [API] API 키 확인: {key_preview} (길이: {len(self.api_key)})")
+            self._key_logged = True
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
                 resp = await client.get(url, params=params)
@@ -376,6 +382,7 @@ class CheongYakAPI:
                 return items
             except httpx.HTTPStatusError as e:
                 print(f"  [API] HTTP 오류 {e.response.status_code}: {url}")
+                print(f"  [API] 응답: {e.response.text[:200]}")
                 return []
             except Exception as e:
                 print(f"  [API] 오류: {e}")
