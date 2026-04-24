@@ -167,6 +167,32 @@ function renderCards() {
   if (noResult) {
     noResult.style.display = filtered.length === 0 ? 'block' : 'none';
   }
+
+  renderPagination(filtered.length);
+}
+
+function renderPagination(totalCount) {
+  var pagination = document.getElementById('pagination');
+  if (!pagination) return;
+
+  var totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+
+  var html = '';
+  for (var i = 1; i <= totalPages; i++) {
+    var isActive = i === _currentPage;
+    html += '<button onclick="goToPage(' + i + ')" style="padding:8px 12px;border:1px solid var(--c-light-gray);border-radius:6px;background:' + (isActive ? 'var(--c-primary)' : 'var(--c-surface)') + ';color:' + (isActive ? '#fff' : 'var(--c-dark)') + ';font-weight:700;cursor:pointer;font-size:13px;transition:all 150ms;font-family:inherit;" onmouseover="this.style.borderColor=\'var(--c-primary)\'" onmouseout="this.style.borderColor=\'var(--c-light-gray)\'">' + i + '</button>';
+  }
+  pagination.innerHTML = html;
+}
+
+function goToPage(pageNum) {
+  _currentPage = pageNum;
+  renderCards();
+  document.getElementById('cards-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 document.addEventListener('DOMContentLoaded', initPage);
