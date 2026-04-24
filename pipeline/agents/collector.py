@@ -33,7 +33,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import httpx
-import pdfplumber
 
 sys.path.append(str(Path(__file__).parent.parent))
 from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
@@ -406,48 +405,7 @@ def load_from_csv(csv_path: Path) -> list[NoticeDocument]:
 
 
 # ══════════════════════════════════════════════════
-# 6. PDF 공고문 파싱 (선택적 보완)
-# ══════════════════════════════════════════════════
-
-async def download_pdf(url: str, save_dir: Path, filename: str) -> Path | None:
-    save_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = save_dir / filename
-    if pdf_path.exists():
-        print(f"  [PDF] 캐시: {filename}")
-        return pdf_path
-    async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
-        try:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            pdf_path.write_bytes(resp.content)
-            print(f"  [PDF] 저장: {filename} ({len(resp.content)//1024}KB)")
-            return pdf_path
-        except Exception as e:
-            print(f"  [PDF] 실패: {e}")
-            return None
-
-
-def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
-    """PDF → (텍스트, 표 목록)"""
-    texts, tables = [], []
-    try:
-        with pdfplumber.open(pdf_path) as pdf:
-            print(f"  [PDF] 파싱: {pdf_path.name} ({len(pdf.pages)}p)")
-            for i, page in enumerate(pdf.pages):
-                text = page.extract_text() or ""
-                if text.strip():
-                    texts.append(f"[{i+1}p]\n{text}")
-                for tbl in (page.extract_tables() or []):
-                    cleaned = [[str(c).strip() if c else "" for c in r] for r in tbl]
-                    tables.append(cleaned)
-    except Exception as e:
-        print(f"  [PDF] 파싱 오류: {e}")
-    print(f"  [PDF] 추출: {sum(len(t) for t in texts)}자, 표 {len(tables)}개")
-    return "\n\n".join(texts), tables
-
-
-# ══════════════════════════════════════════════════
-# 7. 통합 수집 함수
+# 6. 통합 수집 함수
 # ══════════════════════════════════════════════════
 
 _RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위")
@@ -495,20 +453,6 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # PDF 공고문 (URL 있을 때) — 무순위/재공급의 경우 분양가 정보가 PDF에만 있을 수 있음
-        if doc.notice_url:
-            safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
-            pdf_file = await download_pdf(
-                doc.notice_url,
-                OUTPUT_DIR / "pdfs",
-                f"{safe}_{doc.notice_id}.pdf",
-            )
-            if pdf_file:
-                pdf_text, pdf_tables = parse_pdf(pdf_file)
-                doc.raw_text = pdf_text or doc.raw_text
-                doc.tables   = pdf_tables or doc.tables
-                doc.pdf_path = str(pdf_file)
-
         docs.append(doc)
 
     print(f"\n  [수집 완료] {len(docs)}건")
@@ -538,7 +482,7 @@ def _units_to_text(units: list[dict]) -> str:
 
 
 # ══════════════════════════════════════════════════
-# 8. 샘플 데이터 (API 키 없을 때 테스트용)
+# 7. 샘플 데이터 (API 키 없을 때 테스트용)
 # ══════════════════════════════════════════════════
 
 def get_sample_document() -> NoticeDocument:
