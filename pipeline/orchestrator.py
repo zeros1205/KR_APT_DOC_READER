@@ -243,7 +243,70 @@ async def agent_fact_extraction(notice_text: str) -> dict:
 
 
 # ──────────────────────────────────────────────────
-# Agent 2: 입지 분석 (Gemini)
+# Agent 2: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
+# ──────────────────────────────────────────────────
+ELIGIBILITY_FACTCHECK_PROMPT = """당신은 2026년 청약 제도 전문가입니다.
+아래 공고문에서 추출한 청약자격 정보를 검증하세요.
+
+【검증 대상】
+1. eligibility_special: 특별공급 (신혼부부, 생애최초, 다자녀, 노부모부양, 기관추천 등)
+   - 각 항목: type_name, quota, requirements 배열
+2. eligibility_rank1: 1순위 신청자격
+3. eligibility_rank2: 2순위 신청자격
+
+【팩트체크 기준 - 2026년 최신 청약홈 기준】
+- 신혼부부특별공급: 혼인기간 7년 이내 또는 6세 이하 자녀 보유, 부부 무주택, 소득기준 준용
+- 생애최초특별공급: 생애 최초 주택 구입자, 근로소득세 납부, 소득기준 준용
+- 다자녀가구특별공급: 미성년 자녀 3명 이상, 무주택, 소득기준 준용
+- 노부모부양특별공급: 65세 이상 직계존속 3년 이상 부양, 세대주 무주택, 청약통장 24개월 이상
+- 기관추천특별공급: 장애인/다문화/국가유공자 등, 서울시/지역 거주요건
+- 1순위: 해당지역 거주요건 충족, 청약통장 24개월 이상 가입, 가점제/추첨제 구성
+- 2순위: 1순위 미달 시 접수, 청약통장 12개월 이상 가입
+
+【필수 검증】
+- 공고문의 소득기준, 자산기준, 거주기간이 2026년 기준과 일치하는가?
+- 특별공급 자격요건이 공고문의 정확한 표현과 일치하는가?
+- 누락된 자격요건이 있는가?
+- 잘못된 정보가 있는가?
+
+【공고 원문】
+{notice_text}
+
+【추출된 청약자격 정보】
+{extracted_eligibility}
+
+다음 JSON으로 응답하세요:
+{{
+  "eligibility_special": [
+    {{
+      "type_name": "신혼부부특별공급",
+      "quota": "약 40세대 (공고문 기준)",
+      "requirements": [
+        "혼인기간 7년 이내 또는 6세 이하 자녀 보유",
+        "부부 모두 무주택세대구성원",
+        "소득: 도시근로자 월평균 140% 이하 (맞벌이 160%)",
+        "신생아(2세 미만) 보유 시 우선공급 적용"
+      ],
+      "factcheck_notes": "공고문 기준 정확함"
+    }}
+  ],
+  "eligibility_rank1": [
+    "해당지역: 공고일 기준 2년 이상 계속 거주 (우선공급)",
+    "청약통장: 24개월 이상 가입 + 예치금 충족",
+    "세대주 필수 (투기과열지구 해당 시)",
+    "가점제 40% + 추첨제 60% (전용 60㎡ 이하)"
+  ],
+  "eligibility_rank2": [
+    "1순위 미달 시 접수 가능",
+    "청약통장: 12개월 이상 가입 + 예치금 충족",
+    "세대주 또는 세대원 가능"
+  ],
+  "factcheck_summary": "전반적 정확도 평가 및 주요 수정사항",
+  "corrections_needed": ["잘못된 부분 1", "누락된 요건 1", ...]
+}}"""
+
+# ──────────────────────────────────────────────────
+# Agent 2b: 입지 분석 (Gemini)
 # ──────────────────────────────────────────────────
 
 LOCATION_ANALYSIS_PROMPT = """당신은 한국 부동산 입지 분석 전문가입니다.
@@ -301,11 +364,69 @@ _LOCATION_KEYS = (
 )
 
 
-async def agent_location_analysis_gemini(facts: dict) -> dict:
-    """Agent 2: Gemini로 입지 분석 생성"""
-    print("  [Agent 2] 입지 분석 시작 (Gemini)...")
+async def agent_eligibility_factcheck_gemini(facts: dict, notice_text: str) -> dict:
+    """Agent 2: Gemini 3.1 + Google Grounding으로 청약자격 팩트체크"""
+    print("  [Agent 2] 청약자격 팩트체크 시작 (Gemini 3.1 + Google Grounding)...")
     if not GEMINI_API_KEY:
-        print("  [Agent 2] GEMINI_API_KEY 미설정 → 건너뜀")
+        print("  [Agent 2] GEMINI_API_KEY 미설정 → 원본 데이터 반환")
+        return {
+            "eligibility_special": facts.get("eligibility_special", []),
+            "eligibility_rank1": facts.get("eligibility_rank1", []),
+            "eligibility_rank2": facts.get("eligibility_rank2", []),
+        }
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+
+        extracted_eligibility = {
+            "eligibility_special": facts.get("eligibility_special", []),
+            "eligibility_rank1": facts.get("eligibility_rank1", []),
+            "eligibility_rank2": facts.get("eligibility_rank2", []),
+        }
+
+        resp = client.models.generate_content(
+            model="gemini-3.1-pro",  # Grounding 지원 모델
+            contents=ELIGIBILITY_FACTCHECK_PROMPT.format(
+                notice_text=notice_text[:3000],  # 공고문 텍스트 (처음 3000자)
+                extracted_eligibility=json.dumps(extracted_eligibility, ensure_ascii=False, indent=2)
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+                tools=[
+                    genai_types.Tool(
+                        google_search=genai_types.GoogleSearch(),
+                    )
+                ],
+            ),
+        )
+
+        raw = resp.text.strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else extracted_eligibility
+
+        print(f"  [Agent 2] 팩트체크 완료: {result.get('factcheck_summary', '')[:60]}")
+        return result
+
+    except Exception as e:
+        print(f"  [Agent 2] Gemini 팩트체크 오류 ({e}) → 원본 데이터 반환")
+        return {
+            "eligibility_special": facts.get("eligibility_special", []),
+            "eligibility_rank1": facts.get("eligibility_rank1", []),
+            "eligibility_rank2": facts.get("eligibility_rank2", []),
+        }
+
+
+async def agent_location_analysis_gemini(facts: dict) -> dict:
+    """Agent 3: Gemini로 입지 분석 생성"""
+    print("  [Agent 3] 입지 분석 시작 (Gemini)...")
+    if not GEMINI_API_KEY:
+        print("  [Agent 3] GEMINI_API_KEY 미설정 → 건너뜀")
         return {}
     try:
         from google import genai as google_genai
@@ -327,16 +448,16 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
             import re as _re
             m = _re.search(r'\{.*\}', raw, _re.DOTALL)
             result = json.loads(m.group()) if m else {}
-        print(f"  [Agent 2] 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        print(f"  [Agent 3] 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 2] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
+        print(f"  [Agent 3] Gemini 오류 ({e}) → 빈 딕셔너리 반환")
         return {}
 
 
 async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
-    """Agent 3: GPT-5.4로 입지 분석 검증·교정"""
-    print("  [Agent 3] 입지 분석 검증 시작 (GPT-5.4)...")
+    """Agent 4: GPT-5.4로 입지 분석 검증·교정"""
+    print("  [Agent 4] 입지 분석 검증 시작 (GPT-5.4)...")
     if not location_data:
         return location_data
     try:
@@ -359,10 +480,10 @@ async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
             import re as _re
             m = _re.search(r'\{.*\}', raw, _re.DOTALL)
             result = json.loads(m.group()) if m else location_data
-        print(f"  [Agent 3] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
+        print(f"  [Agent 4] 검증 완료: subway_detail={result.get('subway_detail','')[:40]}")
         return result
     except Exception as e:
-        print(f"  [Agent 3] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
+        print(f"  [Agent 4] GPT-5.4 검증 오류 ({e}) → Gemini 결과 그대로 사용")
         return location_data
 
 
@@ -762,6 +883,14 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     apt_name = facts["apt_name"]
     post_dir = OUTPUT_DIR / "posts" / f"temp_{apt_name}"
 
+    # Step 1.5: 청약자격 팩트체크 (Gemini 3.1 + Google Grounding)
+    eligibility_check = await agent_eligibility_factcheck_gemini(facts, notice_text)
+    if eligibility_check:
+        facts["eligibility_special"] = eligibility_check.get("eligibility_special", facts.get("eligibility_special", []))
+        facts["eligibility_rank1"] = eligibility_check.get("eligibility_rank1", facts.get("eligibility_rank1", []))
+        facts["eligibility_rank2"] = eligibility_check.get("eligibility_rank2", facts.get("eligibility_rank2", []))
+        print(f"  [Agent 2] 팩트체크 완료 - 청약자격 정보 검증됨")
+
     # Step 2: 이미지 검색 (병렬)
     print(f"\n  [이미지] '{apt_name}' 관련 이미지 검색...")
     images = await find_images_for_post(
@@ -774,11 +903,11 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         del images["floor_plan_84"]
         print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
 
-    # Step 2: 입지 분석 (Gemini → GPT-5.4 검증)
+    # Step 3: 입지 분석 (Gemini → GPT-5.4 검증)
     location_data = await agent_location_analysis_gemini(facts)
     location_data = await agent_location_verify_gpt(location_data, facts)
 
-    # Step 3~5: 콘텐츠 생성 + 팩트체크 + 품질 검수 루프
+    # Step 4~6: 콘텐츠 생성 + 팩트체크 + 품질 검수 루프
     for attempt in range(1, max_retries + 2):
         print(f"\n  📝 콘텐츠 생성 시도 {attempt}회...")
         content = await agent_content_generation(facts)
@@ -799,7 +928,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
         print(f"\n  🔄 품질 미달 ({score}점) - 재생성...")
 
-    # Step 5: PostData 조립
+    # Step 7: PostData 조립
     unit_types = [
         UnitType(
             type_name=ut["type_name"],
