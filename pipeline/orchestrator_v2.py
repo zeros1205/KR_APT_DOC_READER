@@ -24,8 +24,6 @@ import re
 
 try:
     from pipeline.config import (
-        ANTHROPIC_API_KEY,
-        OPENAI_API_KEY,
         GEMINI_API_KEY,
         BLOG_THEME,
     )
@@ -35,8 +33,6 @@ try:
     from pipeline.index_renderer import build_manifest
 except ImportError:
     from config import (
-        ANTHROPIC_API_KEY,
-        OPENAI_API_KEY,
         GEMINI_API_KEY,
         BLOG_THEME,
     )
