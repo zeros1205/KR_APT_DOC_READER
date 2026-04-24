@@ -32,6 +32,7 @@ try:
     from pipeline.database import SessionLocal
     from pipeline.models import Apartment, Posting, PostingContent, PostingMeta
     from pipeline.index_renderer import build_manifest
+    from pipeline.html_renderer import BlogHTMLRenderer, build_post_data, save_post
 except ImportError:
     from config import (
         GEMINI_API_KEY,
@@ -42,6 +43,7 @@ except ImportError:
     from database import SessionLocal
     from models import Apartment, Posting, PostingContent, PostingMeta
     from index_renderer import build_manifest
+    from html_renderer import BlogHTMLRenderer, build_post_data, save_post
 
 # ──────────────────────────────────────────────────
 # LLM 클라이언트 초기화
@@ -178,9 +180,12 @@ async def stage_2_eligibility(
     if not GEMINI_API_KEY:
         print("  [Stage 2] API 키 없음 - 더미 응답 반환")
         return {
-            "eligibility_special": ["1순위 자격 요건: 해당 지역에 1년 이상 거주", "무주택 요건"],
+            "eligibility_special": [
+                {"type_name": "신혼부부", "quota": "20%", "requirements": ["혼인 후 7년 이내", "무주택세대주"]},
+                {"type_name": "생애최초", "quota": "15%", "requirements": ["생애 처음 주택 구입", "무주택세대주"]}
+            ],
             "eligibility_rank1": ["2년 이상 거주", "무주택 세대주"],
-            "eligibility_rank2": ["거주 기간 제한 없음"],
+            "eligibility_rank2": ["거주 기간 제한 없음", "무주택 세대주"],
             "dates": {
                 "special_supply_date": schedule_dates.get("special_supply"),
                 "rank1_date": schedule_dates.get("rank1"),
@@ -948,7 +953,6 @@ async def run_pipeline_v2(notice_id: str) -> bool:
 
         # ===== HTML 렌더링 및 저장 =====
         try:
-            from pipeline.html_renderer import build_post_data, save_post
 
             # facts: Stage 1-7의 팩트 데이터
             facts = {
@@ -1017,8 +1021,12 @@ async def run_pipeline_v2(notice_id: str) -> bool:
             # 저장할 때 notice_id 설정
             post_data.notice_id = notice_id
 
-            # save_post가 HTML 렌더링 포함
-            output_path = save_post(post_data, "", Path("output"))
+            # BlogHTMLRenderer를 사용하여 HTML 렌더링
+            renderer = BlogHTMLRenderer()
+            rendered_html = renderer.render(post_data)
+
+            # save_post에 렌더링된 HTML 전달
+            output_path = save_post(post_data, rendered_html, Path("output"))
             print(f"✅ HTML 렌더링 완료: {output_path}")
 
         except Exception as e:
