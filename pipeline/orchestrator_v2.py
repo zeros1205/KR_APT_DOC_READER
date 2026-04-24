@@ -26,6 +26,8 @@ try:
     from pipeline.config import (
         GEMINI_API_KEY,
         BLOG_THEME,
+        PUBLIC_DATA_API_KEY,
+        APARTMENT_API_BASE,
     )
     from pipeline.database import SessionLocal
     from pipeline.models import Apartment, Posting, PostingContent, PostingMeta
@@ -34,6 +36,8 @@ except ImportError:
     from config import (
         GEMINI_API_KEY,
         BLOG_THEME,
+        PUBLIC_DATA_API_KEY,
+        APARTMENT_API_BASE,
     )
     from database import SessionLocal
     from models import Apartment, Posting, PostingContent, PostingMeta
@@ -66,28 +70,75 @@ async def stage_1_data_extraction(notice_id: str) -> Dict[str, Any]:
     """
     print("  [Stage 1] 데이터 추출 시작...")
 
-    # TODO: Public Data API 호출 구현
-    # 현재는 더미 데이터
-    apartment_data = {
-        "api_notice_id": notice_id,
-        "apt_name": "샘플 아파트",
-        "supply_address": "서울시 강남구",
-        "location": "서울 / 강남구",
-        "supply_scale": "30~84평",
-        "total_units": 590,
-        "unit_types": ["30평", "40평", "60평", "84평"],
-        "price_range": "4억~8억",
-        "constructor": "샘플건설",
-        "notice_url": "https://www.applyhome.co.kr",
-        "schedule_dates": {
-            "announcement": "2024-05-01",
-            "special_supply": "2024-05-15",
-            "rank1": "2024-05-20",
-            "rank2": "2024-05-25",
-            "winner": "2024-06-15",
-            "move_in": "2025-01-15",
+    apartment_data = None
+
+    # 공공데이터 API 호출 시도
+    if PUBLIC_DATA_API_KEY:
+        try:
+            import requests
+            api_url = f"{APARTMENT_API_BASE}/getAPTLists"
+            params = {
+                "serviceKey": PUBLIC_DATA_API_KEY,
+                "pageIndex": 1,
+                "numOfRows": 1,
+            }
+
+            response = await asyncio.to_thread(
+                lambda: requests.get(api_url, params=params, timeout=10)
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("response", {}).get("body", {}).get("items"):
+                    item = data["response"]["body"]["items"][0]
+                    apartment_data = {
+                        "api_notice_id": notice_id,
+                        "apt_name": item.get("apartmentName", "미상"),
+                        "supply_address": item.get("supplyLocation", ""),
+                        "location": item.get("location", ""),
+                        "supply_scale": item.get("supplyScale", ""),
+                        "total_units": int(item.get("totalHouseholds", 0)) or 0,
+                        "unit_types": [item.get("unitType", "")],
+                        "price_range": f"{item.get('priceMin', 0)}~{item.get('priceMax', 0)}",
+                        "constructor": item.get("constructor", ""),
+                        "notice_url": "https://www.applyhome.co.kr",
+                        "schedule_dates": {
+                            "announcement": item.get("noticeDate", ""),
+                            "special_supply": item.get("specialSupplyDate", ""),
+                            "rank1": item.get("rank1Date", ""),
+                            "rank2": item.get("rank2Date", ""),
+                            "winner": item.get("winnerDate", ""),
+                            "move_in": item.get("moveInDate", ""),
+                        }
+                    }
+                    print(f"  [Stage 1] API에서 {apartment_data['apt_name']} 로드")
+        except Exception as e:
+            print(f"  [Stage 1] API 호출 실패: {e}")
+            apartment_data = None
+
+    # API 실패 시 더미 데이터 사용
+    if not apartment_data:
+        print("  [Stage 1] 더미 데이터 사용")
+        apartment_data = {
+            "api_notice_id": notice_id,
+            "apt_name": "샘플 아파트",
+            "supply_address": "서울시 강남구",
+            "location": "서울 / 강남구",
+            "supply_scale": "30~84평",
+            "total_units": 590,
+            "unit_types": ["30평", "40평", "60평", "84평"],
+            "price_range": "4억~8억",
+            "constructor": "샘플건설",
+            "notice_url": "https://www.applyhome.co.kr",
+            "schedule_dates": {
+                "announcement": "2024-05-01",
+                "special_supply": "2024-05-15",
+                "rank1": "2024-05-20",
+                "rank2": "2024-05-25",
+                "winner": "2024-06-15",
+                "move_in": "2025-01-15",
+            }
         }
-    }
 
     # 누락 항목 확인
     required_fields = ["apt_name", "supply_address", "location"]
