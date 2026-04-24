@@ -449,7 +449,7 @@ async def agent_eligibility_factcheck_gemini(facts: dict, notice_text: str) -> d
         }
 
         resp = client.models.generate_content(
-            model="gemini-3.1-pro",  # Grounding 지원 모델
+            model="gemini-3.1-pro-preview",  # Grounding 지원 모델
             contents=ELIGIBILITY_FACTCHECK_PROMPT.format(
                 notice_text=notice_text[:3000],  # 공고문 텍스트 (처음 3000자)
                 extracted_eligibility=json.dumps(extracted_eligibility, ensure_ascii=False, indent=2)
@@ -497,7 +497,7 @@ async def agent_financial_detail_gemini(facts: dict) -> dict:
         client = google_genai.Client(api_key=GEMINI_API_KEY)
 
         resp = client.models.generate_content(
-            model="gemini-3.1-pro",
+            model="gemini-3.1-pro-preview",
             contents=FINANCIAL_DETAIL_PROMPT.format(
                 contract_ratio=facts.get("contract_ratio", "10"),
                 midterm_ratio=facts.get("midterm_ratio", "60"),
