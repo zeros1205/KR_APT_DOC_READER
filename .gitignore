@@ -10,8 +10,13 @@ output/images/
 output/pdfs/
 output/posts/
 output/index.html
+output/manifest.json
 output/sitemap.xml
 output/robots.txt
+
+# 데이터베이스
+*.db
+apt_reader.db
 
 # ChromaDB 벡터 저장소
 chroma_db/

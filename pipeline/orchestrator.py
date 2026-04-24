@@ -30,6 +30,9 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from data_validators import validate_post_data, get_validation_score_penalties
 from agents.collector import NoticeDocument
+from database import SessionLocal
+from models import Apartment, Posting, PostingContent, PostingMeta
+from index_renderer import build_manifest
 
 
 async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
@@ -1017,6 +1020,102 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
+def _save_to_database(post_data: PostData, facts: dict, content: dict) -> None:
+    """포스트 데이터를 데이터베이스에 저장"""
+    db = SessionLocal()
+    try:
+        apt_notice_id = facts.get("notice_id", "")
+
+        apartment = db.query(Apartment).filter(
+            Apartment.api_notice_id == apt_notice_id
+        ).first()
+
+        if not apartment:
+            apartment = Apartment(
+                api_notice_id=apt_notice_id,
+                apt_name=facts.get("apt_name", ""),
+                supply_address=facts.get("supply_address", ""),
+                location=facts.get("location", ""),
+                supply_scale=facts.get("supply_scale", ""),
+                total_units=facts.get("total_households"),
+                is_hot_zone=facts.get("is_hot_zone", "N"),
+                regulated_zone=facts.get("regulated_zone"),
+                readmission_limit=facts.get("readmission_limit"),
+                live_requirement=facts.get("live_requirement"),
+                price_cap=facts.get("price_cap"),
+                land_type=facts.get("land_type"),
+                constructor=facts.get("constructor"),
+                notice_url=facts.get("notice_url"),
+            )
+            db.add(apartment)
+            db.flush()
+
+        post_slug = re.sub(r'[^\w\s-]', '', post_data.post_title.lower())
+        post_slug = re.sub(r'[-\s]+', '-', post_slug).strip('-')
+
+        posting = Posting(
+            apartment_id=apartment.id,
+            post_title=post_data.post_title,
+            post_subtitle=post_data.post_subtitle or "",
+            post_slug=post_slug,
+            theme=post_data.theme or "intercom",
+            quality_score=post_data.quality_score or 0,
+            is_published=1,
+        )
+        db.add(posting)
+        db.flush()
+
+        posting_content = PostingContent(
+            posting_id=posting.id,
+            apt_intro=content.get("apt_intro", ""),
+            location_intro=content.get("location_intro", ""),
+            financial_intro=content.get("financial_intro", ""),
+            qa_intro=content.get("qa_intro", ""),
+            schedule_desc=content.get("schedule_desc", ""),
+            tax_desc=content.get("tax_desc", ""),
+            unit_type_desc=content.get("unit_type_desc", ""),
+            subway_score=content.get("subway_score", "★★★☆☆"),
+            subway_detail=content.get("subway_detail", ""),
+            school_score=content.get("school_score", "★★★☆☆"),
+            school_detail=content.get("school_detail", ""),
+            life_score=content.get("life_score", "★★★☆☆"),
+            life_detail=content.get("life_detail", ""),
+            medical_score=content.get("medical_score", "★★★☆☆"),
+            medical_detail=content.get("medical_detail", ""),
+            eligibility_special=content.get("eligibility_special", []),
+            eligibility_rank1=content.get("eligibility_rank1", []),
+            eligibility_rank2=content.get("eligibility_rank2", []),
+            qa_blocks=[{"q": qa.question, "a": qa.answer} for qa in post_data.qa_blocks] if post_data.qa_blocks else [],
+            seo_tags=post_data.seo_tags or [],
+        )
+        db.add(posting_content)
+        db.flush()
+
+        posting_metadata = PostingMeta(
+            posting_id=posting.id,
+            special_supply_date=facts.get("special_supply_date", "-"),
+            rank1_date=facts.get("rank1_date", "-"),
+            rank2_date=facts.get("rank2_date", "-"),
+            winner_date=facts.get("winner_date", "-"),
+            move_in_date=facts.get("move_in_date", "-"),
+            contract_ratio=str(facts.get("contract_ratio", "10")),
+            contract_amount=facts.get("contract_amount", ""),
+            midterm_ratio=str(facts.get("midterm_ratio", "60")),
+            midterm_count=str(facts.get("midterm_count", "6")),
+            balance_ratio=str(facts.get("balance_ratio", "30")),
+            loan_info=facts.get("loan_info", ""),
+            resale_restriction=facts.get("resale_restriction", "-"),
+            acquisition_tax_rate=facts.get("acquisition_tax_rate", ""),
+        )
+        db.add(posting_metadata)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"⚠️ DB 저장 실패: {e}")
+    finally:
+        db.close()
+
+
 async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "") -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
@@ -1201,6 +1300,13 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
     # Step 7: 로컬 저장
     saved_path = save_post(post_data, html, OUTPUT_DIR)
+
+    # Step 8: 데이터베이스 저장
+    _save_to_database(post_data, facts, content)
+
+    # Step 9: manifest.json 업데이트
+    build_manifest()
+
     return saved_path
 
 
