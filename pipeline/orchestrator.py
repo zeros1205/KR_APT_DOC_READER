@@ -28,13 +28,17 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-try:
-    from google import genai
-    from google.genai import types
-    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
-except Exception as e:
-    print(f"⚠️  Gemini 클라이언트 초기화 실패: {e}")
-    gemini_client = None
+gemini_client = None
+if not GEMINI_API_KEY:
+    print("⚠️  GEMINI_API_KEY 미설정 — 파이프라인 실행 불가")
+else:
+    try:
+        from google import genai
+        from google.genai import types
+        gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        print(f"❌ Gemini 클라이언트 초기화 실패: {e}")
+        gemini_client = None
 
 
 async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:

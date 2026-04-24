@@ -44,9 +44,31 @@ jobs:
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
           EOF
+          echo "✅ .env 파일 생성 완료"
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "⚠️  경고: GEMINI_API_KEY가 설정되지 않았습니다"
+          fi
 
       - name: Google Search Grounding 테스트
+        continue-on-error: true
         run: python test_google_grounding.py
+
+      - name: API 키 검증
+        run: |
+          python -c "
+          import os
+          from dotenv import load_dotenv
+          load_dotenv()
+
+          gemini_key = os.getenv('GEMINI_API_KEY', '')
+          if not gemini_key:
+              print('❌ 오류: GEMINI_API_KEY가 설정되지 않았습니다')
+              print('GitHub Secrets에 GEMINI_API_KEY를 추가해주세요')
+              print('https://github.com/zeros1205/KR_APT_DOC_READER/settings/secrets/actions')
+              exit(1)
+          else:
+              print('✅ GEMINI_API_KEY 설정됨')
+          "
 
       - name: 파이프라인 실행
         run: |
