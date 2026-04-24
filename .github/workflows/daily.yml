@@ -103,8 +103,12 @@ jobs:
       - name: 프론트 페이지 생성
         if: success()
         run: |
-          cd pipeline
-          python build_index.py
+          python -c "
+          import sys
+          sys.path.insert(0, 'pipeline')
+          from build_index import build
+          build()
+          "
 
       - name: 포스팅 커밋 및 푸시
         if: success()
