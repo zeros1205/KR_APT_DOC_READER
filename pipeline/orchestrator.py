@@ -186,6 +186,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
         model=LLM_EXTRACT_MODEL,
+        max_tokens=8000,  # 팩트 추출은 많은 필드가 필요
     )
     try:
         facts = json.loads(raw)
