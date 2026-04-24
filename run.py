@@ -78,7 +78,9 @@ async def main() -> None:
         docs = [get_sample_document()]
     else:
         print(f"\n[수집] 최근 {args.days}일 공고 조회 중...")
+        print(f"[DEBUG] collect_from_api 호출 시작...")
         docs = await collect_from_api(days_back=args.days)
+        print(f"[DEBUG] collect_from_api 호출 완료: {len(docs)}건")
 
     if not docs:
         print("최근 공고 없음. 잠시 후 다시 시도하세요.")

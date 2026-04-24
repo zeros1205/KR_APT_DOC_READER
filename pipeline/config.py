@@ -13,10 +13,6 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 
-# cwd/.env와 프로젝트 루트 .env를 모두 시도
-load_dotenv()
-load_dotenv(BASE_DIR / ".env")
-
 # ── Google Gemini (모든 LLM 작업 통합) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 LLM_EXTRACT_MODEL = "gemini-3.1-pro-preview"        # 팩트 추출 (Google Grounding 포함)

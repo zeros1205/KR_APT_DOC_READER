@@ -15,6 +15,8 @@ import asyncio
 import json
 import re
 from pathlib import Path
+import google.genai as genai
+from google.genai import types
 
 sys.path.insert(0, str(Path(__file__).parent))
 from config import (
@@ -28,41 +30,23 @@ from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_po
 from image_finder import find_images_for_post, ImageResult
 from agents.collector import NoticeDocument
 
-gemini_client = None
-if not GEMINI_API_KEY:
-    print("⚠️  GEMINI_API_KEY 미설정 — 파이프라인 실행 불가")
-else:
-    try:
-        from google import genai
-        from google.genai import types
-        gemini_client = genai.Client(api_key=GEMINI_API_KEY)
-    except Exception as e:
-        print(f"❌ Gemini 클라이언트 초기화 실패: {e}")
-        gemini_client = None
-
 
 async def _call_gemini_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
-    """Gemini API 호출 헬퍼 — JSON 객체 출력 전용 (Google Grounding 포함)"""
-    if not gemini_client:
-        raise RuntimeError("Gemini 클라이언트가 초기화되지 않음. GEMINI_API_KEY를 확인하세요.")
-
-    prompt = f"""{system}
-
-{user}"""
-
-    try:
-        response = gemini_client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system,
-                temperature=0,
-                max_output_tokens=max_tokens,
-            ),
-        )
-        return (response.text or "").strip()
-    except Exception as e:
-        raise RuntimeError(f"Gemini API 호출 실패: {e}")
+    """Google Gemini API 호출 헬퍼 — JSON 객체 출력 전용"""
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    config = types.GenerateContentConfig(
+        system_instruction=system,
+        max_output_tokens=max_tokens,
+        temperature=0,
+        response_mime_type="application/json"
+    )
+    resp = await asyncio.to_thread(
+        client.models.generate_content,
+        model=model,
+        contents=user,
+        config=config
+    )
+    return (resp.text or "").strip()
 
 
 # ──────────────────────────────────────────────────
@@ -186,7 +170,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
         system="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다. 추측하지 마세요.",
         user=FACT_EXTRACTION_PROMPT.format(notice_text=notice_text),
         model=LLM_EXTRACT_MODEL,
-        max_tokens=8000,  # 팩트 추출은 많은 필드가 필요
+        max_tokens=8000,
     )
     try:
         facts = json.loads(raw)
@@ -567,7 +551,7 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
 
 
 async def agent_location_verify_gpt(location_data: dict, facts: dict) -> dict:
-    """Agent 4: GPT-5.4로 입지 분석 검증·교정"""
+    """Agent 4: Gemini 3.1로 입지 분석 검증·교정"""
     print("  [Agent 4] 입지 분석 검증 시작 (Gemini 3.1)...")
     if not location_data:
         return location_data
@@ -702,26 +686,56 @@ CONTENT_GEN_PROMPT = """
 
 
 async def agent_content_generation(facts: dict) -> dict:
-    """Agent 4: Gemini 3.1로 입지 분석 검증·교정"""
+    """Agent 4: 서술형 콘텐츠 + Q&A 생성 (Gemini 3.1)"""
     print("  [Agent 4] 콘텐츠 생성 시작 (Gemini 3.1)...")
-    raw = await _call_gemini_json(
-        system=(
-            "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
-            "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
-            "모든 텍스트는 한국어로 작성하며, 독자에게 직접 말을 걸듯 자연스럽고 따뜻하게 작성하세요."
-        ),
-        user=CONTENT_GEN_PROMPT.format(
-            facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
-        ),
-        model=LLM_CONTENT_MODEL,
-        max_tokens=6000,
-    )
+    print(f"  [Agent 4] 요청 크기: {len(json.dumps(facts))} chars")
+
+    try:
+        raw = await _call_gemini_json(
+            system=(
+                "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
+                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
+                "모든 텍스트는 한국어로 작성하며, 독자에게 직접 말을 걸듯 자연스럽고 따뜻하게 작성하세요."
+            ),
+            user=CONTENT_GEN_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            ),
+            model=LLM_CONTENT_MODEL,
+            max_tokens=10000,
+        )
+        print(f"  [Agent 4] 응답 받음: {len(raw)} chars")
+        if not raw:
+            print(f"  [Agent 4] 경고: 응답이 비어있음")
+            return {}
+    except Exception as e:
+        print(f"  [Agent 4] API 호출 실패: {e}")
+        return {}
+
     try:
         content = json.loads(raw)
-    except json.JSONDecodeError:
+        print(f"  [Agent 4] JSON 파싱 성공")
+    except json.JSONDecodeError as e:
+        print(f"  [Agent 4] JSON 파싱 에러: {e}")
+        print(f"  [Agent 4] 응답 길이: {len(raw)}")
+        print(f"  [Agent 4] 응답 첫 500자:")
+        print(f"    {raw[:500]}")
+        print(f"  [Agent 4] 응답 마지막 200자:")
+        print(f"    {raw[-200:]}")
+
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
-        content = json.loads(m.group()) if m else {}
+        if m:
+            try:
+                content = json.loads(m.group())
+                print(f"  [Agent 4] 정규식 추출로 JSON 파싱 성공")
+            except json.JSONDecodeError as e2:
+                print(f"  [Agent 4] 정규식 추출도 실패: {e2}")
+                print(f"  [Agent 4] 빈 딕셔너리 반환")
+                content = {}
+        else:
+            print(f"  [Agent 4] JSON 블록 찾을 수 없음 → 빈 딕셔너리 반환")
+            content = {}
+
     print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
@@ -768,8 +782,12 @@ FACTCHECK_USER_TPL = """[단지 팩트]
 
 
 async def agent_factcheck_qa(content: dict, facts: dict) -> dict:
-    """Agent 5: Gemini 3.1로 Q&A 팩트체크 — 오류 답변 자동 정정"""
+    """Agent 5: Gemini 3.1 mini로 Q&A 팩트체크 — 오류 답변 자동 정정"""
     print("  [Agent 5] Q&A 팩트체크 시작 (Gemini 3.1)...")
+
+    if not OPENAI_API_KEY:
+        print("  [Agent 5] OPENAI_API_KEY 미설정 → 팩트체크 건너뜀")
+        return content
 
     try:
         user_msg = FACTCHECK_USER_TPL.format(
@@ -897,9 +915,9 @@ async def agent_quality_check(content: dict, facts: dict) -> tuple[int, list[str
 # 파이프라인 흐름:
 #   [Agent 1] 팩트 추출 (Haiku)
 #   [Agent 2] 입지 분석 (Gemini) — subway/school/life/medical 별점+설명
-#   [Agent 3] 입지 검증 (GPT-5.4) — 역명·학교명·비수도권 지하철 오류 교정
-#   [Agent 4] 콘텐츠 생성 (GPT-5.4)
-#   [Agent 5] Q&A 팩트체크 (GPT-5.4 mini)
+#   [Agent 3] 입지 검증 (Gemini 3.1) — 역명·학교명·비수도권 지하철 오류 교정
+#   [Agent 4] 콘텐츠 생성 (Gemini 3.1)
+#   [Agent 5] Q&A 팩트체크 (Gemini 3.1)
 #   [Agent 6] CTA 최적화
 #   [Agent 7] 품질 검수
 #   [렌더링] HTML 생성 → 저장
@@ -1018,7 +1036,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
         del images["floor_plan_84"]
         print("  [이미지] 타입 1개 → floor_plan_84 슬롯 제거")
 
-    # Step 3: 입지 분석 (Gemini → GPT-5.4 검증)
+    # Step 3: 입지 분석 (Gemini → Gemini 3.1 검증)
     location_data = await agent_location_analysis_gemini(facts)
     location_data = await agent_location_verify_gpt(location_data, facts)
 

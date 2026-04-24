@@ -361,13 +361,24 @@ class CheongYakAPI:
         return await self._get(f"{API_BASE}/getAPTLttotPblancMdl", params)
 
     async def _get(self, url: str, params: dict) -> list[dict]:
+        print(f"  [API] _get() 호출됨 - URL: {url}")
+        print(f"  [API] 파라미터: {params}")
+
         if not self.api_key or "여기에" in str(self.api_key):
             print(f"  [API] serviceKey 미설정 → 샘플 데이터 사용")
             return []
 
+        # API 키 상태 확인 (처음에만 한 번)
+        if not hasattr(self, '_key_logged'):
+            key_preview = f"{self.api_key[:10]}...{self.api_key[-5:]}" if len(self.api_key) > 15 else "***"
+            print(f"  [API] API 키 확인: {key_preview} (길이: {len(self.api_key)})")
+            self._key_logged = True
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
+                print(f"  [API] GET 요청 시작...")
                 resp = await client.get(url, params=params)
+                print(f"  [API] 상태 코드: {resp.status_code}")
                 resp.raise_for_status()
                 data = resp.json()
                 items = data.get("data", [])
@@ -376,9 +387,12 @@ class CheongYakAPI:
                 return items
             except httpx.HTTPStatusError as e:
                 print(f"  [API] HTTP 오류 {e.response.status_code}: {url}")
+                print(f"  [API] 전체 응답: {e.response.text}")
                 return []
             except Exception as e:
                 print(f"  [API] 오류: {e}")
+                import traceback
+                traceback.print_exc()
                 return []
 
 
@@ -420,9 +434,12 @@ def _supply_category(supply_type: str) -> str:
 
 async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     """OpenAPI로 최근 N일 공고 수집"""
+    print(f"[DEBUG] collect_from_api 시작: days_back={days_back}")
     api = CheongYakAPI()
+    print(f"[DEBUG] CheongYakAPI 초기화 완료")
     today = datetime.now()
     start = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    print(f"[DEBUG] 시작일: {start}")
 
     raw_list = await api.get_list(per_page=50, start_date=start)
     if not raw_list:

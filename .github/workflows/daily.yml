@@ -1,10 +1,8 @@
-name: 청약 공고 자동 수집 및 포스팅 생성
+name: 분양공고 포스팅 자동화 (Gemini 3.1)
 
 on:
   schedule:
-    # 매일 오전 9시 KST (= UTC 00:00)
-    - cron: '0 0 * * *'
-  # 수동 실행 버튼 (GitHub Actions 탭에서 클릭 가능)
+    - cron: '0 0 * * *'  # 매일 UTC 00:00 (KST 09:00)
   workflow_dispatch:
     inputs:
       days:
@@ -12,10 +10,7 @@ on:
         default: '7'
       limit:
         description: '최대 처리 건수'
-        default: '3'
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+        default: '1'
 
 jobs:
   generate-posts:
@@ -37,127 +32,82 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
-      - name: 환경 확인
+      - name: 환경 변수 설정
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          EOF
+
+      - name: 환경 검증
         run: |
           python -c "
           import os
-          import sys
+          from dotenv import load_dotenv
+          load_dotenv()
 
-          print('=' * 60)
-          print('🔍 워크플로우 환경 확인')
-          print('=' * 60)
+          print('=== 환경 확인 ===')
 
-          gemini = os.getenv('GEMINI_API_KEY', '')
-          public = os.getenv('PUBLIC_DATA_API_KEY', '')
-          cloudflare = os.getenv('CLOUDFLARE_API_TOKEN', '')
+          # Gemini API 키 확인
+          gemini_key = os.getenv('GEMINI_API_KEY', '')
+          if gemini_key:
+            print(f'✓ GEMINI_API_KEY: {gemini_key[:10]}...{gemini_key[-5:]} (길이: {len(gemini_key)})')
+          else:
+            print('❌ GEMINI_API_KEY: 설정되지 않음')
+            exit(1)
 
-          checks = {
-              'GEMINI_API_KEY': bool(gemini),
-              'PUBLIC_DATA_API_KEY': bool(public),
-              'CLOUDFLARE_API_TOKEN': bool(cloudflare),
-          }
+          # PUBLIC_DATA_API_KEY 확인
+          public_key = os.getenv('PUBLIC_DATA_API_KEY', '')
+          if public_key:
+            print(f'✓ PUBLIC_DATA_API_KEY: {public_key[:10]}...{public_key[-5:]} (길이: {len(public_key)})')
+          else:
+            print('⚠️  PUBLIC_DATA_API_KEY: 설정되지 않음')
 
-          for key, status in checks.items():
-              icon = '✅' if status else '❌'
-              print(f'{icon} {key}: {\"설정됨\" if status else \"미설정\"}')
-
-          print('=' * 60)
-
-          if not gemini:
-              print('❌ 오류: GEMINI_API_KEY 필수 설정')
-              sys.exit(1)
-          "
-
-      - name: Google Search Grounding 테스트
-        continue-on-error: true
-        run: |
-          echo "🧪 Google Search Grounding 테스트 시작..."
-          python test_google_grounding.py || echo "⚠️  Grounding 테스트 스킵 (영향 없음)"
-
-      - name: 파이프라인 설정 확인
-        run: |
-          python -c "
-          from pipeline.config import LLM_EXTRACT_MODEL, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL
-          print('📋 파이프라인 모델 설정 확인')
-          print(f'  - 팩트 추출: {LLM_EXTRACT_MODEL}')
-          print(f'  - 콘텐츠 생성: {LLM_CONTENT_MODEL}')
-          print(f'  - 팩트 체크: {LLM_FACTCHECK_MODEL}')
-          assert LLM_EXTRACT_MODEL == 'gemini-3.1-pro-preview', f'잘못된 모델: {LLM_EXTRACT_MODEL}'
-          print('✅ 모든 모델이 gemini-3.1-pro-preview로 올바르게 설정됨')
+          # 모델 설정 확인
+          from pipeline.config import LLM_EXTRACT_MODEL, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL
+          print(f'✓ LLM_EXTRACT_MODEL: {LLM_EXTRACT_MODEL}')
+          print(f'✓ LLM_CONTENT_MODEL: {LLM_CONTENT_MODEL}')
+          print(f'✓ LLM_FACTCHECK_MODEL: {LLM_FACTCHECK_MODEL}')
+          print(f'✓ LLM_LOCATION_MODEL: {LLM_LOCATION_MODEL}')
           "
 
       - name: 파이프라인 실행
         run: |
           DAYS=${{ github.event.inputs.days || '7' }}
-          LIMIT=${{ github.event.inputs.limit || '3' }}
-          echo "🚀 파이프라인 시작 (days=$DAYS, limit=$LIMIT)"
-          python run.py --days $DAYS --limit $LIMIT || {
-            echo "❌ 파이프라인 실행 실패"
-            exit 1
-          }
+          LIMIT=${{ github.event.inputs.limit || '1' }}
+          python run.py --days $DAYS --limit $LIMIT
 
-      - name: 프론트페이지 재생성
+      - name: 결과 확인
+        if: always()
         run: |
-          echo "📄 프론트페이지(index.html) 재생성..."
-          python pipeline/build_index.py
+          echo "=== 생성 결과 ==="
+          if [ -d "output/posts" ]; then
+            COUNT=$(find output/posts -name "post_*.html" | wc -l)
+            echo "📝 생성된 포스팅: $COUNT개"
+          else
+            echo "📝 생성된 포스팅: 0개"
+          fi
 
-      - name: 생성 결과 커밋
+      - name: 포스팅 커밋 및 푸시
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/posts/ output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json 2>/dev/null || true
+          git add output/ processed_notices.json 2>/dev/null || true
 
-          if git diff --cached --quiet; then
-            echo "ℹ️  변경사항 없음 (새 포스팅 없음)"
-          else
-            echo "📝 변경사항 감지 - 커밋 중..."
+          if ! git diff --cached --quiet; then
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
-            git push origin ${{ github.ref_name }}
-            echo "✅ 커밋 및 푸시 완료"
+            git push
           fi
 
-      - name: Node.js 설정 (Cloudflare Workers 배포)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Wrangler 설치
-        run: npm install -g wrangler
-
-      - name: Cloudflare Workers 배포
-        if: ${{ success() && github.ref_name == 'main' }}
-        run: |
-          echo "🚀 Cloudflare Workers에 배포 중..."
-          wrangler deploy
-          echo "✅ Cloudflare Workers 배포 완료"
-
-      - name: 워크플로우 완료 요약
+      - name: 아티팩트 백업
         if: always()
-        run: |
-          echo ""
-          echo "════════════════════════════════════════"
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ 워크플로우 성공적으로 완료"
-            echo "📤 apt-note.com에 배포 완료"
-          else
-            echo "❌ 워크플로우 실패"
-          fi
-          echo "════════════════════════════════════════"
-          echo "📊 실행 정보:"
-          echo "  - 저장소: ${{ github.repository }}"
-          echo "  - 브랜치: ${{ github.ref_name }}"
-          echo "  - 실행 시간: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "  - 로그: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "  - 사이트: https://apt-note.com"
-
-      - name: 생성된 포스팅 백업
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: posts-backup-${{ github.run_id }}
           path: output/posts/
