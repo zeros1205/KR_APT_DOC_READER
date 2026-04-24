@@ -19,10 +19,10 @@ load_dotenv(BASE_DIR / ".env")
 
 # ── Google Gemini (모든 LLM 작업 통합) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_EXTRACT_MODEL = "gemini-3.1-pro"        # 팩트 추출 (Google Grounding 포함)
-LLM_CONTENT_MODEL = "gemini-3.1-pro"        # 서술형 콘텐츠 생성·검증
-LLM_FACTCHECK_MODEL = "gemini-3.1-pro"      # 팩트 체크
-LLM_LOCATION_MODEL = "gemini-3.1-pro"       # 입지 분석 (Google Search Grounding)
+LLM_EXTRACT_MODEL = "gemini-3.1-pro-preview"        # 팩트 추출 (Google Grounding 포함)
+LLM_CONTENT_MODEL = "gemini-3.1-pro-preview"        # 서술형 콘텐츠 생성·검증
+LLM_FACTCHECK_MODEL = "gemini-3.1-pro-preview"      # 팩트 체크
+LLM_LOCATION_MODEL = "gemini-3.1-pro-preview"       # 입지 분석 (Google Search Grounding)
 
 # ── OpenAI (레거시 - 제거됨) ──
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")  # 보존용 (향후 제거)
