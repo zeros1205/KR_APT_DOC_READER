@@ -14,9 +14,6 @@ on:
         description: '최대 처리 건수'
         default: '3'
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   generate-posts:
     runs-on: ubuntu-latest
@@ -26,10 +23,10 @@ jobs:
 
     steps:
       - name: 코드 체크아웃
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.1
 
       - name: Python 3.11 설정
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.2.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -51,7 +48,10 @@ jobs:
             echo "❌ GEMINI_API_KEY가 설정되지 않았습니다"
             exit 1
           fi
-          echo "✓ GEMINI_API_KEY 확인됨"
+          if [ -z "${{ secrets.PUBLIC_DATA_API_KEY }}" ]; then
+            echo "⚠️  PUBLIC_DATA_API_KEY가 설정되지 않았습니다 (선택사항)"
+          fi
+          echo "✓ 필수 Secrets 확인됨"
 
       - name: Gemini 모델 설정 검증
         run: |
@@ -112,7 +112,7 @@ jobs:
           fi
 
       - name: 생성된 포스팅 업로드 (아티팩트 백업)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.0
         if: always()
         with:
           name: posts-${{ github.run_id }}
