@@ -1169,8 +1169,14 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
     # Step 6: HTML 렌더링
     print("\n  🎨 HTML 렌더링...")
-    renderer = BlogHTMLRenderer()
-    html = renderer.render(post_data)
+    try:
+        renderer = BlogHTMLRenderer()
+        html = renderer.render(post_data)
+    except Exception as e:
+        import traceback
+        print(f"  오류: {str(e)}")
+        print(f"  상세: {traceback.format_exc()}")
+        return None
 
     # Step 7: 로컬 저장
     saved_path = save_post(post_data, html, OUTPUT_DIR)
