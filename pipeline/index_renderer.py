@@ -80,7 +80,7 @@ def build_front_index_once() -> None:
 
 def _render_runtime_script() -> str:
     """JavaScript 런타임 스크립트 생성"""
-    return """<script>
+    return r"""<script>
 var POSTS_PER_PAGE = 12;
 var _currentPage = 1;
 var _activeFilters = {
@@ -112,7 +112,7 @@ function renderRegionTabs() {
   var buttons = regions.map(function(region) {
     var isActive = region.code === '전체' ? 'active' : '';
     return '<button class="tab-btn ' + isActive + '" data-region="' + region.code + '" ' +
-           'onclick="filterByRegion(this, \'' + region.code + '\')">' +
+           "onclick=\"filterByRegion(this, '" + region.code + "')\">" +
            region.name + ' (' + region.count + ')' +
            '</button>';
   }).join('');
