@@ -26,6 +26,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from orchestrator_v2 import run_pipeline_v2, run_batch_pipeline
 from api_collector import get_notice_ids
+from posting_monitor import PostingMonitor
 
 
 def print_header(text: str):
@@ -41,6 +42,8 @@ async def main():
     parser.add_argument("--sample", action="store_true", help="샘플 데이터로 테스트")
     parser.add_argument("--batch", action="store_true", help="배치 모드 (여러 공고 처리)")
     parser.add_argument("--api", action="store_true", help="공공API에서 공고 수집")
+    parser.add_argument("--monitor", action="store_true", help="포스팅 통계 모니터링")
+    parser.add_argument("--quality", action="store_true", help="품질 리포트 출력")
     parser.add_argument("--days", type=int, default=7, help="수집 기간 (일)")
     parser.add_argument("--limit", type=int, default=3, help="최대 처리 건수")
 
@@ -48,6 +51,28 @@ async def main():
 
     print_header("orchestrator_v2 v1.0")
     print(f"시작 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    # 모니터링 모드 확인
+    if args.monitor or args.quality:
+        print_header("포스팅 모니터링")
+        monitor = PostingMonitor()
+
+        if args.quality:
+            report = monitor.get_post_quality_report()
+            print(f"\n📋 품질 리포트")
+            print(f"  • 총 포스팅: {report['total_posts']}개")
+            print(f"  • 품질 점수: {report['quality_score']}%")
+            print(f"  • 문제: {report['issue_count']}건")
+
+            if report["quality_issues"]:
+                print(f"\n  ⚠️  발견된 문제:")
+                for issue in report["quality_issues"][:5]:
+                    print(f"    • {issue['post_id']}: {issue['issue']}")
+        else:
+            monitor.print_summary()
+            monitor.export_json()
+
+        return 0
 
     # 모드 결정
     if args.sample:
