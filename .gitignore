@@ -13,10 +13,16 @@ output/index.html
 output/manifest.json
 output/sitemap.xml
 output/robots.txt
+output/posting_stats.json
+output/processed_notices.json
 
 # 데이터베이스
 *.db
 apt_reader.db
+
+# 로그 파일
+logs/
+*.log
 
 # ChromaDB 벡터 저장소
 chroma_db/
