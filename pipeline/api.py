@@ -17,8 +17,12 @@ from sqlalchemy import and_
 from typing import Optional, List
 from datetime import datetime
 
-from database import SessionLocal, init_db, engine
-from models import Base, Apartment, Posting, PostingContent, PostingMeta
+try:
+    from pipeline.database import SessionLocal, init_db, engine
+    from pipeline.models import Base, Apartment, Posting, PostingContent, PostingMeta
+except ImportError:
+    from database import SessionLocal, init_db, engine
+    from models import Base, Apartment, Posting, PostingContent, PostingMeta
 
 Base.metadata.create_all(bind=engine)
 

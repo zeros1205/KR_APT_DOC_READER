@@ -104,4 +104,4 @@ class PostingMeta(Base):
     resale_restriction = Column(String(100))
     acquisition_tax_rate = Column(String(100))
 
-    posting = relationship("Posting", back_populates="metadata")
+    posting = relationship("Posting", back_populates="meta")
