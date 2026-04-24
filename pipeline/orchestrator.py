@@ -687,34 +687,54 @@ CONTENT_GEN_PROMPT = """
 async def agent_content_generation(facts: dict) -> dict:
     """Agent 4: 서술형 콘텐츠 + Q&A 생성 (Gemini 3.1)"""
     print("  [Agent 4] 콘텐츠 생성 시작 (Gemini 3.1)...")
-    raw = await _call_gemini_json(
-        system=(
-            "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
-            "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
-            "모든 텍스트는 한국어로 작성하며, 독자에게 직접 말을 걸듯 자연스럽고 따뜻하게 작성하세요."
-        ),
-        user=CONTENT_GEN_PROMPT.format(
-            facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
-        ),
-        model=LLM_CONTENT_MODEL,
-        max_tokens=10000,
-    )
+    print(f"  [Agent 4] 요청 크기: {len(json.dumps(facts))} chars")
+
+    try:
+        raw = await _call_gemini_json(
+            system=(
+                "당신은 친근하고 따뜻한 문체로 글을 쓰는 부동산 블로그 전문가입니다.\n"
+                "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.\n"
+                "모든 텍스트는 한국어로 작성하며, 독자에게 직접 말을 걸듯 자연스럽고 따뜻하게 작성하세요."
+            ),
+            user=CONTENT_GEN_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
+            ),
+            model=LLM_CONTENT_MODEL,
+            max_tokens=10000,
+        )
+        print(f"  [Agent 4] 응답 받음: {len(raw)} chars")
+        if not raw:
+            print(f"  [Agent 4] 경고: 응답이 비어있음")
+            return {}
+    except Exception as e:
+        print(f"  [Agent 4] API 호출 실패: {e}")
+        return {}
+
     try:
         content = json.loads(raw)
+        print(f"  [Agent 4] JSON 파싱 성공")
     except json.JSONDecodeError as e:
         print(f"  [Agent 4] JSON 파싱 에러: {e}")
-        print(f"  [Agent 4] 응답 첫 300자: {raw[:300]}")
+        print(f"  [Agent 4] 응답 길이: {len(raw)}")
+        print(f"  [Agent 4] 응답 첫 500자:")
+        print(f"    {raw[:500]}")
+        print(f"  [Agent 4] 응답 마지막 200자:")
+        print(f"    {raw[-200:]}")
+
         import re
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         if m:
             try:
                 content = json.loads(m.group())
-            except json.JSONDecodeError:
-                print(f"  [Agent 4] 정규식 추출도 실패 → 빈 딕셔너리 반환")
+                print(f"  [Agent 4] 정규식 추출로 JSON 파싱 성공")
+            except json.JSONDecodeError as e2:
+                print(f"  [Agent 4] 정규식 추출도 실패: {e2}")
+                print(f"  [Agent 4] 빈 딕셔너리 반환")
                 content = {}
         else:
             print(f"  [Agent 4] JSON 블록 찾을 수 없음 → 빈 딕셔너리 반환")
             content = {}
+
     print(f"  [Agent 4] 완료: Q&A {len(content.get('qa_blocks', []))}개 생성")
     return content
 
