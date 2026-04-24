@@ -105,7 +105,7 @@ jobs:
         run: |
           if [ -d "output/posts" ]; then
             npx wrangler pages deploy output/posts \
-              --project-name=apt-note
+              --project-name=kr-apt-doc-reader
           else
             echo "⚠️  output/posts 디렉토리 없음 - 배포 스킵"
           fi
