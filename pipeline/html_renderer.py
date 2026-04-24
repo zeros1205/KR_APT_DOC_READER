@@ -80,14 +80,15 @@ class QABlock:
 
 @dataclass
 class PostData:
-    # 식별
-    notice_id: str = ""              # 공고번호
+    # 필수 식별 필드 (기본값 없음)
     apt_name: str
     post_title: str
     post_subtitle: str
     location: str
     supply_location: str
     supply_scale: str
+    # 선택 식별 필드 (기본값 있음)
+    notice_id: str = ""              # 공고번호
     total_households: str = ""   # 단지 전체 세대수 (공급세대수와 다를 수 있음)
     is_hot_zone: str = ""        # 투기과열지구 여부 (legacy, IS_HOT_ZONE 토큰으로도 사용)
     regulated_zone: str = ""     # 규제지역 여부 (e.g. "투기과열지구, 청약과열지역", "비규제지역")
