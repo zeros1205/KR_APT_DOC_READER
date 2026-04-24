@@ -118,6 +118,7 @@ class NoticeDocument:
         )
 
         return f"""
+[공고번호] {self.notice_id}
 [단지명] {self.apt_name}
 [주택구분] {self.house_type} / {self.house_detail_type}
 [공급지역] {self.region_name}
