@@ -434,9 +434,12 @@ def _supply_category(supply_type: str) -> str:
 
 async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     """OpenAPI로 최근 N일 공고 수집"""
+    print(f"[DEBUG] collect_from_api 시작: days_back={days_back}")
     api = CheongYakAPI()
+    print(f"[DEBUG] CheongYakAPI 초기화 완료")
     today = datetime.now()
     start = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    print(f"[DEBUG] 시작일: {start}")
 
     raw_list = await api.get_list(per_page=50, start_date=start)
     if not raw_list:
