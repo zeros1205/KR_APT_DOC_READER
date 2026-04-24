@@ -69,36 +69,21 @@ class NoticeDocument:
     special_supply_end: str     # 특별공급 접수종료일
     rank1_local_start: str   # 해당지역 1순위 시작
     rank1_local_end: str     # 해당지역 1순위 종료
-    rank1_near_start: str    # 경기지역 1순위 시작
-    rank1_near_end: str      # 경기지역 1순위 종료
-    rank1_etc_start: str     # 기타지역 1순위 시작
-    rank1_etc_end: str       # 기타지역 1순위 종료
     rank2_local_start: str   # 해당지역 2순위 시작
     rank2_local_end: str     # 해당지역 2순위 종료
-    rank2_near_start: str    # 경기지역 2순위 시작
-    rank2_near_end: str      # 경기지역 2순위 종료
-    rank2_etc_start: str     # 기타지역 2순위 시작
-    rank2_etc_end: str       # 기타지역 2순위 종료
     winner_date: str         # 당첨자발표일
     contract_start: str      # 계약시작일
     contract_end: str        # 계약종료일
     move_in_month: str       # 입주예정월 (YYYY-MM)
 
     # 사업자
-    constructor: str         # 건설업체명(시공사)
-    developer: str           # 사업주체명(시행사)
-    contact: str             # 문의처
-    homepage: str            # 홈페이지주소
+    constructor: str         # 건설업체명(시공사) — 단지소개 글에 사용
     notice_url: str          # 모집공고홈페이지주소
 
     # 규제 여부 (Y/N)
     is_hot_zone: str         # 투기과열지구
     is_adj_zone: str         # 조정대상지역
     is_price_cap: str        # 분양가상한제
-    is_redevelop: str        # 정비사업
-    is_public_dist: str      # 공공주택지구
-    is_large_dev: str        # 대규모택지개발지구
-    is_metro_private: str    # 수도권내민영공공주택지구
 
     # 원문 텍스트 (RAG용)
     raw_text: str = ""
@@ -109,7 +94,7 @@ class NoticeDocument:
     @property
     def supply_date(self) -> str:
         """1순위 접수 시작일 (대표 청약일)"""
-        return self.rank1_local_start or self.rank1_near_start or self.rank1_etc_start
+        return self.rank1_local_start
 
     @property
     def region(self) -> str:
@@ -126,7 +111,6 @@ class NoticeDocument:
         if self.is_hot_zone == "Y":   flags.append("투기과열지구")
         if self.is_adj_zone == "Y":   flags.append("조정대상지역")
         if self.is_price_cap == "Y":  flags.append("분양가상한제 적용")
-        if self.is_redevelop == "Y":  flags.append("정비사업")
 
         table_text = "\n".join(
             " | ".join(str(c) for c in row)
@@ -147,8 +131,6 @@ class NoticeDocument:
 [계약] {self.contract_start} ~ {self.contract_end}
 [입주예정] {self.move_in_month}
 [시공사] {self.constructor}
-[시행사] {self.developer}
-[문의처] {self.contact}
 [규제사항] {', '.join(flags) if flags else '없음'}
 
 {self.raw_text}
@@ -182,32 +164,17 @@ def _from_openapi(d: dict) -> dict:
         "special_supply_end":  d.get("SPSPLY_RCEPT_ENDDE", ""),
         "rank1_local_start":   d.get("GNRL_RNK1_CRSPAREA_RCPTDE", ""),
         "rank1_local_end":     d.get("GNRL_RNK1_CRSPAREA_ENDDE", ""),
-        "rank1_near_start":    d.get("GNRL_RNK1_ETC_GG_RCPTDE", ""),
-        "rank1_near_end":      d.get("GNRL_RNK1_ETC_GG_ENDDE", ""),
-        "rank1_etc_start":     d.get("GNRL_RNK1_ETC_AREA_RCPTDE", ""),
-        "rank1_etc_end":       d.get("GNRL_RNK1_ETC_AREA_ENDDE", ""),
         "rank2_local_start":   d.get("GNRL_RNK2_CRSPAREA_RCPTDE", ""),
         "rank2_local_end":     d.get("GNRL_RNK2_CRSPAREA_ENDDE", ""),
-        "rank2_near_start":    d.get("GNRL_RNK2_ETC_GG_RCPTDE", ""),
-        "rank2_near_end":      d.get("GNRL_RNK2_ETC_GG_ENDDE", ""),
-        "rank2_etc_start":     d.get("GNRL_RNK2_ETC_AREA_RCPTDE", ""),
-        "rank2_etc_end":       d.get("GNRL_RNK2_ETC_AREA_ENDDE", ""),
         "winner_date":         d.get("PRZWNER_PRESNATN_DE", ""),
         "contract_start":      d.get("CNTRCT_CNCLS_BGNDE", ""),
         "contract_end":        d.get("CNTRCT_CNCLS_ENDDE", ""),
         "move_in_month":       d.get("MVN_PREARNGE_YM", ""),
         "constructor":         d.get("CNSTRCT_ENTRPS_NM", ""),
-        "developer":           d.get("BSNS_MBY_NM", ""),
-        "contact":             d.get("MDHS_TELNO", ""),
-        "homepage":            d.get("HMPG_ADRES", ""),
         "notice_url":          d.get("PBLANC_URL", ""),
         "is_hot_zone":         d.get("SPECLT_RDN_EARTH_AT", "N"),
         "is_adj_zone":         d.get("MDAT_TRGET_AREA_SECD", "N"),
         "is_price_cap":        d.get("PARCPRC_ULS_AT", "N"),
-        "is_redevelop":        d.get("IMPRMN_BSNS_AT", "N"),
-        "is_public_dist":      d.get("PUBLIC_HOUSE_EARTH_AT", "N"),
-        "is_large_dev":        d.get("LRSCL_BLDLND_AT", "N"),
-        "is_metro_private":    d.get("NPLN_PRVOPR_PUBLIC_HOUSE_AT", "N"),
     }
 
 
@@ -235,32 +202,17 @@ def _from_csv_row(d: dict) -> dict:
         "special_supply_end":  d.get("특별공급접수종료일", ""),
         "rank1_local_start":   d.get("해당지역1순위접수시작일", ""),
         "rank1_local_end":     d.get("해당지역1순위접수종료일", ""),
-        "rank1_near_start":    d.get("경기지역1순위접수시작일", ""),
-        "rank1_near_end":      d.get("경기지역1순위접수종료일", ""),
-        "rank1_etc_start":     d.get("기타지역1순위접수시작일", ""),
-        "rank1_etc_end":       d.get("기타지역1순위접수종료일", ""),
         "rank2_local_start":   d.get("해당지역2순위접수시작일", ""),
         "rank2_local_end":     d.get("해당지역2순위접수종료일", ""),
-        "rank2_near_start":    d.get("경기지역2순위접수시작일", ""),
-        "rank2_near_end":      d.get("경기지역2순위접수종료일", ""),
-        "rank2_etc_start":     d.get("기타지역2순위접수시작일", ""),
-        "rank2_etc_end":       d.get("기타지역2순위접수종료일", ""),
         "winner_date":         d.get("당첨자발표일", ""),
         "contract_start":      d.get("계약시작일", ""),
         "contract_end":        d.get("계약종료일", ""),
         "move_in_month":       d.get("입주예정월", ""),
         "constructor":         d.get("건설업체명_시공사", ""),
-        "developer":           d.get("사업주체명_시행사", ""),
-        "contact":             d.get("문의처", ""),
-        "homepage":            d.get("홈페이지주소", ""),
         "notice_url":          d.get("모집공고홈페이지주소", ""),
         "is_hot_zone":         d.get("투기과열지구", "N"),
         "is_adj_zone":         d.get("조정대상지역", "N"),
         "is_price_cap":        d.get("분양가상한제", "N"),
-        "is_redevelop":        d.get("정비사업", "N"),
-        "is_public_dist":      d.get("공공주택지구", "N"),
-        "is_large_dev":        d.get("대규모택지개발지구", "N"),
-        "is_metro_private":    d.get("수도권내민영공공주택지구", "N"),
     }
 
 
@@ -523,32 +475,17 @@ def get_sample_document() -> NoticeDocument:
         special_supply_end  = "2026-04-10",
         rank1_local_start   = "2026-04-13",
         rank1_local_end     = "2026-04-13",
-        rank1_near_start    = "2026-04-14",
-        rank1_near_end      = "2026-04-14",
-        rank1_etc_start     = "2026-04-15",
-        rank1_etc_end       = "2026-04-15",
         rank2_local_start   = "2026-04-15",
         rank2_local_end     = "2026-04-15",
-        rank2_near_start    = "",
-        rank2_near_end      = "",
-        rank2_etc_start     = "",
-        rank2_etc_end       = "",
         winner_date         = "2026-04-21",
         contract_start      = "2026-05-06",
         contract_end        = "2026-05-08",
         move_in_month       = "2026-07",
         constructor         = "㈜포스코이앤씨",
-        developer           = "신반포21차아파트주택재건축정비사업조합",
-        contact             = "15992510",
-        homepage            = "https://오티에르반포.kr",
         notice_url          = "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000058&pblancNo=2026000058",
         is_hot_zone         = "Y",
         is_adj_zone         = "Y",
         is_price_cap        = "N",
-        is_redevelop        = "Y",
-        is_public_dist      = "N",
-        is_large_dev        = "N",
-        is_metro_private    = "N",
     )
 
     doc.raw_text = """
