@@ -332,14 +332,14 @@ python run_v2.py --sample
 - [x] Gemini 3.1 Flash 통합
 - [x] LLM 프롬프트 최적화
 
-### Phase 2 (진행 중) 🔄
+### Phase 2 (완료) ✅
 - [x] 배치 처리 지원
 - [x] run_v2.py 진입점
 - [x] 공공API 자동 수집
-- [x] 로깅 및 모니터링
-- [ ] 모니터링 대시보드
+- [x] 로깅 및 모니터링 (logger.py + posting_monitor.py)
+- [x] 모니터링 대시보드 (--monitor, --quality 플래그)
 
-### Phase 3 (계획)
+### Phase 3 (진행 중) 🔄
 - [ ] 포스팅 수정/업데이트 기능
 - [ ] 웹 UI 대시보드
 - [ ] A/B 테스트 지원
