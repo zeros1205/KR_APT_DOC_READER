@@ -23,6 +23,10 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
     steps:
       - name: 코드 체크아웃
@@ -37,37 +41,32 @@ jobs:
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
-      - name: .env 파일 생성 (GitHub Secrets → .env)
+      - name: API 키 확인
         run: |
-          cat <<EOF > .env
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
-          EOF
-          echo "✅ .env 파일 생성 완료"
-          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
-            echo "⚠️  경고: GEMINI_API_KEY가 설정되지 않았습니다"
-          fi
+          python -c "
+          import os
+          gemini = os.getenv('GEMINI_API_KEY', '')
+          public = os.getenv('PUBLIC_DATA_API_KEY', '')
+          print(f'✅ GEMINI_API_KEY: {\"설정됨\" if gemini else \"미설정\"}')
+          print(f'✅ PUBLIC_DATA_API_KEY: {\"설정됨\" if public else \"미설정\"}')
+          if not gemini:
+              print('⚠️  경고: GEMINI_API_KEY가 없습니다')
+          "
 
       - name: Google Search Grounding 테스트
         continue-on-error: true
         run: python test_google_grounding.py
 
-      - name: API 키 검증
+      - name: 파이프라인 실행 전 검증
         run: |
           python -c "
           import os
-          from dotenv import load_dotenv
-          load_dotenv()
-
           gemini_key = os.getenv('GEMINI_API_KEY', '')
           if not gemini_key:
               print('❌ 오류: GEMINI_API_KEY가 설정되지 않았습니다')
-              print('GitHub Secrets에 GEMINI_API_KEY를 추가해주세요')
-              print('https://github.com/zeros1205/KR_APT_DOC_READER/settings/secrets/actions')
+              print('GitHub Settings → Secrets and variables → Actions 에서 GEMINI_API_KEY 추가 필요')
               exit(1)
-          else:
-              print('✅ GEMINI_API_KEY 설정됨')
+          print('✅ GEMINI_API_KEY 설정됨 - 파이프라인 실행 준비')
           "
 
       - name: 파이프라인 실행
