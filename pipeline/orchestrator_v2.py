@@ -613,6 +613,131 @@ async def stage_7_evaluation(
 
 
 # ──────────────────────────────────────────────────
+# DB 저장
+# ──────────────────────────────────────────────────
+
+def _save_to_database_v2(
+    apartment_data: Dict,
+    stage2_result: Dict,
+    stage3_result: Dict,
+    stage4_result: Dict,
+    stage5_result: Dict,
+    stage6_result: Dict,
+    stage7_result: Dict
+) -> bool:
+    """모든 Stage 결과를 데이터베이스에 저장"""
+    print("  [DB Save] 데이터베이스 저장 시작...")
+
+    db = SessionLocal()
+    try:
+        # 1. Apartment 레코드 생성/업데이트
+        apartment = db.query(Apartment).filter(
+            Apartment.api_notice_id == apartment_data["api_notice_id"]
+        ).first()
+
+        if not apartment:
+            apartment = Apartment(
+                api_notice_id=apartment_data["api_notice_id"],
+                apt_name=apartment_data["apt_name"],
+                supply_address=apartment_data["supply_address"],
+                location=apartment_data["location"],
+                supply_scale=apartment_data.get("supply_scale", ""),
+                total_units=apartment_data.get("total_units", 0),
+                is_hot_zone=stage3_result.get("is_hot_zone", "해당없음"),
+                regulated_zone=stage3_result.get("regulated_zone", "-"),
+                readmission_limit=stage3_result.get("readmission_limit", "-"),
+                live_requirement=stage3_result.get("live_requirement", "-"),
+                price_cap=stage3_result.get("price_cap", "-"),
+                land_type=apartment_data.get("land_type", ""),
+                constructor=apartment_data.get("constructor", ""),
+                notice_url=apartment_data.get("notice_url", ""),
+            )
+            db.add(apartment)
+            db.flush()
+        else:
+            # 규제정보 업데이트
+            apartment.is_hot_zone = stage3_result.get("is_hot_zone", apartment.is_hot_zone)
+            apartment.regulated_zone = stage3_result.get("regulated_zone", apartment.regulated_zone)
+            apartment.readmission_limit = stage3_result.get("readmission_limit", apartment.readmission_limit)
+
+        # 2. Posting 레코드 생성
+        post_slug = stage4_result.get("post_title", apartment.apt_name)
+        post_slug = re.sub(r'[^\w\s-]', '', post_slug.lower())
+        post_slug = re.sub(r'[-\s]+', '-', post_slug).strip('-')
+
+        posting = Posting(
+            apartment_id=apartment.id,
+            post_title=stage4_result.get("post_title", apartment.apt_name),
+            post_subtitle=stage4_result.get("post_title", ""),
+            post_slug=post_slug,
+            theme=BLOG_THEME,
+            quality_score=stage7_result.get("quality_score", 0),
+            is_published=1 if stage7_result.get("quality_score", 0) >= 70 else 0,
+        )
+        db.add(posting)
+        db.flush()
+
+        # 3. PostingContent 레코드 생성
+        posting_content = PostingContent(
+            posting_id=posting.id,
+            apt_intro=stage4_result.get("apt_intro", ""),
+            location_intro=stage5_result.get("location_intro", ""),
+            financial_intro=stage6_result.get("financial_intro", ""),
+            qa_intro=stage6_result.get("qa_intro", ""),
+            schedule_desc=stage4_result.get("schedule_desc", ""),
+            tax_desc=stage6_result.get("tax_desc", ""),
+            unit_type_desc=stage4_result.get("unit_type_desc", ""),
+            subway_score=stage5_result.get("subway_score", "★★★☆☆"),
+            subway_detail=stage5_result.get("subway_detail", ""),
+            school_score=stage5_result.get("school_score", "★★★☆☆"),
+            school_detail=stage5_result.get("school_detail", ""),
+            life_score=stage5_result.get("life_score", "★★★☆☆"),
+            life_detail=stage5_result.get("life_detail", ""),
+            medical_score=stage5_result.get("medical_score", "★★★☆☆"),
+            medical_detail=stage5_result.get("medical_detail", ""),
+            eligibility_special=stage2_result.get("eligibility_special", []),
+            eligibility_rank1=stage2_result.get("eligibility_rank1", []),
+            eligibility_rank2=stage2_result.get("eligibility_rank2", []),
+            qa_blocks=stage6_result.get("qa_blocks", []),
+            seo_tags=[],
+        )
+        db.add(posting_content)
+        db.flush()
+
+        # 4. PostingMeta 레코드 생성
+        posting_meta = PostingMeta(
+            posting_id=posting.id,
+            special_supply_date=stage2_result.get("dates", {}).get("special_supply_date", "-"),
+            rank1_date=stage2_result.get("dates", {}).get("rank1_date", "-"),
+            rank2_date=stage2_result.get("dates", {}).get("rank2_date", "-"),
+            winner_date=apartment_data.get("schedule_dates", {}).get("winner", "-"),
+            move_in_date=apartment_data.get("schedule_dates", {}).get("move_in", "-"),
+            contract_ratio=stage6_result.get("contract_ratio", "10%"),
+            contract_amount=stage6_result.get("contract_amount", ""),
+            midterm_ratio=stage6_result.get("midterm_ratio", "60%"),
+            midterm_count=stage6_result.get("midterm_count", "6"),
+            balance_ratio=stage6_result.get("balance_ratio", "30%"),
+            loan_info=stage6_result.get("loan_info", ""),
+            resale_restriction=stage3_result.get("resale_restriction", "-"),
+            acquisition_tax_rate=stage3_result.get("acquisition_tax_rate", ""),
+        )
+        db.add(posting_meta)
+        db.commit()
+
+        print(f"  [DB Save] 완료: Apartment(id={apartment.id}), Posting(id={posting.id})")
+        return True
+
+    except Exception as e:
+        db.rollback()
+        print(f"  [DB Save] 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+    finally:
+        db.close()
+
+
+# ──────────────────────────────────────────────────
 # 메인 파이프라인
 # ──────────────────────────────────────────────────
 
@@ -694,15 +819,23 @@ async def run_pipeline_v2(notice_id: str) -> bool:
         print("="*60)
 
         # ===== DB 저장 =====
-        # TODO: 모든 데이터를 DB에 저장
-        # _save_to_database_v2(apartment_data, stage2_result, stage3_result, ...)
+        db_success = _save_to_database_v2(
+            apartment_data, stage2_result, stage3_result,
+            stage4_result, stage5_result, stage6_result, stage7_result
+        )
 
-        # ===== HTML 렌더링 =====
-        # TODO: HTML 템플릿에 데이터 렌더링
+        if not db_success:
+            print("❌ DB 저장 실패")
+            return False
 
         # ===== manifest.json 업데이트 =====
-        # TODO: build_manifest() 호출
+        try:
+            build_manifest()
+            print("✅ manifest.json 업데이트 완료")
+        except Exception as e:
+            print(f"⚠️  manifest.json 업데이트 실패: {e}")
 
+        print("\n🎉 전체 파이프라인 완료!")
         return True
 
     except Exception as e:
