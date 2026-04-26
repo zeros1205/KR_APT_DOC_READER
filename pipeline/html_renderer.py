@@ -95,13 +95,13 @@ class PostData:
     readmission_limit: str = ""  # 재당첨 제한 (e.g. "10년", "없음")
     live_requirement: str = ""   # 거주의무기간 (있음/없음/공고문 확인 필요)
     price_cap: str = ""          # 분양가 상한제 (적용/미적용)
-    land_type: str = ""          # 택지 유형 (민간택지/공공택지)
     price_range: str = ""
 
     # 유닛 타입
     unit_types: list[UnitType] = field(default_factory=list)
 
     # 청약 일정
+    notice_date: str = ""
     special_supply_date: str = "-"
     rank1_date: str = "-"
     rank2_date: str = "-"
@@ -130,8 +130,8 @@ class PostData:
     subway_detail: str = ""
     school_score: str = "★★★☆☆"
     school_detail: str = ""
-    life_score: str = "★★★☆☆"
-    life_detail: str = ""
+    feature_score: str = "★★★☆☆"
+    feature_detail: str = ""
     medical_score: str = "★★★☆☆"
     medical_detail: str = ""
 
@@ -162,7 +162,6 @@ class PostData:
 
     # 메타
     source_date: str = ""
-    notice_date: str = ""       # 모집공고일
     read_time: int = 7
     supply_type: str = ""       # API SUBSCRPT_TYCD_NM 원본값
 
@@ -284,11 +283,76 @@ def _canonical_supply_scale(supply_scale: str, total_households: str, unit_types
     return f"총 {total_units:,}세대" if total_units > 0 else ""
 
 
+def _format_date_range(start: object, end: object) -> str:
+    start_s = _display_date(start)
+    end_s = _display_date(end)
+    if start_s in {"-", ""} and end_s in {"-", ""}:
+        return "-"
+    if end_s in {"-", ""}:
+        return start_s
+    if start_s in {"-", ""}:
+        return end_s
+    if start_s == end_s:
+        return start_s
+    return f"{start_s} ~ {end_s}"
+
+
+def _rank_area_range(doc, local_start_key: str, etc_start_key: str, fallback: object) -> str:
+    local_date = _stringify(getattr(doc, local_start_key, "")) if doc is not None else ""
+    etc_date = _stringify(getattr(doc, etc_start_key, "")) if doc is not None else ""
+    formatted = _format_date_range(local_date, etc_date)
+    if formatted != "-":
+        return formatted
+    return _display_date(fallback)
+
+
+def _clean_unit_type_name(type_name: str) -> str:
+    text = _stringify(type_name).replace("타입", "").strip()
+    m = re.match(r"0*(\d{2,3})(?:\.\d+)?\s*([A-Z])?$", text, re.IGNORECASE)
+    if m:
+        return f"{int(m.group(1))}{(m.group(2) or '').upper()}"
+    m = re.match(r"0*(\d{2,3})(?:\.\d+)?\s*([A-Z])", text, re.IGNORECASE)
+    if m:
+        return f"{int(m.group(1))}{m.group(2).upper()}"
+    return text
+
+
+def _unit_feature_sentence(unit_types: list["UnitType"]) -> str:
+    type_names = []
+    for ut in unit_types:
+        cleaned = _clean_unit_type_name(_stringify(ut.type_name))
+        if cleaned and cleaned not in type_names:
+            type_names.append(cleaned)
+    if type_names:
+        preview = ", ".join(type_names[:8])
+        suffix = " 등" if len(type_names) > 8 else ""
+        return f"단지 특징으로는 {preview}{suffix} 타입이 공급되는 점을 확인할 수 있습니다."
+    return "단지 특징은 공식 공급 정보와 타입별 세부 조건을 기준으로 확인하는 것이 좋습니다."
+
+
+def _fact_based_apt_intro(
+    *,
+    apt_name: str,
+    supply_location: str,
+    supply_units: int,
+    unit_types: list["UnitType"],
+) -> str:
+    units = f"총 {supply_units:,}세대" if supply_units > 0 else "공고문 기준 공급세대"
+    location = _stringify(supply_location)
+    feature = _unit_feature_sentence(unit_types)
+    location_text = f" 공급 위치는 {location}입니다." if location else ""
+    return (
+        "안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. "
+        f"오늘은 {units}가 공급되는 <strong>{apt_name}</strong>를 소개해드릴게요."
+        f"{location_text} {feature}"
+    )
+
+
 def _normalize_contract_amount(contract_amount: str, contract_ratio: str, unit_types: list["UnitType"]) -> str:
     amount = _stringify(contract_amount)
     if amount and amount not in {"-", "None", "null"}:
         return amount
-    return "실제 납부금액은 공고문 기준 별도 확인"
+    return ""
 
 
 def build_post_data(
@@ -334,6 +398,11 @@ def build_post_data(
     midterm_ratio = _stringify(facts.get("midterm_ratio") or "60")
     midterm_count = _stringify(facts.get("midterm_count") or "6")
     balance_ratio = _stringify(facts.get("balance_ratio") or "30")
+    supply_units = sum(max(0, _safe_int(ut.general_units)) + max(0, _safe_int(ut.special_units)) for ut in unit_types)
+    notice_date = _display_date(facts.get("notice_date"))
+    special_supply_date = _display_date(facts.get("special_supply_date"))
+    rank1_date = _rank_area_range(doc, "rank1_local_start", "rank1_etc_start", facts.get("rank1_date"))
+    rank2_date = _rank_area_range(doc, "rank2_local_start", "rank2_etc_start", facts.get("rank2_date"))
 
     return PostData(
         apt_name=apt_name,
@@ -352,12 +421,12 @@ def build_post_data(
         readmission_limit=_display_value(facts.get("readmission_limit"), default="미기재"),
         live_requirement=_display_value(facts.get("live_requirement"), default="미기재"),
         price_cap=_display_value(facts.get("price_cap"), default="미기재"),
-        land_type=_display_value(facts.get("land_type"), default="미기재"),
         price_range=price_range,
         unit_types=unit_types,
-        special_supply_date=_display_date(facts.get("special_supply_date")),
-        rank1_date=_display_date(facts.get("rank1_date")),
-        rank2_date=_display_date(facts.get("rank2_date")),
+        notice_date=notice_date,
+        special_supply_date=special_supply_date,
+        rank1_date=rank1_date,
+        rank2_date=rank2_date,
         winner_date=_display_date(facts.get("winner_date")),
         move_in_date=_display_value(facts.get("move_in_date"), default="미정"),
         loan_info=_display_value(
@@ -380,11 +449,16 @@ def build_post_data(
         subway_detail=_stringify(content.get("subway_detail")),
         school_score=_stringify(content.get("school_score")) or "★★★☆☆",
         school_detail=_stringify(content.get("school_detail")),
-        life_score=_stringify(content.get("life_score")) or "★★★☆☆",
-        life_detail=_stringify(content.get("life_detail")),
+        feature_score=_stringify(content.get("feature_score")) or "★★★☆☆",
+        feature_detail=_stringify(content.get("feature_detail") or content.get("life_detail")),
         medical_score=_stringify(content.get("medical_score")) or "★★★☆☆",
         medical_detail=_stringify(content.get("medical_detail")),
-        apt_intro=_stringify(content.get("apt_intro")) or f"{apt_name} 분양 정보를 안내해 드립니다.",
+        apt_intro=_fact_based_apt_intro(
+            apt_name=apt_name,
+            supply_location=supply_location,
+            supply_units=supply_units,
+            unit_types=unit_types,
+        ),
         location_intro=_stringify(content.get("location_intro")) or f"{location or apt_name} 입지를 살펴보겠습니다.",
         financial_intro=_stringify(content.get("financial_intro")) or "자금 계획을 미리 세워두는 것이 중요합니다.",
         qa_intro=_stringify(content.get("qa_intro")) or "자주 받는 질문에 답해드릴게요.",
@@ -397,8 +471,7 @@ def build_post_data(
         qa_blocks=qa_blocks,
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
         images={},
-        source_date=_display_date(facts.get("rank1_date")),
-        notice_date=_display_date(facts.get("notice_date")),
+        source_date=notice_date,
         read_time=max(6, len(str(content)) // 450),
         theme=theme,
         supply_type=supply_type or _stringify(getattr(doc, "supply_type", "")),
@@ -442,9 +515,10 @@ def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
     priciest = max(valid, key=lambda u: u.price_max)
 
     def _row(price_str: str, type_name: str, prefix: str = "") -> str:
+        clean_type = _clean_unit_type_name(type_name)
         return (
             f'{prefix}<span style="font-size:22px;font-weight:800;">{price_str}</span>'
-            f'<span style="font-size:16px;font-weight:600;opacity:0.85;">({type_name})</span>'
+            f'<span style="font-size:16px;font-weight:600;opacity:0.85;">({clean_type})</span>'
         )
 
     lo = _row(cheapest._fmt(cheapest.price_min), cheapest.type_name)
@@ -459,9 +533,10 @@ def _render_unit_rows_intro(unit_types: list[UnitType]) -> str:
     rows = []
     for ut in unit_types:
         total = ut.general_units + ut.special_units
+        type_name = _clean_unit_type_name(ut.type_name)
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.15);">
-        <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.type_name}</td>
+        <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{type_name}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{round(ut.area_sqm, 1):.1f}</td>
         <td style="padding: 10px 8px; color: rgba(255,255,255,0.85); letter-spacing: 0.025em;">{total:,}세대</td>
         <td style="padding: 10px 10px; font-weight: 700; color: #fff; white-space: nowrap;">{ut.price_range_str}</td>
@@ -474,12 +549,13 @@ def _render_unit_rows(unit_types: list[UnitType], t: dict) -> str:
     rows = []
     for i, ut in enumerate(unit_types):
         stripe = f"background: {t['table_stripe']};" if i % 2 == 1 else ""
+        type_name = _clean_unit_type_name(ut.type_name)
         rows.append(f"""
       <tr style="text-align: center; border-bottom: 1px solid {t['border']}; {stripe}">
-        <td style="padding: 10px 8px; font-weight: 700; color: {t['accent']};">{ut.type_name}</td>
+        <td style="padding: 10px 8px; font-weight: 700; color: {t['accent']};">{type_name}</td>
         <td style="padding: 10px 8px; color: {t['text2']};">{round(ut.area_sqm, 1):.1f}</td>
-        <td style="padding: 10px 8px; color: {t['text']};">{ut.general_units:,}</td>
-        <td style="padding: 10px 8px; color: {t['text']};">{ut.special_units:,}</td>
+        <td style="padding: 10px 8px; color: {t['text']};">{ut.general_units:,}세대</td>
+        <td style="padding: 10px 8px; color: {t['text']};">{ut.special_units:,}세대</td>
         <td style="padding: 10px 8px; color: {t['step1']}; font-weight: 700;">{ut.price_range_str}</td>
         <td style="padding: 10px 8px; color: {t['text2']};">{ut.price_per_3_3}</td>
       </tr>""")
@@ -553,17 +629,11 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     sp_cards = ""
     for sp in data.eligibility_special:
         type_name = sp.get("type_name", "")
-        quota     = sp.get("quota", "")
         reqs      = sp.get("requirements", [])
-        quota_html = (
-            f'<span style="font-size:11px;font-weight:600;background:{t["accent_light"]};'
-            f'color:{t["accent"]};padding:2px 8px;border-radius:{t["radius_pill"]};'
-            f'margin-left:6px;">{quota}</span>'
-            if quota else ""
-        )
         req_items = "".join(
-            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.7;'
-            f'padding:2px 0;">{r}</li>'
+            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
+            f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
+            f'<span style="color:{t["accent"]};font-weight:700;margin-right:6px;">·</span>{r}</li>'
             for r in reqs
         )
         sp_cards += (
@@ -571,7 +641,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;">'
             f'<div style="font-size:14px;font-weight:800;color:{t["text"]};'
-            f'margin-bottom:10px;">{type_name}{quota_html}</div>'
+            f'margin-bottom:10px;">{type_name}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
             f'</div>'
         )
@@ -630,11 +700,18 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
 
 def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
     """헤더 하단 메타 정보 세로 배치. 빈 값 행 자동 숨김."""
+    def _hero_date(value: str) -> str:
+        text = _stringify(value)
+        if " ~ " not in text:
+            return text
+        start, end = [part.strip() for part in text.split(" ~ ", 1)]
+        return start if start and start == end else text
+
     fields = [
         ("모집공고", data.notice_date),
         ("특별공급", data.special_supply_date),
-        ("일반공급(1순위)", data.rank1_date),
-        ("일반공급(2순위)", data.rank2_date),
+        ("일반공급 1순위", _hero_date(data.rank1_date)),
+        ("일반공급 2순위", _hero_date(data.rank2_date)),
     ]
     rows = []
     for label, value in fields:
@@ -782,17 +859,17 @@ class BlogHTMLRenderer:
             "{{READMISSION_LIMIT}}": data.readmission_limit or "공고문 확인 필요",
             "{{LIVE_REQUIREMENT}}":  data.live_requirement or "공고문 확인 필요",
             "{{PRICE_CAP}}":         data.price_cap or "공고문 확인 필요",
-            "{{LAND_TYPE}}":         data.land_type or "공고문 확인 필요",
             "{{RESALE_RESTRICTION_BADGE}}": data.resale_restriction or "공고문 확인 필요",
             "{{RESALE_RESTRICTION}}": data.resale_restriction or "공고문을 통해 전매제한 기간을 반드시 확인하세요.",
             # 청약 일정
+            "{{NOTICE_DATE}}": data.notice_date,
             "{{SPECIAL_SUPPLY_DATE}}": data.special_supply_date,
             "{{RANK2_DATE}}":     data.rank2_date,
             "{{WINNER_DATE}}":    data.winner_date,
             # 금융
             "{{LOAN_INFO}}":      data.loan_info,
             "{{CONTRACT_RATIO}}": data.contract_ratio,
-            "{{CONTRACT_AMOUNT}}":data.contract_amount or "-",
+            "{{CONTRACT_AMOUNT}}":data.contract_amount or "",
             "{{MIDTERM_RATIO}}":  data.midterm_ratio,
             "{{MIDTERM_COUNT}}":  data.midterm_count,
             "{{BALANCE_RATIO}}":  data.balance_ratio,
@@ -808,8 +885,8 @@ class BlogHTMLRenderer:
             "{{SUBWAY_DETAIL}}":  data.subway_detail,
             "{{SCHOOL_SCORE}}":   data.school_score,
             "{{SCHOOL_DETAIL}}":  data.school_detail,
-            "{{LIFE_SCORE}}":     data.life_score,
-            "{{LIFE_DETAIL}}":    data.life_detail,
+            "{{FEATURE_SCORE}}":  data.feature_score,
+            "{{FEATURE_DETAIL}}": data.feature_detail,
             "{{MEDICAL_SCORE}}":  data.medical_score,
             "{{MEDICAL_DETAIL}}": data.medical_detail,
             # 테이블 집계
@@ -936,7 +1013,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "readmission_limit":    data.readmission_limit,
         "live_requirement":     data.live_requirement,
         "price_cap":            data.price_cap,
-        "land_type":            data.land_type,
         "resale_restriction":   data.resale_restriction,
         "eligibility_special":   data.eligibility_special,
         "eligibility_rank1":     data.eligibility_rank1,

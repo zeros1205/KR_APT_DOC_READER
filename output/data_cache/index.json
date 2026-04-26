@@ -1,0 +1,687 @@
+{
+  "generated_at": "2026-04-26T21:40:41+09:00",
+  "count": 97,
+  "ready_count": 97,
+  "manual_review_count": 0,
+  "notices": [
+    {
+      "notice_id": "2025000497",
+      "apt_name": "아크로 드 서초",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000497.json"
+    },
+    {
+      "notice_id": "2025000510",
+      "apt_name": "두산위브 더센트럴 수원",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000510.json"
+    },
+    {
+      "notice_id": "2025000572",
+      "apt_name": "포레나더샵 인천시청역",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000572.json"
+    },
+    {
+      "notice_id": "2025000574",
+      "apt_name": "무등산 더힐(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000574.json"
+    },
+    {
+      "notice_id": "2025000628",
+      "apt_name": "북오산자이 리버블시티",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000628.json"
+    },
+    {
+      "notice_id": "2025000639",
+      "apt_name": "서귀포시 서홍동 형남아파트6차",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000639.json"
+    },
+    {
+      "notice_id": "2025000645",
+      "apt_name": "이천시 장호원읍 5년 공공건설임대주택(카사펠리스이천) 임차인모집",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000645.json"
+    },
+    {
+      "notice_id": "2025000652",
+      "apt_name": "안양역 센트럴 아이파크 수자인",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000652.json"
+    },
+    {
+      "notice_id": "2025000656",
+      "apt_name": "사우역 지엔하임",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000656.json"
+    },
+    {
+      "notice_id": "2025000657",
+      "apt_name": "평택화양 서희스타힐스 센트럴파크(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000657.json"
+    },
+    {
+      "notice_id": "2025000660",
+      "apt_name": "드파인 연희",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2025000660.json"
+    },
+    {
+      "notice_id": "2026000002",
+      "apt_name": "e편한세상 센텀 하이베뉴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000002.json"
+    },
+    {
+      "notice_id": "2026000004",
+      "apt_name": "남울산 노르웨이숲(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000004.json"
+    },
+    {
+      "notice_id": "2026000008",
+      "apt_name": "경산 상방공원 호반써밋 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000008.json"
+    },
+    {
+      "notice_id": "2026000009",
+      "apt_name": "대전 하늘채 루시에르(2회차)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000009.json"
+    },
+    {
+      "notice_id": "2026000010",
+      "apt_name": "두산위브 더센트럴 부평(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000010.json"
+    },
+    {
+      "notice_id": "2026000012",
+      "apt_name": "경성대부경대역 비스타동원 더 프리미엄",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000012.json"
+    },
+    {
+      "notice_id": "2026000014",
+      "apt_name": "천안 아이파크 시티 5단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000014.json"
+    },
+    {
+      "notice_id": "2026000015",
+      "apt_name": "천안 아이파크 시티 6단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000015.json"
+    },
+    {
+      "notice_id": "2026000017",
+      "apt_name": "쌍용 더 플래티넘 온수역",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000017.json"
+    },
+    {
+      "notice_id": "2026000018",
+      "apt_name": "리첸시아 표선 IB EDU",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000018.json"
+    },
+    {
+      "notice_id": "2026000019",
+      "apt_name": "구리역 하이니티 리버파크",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000019.json"
+    },
+    {
+      "notice_id": "2026000020",
+      "apt_name": "금정산 하늘채 루미엘",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000020.json"
+    },
+    {
+      "notice_id": "2026000022",
+      "apt_name": "울산 우정혁신도시 B1블록(골드클래스) 분양전환 후 잔여세대",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000022.json"
+    },
+    {
+      "notice_id": "2026000023",
+      "apt_name": "더샵 프리엘라",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000023.json"
+    },
+    {
+      "notice_id": "2026000024",
+      "apt_name": "힐스테이트 지석(조합원취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000024.json"
+    },
+    {
+      "notice_id": "2026000027",
+      "apt_name": "전주·완주 혁신도시 에코르 2단지 공가세대 일반공급",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000027.json"
+    },
+    {
+      "notice_id": "2026000028",
+      "apt_name": "해링턴플레이스 노원 센트럴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000028.json"
+    },
+    {
+      "notice_id": "2026000029",
+      "apt_name": "썬밸리 오드카운티 가평설악",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000029.json"
+    },
+    {
+      "notice_id": "2026000030",
+      "apt_name": "힐스테이트 오산 더퍼스트(조합원 자격상실 및 제명세대)(2회차)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000030.json"
+    },
+    {
+      "notice_id": "2026000033",
+      "apt_name": "해링턴플레이스 오룡역",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000033.json"
+    },
+    {
+      "notice_id": "2026000034",
+      "apt_name": "더 플래티넘 센트럴포레",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000034.json"
+    },
+    {
+      "notice_id": "2026000035",
+      "apt_name": "연수 월드메르디앙 어반포레",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000035.json"
+    },
+    {
+      "notice_id": "2026000036",
+      "apt_name": "e편한세상 여수 글렌츠",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000036.json"
+    },
+    {
+      "notice_id": "2026000038",
+      "apt_name": "상주자이르네",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000038.json"
+    },
+    {
+      "notice_id": "2026000039",
+      "apt_name": "래미안 엘라비네",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000039.json"
+    },
+    {
+      "notice_id": "2026000040",
+      "apt_name": "구서 다움포레",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000040.json"
+    },
+    {
+      "notice_id": "2026000041",
+      "apt_name": "마곡지구 17단지 토지임대부(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000041.json"
+    },
+    {
+      "notice_id": "2026000043",
+      "apt_name": "부천역 에피트 어바닉",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000043.json"
+    },
+    {
+      "notice_id": "2026000044",
+      "apt_name": "용인 플랫폼시티 라온프라이빗 아르디에",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000044.json"
+    },
+    {
+      "notice_id": "2026000045",
+      "apt_name": "대전 롯데캐슬 더퍼스트(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000045.json"
+    },
+    {
+      "notice_id": "2026000046",
+      "apt_name": "변동 동건아파트 우선분양전환 후 잔여세대",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000046.json"
+    },
+    {
+      "notice_id": "2026000047",
+      "apt_name": "범어역 파크드림 디아르",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000047.json"
+    },
+    {
+      "notice_id": "2026000048",
+      "apt_name": "이촌 르엘",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000048.json"
+    },
+    {
+      "notice_id": "2026000049",
+      "apt_name": "옥정중앙역 대방 디에트르(중상1, 복합1BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000049.json"
+    },
+    {
+      "notice_id": "2026000051",
+      "apt_name": "아산탕정자이 메트로시티(A3BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000051.json"
+    },
+    {
+      "notice_id": "2026000052",
+      "apt_name": "시흥거모B1 호반써밋",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000052.json"
+    },
+    {
+      "notice_id": "2026000055",
+      "apt_name": "의정부역 센트럴 아이파크",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000055.json"
+    },
+    {
+      "notice_id": "2026000057",
+      "apt_name": "에코델타시티 엘가 로제비앙",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000057.json"
+    },
+    {
+      "notice_id": "2026000058",
+      "apt_name": "오티에르 반포",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000058.json"
+    },
+    {
+      "notice_id": "2026000062",
+      "apt_name": "중앙하이츠 갈산역 센트럴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000062.json"
+    },
+    {
+      "notice_id": "2026000063",
+      "apt_name": "오션포레베네스트하우스(미단시티 공동8BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000063.json"
+    },
+    {
+      "notice_id": "2026000064",
+      "apt_name": "더샵 신길센트럴시티",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000064.json"
+    },
+    {
+      "notice_id": "2026000065",
+      "apt_name": "검단호수공원역 파라곤(AA36BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000065.json"
+    },
+    {
+      "notice_id": "2026000066",
+      "apt_name": "한화포레나 부산당리",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000066.json"
+    },
+    {
+      "notice_id": "2026000069",
+      "apt_name": "야목역 서희스타힐스 그랜드힐",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000069.json"
+    },
+    {
+      "notice_id": "2026000070",
+      "apt_name": "힐스테이트 안양펠루스",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000070.json"
+    },
+    {
+      "notice_id": "2026000071",
+      "apt_name": "르네오션 고성 퍼스트뷰",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000071.json"
+    },
+    {
+      "notice_id": "2026000073",
+      "apt_name": "풍무역세권 수자인 그라센트 2차",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000073.json"
+    },
+    {
+      "notice_id": "2026000074",
+      "apt_name": "엄궁역 트라비스 하늘채",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000074.json"
+    },
+    {
+      "notice_id": "2026000075",
+      "apt_name": "창원자이 더 스카이",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000075.json"
+    },
+    {
+      "notice_id": "2026000077",
+      "apt_name": "북전주 광신프로그레스",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000077.json"
+    },
+    {
+      "notice_id": "2026000078",
+      "apt_name": "천안 동일하이빌 파크레인",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000078.json"
+    },
+    {
+      "notice_id": "2026000081",
+      "apt_name": "선운지구다사로움 공가세대 일반공급",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000081.json"
+    },
+    {
+      "notice_id": "2026000082",
+      "apt_name": "골드클래스 시그니처",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000082.json"
+    },
+    {
+      "notice_id": "2026000085",
+      "apt_name": "힐스테이트 평거 센트럴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000085.json"
+    },
+    {
+      "notice_id": "2026000086",
+      "apt_name": "업성 푸르지오 레이크시티",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000086.json"
+    },
+    {
+      "notice_id": "2026000087",
+      "apt_name": "청주 푸르지오 씨엘리체",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000087.json"
+    },
+    {
+      "notice_id": "2026000088",
+      "apt_name": "용인 양지 서희스타힐스 하이뷰",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000088.json"
+    },
+    {
+      "notice_id": "2026000089",
+      "apt_name": "강릉 우미 린 더 프리미어",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000089.json"
+    },
+    {
+      "notice_id": "2026000090",
+      "apt_name": "소제지구 A3BL 중흥S-클래스 우미린",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000090.json"
+    },
+    {
+      "notice_id": "2026000091",
+      "apt_name": "소제지구 A4BL 중흥S-클래스 우미린",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000091.json"
+    },
+    {
+      "notice_id": "2026000093",
+      "apt_name": "더샵 안동더퍼스트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000093.json"
+    },
+    {
+      "notice_id": "2026000094",
+      "apt_name": "라클라체자이드파인",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000094.json"
+    },
+    {
+      "notice_id": "2026000096",
+      "apt_name": "천안 동문 디 이스트 파크시티",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000096.json"
+    },
+    {
+      "notice_id": "2026000101",
+      "apt_name": "온천장 하늘채 엘리시움",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000101.json"
+    },
+    {
+      "notice_id": "2026000102",
+      "apt_name": "울산신복역 비스타 메트로",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000102.json"
+    },
+    {
+      "notice_id": "2026000104",
+      "apt_name": "도안자이 센텀리체 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000104.json"
+    },
+    {
+      "notice_id": "2026000105",
+      "apt_name": "도안자이 센텀리체 2단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000105.json"
+    },
+    {
+      "notice_id": "2026000107",
+      "apt_name": "경기광주역 롯데캐슬 시그니처 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000107.json"
+    },
+    {
+      "notice_id": "2026000109",
+      "apt_name": "아산경남아너스빌 랜드마크49",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000109.json"
+    },
+    {
+      "notice_id": "2026000110",
+      "apt_name": "엘리프 창원",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000110.json"
+    },
+    {
+      "notice_id": "2026000112",
+      "apt_name": "용인 고림 동문 디 이스트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000112.json"
+    },
+    {
+      "notice_id": "2026000113",
+      "apt_name": "동탄 그웬 160 (동탄2 B11BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000113.json"
+    },
+    {
+      "notice_id": "2026000114",
+      "apt_name": "공덕역자이르네",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000114.json"
+    },
+    {
+      "notice_id": "2026000115",
+      "apt_name": "두산위브더제니스 구미(조합원취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000115.json"
+    },
+    {
+      "notice_id": "2026000121",
+      "apt_name": "문수로 라티에르 673",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000121.json"
+    },
+    {
+      "notice_id": "2026000124",
+      "apt_name": "고덕신도시 아테라 A-63블록 공공분양주택",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000124.json"
+    },
+    {
+      "notice_id": "2026000127",
+      "apt_name": "천안 휴먼빌 퍼스트시티(2회차)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000127.json"
+    },
+    {
+      "notice_id": "2026000129",
+      "apt_name": "더샵 관저아르테",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000129.json"
+    },
+    {
+      "notice_id": "2026000130",
+      "apt_name": "PH159",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000130.json"
+    },
+    {
+      "notice_id": "2026000135",
+      "apt_name": "인천가정2지구 B2블록 공공분양주택(후속사업)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000135.json"
+    },
+    {
+      "notice_id": "2026000143",
+      "apt_name": "파주금촌 금호어울림(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000143.json"
+    },
+    {
+      "notice_id": "2026000146",
+      "apt_name": "기장 이진캐스빌 포레",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000146.json"
+    },
+    {
+      "notice_id": "2026000149",
+      "apt_name": "엘리프 성성호수공원 1BL",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000149.json"
+    },
+    {
+      "notice_id": "2026000150",
+      "apt_name": "엘리프 성성호수공원 2BL",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000150.json"
+    },
+    {
+      "notice_id": "2026000152",
+      "apt_name": "e편한세상 부천 어반스퀘어",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output\\data_cache\\notices\\2026000152.json"
+    }
+  ]
+}

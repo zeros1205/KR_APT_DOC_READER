@@ -306,7 +306,7 @@ _applyFilters();
 
 def load_posts() -> list[dict]:
     posts: list[dict] = []
-    for meta_path in sorted(POSTS_DIR.glob("*/post_meta.json"), reverse=True):
+    for meta_path in POSTS_DIR.glob("*/post_meta.json"):
         try:
             meta = json.loads(meta_path.read_text(encoding="utf-8"))
             post_dir = meta_path.parent.name
@@ -319,6 +319,13 @@ def load_posts() -> list[dict]:
             posts.append(meta)
         except Exception as exc:
             print(f"  [경고] {meta_path} 파싱 실패: {exc}")
+
+    def _sort_key(post: dict) -> tuple[str, str]:
+        notice_date = str(post.get("notice_date") or "").strip()
+        generated_at = str(post.get("generated_at") or "").strip()
+        return (notice_date, generated_at)
+
+    posts.sort(key=_sort_key, reverse=True)
     return posts
 
 
@@ -519,7 +526,7 @@ def build_front_index() -> None:
         "경상남도": "경남",
         "제주도": "제주",
     }
-    known = [region for region in region_order if region in region_counts]
+    known = list(region_order)
     unknown = sorted(region for region in region_counts if region not in region_order)
     regions = ["전체"] + known + unknown
     total = len(posts)

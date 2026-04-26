@@ -30,15 +30,21 @@ from pipeline.html_renderer import BlogHTMLRenderer, PostData, build_post_data, 
 from pipeline.agents.collector import NoticeDocument
 from pipeline.agents.pdf_policy import extract_policy_from_pdf_text
 from pipeline.orchestrator import (
+    _apply_application_area_guidance,
     _derive_price_range,
     _fallback_content_generation,
     _fallback_location_analysis,
+    _apply_special_supply_2026_guidance,
+    _needs_regulation_enrichment,
+    _needs_special_eligibility_enrichment,
     _select_theme,
     agent_content_generation,
     agent_fact_extraction,
     agent_factcheck_qa,
     agent_location_analysis_gemini,
     agent_location_verify_gemini,
+    agent_regulation_grounding,
+    agent_special_eligibility_grounding,
     agent_quality_check,
 )
 
@@ -48,8 +54,8 @@ _LOCATION_KEYS = (
     "subway_detail",
     "school_score",
     "school_detail",
-    "life_score",
-    "life_detail",
+    "feature_score",
+    "feature_detail",
     "medical_score",
     "medical_detail",
 )
@@ -161,6 +167,8 @@ async def extract_facts_node(state: PipelineState) -> dict[str, Any]:
     doc = state.get("doc")
     facts = await agent_fact_extraction(notice_text)
     facts = _merge_pdf_policy(facts, state.get("pdf_policy_text") or (doc.pdf_policy_text if doc else ""))
+    facts = _apply_application_area_guidance(facts)
+    facts = _apply_special_supply_2026_guidance(facts)
 
     if not facts.get("apt_name") and doc and doc.apt_name:
         facts["apt_name"] = doc.apt_name
@@ -171,6 +179,10 @@ async def extract_facts_node(state: PipelineState) -> dict[str, Any]:
             int(ut.get("general_units", 0) or 0) + int(ut.get("special_units", 0) or 0)
             for ut in facts["unit_types"]
         )
+    if doc and _needs_special_eligibility_enrichment(facts):
+        facts = await agent_special_eligibility_grounding(facts, doc.notice_id)
+    if doc and _needs_regulation_enrichment(facts):
+        facts = await agent_regulation_grounding(facts, doc.notice_id)
     return {"facts": facts, "error": ""}
 
 

@@ -14,6 +14,7 @@ import sys
 import asyncio
 import json
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from openai import AsyncOpenAI
 
@@ -32,6 +33,11 @@ from agents.pdf_policy import extract_policy_from_pdf_text
 from kakao_local import KakaoLocalClient, merge_places, normalize_places, score_from_distance
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+CACHE_NOTICE_DIR = Path(__file__).parent.parent / "output" / "data_cache" / "notices"
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone(timedelta(hours=9))).isoformat(timespec="seconds")
 
 
 async def _call_openai_json(system: str, user: str, model: str, max_tokens: int = 4096) -> str:
@@ -87,8 +93,6 @@ FACT_EXTRACTION_PROMPT = """
   예: "2년", "없음", "해당 없음". 공고에 없으면 null.
 - price_cap: 분양가 상한제 적용 여부 — "분양가상한제" 항목.
   반드시 "적용" 또는 "미적용" 중 하나. 공고에 없으면 null.
-- land_type: 택지 유형 — "택지유형", "토지 구분" 항목.
-  예: "민간택지", "공공택지", "공공주택지구". 공고에 없으면 null.
 - is_price_cap: 분양가상한제 여부 (Y/N) — legacy, price_cap과 중복 추출
 - eligibility_special: 배열 — 공고에 명시된 특별공급 유형별 신청자격
   각 항목: type_name(예: "생애최초", "신혼부부", "다자녀", "노부모부양", "기관추천"),
@@ -291,7 +295,7 @@ def _parse_unit_types_from_text(notice_text: str) -> list[dict]:
         elif not special_text.isdigit():
             continue
         if "분양가" in price_text or "가격" in price_text:
-            m = re.search(r"([0-9.,억천백십만~\s]+)", price_text)
+            m = re.search(r"([0-9.,억천백십만원~\s]+)", price_text)
             price_text = m.group(1).strip() if m else price_text
         if not re.search(r"\d", price_text):
             continue
@@ -320,7 +324,7 @@ def _parse_unit_types_from_text(notice_text: str) -> list[dict]:
         r"(?P<type>\d+[A-Z]?(?:타입)?)\s*(?:\(|\[)?\s*(?P<area>[\d.]+)\s*㎡.*?"
         r"(?:일반|공급)\s*(?P<general>\d+)\s*세대.*?"
         r"(?:특별|우선)\s*(?P<special>\d+)\s*세대.*?"
-        r"(?:분양가|가격|분양가상한)\s*(?P<price>[0-9.,억천백십만~\s]+)",
+        r"(?:분양가|가격|분양가상한)\s*(?P<price>[0-9.,억천백십만원~\s]+)",
         re.IGNORECASE,
     )
     for m in pattern.finditer(notice_text or ""):
@@ -437,6 +441,257 @@ def _fallback_fact_extraction(notice_text: str) -> dict:
         facts["supply_total_units"] = 0
 
     return facts
+
+
+def _area_name_from_location(location: str) -> str:
+    parts = [part for part in (location or "").split() if part]
+    if len(parts) >= 2:
+        return " ".join(parts[:2])
+    return parts[0] if parts else "해당 지역"
+
+
+def _apply_application_area_guidance(facts: dict) -> dict:
+    """청약 신청지역 설명을 모든 포스트에서 구체적으로 보강한다."""
+    if not facts:
+        return facts
+    region_name = str(facts.get("region_name") or "").strip()
+    location = str(facts.get("location") or facts.get("supply_location") or "").strip()
+    local_area = region_name or _area_name_from_location(location)
+    if local_area.startswith("서울"):
+        local_area = "서울"
+    elif local_area.startswith("경기"):
+        local_area = "경기도"
+    elif local_area.startswith("인천"):
+        local_area = "인천"
+    if local_area == "서울":
+        local_desc = "서울특별시 2년 이상 계속 거주자"
+        etc_desc = "서울특별시 2년 미만 거주자 및 수도권(경기·인천) 거주자"
+    elif local_area in {"경기", "경기도"}:
+        local_desc = "해당 시·군 또는 경기도 내 공고문상 해당지역 거주자"
+        etc_desc = "기타 수도권 거주자"
+    elif local_area == "인천":
+        local_desc = "인천광역시 공고문상 해당지역 거주자"
+        etc_desc = "기타 수도권 거주자"
+    else:
+        local_desc = f"{local_area} 공고문상 해당지역 거주자"
+        etc_desc = "공고문에서 정한 기타지역 거주자"
+
+    facts["application_area_local"] = local_desc
+    facts["application_area_etc"] = etc_desc
+    facts["eligibility_rank1"] = [
+        f"해당지역 1순위는 {local_desc}를 기준으로 접수합니다.",
+        f"기타지역 1순위는 {etc_desc}를 기준으로 접수합니다.",
+        "청약통장 가입기간, 예치금, 세대구성 등 1순위 기본 요건도 함께 충족해야 합니다.",
+    ]
+    facts["eligibility_rank2"] = [
+        "2순위는 1순위에 해당하지 않거나 1순위 접수 후 남은 물량이 있을 때 공고문 일정에 따라 접수합니다.",
+        "해당지역과 기타지역 접수일이 같더라도 거주지역 구분은 공고문 기준으로 확인해야 합니다.",
+    ]
+    return facts
+
+
+_SPECIAL_SUPPLY_FIELD_MAP = {
+    "기관추천": "INSTT_RECOMEND_HSHLDCO",
+    "생애최초": "LFE_FRST_HSHLDCO",
+    "다자녀가구": "MNYCH_HSHLDCO",
+    "신혼부부": "NWWDS_HSHLDCO",
+    "노부모부양": "OLD_PARNTS_SUPORT_HSHLDCO",
+    "신생아": "NWBB_HSHLDCO",
+    "청년": "YGMN_HSHLDCO",
+}
+
+
+def _load_cached_unit_type_rows(notice_id: str) -> list[dict]:
+    cache_file = CACHE_NOTICE_DIR / f"{notice_id}.json"
+    if not cache_file.exists():
+        return []
+    try:
+        payload = json.loads(cache_file.read_text(encoding="utf-8"))
+        return payload.get("unit_types") or []
+    except Exception:
+        return []
+
+
+def _load_cached_notice_payload(notice_id: str) -> dict:
+    cache_file = CACHE_NOTICE_DIR / f"{notice_id}.json"
+    if not cache_file.exists():
+        return {}
+    try:
+        return json.loads(cache_file.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _persist_grounded_regulation(notice_id: str, regulation: dict) -> None:
+    cache_file = CACHE_NOTICE_DIR / f"{notice_id}.json"
+    if not cache_file.exists():
+        return
+    try:
+        payload = json.loads(cache_file.read_text(encoding="utf-8"))
+    except Exception:
+        return
+
+    payload["grounded_regulation"] = dict(regulation)
+    doc = payload.setdefault("document", {})
+    for key in (
+        "regulated_zone",
+        "is_hot_zone",
+        "readmission_limit",
+        "resale_restriction",
+        "live_requirement",
+        "price_cap",
+        "is_price_cap",
+    ):
+        value = regulation.get(key)
+        if value not in (None, "", "미기재", "공고문 확인 필요"):
+            doc[key] = value
+
+    cache_file.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _aggregate_special_supply_quota(unit_rows: list[dict]) -> list[dict]:
+    items: list[dict] = []
+    for type_name, field_name in _SPECIAL_SUPPLY_FIELD_MAP.items():
+        total = 0
+        for row in unit_rows:
+            try:
+                total += int(str(row.get(field_name) or 0).strip() or 0)
+            except Exception:
+                continue
+        if total > 0:
+            items.append({"type_name": type_name, "quota": f"{total}세대"})
+    return items
+
+
+def _special_supply_fallback_items(base_items: list[dict]) -> list[dict]:
+    fallback_rules = {
+        "기관추천": [
+            "관련 기관 추천 대상자이면서 공고문상 무주택 등 기본 요건을 충족해야 합니다.",
+            "청약통장 인정 여부와 거주지역 기준은 모집공고문 및 청약홈 안내를 함께 확인해야 합니다.",
+        ],
+        "생애최초": [
+            "생애최초 특별공급은 무주택 여부와 소득·자산 등 공고문 기준을 함께 확인해야 합니다.",
+            "세대 구성과 청약통장 요건은 모집공고문 기준으로 판단해야 합니다.",
+        ],
+        "다자녀가구": [
+            "다자녀가구 특별공급은 자녀 수, 무주택 여부, 거주요건 등을 공고문 기준으로 확인해야 합니다.",
+            "세대 구성 기준일과 자녀 인정 범위는 모집공고문을 우선 확인해야 합니다.",
+        ],
+        "신혼부부": [
+            "신혼부부 특별공급은 혼인 기간, 무주택 여부, 소득·자산 기준을 공고문 기준으로 확인해야 합니다.",
+            "예비신혼부부 포함 여부와 세대 구성 요건은 모집공고문 및 청약홈 안내를 함께 봐야 합니다.",
+        ],
+        "노부모부양": [
+            "노부모부양 특별공급은 부양 기간, 세대 구성, 무주택 요건 등을 공고문 기준으로 확인해야 합니다.",
+            "동일 세대 인정 범위와 부양 사실 판단 기준은 모집공고문에서 다시 확인해야 합니다.",
+        ],
+        "신생아": [
+            "신생아 특별공급은 출산·입양 기준일과 무주택, 소득·자산 요건을 공고문 기준으로 확인해야 합니다.",
+            "세부 증빙 기준은 모집공고문 및 청약홈 안내를 함께 확인해야 합니다.",
+        ],
+        "청년": [
+            "청년 특별공급은 연령, 무주택 여부, 소득 기준 등 공고문상 요건을 먼저 확인해야 합니다.",
+            "세부 자격 기준은 모집공고문과 청약홈 안내를 함께 확인해야 합니다.",
+        ],
+    }
+    result = []
+    for item in base_items:
+        result.append(
+            {
+                "type_name": item["type_name"],
+                "quota": item.get("quota"),
+                "requirements": fallback_rules.get(
+                    item["type_name"],
+                    ["공고문에 명시된 해당 특별공급 요건을 우선 확인해야 합니다."],
+                ),
+            }
+        )
+    return result
+
+
+def _is_2026_notice(facts: dict) -> bool:
+    notice_date = str(facts.get("notice_date") or "").strip()
+    return notice_date.startswith("2026-")
+
+
+def _special_supply_standard_requirements_2026(type_name: str) -> list[str]:
+    rules = {
+        "신혼부부": [
+            "입주자모집공고일 기준 혼인 7년 이내 무주택세대구성원을 기본으로 보며, 예비신혼부부 포함 여부 요건을 반드시 확인해야 합니다.",
+            "맞벌이 여부, 소득·자산 기준, 청약통장 요건을 반드시 확인해야 합니다.",
+        ],
+        "생애최초": [
+            "입주자모집공고일 기준 본인과 배우자 모두 주택 소유 이력이 없어야 하며, 무주택세대구성원 요건을 충족해야 합니다.",
+            "소득세 납부 이력, 소득·자산 기준, 청약통장 요건을 반드시 확인해야 합니다.",
+        ],
+        "다자녀가구": [
+            "입주자모집공고일 기준 미성년 자녀 3명 이상인 무주택세대구성원을 기본으로 봅니다.",
+            "자녀 수 산정 기준, 소득·자산 기준, 청약통장 요건을 반드시 확인해야 합니다.",
+        ],
+        "노부모부양": [
+            "입주자모집공고일 기준 만 65세 이상 직계존속을 3년 이상 계속 부양한 경우를 기본으로 봅니다.",
+            "세대주 요건, 부모의 무주택 요건, 청약통장 조건을 반드시 확인해야 합니다.",
+        ],
+        "신생아": [
+            "입주자모집공고일 기준 출생 또는 입양 2년 이내 자녀가 있는 무주택세대구성원 여부를 기본으로 봅니다.",
+            "공공분양과 민영주택의 기준 차이, 소득·자산 기준, 청약통장 요건을 반드시 확인해야 합니다.",
+        ],
+        "기관추천": [
+            "국가유공자, 장애인 등 관계기관 추천 대상자로 선정된 경우가 핵심이며, 추천 여부가 가장 중요합니다.",
+            "무주택 여부와 청약통장 필요 여부 등 세부 조건을 반드시 확인해야 합니다.",
+        ],
+        }
+    return rules.get(
+        type_name,
+        [
+            "입주자모집공고일 기준 무주택세대구성원 여부와 해당 유형의 기본 자격을 먼저 확인해야 합니다.",
+            "혼인·자녀·연령·부양기간·소득·자산·청약통장 조건을 반드시 확인해야 합니다.",
+        ],
+    )
+
+
+def _apply_special_supply_2026_guidance(facts: dict) -> dict:
+    if not _is_2026_notice(facts):
+        return facts
+    items = facts.get("eligibility_special") or []
+    normalized: list[dict] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        type_name = str(item.get("type_name") or "").strip()
+        if not type_name:
+            continue
+        normalized.append(
+            {
+                "type_name": type_name,
+                "quota": item.get("quota"),
+                "requirements": _special_supply_standard_requirements_2026(type_name),
+            }
+        )
+    if normalized:
+        facts["eligibility_special"] = normalized
+    return facts
+
+
+def _needs_special_eligibility_enrichment(facts: dict) -> bool:
+    items = facts.get("eligibility_special") or []
+    if not items:
+        return True
+    if len(items) == 1 and str(items[0].get("type_name") or "").strip() == "특별공급":
+        return True
+    return False
+
+
+def _needs_regulation_enrichment(facts: dict) -> bool:
+    missing_markers = {"", "미기재", "공고문 확인 필요", "해당없음", None}
+    for key in ("readmission_limit", "resale_restriction", "live_requirement"):
+        if facts.get(key) in missing_markers:
+            return True
+    if facts.get("price_cap") in {"", "미기재", "공고문 확인 필요", None}:
+        return True
+    if facts.get("regulated_zone") in {"", "미기재", "공고문 확인 필요", None}:
+        return True
+    return False
 
 
 def _extract_section_text(text: str, header: str) -> str:
@@ -594,12 +849,12 @@ async def _build_kakao_location_analysis(facts: dict) -> dict:
             empty_text="반경 500m 이내 초등학교·중학교 정보가 확인되지 않았습니다.",
             columns=2,
         ),
-        "life_score": score_from_distance(_nearest_distance(life), thresholds=(200, 350, 500, 700)),
-        "life_detail": _render_place_list_html(
-            life,
-            empty_text="반경 500m 이내 주요 생활편의시설 정보가 확인되지 않았습니다.",
-            columns=1,
-        ),
+        "feature_score": "",
+        "feature_detail": _html_list([
+            f"{apt_name or '해당 단지'}는 {facts.get('supply_scale') or '공급 규모'}를 바탕으로 지역 안에서 눈에 띄는 신규 주거 선택지로 볼 수 있습니다. 단지 자체의 희소성과 공급 성격을 함께 확인해보세요.",
+            ((life[0].get("description") or "").strip() if life else f"{address or apt_name or '해당 단지'} 주변 생활편의시설 접근성은 실제 거주 만족도를 가르는 요소입니다. 마트·공원·생활시설 동선을 같이 확인해보는 것이 좋습니다."),
+            ((medical[0].get("description") or "").strip() if medical else f"생활권 안의 의료·편의 인프라도 같이 보셔야 해요. 단지 외부 환경까지 함께 확인해보면 실거주 관점에서 훨씬 판단이 쉬워집니다."),
+        ]),
         "medical_score": score_from_distance(_nearest_distance(medical), thresholds=(200, 350, 500, 700)),
         "medical_detail": _render_place_list_html(
             medical,
@@ -656,7 +911,7 @@ def _fallback_location_analysis(facts: dict, notice_text: str) -> dict:
         "주변 주거지 성숙도와 생활 인프라 밀도는 자녀 교육 환경의 체감 품질에 직접 연결되는 요소입니다.",
     ]
     life_items = [
-        f"{apt_name}는 {facts.get('supply_scale') or '공급 규모'}를 바탕으로 지역 내 새로운 주거 선택지로 읽히는 단지입니다.",
+        f"{apt_name}는 이번 공고의 공급 구성과 입지 조건을 함께 봐야 특징이 잘 보이는 단지입니다.",
         life or f"{location or apt_name} 생활권의 편의시설 접근성은 실제 거주 편의성을 판단하는 핵심 기준입니다.",
         medical or f"의료·생활 기반시설은 {location or apt_name} 주변 생활권을 기준으로 추가 확인할 만합니다.",
     ]
@@ -673,8 +928,8 @@ def _fallback_location_analysis(facts: dict, notice_text: str) -> dict:
         "subway_detail": _html_list(transit_items),
         "school_score": "",
         "school_detail": _html_list(school_items),
-        "life_score": "",
-        "life_detail": _html_list(life_items),
+        "feature_score": "",
+        "feature_detail": _safe_feature_detail_from_facts(facts),
         "medical_score": "",
         "medical_detail": "",
     }
@@ -697,6 +952,8 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
     readmission_limit = facts.get("readmission_limit") or "공고문 확인 필요"
     live_requirement = facts.get("live_requirement") or "공고문 확인 필요"
     price_cap = facts.get("price_cap") or "공고문 확인 필요"
+    local_area = facts.get("application_area_local") or "공고문상 해당지역 거주자"
+    etc_area = facts.get("application_area_etc") or "공고문상 기타지역 거주자"
 
     unit_names = ", ".join(ut.get("type_name", "") for ut in unit_types[:4] if ut.get("type_name")) or "주요 타입"
     type_summary = (
@@ -705,31 +962,45 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
 
     qa_blocks = [
         {
-            "question": "이 단지는 어떤 점을 먼저 봐야 하나요?",
+            "question": "청약 접수 일정은 어떻게 되나요?",
             "answer": (
-                f"{apt_name}은(는) {location or '공고문상 공급위치'}에 들어서는 공고로, "
-                f"가장 먼저 일정과 규제, 타입별 가격대를 함께 보는 것이 중요합니다. "
-                f"현재 확인되는 가격 범위는 {price_range or '공고문 확인 필요'}이고, "
-                f"1순위 접수는 {rank1_date or '공고문 확인 필요'}에 진행됩니다. "
-                f"단지의 장점은 입지와 공급구성이 맞아떨어질 때 더 선명해지므로, 교통·교육·생활편의 동선을 함께 확인해야 합니다."
+                f"이번 일정은 특별공급 {facts.get('special_supply_date') or '공고문 확인 필요'}, 1순위 {rank1_date or '공고문 확인 필요'}, "
+                f"2순위 {facts.get('rank2_date') or '공고문 확인 필요'}, 당첨자 발표 {winner_date or '공고문 확인 필요'} 순서로 보시면 됩니다. "
+                f"1순위는 거주지에 따라 접수일이 달라질 수 있으니, 마지막으로 본인 기준 날짜만 다시 체크해두세요. "
+                f"특히 해당지역과 기타지역 일정이 나뉘는 공고라면 접수일 표기를 끝까지 확인하는 편이 좋습니다."
             ),
         },
         {
-            "question": "규제와 청약 제한은 어떻게 해석하면 되나요?",
+            "question": "해당지역과 기타지역은 어떻게 구분하나요?",
             "answer": (
-                f"규제 정보는 {regulated_zone}, 전매제한은 {facts.get('resale_restriction') or '공고문 확인 필요'}, "
-                f"재당첨 제한은 {readmission_limit}, 거주의무기간은 {live_requirement}, 분양가상한제는 {price_cap}로 정리됩니다. "
-                f"실제 청약 가능 여부는 세대원 구성, 거주지역, 청약통장 가입기간, 예치금 조건이 함께 맞아야 판단할 수 있습니다. "
-                f"따라서 규제 문구 하나만 보지 말고 공고문 전체와 청약홈 안내를 함께 대조하는 것이 안전합니다."
+                f"이 공고에서는 해당지역을 {local_area}, 기타지역을 {etc_area} 정도로 이해하시면 됩니다. "
+                f"거주기간 계산 방식이나 우선공급 기준은 공고문 표기를 그대로 따라가는 게 가장 정확합니다. "
+                f"같은 수도권 공고라도 기준이 조금씩 다를 수 있어서 익숙한 표현이라도 그대로 넘기지 않는 편이 안전합니다."
             ),
         },
         {
-            "question": "자금계획은 어떻게 준비해야 하나요?",
+            "question": "규제와 제한사항은 무엇인가요?",
             "answer": (
-                f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}%라는 흐름으로 이해하면 됩니다. "
-                f"여기서는 비율과 납부 시점만 먼저 이해하고, 실제 납부금액은 선택 타입과 옵션, 대출 조건을 반영해 공고문 기준으로 다시 확인하는 것이 안전합니다. "
-                f"특히 {apt_name}처럼 타입별 분양가 차이가 있는 단지는 동일 단지 안에서도 실제 필요 현금이 달라질 수 있으므로, "
-                f"희망 평형을 정한 뒤 분양사 안내와 금융 조건을 함께 대조해야 합니다."
+                f"먼저 볼 부분은 {regulated_zone} 여부와 전매제한 {facts.get('resale_restriction') or '공고문 확인 필요'}입니다. "
+                f"여기에 재당첨 제한 {readmission_limit}, 거주의무기간 {live_requirement}, 분양가상한제 {price_cap}까지 함께 확인해보세요. "
+                f"이 항목들은 청약 후 계약과 보유 계획에도 연결되기 때문에 일정만큼이나 먼저 확인하셔야 해요."
+            ),
+        },
+        {
+            "question": "공급 규모와 분양가는 어떻게 되나요?",
+            "answer": (
+                f"이번 공급 물량은 총 {facts.get('supply_total_units') or facts.get('total_households') or '공고문 확인 필요'}세대이고, "
+                f"분양가는 {price_range or '공고문 확인 필요'} 수준으로 보면 됩니다. "
+                f"실제로 비교할 때는 타입별 세대수와 가격 차이를 같이 보는 쪽이 더 도움이 됩니다. "
+                f"같은 단지 안에서도 타입에 따라 체감 가격 차이가 꽤 다르게 느껴질 수 있습니다."
+            ),
+        },
+        {
+            "question": "계약금·중도금·잔금 구조는 어떻게 보나요?",
+            "answer": (
+                f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 순서입니다. "
+                f"자금 마련 방식은 사람마다 다를 수 있어서, 실제 대출 가능 여부와 한도는 따로 확인해두는 편이 좋습니다. "
+                f"공고문에 비율만 적혀 있는 경우에는 납부 시점과 금융 조건을 같이 보면서 준비하는 쪽이 실수 없이 대응하기 좋습니다."
             ),
         },
     ]
@@ -754,10 +1025,10 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         "location_intro": location_data.get("location_intro")
         or f"{apt_name}의 입지는 {location or '공고문상 공급위치'}를 중심으로 교통과 생활권을 함께 보는 것이 핵심입니다.",
         "financial_intro": (
-            f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 구조로 이해하면 됩니다. "
-            f"실제 납부금액은 선택 타입과 옵션, 대출 조건에 따라 달라지므로 비율과 일정부터 먼저 확인하는 편이 안전합니다."
+            f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 구조를 먼저 확인하면 됩니다. "
+            f"실제 납부금액과 조달 방식은 타입별 조건과 개인별 금융 여건에 따라 달라질 수 있습니다."
         ),
-        "qa_intro": "아래 Q&A에서는 일정, 규제, 자금계획 순서로 실무적으로 필요한 포인트만 다시 정리합니다.",
+        "qa_intro": "공고문을 볼 때 많이 헷갈리는 질문만 먼저 골라서 짧게 풀어봤어요.",
         "schedule_desc": (
             f"특별공급과 1순위, 2순위 일정은 각각 공고문 일정표를 기준으로 확인해야 합니다. "
             f"대표 청약일은 {rank1_date or '공고문 확인 필요'}이며, 당첨자 발표는 {winner_date or '공고문 확인 필요'}입니다."
@@ -773,16 +1044,12 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         "seo_tags": seo_tags,
         "subway_detail": location_data.get("subway_detail", "교통 접근성은 공고문과 지도를 함께 확인해야 합니다."),
         "school_detail": location_data.get("school_detail", "학군 정보는 교육청 자료와 함께 확인해야 합니다."),
-        "life_detail": location_data.get("life_detail", "생활편의시설은 지도 기반으로 재확인하는 것이 좋습니다."),
+        "feature_detail": location_data.get("feature_detail", location_data.get("life_detail", "단지 특징과 주변 생활권은 함께 확인해보는 것이 좋습니다.")),
         "medical_detail": location_data.get("medical_detail", "의료 인프라는 실제 생활권 반경을 기준으로 확인해야 합니다."),
     }
 
 
-_QA_REQUIRED_NOTE = (
-    '<br><span style="font-size:13px; color:#999;">'
-    '※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, '
-    '반드시 분양사 및 관련 기관에 직접 확인하세요.</span>'
-)
+_QA_REQUIRED_NOTE = ""
 
 _RISKY_CONTENT_PATTERNS = (
     r"시세차익",
@@ -814,11 +1081,7 @@ def _contains_risky_claim(text: str) -> bool:
 
 def _ensure_qa_required_note(answer: str) -> str:
     answer = (answer or "").strip()
-    if not answer:
-        return _QA_REQUIRED_NOTE.lstrip("<br>")
-    if "※ 개인 조건" in answer:
-        return answer
-    return f"{answer}{_QA_REQUIRED_NOTE}"
+    return answer
 
 
 def _has_financial_conflict(answer: str, facts: dict) -> bool:
@@ -880,6 +1143,8 @@ def _sanitize_generated_content(content: dict, facts: dict, location_data: dict)
             )
         sanitized["qa_blocks"] = safe_blocks
 
+    sanitized["qa_blocks"] = _fallback_content_generation(facts, location_data)["qa_blocks"]
+
     for key in ("post_title", "post_subtitle"):
         value = str(sanitized.get(key) or "").strip()
         if not value or _contains_risky_claim(value):
@@ -896,6 +1161,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
     if not OPENAI_API_KEY.strip():
         print("  [Agent 1] OPENAI_API_KEY 미설정 → 결정론적 폴백 사용")
         facts = _fallback_fact_extraction(notice_text)
+        facts = _apply_application_area_guidance(facts)
         print(f"  [Agent 1] 완료: {facts.get('apt_name', '미확인')} 추출")
         return facts
     raw = await _call_openai_json(
@@ -977,6 +1243,7 @@ async def agent_fact_extraction(notice_text: str) -> dict:
             print(f"  [Agent 1] 자금계획 재추출 실패 ({e})")
 
     print(f"  [Agent 1] 완료: {facts.get('apt_name', '미확인')} 추출")
+    facts = _apply_application_area_guidance(facts)
     return facts
 
 
@@ -997,12 +1264,14 @@ LOCATION_ANALYSIS_PROMPT = """당신은 아파트를 분양해야 하는 시행�
 1. location_intro: 요약 3문장 이내
 2. subway_detail: "1. 교통 및 입지 여건" 섹션용 HTML 목록
 3. school_detail: "2. 교육 및 주거 환경" 섹션용 HTML 목록
-4. life_detail: "3. 단지 특징" 섹션용 HTML 목록
+4. feature_detail: "3. 단지 특징" 섹션용 HTML 목록
 
 반드시 지킬 것:
 - JSON만 출력
-- subway_detail / school_detail / life_detail 는 반드시 <ul>...</ul> 형식의 HTML 문자열
-- 각 섹션은 2~4개의 <li>로 구성
+- subway_detail / school_detail / feature_detail 는 반드시 <ul>...</ul> 형식의 HTML 문자열
+- 각 섹션은 반드시 정확히 3개의 <li>로 구성
+- 각 <li>는 2문장 이상으로, 단순 키워드 나열이 아니라 설명형 문장으로 작성
+- 세 문장은 서로 다른 포인트를 설명해야 하며, 같은 의미 반복 금지
 - 실제 확인된 facts만 기반으로 쓰고, facts에 없는 고유명사·역명·학교명·시설명은 새로 만들지 말 것
 - 생활·교육·교통이 부족하면 장점 중심의 일반화 문장으로 안전하게 작성할 것
 - medical_detail은 빈 문자열로 둘 것
@@ -1015,11 +1284,11 @@ JSON만 출력:
 {{
   "location_intro": "요약 3문장 이내",
   "subway_score": "",
-  "subway_detail": "<ul><li>...</li><li>...</li></ul>",
+  "subway_detail": "<ul><li>...</li><li>...</li><li>...</li></ul>",
   "school_score": "",
-  "school_detail": "<ul><li>...</li><li>...</li></ul>",
-  "life_score": "",
-  "life_detail": "<ul><li>...</li><li>...</li></ul>",
+  "school_detail": "<ul><li>...</li><li>...</li><li>...</li></ul>",
+  "feature_score": "",
+  "feature_detail": "<ul><li>...</li><li>...</li><li>...</li></ul>",
   "medical_score": "",
   "medical_detail": ""
 }}"""
@@ -1031,8 +1300,9 @@ LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
 1. facts에 없는 고유명사·역명·학교명·시설명을 새로 만들지 않았는가?
 2. 투자수익, 시세차익, 가격상승, 당첨 가능성 예측이 들어가 있지 않은가?
 3. location_intro는 3문장 이내인가?
-4. subway_detail / school_detail / life_detail 은 각각 <ul>...</ul> HTML 목록인가?
-5. "교통 및 입지 여건 / 교육 및 주거 환경 / 단지 특징"에 맞는 내용으로 구분되어 있는가?
+4. subway_detail / school_detail / feature_detail 은 각각 <ul>...</ul> HTML 목록인가?
+5. 각 섹션이 정확히 3개의 <li>로 구성되어 있고, 각 <li>가 설명형 문장 2문장 이상으로 작성되어 있는가?
+6. "교통 및 입지 여건 / 교육 및 주거 환경 / 단지 특징"에 맞는 내용으로 구분되어 있는가?
 
 [단지명]: {apt_name}
 [위치]: {location}
@@ -1044,7 +1314,7 @@ LOCATION_VERIFY_PROMPT = """아래는 AI가 생성한 입지 분석입니다.
 
 _LOCATION_KEYS = (
     "location_intro", "subway_score", "subway_detail",
-    "school_score", "school_detail", "life_score", "life_detail",
+    "school_score", "school_detail", "feature_score", "feature_detail",
     "medical_score", "medical_detail",
 )
 
@@ -1071,9 +1341,60 @@ def _html_list(items: list[str]) -> str:
     return f"<ul>{lis}</ul>"
 
 
+def _feature_type_summary(facts: dict) -> str:
+    unit_types = facts.get("unit_types", []) or []
+    type_names = []
+    for ut in unit_types:
+        name = str((ut or {}).get("type_name") or "").strip()
+        if name and name not in type_names:
+            type_names.append(name)
+    if not type_names:
+        return "타입 구성은 공고문 기준으로 확인이 필요합니다."
+    preview = ", ".join(type_names[:4])
+    suffix = " 등" if len(type_names) > 4 else ""
+    return f"이번 공고에서는 {preview}{suffix} 타입 구성을 확인해볼 수 있습니다."
+
+
+def _safe_feature_detail_from_facts(facts: dict) -> str:
+    apt_name = str(facts.get("apt_name") or "해당 단지").strip()
+    supply_location = str(facts.get("supply_location") or facts.get("location") or "공급 위치").strip()
+    notice_date = str(facts.get("notice_date") or "공고문 확인 필요").strip()
+    move_in_date = str(facts.get("move_in_date") or "입주 시기 확인 필요").strip()
+    regulated_zone = str(facts.get("regulated_zone") or "규제 정보 확인 필요").strip()
+    price_cap = str(facts.get("price_cap") or "분양가상한제 여부 확인 필요").strip()
+    resale = str(facts.get("resale_restriction") or "전매제한 확인 필요").strip()
+
+    items = [
+        f"{apt_name}는 공급 위치와 공고문에 적힌 공급 구성을 함께 봐야 특징이 잘 보입니다. {_feature_type_summary(facts)}",
+        f"이번 공고 기준 모집공고일은 {notice_date}, 입주 예정 시기는 {move_in_date}입니다. 일정과 공급 조건을 같이 보면서 준비 흐름을 확인해보세요.",
+        f"규제 측면에서는 {regulated_zone}, 분양가상한제 {price_cap}, 전매제한 {resale} 여부를 함께 보셔야 해요. {supply_location}에 들어서는 공고인 만큼 위치와 규제 조건을 같이 읽는 편이 좋습니다.",
+    ]
+    return _html_list(items)
+
+
+def _extract_html_list_items(value: str) -> list[str]:
+    if not value:
+        return []
+    items = re.findall(r"<li[^>]*>(.*?)</li>", value, flags=re.IGNORECASE | re.DOTALL)
+    if items:
+        return [re.sub(r"\s+", " ", _strip_html(item)).strip() for item in items if _strip_html(item).strip()]
+    return [line.strip("-• \t") for line in re.split(r"[\r\n]+", _strip_html(value)) if line.strip()]
+
+
+def _ensure_location_list(value: str, fallback_items: list[str]) -> str:
+    items = _extract_html_list_items(value)
+    normalized = [item for item in items if item]
+    for fallback in fallback_items:
+        if len(normalized) >= 3:
+            break
+        normalized.append(fallback)
+    return _html_list(normalized[:3])
+
+
 def _normalize_location_output(result: dict, facts: dict, notice_text: str = "") -> dict:
     apt_name = facts.get("apt_name", "해당 단지")
     location = facts.get("location", "") or facts.get("supply_location", "") or "공급 위치"
+    fallback = _fallback_location_analysis(facts, notice_text)
 
     intro = _limit_sentences(result.get("location_intro", ""))
     if not intro:
@@ -1088,29 +1409,30 @@ def _normalize_location_output(result: dict, facts: dict, notice_text: str = "")
         "subway_detail": result.get("subway_detail", "") or "",
         "school_score": "",
         "school_detail": result.get("school_detail", "") or "",
-        "life_score": "",
-        "life_detail": result.get("life_detail", "") or "",
+        "feature_score": "",
+        "feature_detail": result.get("feature_detail", "") or result.get("life_detail", "") or "",
         "medical_score": "",
         "medical_detail": "",
     }
 
-    for key in ("subway_detail", "school_detail", "life_detail"):
+    for key in ("subway_detail", "school_detail", "feature_detail"):
         value = (normalized.get(key) or "").strip()
-        if not value:
-            continue
-        if not value.lstrip().startswith("<ul"):
-            chunks = [line.strip("-• \t") for line in re.split(r"[\r\n]+", _strip_html(value)) if line.strip()]
-            normalized[key] = _html_list(chunks)
+        fallback_items = _extract_html_list_items(fallback.get(key, ""))
+        normalized[key] = _ensure_location_list(value, fallback_items)
 
-    if not normalized["subway_detail"] or normalized["subway_detail"] == "<ul></ul>":
-        fallback = _fallback_location_analysis(facts, notice_text)
-        normalized["subway_detail"] = fallback["subway_detail"]
-    if not normalized["school_detail"] or normalized["school_detail"] == "<ul></ul>":
-        fallback = _fallback_location_analysis(facts, notice_text)
-        normalized["school_detail"] = fallback["school_detail"]
-    if not normalized["life_detail"] or normalized["life_detail"] == "<ul></ul>":
-        fallback = _fallback_location_analysis(facts, notice_text)
-        normalized["life_detail"] = fallback["life_detail"]
+    feature_text = _strip_html(normalized.get("feature_detail", ""))
+    risky_feature_patterns = (
+        r"프라이빗",
+        r"개방감",
+        r"세련된 외관",
+        r"현대적인 설계",
+        r"최신 주거 트렌드",
+        r"심미적 완성도",
+        r"효율적인 공간 활용",
+        r"주거 환경을 지향",
+    )
+    if any(re.search(pattern, feature_text) for pattern in risky_feature_patterns):
+        normalized["feature_detail"] = _safe_feature_detail_from_facts(facts)
 
     return normalized
 
@@ -1153,6 +1475,264 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
 async def agent_location_analysis_gpt(facts: dict) -> dict:
     """호환성용 래퍼. 입지 분석은 Gemini 경로를 사용한다."""
     return await agent_location_analysis_gemini(facts)
+
+
+SPECIAL_ELIGIBILITY_GROUNDING_PROMPT = """
+당신은 한국 아파트 청약 공고 해설 전문가입니다.
+아래 단지 정보와 특별공급 유형 목록을 보고, 각 특별공급 유형별 핵심 자격을 2문장 이내로 요약하세요.
+
+중요 규칙:
+- 반드시 Google grounding 검색 결과를 우선 참고하세요.
+- 공고문에 없는 세부 수치나 단정적 기준은 만들지 말고, "공고문 기준으로 확인" 형태로 정리하세요.
+- 각 유형별로 requirements는 2개까지만 작성하세요.
+- 개인 적합 여부를 판단하지 마세요.
+- JSON만 출력하세요.
+
+[단지 정보]
+{facts_json}
+
+[특별공급 유형]
+{special_types_json}
+
+출력 형식:
+{{
+  "eligibility_special": [
+    {{
+      "type_name": "신혼부부",
+      "quota": "17세대",
+      "requirements": [
+        "혼인 기간, 무주택 여부, 소득·자산 기준을 공고문 기준으로 확인해야 합니다.",
+        "예비신혼부부 포함 여부와 세대 구성 요건은 모집공고문 및 청약홈 안내를 함께 봐야 합니다."
+      ]
+    }}
+  ]
+}}
+"""
+
+REGULATION_GROUNDING_PROMPT = """
+당신은 한국 아파트 청약 규제 해설 전문가입니다.
+아래 단지 정보와 이미 확보한 공공데이터 플래그를 바탕으로, 반드시 Google grounding 검색 결과를 우선 참고해 규제 정보를 JSON으로 정리하세요.
+
+중요 규칙:
+- 추측 금지. 검색 결과에서 확인되지 않으면 "미기재"로 두세요.
+- regulated_zone은 확인된 규제지역명을 쉼표로 연결하세요.
+  예: "투기과열지구, 청약과열지역", "비규제지역"
+- readmission_limit, resale_restriction, live_requirement은 기간값만 간결하게 적으세요.
+  예: "10년", "3년", "2년", "없음"
+- price_cap은 반드시 "적용" 또는 "미적용" 중 하나로 적으세요. 확인되지 않으면 API 플래그를 참고해도 됩니다.
+- evidence_queries에는 실제로 참고한 검색어를 1~4개 넣으세요.
+- JSON만 출력하세요.
+
+[단지 정보]
+{facts_json}
+
+[공공데이터 플래그]
+{api_flags_json}
+
+출력 형식:
+{{
+  "regulated_zone": "투기과열지구, 청약과열지역",
+  "readmission_limit": "10년",
+  "resale_restriction": "3년",
+  "live_requirement": "2년",
+  "price_cap": "적용",
+  "evidence_queries": [
+    "오티에르 반포 아파트 분양 재당첨제한",
+    "오티에르 반포 아파트 분양 전매제한"
+  ]
+}}
+"""
+
+
+async def agent_special_eligibility_grounding(facts: dict, notice_id: str) -> dict:
+    print(f"  [Agent 1B] 특별공급 자격 보강 시작 ({LLM_LOCATION_MODEL})...")
+    unit_rows = _load_cached_unit_type_rows(notice_id)
+    base_items = _aggregate_special_supply_quota(unit_rows)
+    if not base_items:
+        print("  [Agent 1B] 특별공급 유형 물량 없음 → 보강 생략")
+        return facts
+
+    fallback_items = _special_supply_fallback_items(base_items)
+    if not GEMINI_API_KEY:
+        print("  [Agent 1B] GEMINI_API_KEY 미설정 → 유형별 안전 폴백 사용")
+        facts["eligibility_special"] = fallback_items
+        facts = _apply_special_supply_2026_guidance(facts)
+        return facts
+
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
+            model=LLM_LOCATION_MODEL,
+            contents=SPECIAL_ELIGIBILITY_GROUNDING_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
+                special_types_json=json.dumps(base_items, ensure_ascii=False, indent=2),
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+                tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
+            ),
+        )
+        raw = (resp.text or "").strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r"\{.*\}", raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+        if not isinstance(result, dict):
+            result = {}
+        items = result.get("eligibility_special") or []
+        normalized = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            type_name = str(item.get("type_name") or "").strip()
+            if not type_name:
+                continue
+            quota = str(item.get("quota") or "").strip()
+            requirements = [
+                str(req).strip()
+                for req in (item.get("requirements") or [])
+                if str(req).strip()
+            ][:2]
+            if not requirements:
+                continue
+            normalized.append(
+                {
+                    "type_name": type_name,
+                    "quota": quota or next((b["quota"] for b in base_items if b["type_name"] == type_name), None),
+                    "requirements": requirements,
+                }
+            )
+        facts["eligibility_special"] = normalized or fallback_items
+        facts = _apply_special_supply_2026_guidance(facts)
+        print(f"  [Agent 1B] 특별공급 자격 보강 완료: {len(facts['eligibility_special'])}개 유형")
+        return facts
+    except Exception as e:
+        print(f"  [Agent 1B] grounding 보강 오류 ({e}) → 유형별 안전 폴백 사용")
+        facts["eligibility_special"] = fallback_items
+        facts = _apply_special_supply_2026_guidance(facts)
+        return facts
+
+
+def _normalize_regulation_result(result: dict, facts: dict) -> dict:
+    zone = str(result.get("regulated_zone") or "").strip()
+    readmission_limit = str(result.get("readmission_limit") or "").strip()
+    resale_restriction = str(result.get("resale_restriction") or "").strip()
+    live_requirement = str(result.get("live_requirement") or "").strip()
+    price_cap = str(result.get("price_cap") or "").strip()
+    evidence_queries = [
+        str(item).strip()
+        for item in (result.get("evidence_queries") or [])
+        if str(item).strip()
+    ][:4]
+
+    if not zone or zone == "미기재":
+        if facts.get("is_hot_zone") == "Y":
+            zone = str(facts.get("regulated_zone") or "").strip() or "규제지역"
+        elif facts.get("is_hot_zone") == "N":
+            zone = "비규제지역"
+
+    if price_cap not in {"적용", "미적용"}:
+        if str(facts.get("is_price_cap") or "").strip() == "Y":
+            price_cap = "적용"
+        elif str(facts.get("is_price_cap") or "").strip() == "N":
+            price_cap = "미적용"
+        else:
+            price_cap = str(facts.get("price_cap") or "").strip() or "미기재"
+
+    return {
+        "regulated_zone": zone or str(facts.get("regulated_zone") or "").strip() or "미기재",
+        "is_hot_zone": "Y" if any(token in zone for token in ("투기과열지구", "청약과열지역", "조정대상지역")) else ("N" if zone == "비규제지역" else str(facts.get("is_hot_zone") or "")),
+        "readmission_limit": readmission_limit or str(facts.get("readmission_limit") or "").strip() or "미기재",
+        "resale_restriction": resale_restriction or str(facts.get("resale_restriction") or "").strip() or "미기재",
+        "live_requirement": live_requirement or str(facts.get("live_requirement") or "").strip() or "미기재",
+        "price_cap": price_cap,
+        "is_price_cap": "Y" if price_cap == "적용" else ("N" if price_cap == "미적용" else str(facts.get("is_price_cap") or "")),
+        "source": "gemini_grounding",
+        "query": " | ".join(evidence_queries),
+        "evidence_queries": evidence_queries,
+        "checked_at": _now_iso(),
+    }
+
+
+async def agent_regulation_grounding(facts: dict, notice_id: str) -> dict:
+    print(f"  [Agent 1C] 규제 정보 보강 시작 ({LLM_LOCATION_MODEL})...")
+    payload = _load_cached_notice_payload(notice_id)
+    grounded = payload.get("grounded_regulation") or {}
+    if grounded:
+        print("  [Agent 1C] 기존 규제 캐시 재사용")
+        facts.update(
+            {
+                key: grounded[key]
+                for key in ("regulated_zone", "is_hot_zone", "readmission_limit", "resale_restriction", "live_requirement", "price_cap", "is_price_cap")
+                if key in grounded and grounded.get(key) not in (None, "", "미기재")
+            }
+        )
+        return facts
+
+    if not GEMINI_API_KEY:
+        print("  [Agent 1C] GEMINI_API_KEY 미설정 → 규제 보강 생략")
+        return facts
+
+    api_flags = {
+        "notice_id": notice_id,
+        "apt_name": facts.get("apt_name", ""),
+        "supply_location": facts.get("supply_location", ""),
+        "notice_url": facts.get("notice_url", ""),
+        "region_name": facts.get("region_name", ""),
+        "is_hot_zone": facts.get("is_hot_zone", ""),
+        "is_price_cap": facts.get("is_price_cap", ""),
+        "regulated_zone": facts.get("regulated_zone", ""),
+        "price_cap": facts.get("price_cap", ""),
+    }
+
+    try:
+        from google import genai as google_genai
+        from google.genai import types as genai_types
+
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        resp = client.models.generate_content(
+            model=LLM_LOCATION_MODEL,
+            contents=REGULATION_GROUNDING_PROMPT.format(
+                facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
+                api_flags_json=json.dumps(api_flags, ensure_ascii=False, indent=2),
+            ),
+            config=genai_types.GenerateContentConfig(
+                system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
+                tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
+            ),
+        )
+        raw = (resp.text or "").strip()
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            import re as _re
+            m = _re.search(r"\{.*\}", raw, _re.DOTALL)
+            result = json.loads(m.group()) if m else {}
+        if not isinstance(result, dict):
+            result = {}
+
+        normalized = _normalize_regulation_result(result, facts)
+        facts.update(
+            {
+                key: normalized[key]
+                for key in ("regulated_zone", "is_hot_zone", "readmission_limit", "resale_restriction", "live_requirement", "price_cap", "is_price_cap")
+            }
+        )
+        _persist_grounded_regulation(notice_id, normalized)
+        print(
+            "  [Agent 1C] 규제 정보 보강 완료: "
+            f"{facts.get('regulated_zone','미기재')} / 재당첨 {facts.get('readmission_limit','미기재')} / "
+            f"전매 {facts.get('resale_restriction','미기재')} / 거주의무 {facts.get('live_requirement','미기재')}"
+        )
+        return facts
+    except Exception as e:
+        print(f"  [Agent 1C] grounding 보강 오류 ({e}) → 기존 팩트 유지")
+        return facts
 
 
 async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict:
@@ -1258,9 +1838,13 @@ CONTENT_GEN_PROMPT = """
    - 취득세율·대출한도·DSR 계산값 등을 "확정"처럼 단정하지 말 것
    - 반드시 "공고문 및 관련 기관에서 직접 확인 필요" 문구 포함
 
-④ 답변 말미 필수 문구
-   - 모든 Q&A 답변 마지막에 반드시 다음 문구 포함:
-     <br><span style="font-size:13px; color:#999;">※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span>
+④ Q&A 답변 길이와 톤
+   - 각 답변은 3문장 이내로 작성
+   - 반복적인 면책 문구를 모든 답변 끝에 붙이지 말 것
+   - 필요한 경우 "공고문 기준으로 확인해야 합니다" 정도의 짧은 확인 문장만 사용
+   - 모든 답변을 "~로 정리됩니다", "~입니다" 같은 같은 종결 패턴으로 반복하지 말 것
+   - 답변마다 표현을 조금씩 다르게 써서 실제 상담 답변처럼 자연스럽게 작성할 것
+   - 과장 없이 담백하게 쓰되, 기계적으로 보이는 정형 문구 반복은 피할 것
 
 ⑤ 자금 계획 작성 절대 원칙
    - 계약금/중도금/잔금은 비율과 납부 구조만 설명
@@ -1268,6 +1852,8 @@ CONTENT_GEN_PROMPT = """
    - "약 8,000만원", "약 1.2억원" 같은 계산형 금액 문구 생성 금지
    - 공고문에 실제 납부금액이 명시된 경우에만 그 금액을 그대로 인용 가능
    - 실제 대출 가능 금액, 세금 액수, 실수령액 계산 금지
+   - "주택담보대출로 전환", "주담대로 처리", "대출이 가능하다"처럼 특정 조달 방식이나 승인 가능성을 단정하지 말 것
+   - 자금 조달 방식은 "개인별 조건과 금융기관 심사 결과에 따라 달라질 수 있다" 수준으로만 설명
 
 [단지 정보]:
 {facts_json}
@@ -1284,32 +1870,28 @@ CONTENT_GEN_PROMPT = """
 
   "financial_intro": "80~100자. 자금 계획의 중요성을 공감 가는 방식으로 도입. 단, 실제 납부금액 계산은 하지 말고 비율과 일정 확인이 중요하다는 방향으로만 작성.",
 
-  "qa_intro": "60~80자. '청약 준비하면서 많은 분들이 공통으로 궁금해 하는 내용들을 모았어요' 같은 톤. 댓글 유도·구독 유도·공유 요청 등 일체 금지. 순수하게 정보 안내로만 마무리.",
+  "qa_intro": "40~70자. 청약 공고 핵심 질문만 짧게 정리했다는 안내. 댓글 유도·구독 유도·공유 요청 등 일체 금지.",
 
   "qa_blocks": [
     {{
-      "question": "실수요자가 실제로 궁금해하는 질문 (중도금대출/주담대 키워드 포함)",
-      "answer": "300~500자. 공고문 팩트 기반 설명. 개인 적합 여부 판단 금지. <strong>강조</strong>, <br> 줄바꿈 사용 가능. 답변 말미에 ※ 개인 조건 확인 필요 문구 필수."
+      "question": "청약 접수 일정은 어떻게 되나요?",
+      "answer": "3문장 이내. 특별공급, 1순위, 2순위, 당첨자 발표일을 요약. 개인 적합 여부 판단 금지."
     }},
     {{
-      "question": "특별공급/청약 자격 관련 (생애최초/신혼부부 키워드)",
-      "answer": "300~500자. 자격 요건 객관적 나열만. '귀하는 해당됩니다' 류 판단 절대 금지. 답변 말미 ※ 문구 필수."
+      "question": "해당지역과 기타지역은 어떻게 구분하나요?",
+      "answer": "3문장 이내. application_area_local과 application_area_etc를 기준으로 요약. 개인 적합 여부 판단 금지."
     }},
     {{
-      "question": "입지/학군/교통 관련 (역세권/학군 키워드)",
-      "answer": "300~500자. 공고문·공개 데이터 기반 사실 서술만. 답변 말미 ※ 문구 필수."
+      "question": "규제와 제한사항은 무엇인가요?",
+      "answer": "3문장 이내. 규제지역, 전매제한, 재당첨제한, 거주의무, 분양가상한제를 요약."
     }},
     {{
-      "question": "취득세/세금/자금계획 관련 (취득세/DTI 키워드)",
-      "answer": "300~500자. 세율·한도 단정 금지. '일반적인 기준' 수준으로만 안내. 계약금/중도금/잔금을 실제 금액으로 계산하지 말 것. 답변 말미 ※ 문구 필수."
+      "question": "공급 규모와 분양가는 어떻게 되나요?",
+      "answer": "3문장 이내. 공급세대수와 분양가 범위를 요약. 계산형 금액 문구 생성 금지."
     }},
     {{
-      "question": "인테리어/발코니 확장 관련 (아파트인테리어 키워드)",
-      "answer": "300~500자. 답변 말미 ※ 문구 필수."
-    }},
-    {{
-      "question": "청약 가점/당첨 전략 관련 (가점제/추첨제 키워드)",
-      "answer": "300~500자. 특정 가점 점수로 '당첨 가능' 단정 절대 금지. 경쟁률·제도 구조 설명 수준으로만. 답변 말미 ※ 문구 필수."
+      "question": "계약금·중도금·잔금 구조는 어떻게 보나요?",
+      "answer": "3문장 이내. 계약금/중도금/잔금 비율만 설명. 실제 납부금액 계산 금지. 주담대 전환이나 대출 가능 여부를 단정하지 말 것."
     }}
   ],
 
@@ -1383,8 +1965,8 @@ FACTCHECK_SYSTEM = """당신은 한국 부동산·청약 분야 전문가입니�
    - "당신은 자격이 됩니다", "신청하세요", "유리합니다" 등 개인 적합 여부 판단 표현 → 즉시 삭제·수정
    - 투자 수익·시세 전망 언급 → 즉시 삭제
    - 세금·대출 한도를 확정적으로 단정한 표현 → "일반적 기준" 수준으로 완화
-   - 모든 답변 말미에 ※ 개인 조건 확인 필요 문구가 있는지 확인 → 없으면 추가:
-     <br><span style="font-size:13px; color:#999;">※ 개인 조건(소득·자산·주택 수 등)에 따라 결과가 크게 다를 수 있으므로, 반드시 분양사 및 관련 기관에 직접 확인하세요.</span>
+   - 답변은 3문장 이내로 유지
+   - 반복적인 장문 면책 문구는 추가하지 말고, 필요한 경우 짧은 확인 문장으로만 완화
 
 출력 형식 (JSON만):
 {
@@ -1480,12 +2062,15 @@ def compute_quality_score(content: dict, facts: dict) -> tuple[int, list[str]]:
     score = 100
     issues = []
 
-    # 1. Q&A 답변 길이 검증
+    # 1. Q&A 답변 길이 검증 — 핵심 FAQ는 2문장 이내 요약형을 정상으로 본다.
     for i, qa in enumerate(content.get("qa_blocks", [])):
         answer_len = len(qa.get("answer", ""))
-        if answer_len < 150:
+        if answer_len < 60:
             score -= 15
             issues.append(f"Q{i+1} 답변이 너무 짧음 ({answer_len}자)")
+        if answer_len > 260:
+            score -= 8
+            issues.append(f"Q{i+1} 답변이 너무 김 ({answer_len}자)")
 
     # 2. 필수 팩트 존재 여부
     required_facts = ["apt_name", "rank1_date", "price_range", "unit_types"]
@@ -1657,6 +2242,7 @@ async def run_pipeline(
     # Step 1: 팩트 추출
     facts = await agent_fact_extraction(notice_text)
     facts = _merge_pdf_policy(facts, pdf_policy_text or (doc.pdf_policy_text if doc else ""))
+    facts = _apply_special_supply_2026_guidance(facts)
 
     if not facts.get("apt_name") and doc and doc.apt_name:
         facts["apt_name"] = doc.apt_name
@@ -1664,6 +2250,11 @@ async def run_pipeline(
     if not facts.get("apt_name"):
         print("❌ 팩트 추출 실패 - 단지명 없음. 파이프라인 중단.")
         return None
+
+    if doc and _needs_special_eligibility_enrichment(facts):
+        facts = await agent_special_eligibility_grounding(facts, doc.notice_id)
+    if doc and _needs_regulation_enrichment(facts):
+        facts = await agent_regulation_grounding(facts, doc.notice_id)
 
     apt_name = facts["apt_name"]
     post_dir = OUTPUT_DIR / "posts" / f"temp_{apt_name}"

@@ -82,7 +82,7 @@ def _pick_value_after_header(lines: list[str], header_needles: tuple[str, ...]) 
         return ""
     for line in lines[idx + 1 : idx + 6]:
         if line and not line.startswith("■"):
-            if any(token in line for token in ("없음", "적용", "비규제", "투기과열", "조정대상", "민간택지", "공공택지")):
+            if any(token in line for token in ("없음", "적용", "비규제", "투기과열", "조정대상", "청약과열", "민간택지", "공공택지")):
                 return line
     return ""
 
@@ -143,8 +143,10 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
         zones: list[str] = []
         if "투기과열지구" in normalized:
             zones.append("투기과열지구")
-        if "조정대상지역" in normalized or "청약과열지역" in normalized:
+        if "조정대상지역" in normalized:
             zones.append("조정대상지역")
+        if "청약과열지역" in normalized:
+            zones.append("청약과열지역")
         if zones:
             result["regulated_zone"] = ", ".join(dict.fromkeys(zones))
             result["is_hot_zone"] = "Y"

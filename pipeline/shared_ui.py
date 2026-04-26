@@ -232,5 +232,5 @@ def detail_nav(home_href: str = "../../") -> str:
         home_href=home_href,
         include_palette=False,
         include_search=False,
-        include_applyhome=True,
+        include_applyhome=False,
     )

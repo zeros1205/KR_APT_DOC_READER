@@ -17,6 +17,28 @@ CHROMA_DIR = BASE_DIR / "chroma_db"
 load_dotenv()
 load_dotenv(BASE_DIR / ".env")
 
+
+def _clear_dead_local_proxy() -> None:
+    """
+    잘못 주입된 로컬 프록시(127.0.0.1:9)를 제거한다.
+
+    Codex/터미널 환경에 따라 HTTP(S)_PROXY가 dead endpoint로 설정되는 경우가 있어
+    OpenAI/Chroma 임베딩/Gemini 외부 호출이 전부 Connection error로 실패한다.
+    실제 프록시를 쓰는 환경은 건드리지 않고, 죽어 있는 loopback:9 값만 제거한다.
+    """
+    dead_proxy_hosts = ("127.0.0.1:9", "localhost:9")
+    proxy_keys = (
+        "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+        "http_proxy", "https_proxy", "all_proxy",
+    )
+    for key in proxy_keys:
+        value = os.getenv(key, "").strip()
+        if value and any(host in value for host in dead_proxy_hosts):
+            os.environ.pop(key, None)
+
+
+_clear_dead_local_proxy()
+
 # ── OpenAI ──
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 LLM_EXTRACT_MODEL = "gpt-5.4"      # 팩트 추출
@@ -25,7 +47,7 @@ LLM_EMBED_MODEL = "text-embedding-3-small"
 
 # ── Google Gemini (입지 분석 전용) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.5-pro")
+LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite-preview")
 
 # ── OpenAI 팩트체크 ──
 LLM_FACTCHECK_MODEL = "gpt-5.4-mini"

@@ -33,11 +33,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import httpx
-import pdfplumber
-
 sys.path.append(str(Path(__file__).parent.parent))
-from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
-from agents.pdf_policy import normalize_pdf_text
+from config import PUBLIC_DATA_API_KEY
 
 
 # ══════════════════════════════════════════════════
@@ -176,8 +173,8 @@ def _from_openapi(d: dict) -> dict:
         "house_manage_no":     str(d.get("HOUSE_MANAGE_NO", "")),
         "apt_name":            d.get("HOUSE_NM", ""),
         "house_type":          d.get("HOUSE_SECD_NM", ""),
-        "house_detail_type":   d.get("RENTBSNS_HOUSE_SECD_NM", ""),
-        "supply_type":         d.get("SUBSCRPT_TYCD_NM", ""),
+        "house_detail_type":   d.get("RENTBSNS_HOUSE_SECD_NM") or d.get("HOUSE_DTL_SECD_NM", ""),
+        "supply_type":         d.get("SUBSCRPT_TYCD_NM") or d.get("RENT_SECD_NM") or d.get("HOUSE_DTL_SECD_NM", ""),
         "region_code":         d.get("SUBSCRPT_AREA_CODE", ""),
         "region_name":         d.get("SUBSCRPT_AREA_CODE_NM", ""),
         "supply_address":      d.get("HSSPLY_ADRES", ""),
@@ -344,6 +341,17 @@ class CheongYakAPI:
         items = await self._get(f"{API_BASE}/getAPTLttotPblancDetail", params)
         return items[0] if items else {}
 
+    async def get_detail_by_notice_id(self, notice_id: str) -> dict:
+        """공고번호(PBLANC_NO) 기준으로 APT 분양정보 상세 조회."""
+        params = {
+            "serviceKey": self.api_key,
+            "page": 1,
+            "perPage": 1,
+            "cond[PBLANC_NO::EQ]": notice_id,
+        }
+        items = await self._get(f"{API_BASE}/getAPTLttotPblancDetail", params)
+        return items[0] if items else {}
+
     async def get_unit_types(self, house_manage_no: str) -> list[dict]:
         """
         APT 분양정보 주택형별 상세 조회 (getAPTLttotPblancMdl)
@@ -410,48 +418,17 @@ def load_from_csv(csv_path: Path) -> list[NoticeDocument]:
 
 
 # ══════════════════════════════════════════════════
-# 6. PDF 공고문 파싱 (선택적 보완)
+# 6. PDF 공고문 파싱 (legacy helper)
 # ══════════════════════════════════════════════════
 
 async def download_pdf(url: str, save_dir: Path, filename: str) -> Path | None:
-    save_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = save_dir / filename
-    if pdf_path.exists():
-        print(f"  [PDF] 캐시: {filename}")
-        return pdf_path
-    async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
-        try:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            pdf_path.write_bytes(resp.content)
-            print(f"  [PDF] 저장: {filename} ({len(resp.content)//1024}KB)")
-            return pdf_path
-        except Exception as e:
-            print(f"  [PDF] 실패: {e}")
-            return None
+    """Deprecated: notice_url is preserved for users, not crawled for PDF downloads."""
+    raise RuntimeError("PDF download is disabled. Use notice_url as an external link only.")
 
 
 def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
-    """PDF → (텍스트, 표 목록)"""
-    texts, tables = [], []
-    try:
-        with pdfplumber.open(pdf_path) as pdf:
-            print(f"  [PDF] 파싱: {pdf_path.name} ({len(pdf.pages)}p)")
-            for i, page in enumerate(pdf.pages):
-                text = page.extract_text() or ""
-                if text.strip():
-                    texts.append(f"[{i+1}p]\n{text}")
-                for tbl in (page.extract_tables() or []):
-                    cleaned = [[str(c).strip() if c else "" for c in r] for r in tbl]
-                    tables.append(cleaned)
-    except Exception as e:
-        print(f"  [PDF] 파싱 오류: {e}")
-    print(f"  [PDF] 추출: {sum(len(t) for t in texts)}자, 표 {len(tables)}개")
-    return "\n\n".join(texts), tables
-
-def _merge_text_blocks(*blocks: str) -> str:
-    parts = [normalize_pdf_text(block) if block else "" for block in blocks]
-    return "\n\n".join(part for part in parts if part.strip())
+    """Deprecated: PDF parsing is disabled for the collection pipeline."""
+    raise RuntimeError("PDF parsing is disabled. Use API data and grounded field enrichment.")
 
 
 _POLICY_RESALE_PATTERNS = [
@@ -597,24 +574,10 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # PDF 공고문은 notice_url 원문 다운로드를 기본 경로로 사용한다.
-        pdf_file = None
-        if doc.notice_url:
-            safe = re.sub(r"[^\w가-힣]", "_", doc.apt_name)
-            pdf_file = await download_pdf(
-                doc.notice_url,
-                OUTPUT_DIR / "pdfs",
-                f"{safe}_{doc.notice_id}.pdf",
-            )
-        else:
-            print(f"  [PDF] URL 없음: {doc.apt_name}")
-
-        if pdf_file:
-            pdf_text, pdf_tables = parse_pdf(pdf_file)
-            doc.pdf_policy_text = pdf_text
-            doc.raw_text = _merge_text_blocks(doc.raw_text, pdf_text)
-            doc.tables = pdf_tables or doc.tables
-            doc.pdf_path = str(pdf_file)
+        # notice_url은 상세 페이지의 "모집공고문 보기" 링크로만 보존한다.
+        # URL 안의 PDF 다운로드/파싱은 비용과 실패 경로를 줄이기 위해 수행하지 않는다.
+        if not doc.notice_url:
+            print(f"  [공고문 링크] URL 없음: {doc.apt_name}")
 
         docs.append(doc)
 
@@ -627,8 +590,7 @@ def _units_to_text(units: list[dict]) -> str:
     lines = []
     for u in units:
         house_type = u.get("HOUSE_TY", "")
-        excl_ar    = u.get("EXCLUSE_AR", "")
-        suply_ar   = u.get("SUPLY_AR", "")
+        excl_ar    = u.get("EXCLUSE_AR") or u.get("EXCLUSE_AR_VALUE") or u.get("SUPLY_AR", "")
         # GNRL_HOSP_CO / SPSPLY_HOSP_CO: API 문서 기준 필드명
         # SUPLY_HSHLDCO / SPSPLY_HSHLDCO: 일부 응답 변형 대비 폴백
         gnrl_cnt   = u.get("GNRL_HOSP_CO") or u.get("SUPLY_HSHLDCO", "")
@@ -637,7 +599,7 @@ def _units_to_text(units: list[dict]) -> str:
         low_price  = u.get("LTTOT_LOWPR_AMOUNT", "")
         price_str  = f"{low_price}~{top_price}" if low_price and top_price and low_price != top_price else (top_price or "-")
         lines.append(
-            f"{house_type}타입 | 전용 {excl_ar}㎡ | 공급 {suply_ar}㎡ "
+            f"{house_type}타입 | 전용 {excl_ar}㎡ "
             f"| 일반 {gnrl_cnt}세대 | 특별 {spsply_cnt}세대 "
             f"| 분양가 {price_str}만원"
         )
