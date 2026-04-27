@@ -349,6 +349,21 @@ def _fmt_notice_date(date_str: str) -> str:
         return "모집공고일 확인 필요"
 
 
+def _get_latest_notice_date(posts: list[dict]) -> str:
+    """Get the most recent notice_date from all posts and format as Korean string."""
+    if not posts:
+        return "2026년 4월 22일"
+    for post in posts:
+        notice_date = post.get("notice_date", "").strip()
+        if notice_date and notice_date not in ("-", "null", "None"):
+            try:
+                parsed = datetime.fromisoformat(notice_date[:10])
+                return f"{parsed.year}년 {parsed.month}월 {parsed.day}일"
+            except Exception:
+                continue
+    return "2026년 4월 22일"
+
+
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:
     combined = title + " " + apt_name
     resupply_map = [
@@ -542,6 +557,8 @@ def build_front_index() -> None:
         for region in regions
     )
 
+    latest_date = _get_latest_notice_date(posts)
+
     html = template
     html = html.replace("{{PALETTE_INIT_JS}}", PALETTE_INIT_JS)
     html = html.replace("{{INDEX_NAV}}", index_nav("/"))
@@ -552,6 +569,7 @@ def build_front_index() -> None:
     html = html.replace("{{SUPPLY_TABS}}", "")
     html = html.replace("{{CARDS_HTML}}", "\n".join(_render_card(post) for post in posts))
     html = html.replace("{{INDEX_RUNTIME_SCRIPT}}", INDEX_RUNTIME_SCRIPT)
+    html = html.replace("최근 업데이트 2026년 4월 22일", f"최근 업데이트 {latest_date}")
 
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"✅ index.html 생성 완료: {OUT_FILE}  ({len(posts)}건)")
