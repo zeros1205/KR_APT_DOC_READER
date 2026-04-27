@@ -87,20 +87,18 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     normalized = {key: _stringify_none(data.get(key, "")) for key in fields}
     normalized["tables"] = data.get("tables") or []
     normalized["pdf_path"] = None
-    normalized["pdf_policy_text"] = ""
     doc = NoticeDocument(**normalized)
     if manual_regulation:
         policy_lines = [
-            f"[PDF 정책] regulated_zone: {manual_regulation.get('regulated_zone', '')}",
-            f"[PDF 정책] is_hot_zone: {manual_regulation.get('is_hot_zone', '')}",
-            f"[PDF 정책] readmission_limit: {manual_regulation.get('readmission_limit', '')}",
-            f"[PDF 정책] resale_restriction: {manual_regulation.get('resale_restriction', '')}",
-            f"[PDF 정책] live_requirement: {manual_regulation.get('live_requirement', '')}",
-            f"[PDF 정책] price_cap: {manual_regulation.get('price_cap', '')}",
-            f"[PDF 정책] is_price_cap: {manual_regulation.get('is_price_cap', '')}",
+            f"[규제] regulated_zone: {manual_regulation.get('regulated_zone', '')}",
+            f"[규제] is_hot_zone: {manual_regulation.get('is_hot_zone', '')}",
+            f"[규제] readmission_limit: {manual_regulation.get('readmission_limit', '')}",
+            f"[규제] resale_restriction: {manual_regulation.get('resale_restriction', '')}",
+            f"[규제] live_requirement: {manual_regulation.get('live_requirement', '')}",
+            f"[규제] price_cap: {manual_regulation.get('price_cap', '')}",
+            f"[규제] is_price_cap: {manual_regulation.get('is_price_cap', '')}",
         ]
         doc.raw_text = f"{doc.raw_text}\n\n" + "\n".join(policy_lines)
-        doc.pdf_policy_text = "\n".join(policy_lines)
     return doc
 
 
