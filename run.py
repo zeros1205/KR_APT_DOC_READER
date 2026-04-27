@@ -42,7 +42,11 @@ def _load_processed() -> set[str]:
         except json.JSONDecodeError:
             print("[경고] processed_notices.json 파싱 실패 → 빈 히스토리로 진행")
             return set()
-        return set(data)
+        if isinstance(data, list):
+            return set(data)
+        if isinstance(data, dict):
+            return set(data.keys())
+        return set()
     return set()
 
 
