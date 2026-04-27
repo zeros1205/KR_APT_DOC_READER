@@ -3126,13 +3126,24 @@ function _renderPagination(matched) {
   var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
     + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
     + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
+  var BLOCK = 5;
+  var block = Math.ceil(_currentPage / BLOCK);
+  var totalBlocks = Math.ceil(pages / BLOCK);
+  var start = (block - 1) * BLOCK + 1;
+  var end = Math.min(block * BLOCK, pages);
   var html = '';
-  for (var i = 1; i <= pages; i++) {
+  if (block > 1) {
+    html += '<button ' + btnBase + ' aria-label="이전 5페이지" onclick="goPage(' + (start - 1) + ')">‹</button>';
+  }
+  for (var i = start; i <= end; i++) {
     if (i === _currentPage) {
       html += '<button ' + btnActive + '>' + i + '</button>';
     } else {
       html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
     }
+  }
+  if (block < totalBlocks) {
+    html += '<button ' + btnBase + ' aria-label="다음 5페이지" onclick="goPage(' + (end + 1) + ')">›</button>';
   }
   box.innerHTML = html;
 }
