@@ -1,100 +1,780 @@
 {
   "posts": [
     {
-      "post_id": "2026-04-27_OTIE_BANPO",
-      "apt_name": "오티에르 반포",
+      "post_id": "2026-04-27_APT000",
+      "apt_name": "오티에르 반포 1",
       "region": "서울",
       "notice_date": "2026-04-27",
-      "price_min": 142640,
-      "price_max": 366890
+      "price_min": 50000,
+      "price_max": 80000
     },
     {
-      "post_id": "2026-04-25_SAMSUNG_RIVERSIDE",
-      "apt_name": "삼성강변아파트",
-      "region": "서울",
-      "notice_date": "2026-04-25",
-      "price_min": 85000,
-      "price_max": 150000
-    },
-    {
-      "post_id": "2026-04-24_LOTTE_CASTLE",
-      "apt_name": "롯데캐슬",
+      "post_id": "2026-04-26_APT001",
+      "apt_name": "삼성강변 2",
       "region": "부산",
-      "notice_date": "2026-04-24",
-      "price_min": 65000,
-      "price_max": 120000
+      "notice_date": "2026-04-26",
+      "price_min": 51000,
+      "price_max": 81500
     },
     {
-      "post_id": "2026-04-23_GS_TOWER",
-      "apt_name": "GS타워 강남",
-      "region": "서울",
-      "notice_date": "2026-04-23",
-      "price_min": 95000,
-      "price_max": 180000
-    },
-    {
-      "post_id": "2026-04-22_HYUNDAI_NEXT",
-      "apt_name": "현대넥스트 판교",
-      "region": "경기도",
-      "notice_date": "2026-04-22",
+      "post_id": "2026-04-25_APT002",
+      "apt_name": "래미안 3",
+      "region": "대구",
+      "notice_date": "2026-04-25",
       "price_min": 52000,
+      "price_max": 83000
+    },
+    {
+      "post_id": "2026-04-24_APT003",
+      "apt_name": "자이 4",
+      "region": "인천",
+      "notice_date": "2026-04-24",
+      "price_min": 53000,
+      "price_max": 84500
+    },
+    {
+      "post_id": "2026-04-23_APT004",
+      "apt_name": "현대 5",
+      "region": "광주",
+      "notice_date": "2026-04-23",
+      "price_min": 54000,
+      "price_max": 86000
+    },
+    {
+      "post_id": "2026-04-22_APT005",
+      "apt_name": "포스코 6",
+      "region": "대전",
+      "notice_date": "2026-04-22",
+      "price_min": 55000,
+      "price_max": 87500
+    },
+    {
+      "post_id": "2026-04-21_APT006",
+      "apt_name": "롯데캐슬 7",
+      "region": "울산",
+      "notice_date": "2026-04-21",
+      "price_min": 56000,
+      "price_max": 89000
+    },
+    {
+      "post_id": "2026-04-20_APT007",
+      "apt_name": "힐스테이트 8",
+      "region": "세종",
+      "notice_date": "2026-04-20",
+      "price_min": 57000,
+      "price_max": 90500
+    },
+    {
+      "post_id": "2026-04-19_APT008",
+      "apt_name": "푸르지오 9",
+      "region": "경기도",
+      "notice_date": "2026-04-19",
+      "price_min": 58000,
+      "price_max": 92000
+    },
+    {
+      "post_id": "2026-04-18_APT009",
+      "apt_name": "이편한세상 10",
+      "region": "강원도",
+      "notice_date": "2026-04-18",
+      "price_min": 59000,
+      "price_max": 93500
+    },
+    {
+      "post_id": "2026-04-17_APT010",
+      "apt_name": "GS타워 11",
+      "region": "충청북도",
+      "notice_date": "2026-04-17",
+      "price_min": 60000,
       "price_max": 95000
     },
     {
-      "post_id": "2026-04-21_CJ_LANDMARK",
-      "apt_name": "CJ랜드마크",
-      "region": "인천",
-      "notice_date": "2026-04-21",
-      "price_min": 48000,
-      "price_max": 85000
+      "post_id": "2026-04-16_APT011",
+      "apt_name": "한화갤럭시 12",
+      "region": "충청남도",
+      "notice_date": "2026-04-16",
+      "price_min": 61000,
+      "price_max": 96500
     },
     {
-      "post_id": "2026-04-20_DAELIM_CASTLE",
-      "apt_name": "대림캐슬",
-      "region": "대구",
-      "notice_date": "2026-04-20",
-      "price_min": 42000,
-      "price_max": 78000
-    },
-    {
-      "post_id": "2026-04-19_SK_VISTA",
-      "apt_name": "SK비스타 수원",
-      "region": "경기도",
-      "notice_date": "2026-04-19",
-      "price_min": 55000,
+      "post_id": "2026-04-15_APT012",
+      "apt_name": "대우 13",
+      "region": "전라북도",
+      "notice_date": "2026-04-15",
+      "price_min": 62000,
       "price_max": 98000
     },
     {
-      "post_id": "2026-04-18_POSCO_ARTIUM",
-      "apt_name": "포스코아르티움 천안",
-      "region": "충청남도",
-      "notice_date": "2026-04-18",
-      "price_min": 38000,
-      "price_max": 72000
+      "post_id": "2026-04-14_APT013",
+      "apt_name": "극동 14",
+      "region": "전라남도",
+      "notice_date": "2026-04-14",
+      "price_min": 63000,
+      "price_max": 99500
     },
     {
-      "post_id": "2026-04-17_HANWHA_GALAXY",
-      "apt_name": "한화갤럭시 광주",
-      "region": "광주",
-      "notice_date": "2026-04-17",
-      "price_min": 45000,
-      "price_max": 82000
+      "post_id": "2026-04-13_APT014",
+      "apt_name": "한진 15",
+      "region": "경상북도",
+      "notice_date": "2026-04-13",
+      "price_min": 64000,
+      "price_max": 101000
     },
     {
-      "post_id": "2026-04-16_LOTTE_WORLD",
-      "apt_name": "롯데월드 몇배",
+      "post_id": "2026-04-12_APT015",
+      "apt_name": "현대홈타운 16",
+      "region": "경상남도",
+      "notice_date": "2026-04-12",
+      "price_min": 65000,
+      "price_max": 102500
+    },
+    {
+      "post_id": "2026-04-11_APT016",
+      "apt_name": "쌍용 17",
+      "region": "제주도",
+      "notice_date": "2026-04-11",
+      "price_min": 66000,
+      "price_max": 104000
+    },
+    {
+      "post_id": "2026-04-10_APT017",
+      "apt_name": "대림 18",
       "region": "서울",
-      "notice_date": "2026-04-16",
+      "notice_date": "2026-04-10",
+      "price_min": 67000,
+      "price_max": 105500
+    },
+    {
+      "post_id": "2026-04-09_APT018",
+      "apt_name": "우미린 19",
+      "region": "부산",
+      "notice_date": "2026-04-09",
+      "price_min": 68000,
+      "price_max": 107000
+    },
+    {
+      "post_id": "2026-04-08_APT019",
+      "apt_name": "태영 20",
+      "region": "대구",
+      "notice_date": "2026-04-08",
+      "price_min": 69000,
+      "price_max": 108500
+    },
+    {
+      "post_id": "2026-04-07_APT020",
+      "apt_name": "한신 21",
+      "region": "인천",
+      "notice_date": "2026-04-07",
+      "price_min": 70000,
+      "price_max": 110000
+    },
+    {
+      "post_id": "2026-04-06_APT021",
+      "apt_name": "인우 22",
+      "region": "광주",
+      "notice_date": "2026-04-06",
+      "price_min": 71000,
+      "price_max": 111500
+    },
+    {
+      "post_id": "2026-04-05_APT022",
+      "apt_name": "성은 23",
+      "region": "대전",
+      "notice_date": "2026-04-05",
+      "price_min": 72000,
+      "price_max": 113000
+    },
+    {
+      "post_id": "2026-04-04_APT023",
+      "apt_name": "건영 24",
+      "region": "울산",
+      "notice_date": "2026-04-04",
+      "price_min": 73000,
+      "price_max": 114500
+    },
+    {
+      "post_id": "2026-04-03_APT024",
+      "apt_name": "신정 25",
+      "region": "세종",
+      "notice_date": "2026-04-03",
+      "price_min": 74000,
+      "price_max": 116000
+    },
+    {
+      "post_id": "2026-04-02_APT025",
+      "apt_name": "동아 26",
+      "region": "경기도",
+      "notice_date": "2026-04-02",
+      "price_min": 75000,
+      "price_max": 117500
+    },
+    {
+      "post_id": "2026-04-01_APT026",
+      "apt_name": "신라 27",
+      "region": "강원도",
+      "notice_date": "2026-04-01",
+      "price_min": 76000,
+      "price_max": 119000
+    },
+    {
+      "post_id": "2026-04-27_APT027",
+      "apt_name": "선경 28",
+      "region": "충청북도",
+      "notice_date": "2026-03-31",
+      "price_min": 77000,
+      "price_max": 120500
+    },
+    {
+      "post_id": "2026-04-26_APT028",
+      "apt_name": "미래 29",
+      "region": "충청남도",
+      "notice_date": "2026-03-30",
+      "price_min": 78000,
+      "price_max": 122000
+    },
+    {
+      "post_id": "2026-04-25_APT029",
+      "apt_name": "일신 30",
+      "region": "전라북도",
+      "notice_date": "2026-03-29",
+      "price_min": 79000,
+      "price_max": 123500
+    },
+    {
+      "post_id": "2026-04-24_APT030",
+      "apt_name": "한양 31",
+      "region": "전라남도",
+      "notice_date": "2026-03-28",
+      "price_min": 80000,
+      "price_max": 125000
+    },
+    {
+      "post_id": "2026-04-23_APT031",
+      "apt_name": "부영 32",
+      "region": "경상북도",
+      "notice_date": "2026-03-27",
+      "price_min": 81000,
+      "price_max": 126500
+    },
+    {
+      "post_id": "2026-04-22_APT032",
+      "apt_name": "동남 33",
+      "region": "경상남도",
+      "notice_date": "2026-03-26",
+      "price_min": 82000,
+      "price_max": 128000
+    },
+    {
+      "post_id": "2026-04-21_APT033",
+      "apt_name": "해림 34",
+      "region": "제주도",
+      "notice_date": "2026-03-25",
+      "price_min": 83000,
+      "price_max": 129500
+    },
+    {
+      "post_id": "2026-04-20_APT034",
+      "apt_name": "시영 35",
+      "region": "서울",
+      "notice_date": "2026-03-24",
+      "price_min": 84000,
+      "price_max": 131000
+    },
+    {
+      "post_id": "2026-04-19_APT035",
+      "apt_name": "인주 36",
+      "region": "부산",
+      "notice_date": "2026-03-23",
+      "price_min": 85000,
+      "price_max": 132500
+    },
+    {
+      "post_id": "2026-04-18_APT036",
+      "apt_name": "오티에르 반포 37",
+      "region": "대구",
+      "notice_date": "2026-03-22",
+      "price_min": 86000,
+      "price_max": 134000
+    },
+    {
+      "post_id": "2026-04-17_APT037",
+      "apt_name": "삼성강변 38",
+      "region": "인천",
+      "notice_date": "2026-03-21",
+      "price_min": 87000,
+      "price_max": 135500
+    },
+    {
+      "post_id": "2026-04-16_APT038",
+      "apt_name": "래미안 39",
+      "region": "광주",
+      "notice_date": "2026-03-20",
+      "price_min": 88000,
+      "price_max": 137000
+    },
+    {
+      "post_id": "2026-04-15_APT039",
+      "apt_name": "자이 40",
+      "region": "대전",
+      "notice_date": "2026-03-19",
+      "price_min": 89000,
+      "price_max": 138500
+    },
+    {
+      "post_id": "2026-04-14_APT040",
+      "apt_name": "현대 41",
+      "region": "울산",
+      "notice_date": "2026-03-18",
+      "price_min": 90000,
+      "price_max": 140000
+    },
+    {
+      "post_id": "2026-04-13_APT041",
+      "apt_name": "포스코 42",
+      "region": "세종",
+      "notice_date": "2026-03-17",
+      "price_min": 91000,
+      "price_max": 141500
+    },
+    {
+      "post_id": "2026-04-12_APT042",
+      "apt_name": "롯데캐슬 43",
+      "region": "경기도",
+      "notice_date": "2026-03-16",
+      "price_min": 92000,
+      "price_max": 143000
+    },
+    {
+      "post_id": "2026-04-11_APT043",
+      "apt_name": "힐스테이트 44",
+      "region": "강원도",
+      "notice_date": "2026-03-15",
+      "price_min": 93000,
+      "price_max": 144500
+    },
+    {
+      "post_id": "2026-04-10_APT044",
+      "apt_name": "푸르지오 45",
+      "region": "충청북도",
+      "notice_date": "2026-03-14",
+      "price_min": 94000,
+      "price_max": 146000
+    },
+    {
+      "post_id": "2026-04-09_APT045",
+      "apt_name": "이편한세상 46",
+      "region": "충청남도",
+      "notice_date": "2026-03-13",
+      "price_min": 95000,
+      "price_max": 147500
+    },
+    {
+      "post_id": "2026-04-08_APT046",
+      "apt_name": "GS타워 47",
+      "region": "전라북도",
+      "notice_date": "2026-03-12",
+      "price_min": 96000,
+      "price_max": 149000
+    },
+    {
+      "post_id": "2026-04-07_APT047",
+      "apt_name": "한화갤럭시 48",
+      "region": "전라남도",
+      "notice_date": "2026-03-11",
+      "price_min": 97000,
+      "price_max": 150500
+    },
+    {
+      "post_id": "2026-04-06_APT048",
+      "apt_name": "대우 49",
+      "region": "경상북도",
+      "notice_date": "2026-03-10",
+      "price_min": 98000,
+      "price_max": 152000
+    },
+    {
+      "post_id": "2026-04-05_APT049",
+      "apt_name": "극동 50",
+      "region": "경상남도",
+      "notice_date": "2026-03-09",
+      "price_min": 99000,
+      "price_max": 153500
+    },
+    {
+      "post_id": "2026-04-04_APT050",
+      "apt_name": "한진 51",
+      "region": "제주도",
+      "notice_date": "2026-03-08",
+      "price_min": 100000,
+      "price_max": 155000
+    },
+    {
+      "post_id": "2026-04-03_APT051",
+      "apt_name": "현대홈타운 52",
+      "region": "서울",
+      "notice_date": "2026-03-07",
+      "price_min": 101000,
+      "price_max": 156500
+    },
+    {
+      "post_id": "2026-04-02_APT052",
+      "apt_name": "쌍용 53",
+      "region": "부산",
+      "notice_date": "2026-03-06",
+      "price_min": 102000,
+      "price_max": 158000
+    },
+    {
+      "post_id": "2026-04-01_APT053",
+      "apt_name": "대림 54",
+      "region": "대구",
+      "notice_date": "2026-03-05",
+      "price_min": 103000,
+      "price_max": 159500
+    },
+    {
+      "post_id": "2026-04-27_APT054",
+      "apt_name": "우미린 55",
+      "region": "인천",
+      "notice_date": "2026-03-04",
+      "price_min": 104000,
+      "price_max": 161000
+    },
+    {
+      "post_id": "2026-04-26_APT055",
+      "apt_name": "태영 56",
+      "region": "광주",
+      "notice_date": "2026-03-03",
+      "price_min": 105000,
+      "price_max": 162500
+    },
+    {
+      "post_id": "2026-04-25_APT056",
+      "apt_name": "한신 57",
+      "region": "대전",
+      "notice_date": "2026-03-02",
+      "price_min": 106000,
+      "price_max": 164000
+    },
+    {
+      "post_id": "2026-04-24_APT057",
+      "apt_name": "인우 58",
+      "region": "울산",
+      "notice_date": "2026-03-01",
+      "price_min": 107000,
+      "price_max": 165500
+    },
+    {
+      "post_id": "2026-04-23_APT058",
+      "apt_name": "성은 59",
+      "region": "세종",
+      "notice_date": "2026-02-28",
+      "price_min": 108000,
+      "price_max": 167000
+    },
+    {
+      "post_id": "2026-04-22_APT059",
+      "apt_name": "건영 60",
+      "region": "경기도",
+      "notice_date": "2026-02-27",
+      "price_min": 109000,
+      "price_max": 168500
+    },
+    {
+      "post_id": "2026-04-21_APT060",
+      "apt_name": "신정 61",
+      "region": "강원도",
+      "notice_date": "2026-02-26",
       "price_min": 110000,
+      "price_max": 170000
+    },
+    {
+      "post_id": "2026-04-20_APT061",
+      "apt_name": "동아 62",
+      "region": "충청북도",
+      "notice_date": "2026-02-25",
+      "price_min": 111000,
+      "price_max": 171500
+    },
+    {
+      "post_id": "2026-04-19_APT062",
+      "apt_name": "신라 63",
+      "region": "충청남도",
+      "notice_date": "2026-02-24",
+      "price_min": 112000,
+      "price_max": 173000
+    },
+    {
+      "post_id": "2026-04-18_APT063",
+      "apt_name": "선경 64",
+      "region": "전라북도",
+      "notice_date": "2026-02-23",
+      "price_min": 113000,
+      "price_max": 174500
+    },
+    {
+      "post_id": "2026-04-17_APT064",
+      "apt_name": "미래 65",
+      "region": "전라남도",
+      "notice_date": "2026-02-22",
+      "price_min": 114000,
+      "price_max": 176000
+    },
+    {
+      "post_id": "2026-04-16_APT065",
+      "apt_name": "일신 66",
+      "region": "경상북도",
+      "notice_date": "2026-02-21",
+      "price_min": 115000,
+      "price_max": 177500
+    },
+    {
+      "post_id": "2026-04-15_APT066",
+      "apt_name": "한양 67",
+      "region": "경상남도",
+      "notice_date": "2026-02-20",
+      "price_min": 116000,
+      "price_max": 179000
+    },
+    {
+      "post_id": "2026-04-14_APT067",
+      "apt_name": "부영 68",
+      "region": "제주도",
+      "notice_date": "2026-02-19",
+      "price_min": 117000,
+      "price_max": 180500
+    },
+    {
+      "post_id": "2026-04-13_APT068",
+      "apt_name": "동남 69",
+      "region": "서울",
+      "notice_date": "2026-02-18",
+      "price_min": 118000,
+      "price_max": 182000
+    },
+    {
+      "post_id": "2026-04-12_APT069",
+      "apt_name": "해림 70",
+      "region": "부산",
+      "notice_date": "2026-02-17",
+      "price_min": 119000,
+      "price_max": 183500
+    },
+    {
+      "post_id": "2026-04-11_APT070",
+      "apt_name": "시영 71",
+      "region": "대구",
+      "notice_date": "2026-02-16",
+      "price_min": 120000,
+      "price_max": 185000
+    },
+    {
+      "post_id": "2026-04-10_APT071",
+      "apt_name": "인주 72",
+      "region": "인천",
+      "notice_date": "2026-02-15",
+      "price_min": 121000,
+      "price_max": 186500
+    },
+    {
+      "post_id": "2026-04-09_APT072",
+      "apt_name": "오티에르 반포 73",
+      "region": "광주",
+      "notice_date": "2026-02-14",
+      "price_min": 122000,
+      "price_max": 188000
+    },
+    {
+      "post_id": "2026-04-08_APT073",
+      "apt_name": "삼성강변 74",
+      "region": "대전",
+      "notice_date": "2026-02-13",
+      "price_min": 123000,
+      "price_max": 189500
+    },
+    {
+      "post_id": "2026-04-07_APT074",
+      "apt_name": "래미안 75",
+      "region": "울산",
+      "notice_date": "2026-02-12",
+      "price_min": 124000,
+      "price_max": 191000
+    },
+    {
+      "post_id": "2026-04-06_APT075",
+      "apt_name": "자이 76",
+      "region": "세종",
+      "notice_date": "2026-02-11",
+      "price_min": 125000,
+      "price_max": 192500
+    },
+    {
+      "post_id": "2026-04-05_APT076",
+      "apt_name": "현대 77",
+      "region": "경기도",
+      "notice_date": "2026-02-10",
+      "price_min": 126000,
+      "price_max": 194000
+    },
+    {
+      "post_id": "2026-04-04_APT077",
+      "apt_name": "포스코 78",
+      "region": "강원도",
+      "notice_date": "2026-02-09",
+      "price_min": 127000,
+      "price_max": 195500
+    },
+    {
+      "post_id": "2026-04-03_APT078",
+      "apt_name": "롯데캐슬 79",
+      "region": "충청북도",
+      "notice_date": "2026-02-08",
+      "price_min": 128000,
+      "price_max": 197000
+    },
+    {
+      "post_id": "2026-04-02_APT079",
+      "apt_name": "힐스테이트 80",
+      "region": "충청남도",
+      "notice_date": "2026-02-07",
+      "price_min": 129000,
+      "price_max": 198500
+    },
+    {
+      "post_id": "2026-04-01_APT080",
+      "apt_name": "푸르지오 81",
+      "region": "전라북도",
+      "notice_date": "2026-02-06",
+      "price_min": 130000,
       "price_max": 200000
     },
     {
-      "post_id": "2026-04-15_SAMSUNG_APTS",
-      "apt_name": "삼성아파트 프라임",
+      "post_id": "2026-04-27_APT081",
+      "apt_name": "이편한세상 82",
+      "region": "전라남도",
+      "notice_date": "2026-02-05",
+      "price_min": 131000,
+      "price_max": 201500
+    },
+    {
+      "post_id": "2026-04-26_APT082",
+      "apt_name": "GS타워 83",
+      "region": "경상북도",
+      "notice_date": "2026-02-04",
+      "price_min": 132000,
+      "price_max": 203000
+    },
+    {
+      "post_id": "2026-04-25_APT083",
+      "apt_name": "한화갤럭시 84",
+      "region": "경상남도",
+      "notice_date": "2026-02-03",
+      "price_min": 133000,
+      "price_max": 204500
+    },
+    {
+      "post_id": "2026-04-24_APT084",
+      "apt_name": "대우 85",
+      "region": "제주도",
+      "notice_date": "2026-02-02",
+      "price_min": 134000,
+      "price_max": 206000
+    },
+    {
+      "post_id": "2026-04-23_APT085",
+      "apt_name": "극동 86",
+      "region": "서울",
+      "notice_date": "2026-02-01",
+      "price_min": 135000,
+      "price_max": 207500
+    },
+    {
+      "post_id": "2026-04-22_APT086",
+      "apt_name": "한진 87",
       "region": "부산",
-      "notice_date": "2026-04-15",
-      "price_min": 72000,
-      "price_max": 135000
+      "notice_date": "2026-01-31",
+      "price_min": 136000,
+      "price_max": 209000
+    },
+    {
+      "post_id": "2026-04-21_APT087",
+      "apt_name": "현대홈타운 88",
+      "region": "대구",
+      "notice_date": "2026-01-30",
+      "price_min": 137000,
+      "price_max": 210500
+    },
+    {
+      "post_id": "2026-04-20_APT088",
+      "apt_name": "쌍용 89",
+      "region": "인천",
+      "notice_date": "2026-01-29",
+      "price_min": 138000,
+      "price_max": 212000
+    },
+    {
+      "post_id": "2026-04-19_APT089",
+      "apt_name": "대림 90",
+      "region": "광주",
+      "notice_date": "2026-01-28",
+      "price_min": 139000,
+      "price_max": 213500
+    },
+    {
+      "post_id": "2026-04-18_APT090",
+      "apt_name": "우미린 91",
+      "region": "대전",
+      "notice_date": "2026-01-27",
+      "price_min": 140000,
+      "price_max": 215000
+    },
+    {
+      "post_id": "2026-04-17_APT091",
+      "apt_name": "태영 92",
+      "region": "울산",
+      "notice_date": "2026-01-26",
+      "price_min": 141000,
+      "price_max": 216500
+    },
+    {
+      "post_id": "2026-04-16_APT092",
+      "apt_name": "한신 93",
+      "region": "세종",
+      "notice_date": "2026-01-25",
+      "price_min": 142000,
+      "price_max": 218000
+    },
+    {
+      "post_id": "2026-04-15_APT093",
+      "apt_name": "인우 94",
+      "region": "경기도",
+      "notice_date": "2026-01-24",
+      "price_min": 143000,
+      "price_max": 219500
+    },
+    {
+      "post_id": "2026-04-14_APT094",
+      "apt_name": "성은 95",
+      "region": "강원도",
+      "notice_date": "2026-01-23",
+      "price_min": 144000,
+      "price_max": 221000
+    },
+    {
+      "post_id": "2026-04-13_APT095",
+      "apt_name": "건영 96",
+      "region": "충청북도",
+      "notice_date": "2026-01-22",
+      "price_min": 145000,
+      "price_max": 222500
+    },
+    {
+      "post_id": "2026-04-12_APT096",
+      "apt_name": "신정 97",
+      "region": "충청남도",
+      "notice_date": "2026-01-21",
+      "price_min": 146000,
+      "price_max": 224000
     }
   ],
   "regions": [
