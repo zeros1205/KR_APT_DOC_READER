@@ -3171,7 +3171,7 @@ function goPage(page) {
   var dock = document.getElementById('filter-dock');
   var stickyTop = dock ? (parseFloat(getComputedStyle(dock).top) || 0) : 0;
   var dockH = dock ? dock.offsetHeight : 0;
-  var offset = stickyTop + dockH + 12;
+  var offset = stickyTop + dockH + 32;
   if (window.scrollY > grid.offsetTop - offset - 40) {
     window.scrollTo({ top: grid.offsetTop - offset, behavior: 'smooth' });
   }
