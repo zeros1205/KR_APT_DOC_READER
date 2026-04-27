@@ -1,0 +1,119 @@
+{
+  "posts": [
+    {
+      "post_id": "2026-04-27_OTIE_BANPO",
+      "apt_name": "오티에르 반포",
+      "region": "서울",
+      "notice_date": "2026-04-27",
+      "price_min": 142640,
+      "price_max": 366890
+    },
+    {
+      "post_id": "2026-04-25_SAMSUNG_RIVERSIDE",
+      "apt_name": "삼성강변아파트",
+      "region": "서울",
+      "notice_date": "2026-04-25",
+      "price_min": 85000,
+      "price_max": 150000
+    },
+    {
+      "post_id": "2026-04-24_LOTTE_CASTLE",
+      "apt_name": "롯데캐슬",
+      "region": "부산",
+      "notice_date": "2026-04-24",
+      "price_min": 65000,
+      "price_max": 120000
+    },
+    {
+      "post_id": "2026-04-23_GS_TOWER",
+      "apt_name": "GS타워 강남",
+      "region": "서울",
+      "notice_date": "2026-04-23",
+      "price_min": 95000,
+      "price_max": 180000
+    },
+    {
+      "post_id": "2026-04-22_HYUNDAI_NEXT",
+      "apt_name": "현대넥스트 판교",
+      "region": "경기도",
+      "notice_date": "2026-04-22",
+      "price_min": 52000,
+      "price_max": 95000
+    },
+    {
+      "post_id": "2026-04-21_CJ_LANDMARK",
+      "apt_name": "CJ랜드마크",
+      "region": "인천",
+      "notice_date": "2026-04-21",
+      "price_min": 48000,
+      "price_max": 85000
+    },
+    {
+      "post_id": "2026-04-20_DAELIM_CASTLE",
+      "apt_name": "대림캐슬",
+      "region": "대구",
+      "notice_date": "2026-04-20",
+      "price_min": 42000,
+      "price_max": 78000
+    },
+    {
+      "post_id": "2026-04-19_SK_VISTA",
+      "apt_name": "SK비스타 수원",
+      "region": "경기도",
+      "notice_date": "2026-04-19",
+      "price_min": 55000,
+      "price_max": 98000
+    },
+    {
+      "post_id": "2026-04-18_POSCO_ARTIUM",
+      "apt_name": "포스코아르티움 천안",
+      "region": "충청남도",
+      "notice_date": "2026-04-18",
+      "price_min": 38000,
+      "price_max": 72000
+    },
+    {
+      "post_id": "2026-04-17_HANWHA_GALAXY",
+      "apt_name": "한화갤럭시 광주",
+      "region": "광주",
+      "notice_date": "2026-04-17",
+      "price_min": 45000,
+      "price_max": 82000
+    },
+    {
+      "post_id": "2026-04-16_LOTTE_WORLD",
+      "apt_name": "롯데월드 몇배",
+      "region": "서울",
+      "notice_date": "2026-04-16",
+      "price_min": 110000,
+      "price_max": 200000
+    },
+    {
+      "post_id": "2026-04-15_SAMSUNG_APTS",
+      "apt_name": "삼성아파트 프라임",
+      "region": "부산",
+      "notice_date": "2026-04-15",
+      "price_min": 72000,
+      "price_max": 135000
+    }
+  ],
+  "regions": [
+    "서울",
+    "부산",
+    "대구",
+    "인천",
+    "광주",
+    "대전",
+    "울산",
+    "세종",
+    "경기도",
+    "강원도",
+    "충청북도",
+    "충청남도",
+    "전라북도",
+    "전라남도",
+    "경상북도",
+    "경상남도",
+    "제주도"
+  ]
+}

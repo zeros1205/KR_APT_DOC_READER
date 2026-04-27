@@ -35,6 +35,32 @@ class ApiService {
     offset: number = 0
   ): Promise<{ posts: PostMeta[]; total: number }> {
     try {
+      // 개발 환경: manifest.json 사용
+      if (process.env.NODE_ENV === 'development') {
+        const response = await fetch('/manifest.json');
+        const data = await response.json();
+
+        let posts: PostMeta[] = data.posts;
+
+        // 지역 필터링
+        if (regions && regions.length > 0) {
+          posts = posts.filter(p => regions.includes(p.region));
+        }
+
+        // 최신순 정렬
+        posts = posts.sort(
+          (a, b) =>
+            new Date(b.notice_date).getTime() -
+            new Date(a.notice_date).getTime()
+        );
+
+        // 페이지네이션
+        const paginated = posts.slice(offset, offset + limit);
+
+        return { posts: paginated, total: posts.length };
+      }
+
+      // 프로덕션 환경: API 호출
       const params: any = { limit, offset };
       if (regions && regions.length > 0) {
         params.regions = regions.join(',');
@@ -49,6 +75,45 @@ class ApiService {
 
   async getPostDetail(postId: string): Promise<PostDetail> {
     try {
+      // 개발 환경: 샘플 데이터 반환
+      if (process.env.NODE_ENV === 'development') {
+        const sampleContent = `
+          <h2>아파트 상세 정보</h2>
+          <p><strong>주소:</strong> 서울시 강남구 테헤란로 123</p>
+          <p><strong>규모:</strong> 지상 40층, 총 500세대</p>
+          <p><strong>분양가:</strong> 5억 ~ 15억원</p>
+          <p><strong>입주 예정:</strong> 2027년 6월</p>
+
+          <h3>특징</h3>
+          <ul>
+            <li>강남역 도보 5분 거리</li>
+            <li>프리미엄 조경 및 편의시설</li>
+            <li>에너지 효율 1등급</li>
+            <li>스마트 홈 시스템 기본 설치</li>
+          </ul>
+
+          <h3>청약 일정</h3>
+          <ul>
+            <li>일반공급 1순위: 2026년 5월 1일 ~ 5월 5일</li>
+            <li>일반공급 2순위: 2026년 5월 6일 ~ 5월 10일</li>
+            <li>특별공급: 2026년 4월 28일 ~ 4월 30일</li>
+          </ul>
+
+          <p style="color: #666; font-size: 14px; margin-top: 20px;">
+            ⚠️ 본 정보는 샘플 데이터입니다. 정확한 정보는 청약홈 공식사이트에서 확인하세요.
+          </p>
+        `;
+
+        return {
+          post_id: postId,
+          apt_name: '샘플 아파트',
+          content: sampleContent,
+          notice_date: new Date().toISOString().split('T')[0],
+          region: '서울',
+        };
+      }
+
+      // 프로덕션 환경: API 호출
       const response = await this.api.get(`/posts/${postId}`);
       return response.data;
     } catch (error) {
