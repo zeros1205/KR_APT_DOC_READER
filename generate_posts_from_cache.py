@@ -64,7 +64,29 @@ def _stringify_none(value: Any) -> Any:
     return value
 
 
-def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
+def _fmt_unit_types_text(unit_types_raw: list[dict]) -> str:
+    """API 원시 unit_types → LLM이 읽을 수 있는 텍스트 변환"""
+    if not unit_types_raw:
+        return ""
+    lines = ["[주택형별 분양정보]"]
+    for u in unit_types_raw:
+        house_ty     = u.get("HOUSE_TY", "")
+        area         = u.get("SUPLY_AR", "")
+        price_max    = u.get("LTTOT_TOP_AMOUNT", "")
+        general      = u.get("SUPLY_HSHLDCO", 0)
+        special      = u.get("SPSPLY_HSHLDCO", 0)
+        try:
+            price_str = f"{int(price_max):,}만원" if price_max else "-"
+        except (ValueError, TypeError):
+            price_str = f"{price_max}만원"
+        lines.append(
+            f"타입 {house_ty} | 공급면적 {area}㎡ | 최고분양가 {price_str}"
+            f" | 일반공급 {general}세대 | 특별공급 {special}세대"
+        )
+    return "\n".join(lines)
+
+
+def _doc_from_payload(payload: dict[str, Any]) -> tuple["NoticeDocument", list[dict]]:
     data = dict(payload.get("document") or {})
     manual_regulation = payload.get("manual_regulation") or {}
     if manual_regulation:
@@ -88,6 +110,12 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     normalized["tables"] = data.get("tables") or []
     normalized["pdf_path"] = None
     doc = NoticeDocument(**normalized)
+
+    unit_types_raw: list[dict] = payload.get("unit_types") or []
+    unit_text = _fmt_unit_types_text(unit_types_raw)
+    if unit_text:
+        doc.raw_text = f"{doc.raw_text}\n\n{unit_text}" if doc.raw_text else unit_text
+
     if manual_regulation:
         policy_lines = [
             f"[규제] regulated_zone: {manual_regulation.get('regulated_zone', '')}",
@@ -99,7 +127,8 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
             f"[규제] is_price_cap: {manual_regulation.get('is_price_cap', '')}",
         ]
         doc.raw_text = f"{doc.raw_text}\n\n" + "\n".join(policy_lines)
-    return doc
+
+    return doc, unit_types_raw
 
 
 def _iter_payloads(*, include_manual: bool) -> list[tuple[Path, dict[str, Any]]]:
@@ -164,10 +193,10 @@ async def main() -> None:
     results: list[Path] = []
     failed: list[str] = []
     for _, payload in selected:
-        doc = _doc_from_payload(payload)
+        doc, unit_types_raw = _doc_from_payload(payload)
         print(f"\n[generate] {doc.notice_id} {doc.apt_name}")
         try:
-            saved = await run_pipeline_from_doc(doc)
+            saved = await run_pipeline_from_doc(doc, unit_types_raw=unit_types_raw)
             if saved:
                 results.append(saved)
                 processed_ids.add(doc.notice_id)

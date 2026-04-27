@@ -1020,16 +1020,13 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_address: str = "") -> Path | None:
+async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_address: str = "", api_facts: dict | None = None) -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
     Args:
-        notice_text: 분양 공고 원문 (청약홈 API + PDF 파싱 결과 합본)
-        max_retries: 품질 미달 시 재생성 최대 횟수
-
-    Returns:
-        저장된 포스팅 디렉토리 경로 (실패 시 None)
+        notice_text: 분양 공고 원문
+        api_facts: 캐시에서 확보된 확정 데이터 (LLM 추출값보다 우선 적용)
     """
     print("\n" + "="*55)
     print("🚀 블로그 포스팅 파이프라인 시작")
@@ -1037,13 +1034,30 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
 
     # Step 1: 팩트 추출
     facts = await agent_fact_extraction(notice_text)
+
+    # 캐시 확정값으로 보정: API 확정 필드는 무조건 덮어쓰고,
+    # location처럼 LLM이 더 구체적으로 추출하는 필드는 폴백으로만 적용.
+    _API_OVERRIDE_KEYS = {
+        "notice_id", "apt_name", "supply_address", "total_households",
+        "notice_date", "special_supply_date", "rank1_date", "rank2_date",
+        "winner_date", "move_in_date", "is_hot_zone", "is_price_cap", "unit_types",
+    }
+    if api_facts:
+        for key, val in api_facts.items():
+            if val in (None, "", [], {}):
+                continue
+            if key in _API_OVERRIDE_KEYS:
+                facts[key] = val          # 항상 덮어쓰기
+            elif not facts.get(key):
+                facts[key] = val          # 폴백(LLM 결과 없을 때만)
+
     if not facts.get("apt_name"):
         print("❌ 팩트 추출 실패 - 단지명 없음. 파이프라인 중단.")
         return None
 
     apt_name = facts["apt_name"]
 
-    # API에서 공급 위치를 받으면 facts에 설정 (Gemini가 추출하지 못한 경우 대비)
+    # 하위호환: api_supply_address 단독 파라미터
     if api_supply_address and not facts.get("supply_address"):
         facts["supply_address"] = api_supply_address
 
@@ -1322,15 +1336,62 @@ def _save_to_database(post_data: PostData, content: dict, facts: dict) -> None:
 # RAG 연동 파이프라인
 # ──────────────────────────────────────────────────
 
-async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Path | None:
+def _build_api_facts(doc: NoticeDocument, unit_types_raw: list[dict] | None = None) -> dict:
+    """캐시에서 확보된 확정 데이터를 facts 형식으로 변환.
+    LLM 추출보다 우선 적용되어 notice_id·날짜·세대수 등 누락을 방지한다."""
+    move_in = doc.move_in_month or ""
+    if len(move_in) == 6 and move_in.isdigit():
+        move_in = f"{move_in[:4]}년 {move_in[4:]}월"
+
+    api_facts: dict = {
+        "notice_id":          doc.notice_id,
+        "apt_name":           doc.apt_name,
+        "supply_address":     doc.supply_address,
+        "location":           doc.region_name,
+        "total_households":   doc.total_units,
+        "notice_date":        doc.notice_date,
+        "special_supply_date": doc.special_supply_start,
+        "rank1_date":         doc.rank1_local_start,
+        "rank2_date":         doc.rank2_local_start,
+        "winner_date":        doc.winner_date,
+        "move_in_date":       move_in,
+        "is_hot_zone":        doc.is_hot_zone,
+        "is_price_cap":       doc.is_price_cap,
+    }
+
+    if unit_types_raw:
+        converted = []
+        for u in unit_types_raw:
+            price_raw = u.get("LTTOT_TOP_AMOUNT") or 0
+            try:
+                price_val = int(price_raw)
+            except (ValueError, TypeError):
+                price_val = 0
+            converted.append({
+                "type_name":    u.get("HOUSE_TY", ""),
+                "area_sqm":     float(u.get("SUPLY_AR") or 0),
+                "general_units": int(u.get("SUPLY_HSHLDCO") or 0),
+                "special_units": int(u.get("SPSPLY_HSHLDCO") or 0),
+                "price_min":    price_val,
+                "price_max":    price_val,
+            })
+        if converted:
+            api_facts["unit_types"] = converted
+
+    return {k: v for k, v in api_facts.items() if v not in (None, "", [], {})}
+
+
+async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2, unit_types_raw: list[dict] | None = None) -> Path | None:
     """
     NoticeDocument → RAG 저장 → 컨텍스트 조합 → 블로그 포스팅 생성
 
-    RAG 초기화 실패 시 doc.to_rag_text()로 자동 폴백하여
-    ChromaDB 없이도 동작 보장.
+    캐시의 확정 데이터(api_facts)를 먼저 구성해 LLM 추출 누락을 방지한다.
+    RAG 초기화 실패 시 doc.to_rag_text()로 자동 폴백.
     """
     theme = _select_theme(doc.supply_type)
     print(f"\n  [RAG] '{doc.apt_name}' 공고 처리 시작... (공급유형: {doc.supply_type or '신규'} → 테마: {theme})")
+
+    api_facts = _build_api_facts(doc, unit_types_raw)
 
     try:
         from agents.rag_store import ApartmentRAGStore
@@ -1344,7 +1405,16 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone, api_supply_address=doc.supply_address)
+    return await run_pipeline(
+        notice_text,
+        max_retries=max_retries,
+        theme=theme,
+        supply_type=doc.supply_type,
+        notice_url=doc.notice_url,
+        api_is_hot_zone=doc.is_hot_zone,
+        api_supply_address=doc.supply_address,
+        api_facts=api_facts,
+    )
 
 
 # ──────────────────────────────────────────────────
