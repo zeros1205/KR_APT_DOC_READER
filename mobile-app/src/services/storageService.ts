@@ -165,6 +165,29 @@ class StorageService {
     }
   }
 
+  async getPrivacyAgreedAt(): Promise<string | null> {
+    try {
+      return await Storage.getItem(`${this.prefix}privacy-agreed-at`);
+    } catch (error) {
+      console.error('Failed to get privacy agreement date:', error);
+      return null;
+    }
+  }
+
+  async setPrivacyAgreed(agreedAt: string): Promise<void> {
+    try {
+      await Storage.setItem(`${this.prefix}privacy-agreed-at`, agreedAt);
+      await Storage.setItem(`${this.prefix}privacy-version`, '1.0');
+    } catch (error) {
+      console.error('Failed to set privacy agreement:', error);
+    }
+  }
+
+  async isPrivacyAgreed(): Promise<boolean> {
+    const agreedAt = await this.getPrivacyAgreedAt();
+    return agreedAt !== null;
+  }
+
   async clear(): Promise<void> {
     try {
       await Storage.clear();

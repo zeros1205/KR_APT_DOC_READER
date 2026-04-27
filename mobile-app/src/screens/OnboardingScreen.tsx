@@ -14,6 +14,7 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const [step, setStep] = useState(1);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   const toggleRegion = (region: string) => {
     if (selectedRegions.includes(region)) {
@@ -24,12 +25,21 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
   };
 
   const handleNext = async () => {
-    if (step === 3) {
+    if (step === 4) {
+      // 최종 단계: 개인정보처리방침 동의 기록
+      if (!privacyAgreed) {
+        alert('개인정보처리방침에 동의해야 앱을 사용할 수 있습니다.');
+        return;
+      }
+
       await storageService.setUserPreferences({
         regions: selectedRegions,
         quiet_hours: { start: '22:00', end: '08:00', enabled: true },
         notifications: { enabled: true },
       });
+
+      // 동의 기록 저장
+      await storageService.setPrivacyAgreed(new Date().toISOString());
       onComplete();
     } else {
       setStep(step + 1);
@@ -101,6 +111,46 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             </div>
           </div>
         )}
+
+        {step === 4 && (
+          <div>
+            <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>개인정보처리방침</h2>
+            <div style={{ backgroundColor: 'var(--c-surface)', padding: '16px', borderRadius: '8px', marginBottom: '16px', maxHeight: '300px', overflowY: 'auto' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>주요 내용</h3>
+              <ul style={{ fontSize: '13px', color: 'var(--c-dark)', lineHeight: '1.8', marginLeft: '20px' }}>
+                <li>✅ 수집 정보: FCM 토큰, 디바이스 ID, 관심지역, 즐겨찾기</li>
+                <li>✅ 목적: 분양공고 알림 및 서비스 제공</li>
+                <li>✅ 보관: 로컬 저장소 (기기에만)</li>
+                <li>✅ 삭제: 앱 삭제 시 자동 삭제</li>
+                <li>✅ 보안: HTTPS + 암호화</li>
+                <li>❌ 수집 안 함: 이름, 이메일, 위치, 금융정보</li>
+              </ul>
+              <p style={{ fontSize: '12px', color: 'var(--c-mid)', marginTop: '12px', marginBottom: 0 }}>
+                전체 내용: https://apt-note.com/privacy
+              </p>
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={privacyAgreed}
+                onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  cursor: 'pointer',
+                }}
+              />
+              <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--c-dark)' }}>
+                개인정보처리방침에 동의합니다
+              </span>
+            </label>
+
+            <p style={{ fontSize: '12px', color: 'var(--c-mid)', marginTop: '12px' }}>
+              동의하지 않으면 앱을 사용할 수 없습니다. 언제든 설정에서 거부할 수 있습니다.
+            </p>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
@@ -135,12 +185,12 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             fontWeight: '600',
           }}
         >
-          {step === 3 ? '시작하기' : '다음'}
+          {step === 4 ? '시작하기' : '다음'}
         </button>
       </div>
 
       <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '12px', color: 'var(--c-mid)' }}>
-        {step}/3
+        {step}/4
       </div>
     </div>
   );
