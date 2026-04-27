@@ -1,0 +1,136 @@
+name: 공고 데이터 수집
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 UTC 00:00 (KST 09:00)
+  workflow_dispatch:
+    inputs:
+      days:
+        description: '최근 N일 공고 수집'
+        default: '150'
+      collect_limit:
+        description: '수집 최대 건수 (0=무제한)'
+        default: '0'
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 가상환경 캐시
+        uses: actions/cache@v4
+        id: venv-cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py3.11-${{ hashFiles('requirements.txt') }}
+
+      - name: ChromaDB 모델 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/chroma
+          key: chroma-models-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            chroma-models-
+
+      - name: 의존성 설치
+        if: steps.venv-cache.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: 가상환경 PATH 등록
+        run: echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+
+      - name: 환경 변수 설정
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          EOF
+
+      - name: 환경 검증
+        run: |
+          python -c "
+          import os
+          from dotenv import load_dotenv
+          load_dotenv()
+
+          public_key = os.getenv('PUBLIC_DATA_API_KEY', '')
+          if public_key:
+            print(f'✓ PUBLIC_DATA_API_KEY: {public_key[:10]}...{public_key[-5:]} (길이: {len(public_key)})')
+          else:
+            print('❌ PUBLIC_DATA_API_KEY: 설정되지 않음')
+            exit(1)
+          "
+
+      - name: 공고 데이터 수집
+        run: |
+          DAYS=${{ github.event.inputs.days || '150' }}
+          LIMIT=${{ github.event.inputs.collect_limit || '0' }}
+          if [ "$LIMIT" = "0" ]; then
+            python collect_notices_weekly.py --days $DAYS
+          else
+            python collect_notices_weekly.py --days $DAYS --limit $LIMIT
+          fi
+
+      - name: 수집 결과 확인
+        if: always()
+        run: |
+          echo "=== data_cache 현황 ==="
+          if [ -d "output/data_cache/notices" ]; then
+            COUNT=$(ls output/data_cache/notices/*.json 2>/dev/null | wc -l)
+            echo "📦 캐시된 공고: $COUNT개"
+          fi
+          if [ -f "output/data_cache/manual_review/missing_fields.csv" ]; then
+            MANUAL=$(tail -n +2 output/data_cache/manual_review/missing_fields.csv | wc -l)
+            echo "⚠️  수동 검토 필요: $MANUAL건"
+          fi
+          python3 -c "
+          import json
+          from pathlib import Path
+          processed = set(json.loads(Path('output/processed_notices.json').read_text())) if Path('output/processed_notices.json').exists() else set()
+          cache = list(Path('output/data_cache/notices').glob('*.json')) if Path('output/data_cache/notices').exists() else []
+          new = [f.stem for f in cache if f.stem not in processed]
+          print(f'🆕 미처리(포스트 생성 대상): {len(new)}개')
+          " 2>/dev/null || true
+
+      - name: data_cache 커밋 및 푸시
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git pull --rebase --autostash origin main
+
+          git add output/data_cache/ 2>/dev/null || true
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 공고 데이터 수집 [$(date +%Y-%m-%d)]"
+            git push -u origin main
+          else
+            echo "신규 수집 데이터 없음 — 커밋 스킵"
+          fi
+
+      - name: 아티팩트 백업
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-cache-${{ github.run_id }}
+          path: output/data_cache/
+          retention-days: 3
+          if-no-files-found: ignore
