@@ -33,7 +33,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+
+      - name: 가상환경 캐시
+        uses: actions/cache@v4
+        id: venv-cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py3.11-${{ hashFiles('requirements.txt') }}
 
       - name: ChromaDB 모델 캐싱
         uses: actions/cache@v4
@@ -44,7 +50,14 @@ jobs:
             chroma-models-
 
       - name: 의존성 설치
-        run: pip install -r requirements.txt
+        if: steps.venv-cache.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: 가상환경 PATH 등록
+        run: echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: 환경 변수 설정
         run: |
@@ -131,13 +144,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # pull 먼저 (스테이징 전에 해야 rebase 충돌 없음)
+          git pull --rebase origin main
+
           # gitignore 제외 산출물 강제 추가
           git add -f output/posts/ output/index.html output/sitemap.xml output/robots.txt 2>/dev/null || true
           # 추적 대상 파일 추가
           git add output/data_cache/ output/processed_notices.json output/manifest.json 2>/dev/null || true
 
           if ! git diff --cached --quiet; then
-            git pull --rebase origin main
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
             git push -u origin main
           else
