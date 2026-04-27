@@ -1,0 +1,71 @@
+name: codex-분양공고 데이터 가져오기
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "최근 N일 공고 수집"
+        required: true
+        default: "7"
+      limit:
+        description: "최대 수집 건수, 0은 제한 없음"
+        required: true
+        default: "1"
+      start_date:
+        description: "조회 시작일 YYYY-MM-DD, 입력 시 days보다 우선"
+        required: false
+        default: ""
+
+jobs:
+  collect-notices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    env:
+      PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
+          EOF
+
+      - name: Collect notice cache
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          LIMIT="${{ github.event.inputs.limit }}"
+          START_DATE="${{ github.event.inputs.start_date }}"
+
+          if [ -n "$START_DATE" ]; then
+            python collect_notices_weekly.py --start-date "$START_DATE" --limit "$LIMIT"
+          else
+            python collect_notices_weekly.py --days "$DAYS" --limit "$LIMIT"
+          fi
+
+      - name: Commit collected cache
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/data_cache
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: collect notice cache [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No notice cache changes."
+          fi
