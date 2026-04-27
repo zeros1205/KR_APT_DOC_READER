@@ -880,6 +880,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="robots" content="index, follow">
+<meta name="google-adsense-account" content="ca-pub-8234120897033274">
 {FONT_LINK}
 {PALETTE_INIT_JS}
 <style>
