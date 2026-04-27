@@ -1,0 +1,81 @@
+name: codex-분양공고 데이터 가져오기
+
+on:
+  schedule:
+    # 매주 월요일 00:00 KST
+    - cron: "0 15 * * 0"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "최근 N일 공고 수집"
+        required: false
+        default: "7"
+      start_date:
+        description: "조회 시작일 YYYY-MM-DD, 비우면 days 사용"
+        required: false
+        default: ""
+      limit:
+        description: "최대 수집 건수, 0은 제한 없음"
+        required: false
+        default: "0"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+
+jobs:
+  collect-notices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${GEMINI_API_KEY}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
+          PUBLIC_DATA_API_KEY=${PUBLIC_DATA_API_KEY}
+          EOF
+
+      - name: Collect public notice data
+        run: |
+          DAYS="${{ github.event.inputs.days || '7' }}"
+          START_DATE="${{ github.event.inputs.start_date || '' }}"
+          LIMIT="${{ github.event.inputs.limit || '0' }}"
+
+          CMD="python collect_notices_weekly.py --days $DAYS --limit $LIMIT"
+          if [ -n "$START_DATE" ]; then
+            CMD="$CMD --start-date $START_DATE"
+          fi
+
+          echo "$CMD"
+          eval "$CMD"
+
+      - name: Commit cache changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/data_cache
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: collect notice cache [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No cache changes."
+          fi

@@ -851,7 +851,7 @@ async def _build_kakao_location_analysis(facts: dict) -> dict:
         ),
         "feature_score": "",
         "feature_detail": _html_list([
-            f"{apt_name or '해당 단지'}는 {facts.get('supply_scale') or '공급 규모'}를 바탕으로 지역 안에서 눈에 띄는 신규 주거 선택지로 볼 수 있습니다. 단지 자체의 희소성과 공급 성격을 함께 확인해보세요.",
+            f"{apt_name or '해당 단지'}는 공고문에 적힌 공급 구성과 타입 구성을 함께 봐야 특징이 잘 보입니다. 공급세대수를 단지 전체 규모처럼 해석하지 말고, 이번 청약 물량 기준으로만 확인해보세요.",
             ((life[0].get("description") or "").strip() if life else f"{address or apt_name or '해당 단지'} 주변 생활편의시설 접근성은 실제 거주 만족도를 가르는 요소입니다. 마트·공원·생활시설 동선을 같이 확인해보는 것이 좋습니다."),
             ((medical[0].get("description") or "").strip() if medical else f"생활권 안의 의료·편의 인프라도 같이 보셔야 해요. 단지 외부 환경까지 함께 확인해보면 실거주 관점에서 훨씬 판단이 쉬워집니다."),
         ]),
@@ -1019,8 +1019,9 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         "post_title": f"{apt_name} 청약 핵심 정리와 체크포인트",
         "post_subtitle": f"{location or '공고문상 공급위치'} 기준으로 꼭 볼 규제와 일정",
         "apt_intro": (
-            f"{apt_name}은(는) {location or '공고문상 공급위치'}에 위치한 {supply_type or '분양'} 공고입니다. "
-            f"{type_summary} 일정과 규제, 자금 흐름을 한 번에 정리해 두면 청약 판단이 훨씬 쉬워집니다."
+            f"안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. "
+            f"오늘은 {apt_name}의 분양 정보를 소개해드릴게요. "
+            f"공급 위치는 {location or '공고문상 공급위치'}이며, 타입 구성과 일정, 규제 조건을 함께 확인해보세요."
         ),
         "location_intro": location_data.get("location_intro")
         or f"{apt_name}의 입지는 {location or '공고문상 공급위치'}를 중심으로 교통과 생활권을 함께 보는 것이 핵심입니다.",
@@ -1118,6 +1119,11 @@ def _sanitize_generated_content(content: dict, facts: dict, location_data: dict)
         if not value or _contains_risky_claim(value):
             sanitized[key] = fallback.get(key, "")
 
+    if _mentions_supply_as_complex_scale(str(sanitized.get("apt_intro") or "")):
+        sanitized["apt_intro"] = fallback.get("apt_intro", "")
+    if _mentions_supply_as_complex_scale(str(sanitized.get("feature_detail") or "")):
+        sanitized["feature_detail"] = _safe_feature_detail_from_facts(facts)
+
     qa_blocks = sanitized.get("qa_blocks")
     if not isinstance(qa_blocks, list) or not qa_blocks:
         sanitized["qa_blocks"] = fallback["qa_blocks"]
@@ -1155,6 +1161,18 @@ def _sanitize_generated_content(content: dict, facts: dict, location_data: dict)
         sanitized["seo_tags"] = fallback["seo_tags"]
 
     return sanitized
+
+
+def _mentions_supply_as_complex_scale(text: str) -> bool:
+    """공급세대수를 단지 전체 규모처럼 표현한 문장을 차단한다."""
+    if not text:
+        return False
+    patterns = (
+        r"총\s*[\d,]+\s*세대\s*(규모|단지|구성)",
+        r"[\d,]+\s*세대\s*(규모|단지로|구성되어|구성된)",
+        r"공급세대수.*(단지\s*규모|규모\s*단지)",
+    )
+    return any(re.search(pattern, text) for pattern in patterns)
 async def agent_fact_extraction(notice_text: str) -> dict:
     """Agent 1: 공고문에서 팩트를 추출하여 구조화된 JSON 반환 (GPT-5.4)"""
     print("  [Agent 1] 팩트 추출 시작...")
@@ -1430,6 +1448,8 @@ def _normalize_location_output(result: dict, facts: dict, notice_text: str = "")
         r"심미적 완성도",
         r"효율적인 공간 활용",
         r"주거 환경을 지향",
+        r"총\s*[\d,]+\s*세대\s*(규모|단지|구성)",
+        r"[\d,]+\s*세대\s*(규모|단지로|구성되어|구성된)",
     )
     if any(re.search(pattern, feature_text) for pattern in risky_feature_patterns):
         normalized["feature_detail"] = _safe_feature_detail_from_facts(facts)
@@ -1819,10 +1839,18 @@ CONTENT_GEN_PROMPT = """
 글쓰기 방식: 마케팅 담당자가 고객을 처음 만나 대화하듯 자연스럽고 친근한 스토리텔링으로 작성하세요.
 딱딱한 공문서 스타일이 아닌, 독자가 술술 읽히는 산문체로 작성해야 합니다.
 
+【apt_intro 작성 절대 원칙 — 반드시 준수】
+- 반드시 '안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. '로 시작
+- 단지 규모, 단지 전체 세대수, 건축 규모, 프라이빗 규모 같은 표현 절대 금지
+- 공급세대수는 "이번 공고에서 공급되는 물량"으로만 표현
+- 금지 예시: "총 86세대 규모 단지", "86세대로 구성된 단지", "소규모 단지", "프라이빗한 단지"
+- 허용 예시: "오늘은 총 86세대가 공급되는 오티에르 반포를 소개해드릴게요."
+- 위치, 타입 구성, 일정, 규제 조건처럼 공고문에 있는 팩트만 자연스럽게 연결
+
 【공급세대수 vs 총세대수 구분 원칙 — 반드시 준수】
-- apt_intro에서 "이번 청약 공급 물량(공급세대수)"과 "단지 전체 세대수(total_households)"를 절대 혼용하지 마세요.
-- total_households(단지 전체 세대수)가 있는 경우: "총 X세대 규모 단지"라고 언급하되, 이번 공급 물량(공급세대수)은 별도로 "이번 청약 Y세대 모집"처럼 명확히 구분하여 서술.
-- total_households가 null인 경우: 단지 규모(총세대수) 추측·언급 절대 금지. 이번 공급세대수만 언급.
+- 이번 공급 물량(공급세대수): "Y세대 공급" 또는 "Y세대 모집" 형태로만 기재
+- total_households(단지 전체 세대수): 블로그 본문에서 언급 금지
+- 공급세대수를 근거로 단지 규모·희소성·프라이버시·대형/소형 단지 여부를 해석하지 말 것
 
 【Q&A 작성 절대 원칙 — 반드시 준수】
 아래 금지 원칙을 단 하나라도 위반하면 답변 전체가 무효입니다.
@@ -1864,7 +1892,7 @@ CONTENT_GEN_PROMPT = """
   "post_subtitle": "30자 이내 부제목 (이 글을 읽어야 하는 이유)",
   "seo_tags": ["단지명태그", "지역태그", "청약관련태그", ...최대10개],
 
-  "apt_intro": "150~200자. 반드시 '안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. 오늘은 ' 으로 시작. 이어서 단지명과 가장 큰 매력 포인트를 자연스럽게 연결. <strong> 태그 사용 가능.",
+  "apt_intro": "150~200자. 반드시 '안녕하세요. 복잡한 청약 공고문을 쉽게 정리해 드리는 정과장입니다. 오늘은 '으로 시작. 공급세대수는 이번 공고 공급 물량으로만 언급하고, 단지 규모·소규모·대형·프라이빗 같은 해석은 절대 금지. 위치·타입·일정 등 공고문 팩트만 연결. <strong> 태그 사용 가능.",
 
   "location_intro": "100~150자. 해당 지역의 분위기와 생활 환경을 친근하게 설명. 지역 특색과 장점 중심. 독자가 그 동네를 떠올릴 수 있도록 묘사.",
 

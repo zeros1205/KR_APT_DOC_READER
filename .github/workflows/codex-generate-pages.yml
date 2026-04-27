@@ -1,0 +1,112 @@
+name: codex-페이지 생성하기
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "최대 생성 건수, 0은 제한 없음"
+        required: false
+        default: "1"
+      notice_id:
+        description: "특정 공고번호, 비우면 캐시 순서대로 생성"
+        required: false
+        default: ""
+      include_manual:
+        description: "manual_review 공고 포함 여부"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      include_processed:
+        description: "이미 생성된 공고 재생성 여부"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+
+jobs:
+  generate-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${GEMINI_API_KEY}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
+          PUBLIC_DATA_API_KEY=${PUBLIC_DATA_API_KEY}
+          EOF
+
+      - name: Verify frozen UI files before generation
+        run: python check_ui_freeze.py
+
+      - name: Generate posts from cache
+        run: |
+          LIMIT="${{ github.event.inputs.limit || '1' }}"
+          NOTICE_ID="${{ github.event.inputs.notice_id || '' }}"
+          INCLUDE_MANUAL="${{ github.event.inputs.include_manual || 'false' }}"
+          INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
+
+          CMD="python generate_posts_from_cache.py --limit $LIMIT"
+          if [ -n "$NOTICE_ID" ]; then
+            CMD="$CMD --notice-id $NOTICE_ID"
+          fi
+          if [ "$INCLUDE_MANUAL" = "true" ]; then
+            CMD="$CMD --include-manual"
+          fi
+          if [ "$INCLUDE_PROCESSED" = "true" ]; then
+            CMD="$CMD --include-processed"
+          fi
+
+          echo "$CMD"
+          eval "$CMD"
+
+      - name: Verify frozen UI files after generation
+        run: |
+          python check_ui_freeze.py
+          git diff --exit-code -- \
+            UI_FREEZE_MANIFEST.json \
+            templates/blog_template.html \
+            templates/front_index_template.html \
+            pipeline/html_renderer.py \
+            pipeline/index_renderer.py \
+            pipeline/shared_ui.py \
+            pipeline/themes.py
+
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f output/posts output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: generate pages [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No generated page changes."
+          fi
