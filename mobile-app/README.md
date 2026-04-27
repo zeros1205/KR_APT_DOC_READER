@@ -176,8 +176,9 @@ GET /api/posts/{post_id}
 
 | 문서 | 용도 |
 |------|------|
-| [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md) | Android 개발 환경 설정, 빌드, Google Play 배포 |
-| [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) | Firebase 프로젝트 생성, FCM 설정, 배포 준비 |
+| [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) | **먼저 읽기**: Android 배포 전체 프로세스 단계별 체크리스트 |
+| [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md) | Android 개발 환경 설정, 빌드, Google Play 배포 상세 가이드 |
+| [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) | Firebase 프로젝트 생성, FCM 설정, 배포 준비 상세 가이드 |
 
 ## 개발 역할 분담
 
@@ -194,57 +195,109 @@ GET /api/posts/{post_id}
 | 물리 기기 테스트 | ⏳ 필요 | 사용자 |
 | iOS 빌드 (Mac 필요) | ⏳ 후속 | - |
 
-## 다음 단계 (사용자)
+## 🚀 다음 단계: Android 배포 (지금!)
 
-### Phase 4 실행 체크리스트
+### 먼저 읽기 (5분)
+📘 **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** 
+- Android 배포 전체 프로세스 (10단계)
+- 각 단계별 체크리스트
+- 예상 소요 시간: 2-3주
 
-1. **개발 환경 준비** ([ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md#1-개발-환경-준비) 참조)
-   - [ ] JDK 17 설치
-   - [ ] Android Studio 설치 (SDK Platform 33+)
-   - [ ] ANDROID_HOME 환경 변수 설정
-   - [ ] Node.js 16+ 확인
+### 상세 가이드 (필요시 참조)
+- [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md) - 빌드 명령어 및 문제 해결
+- [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Firebase 설정 상세 가이드
 
-2. **Firebase 설정** ([FIREBASE_SETUP.md](./FIREBASE_SETUP.md) 참조)
-   - [ ] Firebase Console에서 프로젝트 생성
-   - [ ] Android 앱 등록 (com.apta.note)
-   - [ ] google-services.json 다운로드
-   - [ ] android/app/ 폴더에 배치
+### 배포 단계 (요약)
 
-3. **Google Play 준비** ([FIREBASE_SETUP.md#4-google-play-console-설정](./FIREBASE_SETUP.md#4-google-play-console-설정) 참조)
-   - [ ] Google Play Developer 계정 등록 ($25)
-   - [ ] 앱 생성
-   - [ ] 스토어 정보 입력
+**1단계: 개발 환경 준비** (1일)
+```bash
+# JDK 17, Android Studio, ANDROID_HOME 설정
+java -version  # 17 이상 확인
+echo $ANDROID_HOME  # 설정 확인
+```
 
-4. **로컬 빌드 테스트**
-   ```bash
-   npm run build
-   npx capacitor sync android
-   ./gradlew assembleDebug
-   ```
+**2단계: Firebase 설정** (1시간)
+```
+Firebase Console → 프로젝트 생성 → Android 앱 등록
+→ google-services.json 다운로드
+→ mobile-app/android/app/ 에 배치
+```
 
-5. **배포**
-   - [ ] 키스토어 파일 생성
-   - [ ] Release AAB 빌드
-   - [ ] Google Play에 업로드
-   - [ ] 심사 대기 (24시간~1주)
+**3단계: 앱 서명 설정** (1-2시간)
+```bash
+cd mobile-app/android
 
-## 성과 요약
+# 키스토어 생성 (처음만, 강력한 비밀번호 설정!)
+keytool -genkey -v -keystore apt-note.jks ...
 
-### Phase 1-3 완료 (8주)
-- ✅ 온보딩 시스템 (관심지역 선택)
-- ✅ 홈 + 즐겨찾기 + 설정 탭
-- ✅ Firebase FCM 통합
-- ✅ 로컬 알림 + 조용한 시간
-- ✅ 오프라인 캐싱 (LRU + 쿼터)
+# 환경 변수 설정
+export KEYSTORE_PASSWORD="..."
+export KEY_ALIAS="apt-note-key"
+export KEY_PASSWORD="..."
+```
+
+**4단계: 빌드** (2-5분)
+```bash
+cd mobile-app
+
+# 웹 리소스 빌드
+npm run build
+
+# Capacitor 동기화
+npx capacitor sync android
+
+# Release AAB 빌드
+cd android
+./gradlew bundleRelease
+
+# 결과: app/build/outputs/bundle/release/app-release.aab
+```
+
+**5-9단계: Google Play 배포** (3-5시간)
+```
+Google Play Console 가입 ($25)
+→ 앱 생성
+→ 스토어 정보 입력 (이름, 설명, 스크린샷)
+→ AAB 업로드
+→ 출시 제출
+→ 심사 대기 (24시간 ~ 1주)
+```
+
+**10단계: 모니터링** (지속)
+```
+Google Play Console 대시보드에서
+설치, 충돌, 리뷰 모니터링
+```
+
+## 📊 성과 요약
+
+### Phase 1-4 완료 (2026년 4월 27일)
+
+**구현 완료:**
+- ✅ 온보딩 시스템 (3단계: 소개 → 지역 선택 → 알림 설정)
+- ✅ 홈 화면 (포스트 그리드 + 검색 + 무한 스크롤)
+- ✅ 즐겨찾기 관리 (저장/삭제/정렬)
+- ✅ 설정 화면 (관심지역, 조용한 시간, 캐시)
+- ✅ 플로팅 메뉴 네비게이션
+- ✅ Firebase Cloud Messaging 통합
+- ✅ 로컬 알림 + 조용한 시간 (22:00~08:00)
+- ✅ 오프라인 캐싱 (24시간 TTL, LRU 100개, 통계)
 - ✅ 97개 샘플 포스트 데이터
 
-### Phase 4 진행 중
-- ✅ Android 빌드 가이드
-- ✅ Firebase 설정 가이드
-- ⏳ 첫 배포
+**배포 문서:**
+- ✅ [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) - 전체 프로세스 (10단계)
+- ✅ [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md) - 개발 환경 & 빌드
+- ✅ [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Firebase & Google Play
+
+### 배포 계획
+
+| 단계 | 대상 | 상태 | 예상 일정 |
+|------|------|------|---------|
+| **Phase 4** | Android | 🔄 진행 중 | 2026년 5월 중순 (2-3주) |
+| **Phase 5** | iOS | ⏳ 나중에 | Android 피드백 후 결정 |
 
 ---
 
-**시작 일자**: 2026년 4월 27일  
+**프로젝트 시작**: 2026년 4월 27일  
 **Phase 1-3 완료**: 2026년 4월 27일  
-**목표 배포**: 2026년 5월 중순 (Android)
+**다음 단계**: [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)에서 Android 배포 시작!
