@@ -115,6 +115,16 @@ jobs:
           fi
 
       # ── Step 2: cache → 포스트 생성 + index/sitemap/robots 재빌드 ───────
+      - name: 포스트 생성 전 스냅샷
+        run: |
+          if [ -f "output/processed_notices.json" ]; then
+            python3 -c "import json; d=json.load(open('output/processed_notices.json')); print(len(d))" > /tmp/before_count.txt
+            cp output/processed_notices.json /tmp/processed_before.json
+          else
+            echo "0" > /tmp/before_count.txt
+            echo "[]" > /tmp/processed_before.json
+          fi
+
       - name: 포스트 생성
         run: |
           LIMIT=${{ github.event.inputs.generate_limit || '3' }}
@@ -134,7 +144,33 @@ jobs:
           fi
           if [ -f "output/processed_notices.json" ]; then
             PROCESSED=$(python3 -c "import json; d=json.load(open('output/processed_notices.json')); print(len(d))")
+            BEFORE=$(cat /tmp/before_count.txt 2>/dev/null || echo "0")
             echo "✅ 처리 완료 누적: $PROCESSED개"
+            echo ""
+            echo "=== 이번 실행에서 새로 생성된 포스트 ==="
+            python3 - <<'PYEOF'
+          import json
+          before = set(json.load(open('/tmp/processed_before.json')))
+          after  = set(json.load(open('output/processed_notices.json')))
+          new_ids = after - before
+          if not new_ids:
+              print("  (신규 없음)")
+          else:
+              from pathlib import Path
+              for nid in sorted(new_ids):
+                  # post_meta.json에서 이름 찾기
+                  metas = list(Path('output/posts').glob('*/post_meta.json'))
+                  name = nid
+                  for m in metas:
+                      try:
+                          d = json.loads(m.read_text())
+                          if str(d.get('notice_id','')) == str(nid) or str(d.get('pblancNo','')) == str(nid):
+                              name = d.get('apt_name', nid)
+                              break
+                      except Exception:
+                          pass
+                  print(f"  ✨ [{nid}] {name}")
+          PYEOF
           fi
 
       # ── Step 3: 변경사항 커밋 & 푸시 (Cloudflare Pages 자동 배포 트리거) ──
