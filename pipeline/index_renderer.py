@@ -111,8 +111,13 @@ function goPage(page) {
   _renderPage(matched, _currentPage);
   _renderPagination(matched);
   var grid = document.getElementById('cards-grid');
-  if (grid && window.scrollY > grid.offsetTop - 120) {
-    window.scrollTo({ top: grid.offsetTop - 80, behavior: 'smooth' });
+  if (!grid) return;
+  var dock = document.getElementById('filter-dock');
+  var stickyTop = dock ? (parseFloat(getComputedStyle(dock).top) || 0) : 0;
+  var dockH = dock ? dock.offsetHeight : 0;
+  var offset = stickyTop + dockH + 12;
+  if (window.scrollY > grid.offsetTop - offset - 40) {
+    window.scrollTo({ top: grid.offsetTop - offset, behavior: 'smooth' });
   }
 }
 
