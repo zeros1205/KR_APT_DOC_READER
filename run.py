@@ -27,7 +27,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import collect_from_api, get_sample_document
 from orchestrator import run_pipeline_from_doc
-from index_renderer import build_manifest
+from index_renderer import build_front_index as build_manifest
 
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
