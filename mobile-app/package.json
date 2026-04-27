@@ -1,0 +1,49 @@
+{
+  "name": "apt-note-mobile",
+  "version": "1.0.0",
+  "description": "iOS/Android mobile app for apt-note.com",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "cap": "capacitor",
+    "cap:add:ios": "capacitor add ios",
+    "cap:add:android": "capacitor add android",
+    "cap:open:ios": "capacitor open ios",
+    "cap:open:android": "capacitor open android",
+    "cap:build": "npm run build && capacitor sync"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "@capacitor/core": "^5.7.0",
+    "@capacitor/ios": "^5.7.0",
+    "@capacitor/android": "^5.7.0",
+    "@capacitor/storage": "^5.7.0",
+    "@capacitor/local-notifications": "^5.7.0",
+    "@capacitor/app": "^5.7.0",
+    "@capacitor/permissions": "^5.7.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@capacitor/cli": "^5.7.0",
+    "typescript": "^5.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
