@@ -63,7 +63,7 @@ function App() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
       {!isOnboarded ? (
         <OnboardingScreen onComplete={handleOnboardingComplete} />
       ) : (
@@ -73,83 +73,103 @@ function App() {
             {currentScreen === 'favorites' && <FavoritesScreen />}
             {currentScreen === 'settings' && <SettingsScreen />}
           </div>
-          <BottomTabBar currentScreen={currentScreen} onScreenChange={setCurrentScreen} />
+          <FloatingMenu currentScreen={currentScreen} onScreenChange={setCurrentScreen} />
         </>
       )}
     </div>
   );
 }
 
-interface BottomTabBarProps {
+interface FloatingMenuProps {
   currentScreen: Screen;
   onScreenChange: (screen: Screen) => void;
 }
 
-function BottomTabBar({ currentScreen, onScreenChange }: BottomTabBarProps) {
+function FloatingMenu({ currentScreen, onScreenChange }: FloatingMenuProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const menuItems: { screen: Screen; icon: string; label: string }[] = [
+    { screen: 'home', icon: '🏠', label: '홈' },
+    { screen: 'favorites', icon: '⭐', label: '즐겨찾기' },
+    { screen: 'settings', icon: '⚙️', label: '설정' },
+  ];
+
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        height: '60px',
-        backgroundColor: 'var(--c-surface)',
-        borderTop: '1px solid var(--c-light-gray)',
-        gap: '4px',
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        zIndex: 1000,
       }}
     >
-      {['home', 'favorites', 'settings'].map((screen) => (
-        <button
-          key={screen}
-          onClick={() => onScreenChange(screen as Screen)}
+      {isExpanded && (
+        <div
           style={{
-            flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '4px',
-            padding: '8px',
-            backgroundColor: 'transparent',
-            borderBottom:
-              currentScreen === screen ? '3px solid var(--c-primary)' : 'none',
-            color: currentScreen === screen ? 'var(--c-primary)' : 'var(--c-mid)',
-            fontSize: '12px',
-            fontWeight: currentScreen === screen ? '600' : '400',
+            gap: '12px',
+            marginBottom: '16px',
+            alignItems: 'flex-end',
           }}
         >
-          {getTabIcon(screen as Screen)}
-          {getTabLabel(screen as Screen)}
-        </button>
-      ))}
+          {menuItems.map(item => (
+            <button
+              key={item.screen}
+              onClick={() => {
+                onScreenChange(item.screen);
+                setIsExpanded(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 16px',
+                backgroundColor: 'var(--c-surface)',
+                color:
+                  currentScreen === item.screen
+                    ? 'var(--c-primary)'
+                    : 'var(--c-dark)',
+                border: `2px solid ${
+                  currentScreen === item.screen
+                    ? 'var(--c-primary)'
+                    : 'var(--c-light-gray)'
+                }`,
+                borderRadius: '24px',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              }}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{
+          width: '56px',
+          height: '56px',
+          borderRadius: '28px',
+          backgroundColor: 'var(--c-primary)',
+          color: '#ffffff',
+          border: 'none',
+          fontSize: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          transition: 'transform 200ms',
+          transform: isExpanded ? 'rotate(45deg)' : 'rotate(0)',
+        }}
+      >
+        +
+      </button>
     </div>
   );
-}
-
-function getTabIcon(screen: Screen) {
-  switch (screen) {
-    case 'home':
-      return '🏠';
-    case 'favorites':
-      return '⭐';
-    case 'settings':
-      return '⚙️';
-    default:
-      return '';
-  }
-}
-
-function getTabLabel(screen: Screen) {
-  switch (screen) {
-    case 'home':
-      return '홈';
-    case 'favorites':
-      return '즐겨찾기';
-    case 'settings':
-      return '설정';
-    default:
-      return '';
-  }
 }
 
 export default App;

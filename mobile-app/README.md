@@ -19,11 +19,11 @@ mobile-app/
 │   │   ├── notificationService.ts # FCM/로컬 알림
 │   │   └── cacheService.ts  # 오프라인 캐싱
 │   ├── styles/
-│   │   ├── themes.ts        # 색상 팔레트 (A, B, C)
+│   │   ├── themes.ts        # 테마 설정
 │   │   └── index.css        # 글로벌 스타일
 │   ├── types/               # TypeScript 타입 정의
 │   ├── hooks/               # 커스텀 React 훅
-│   ├── App.tsx              # 메인 앱 컴포넌트 + 바텀 탭 네비게이션
+│   ├── App.tsx              # 메인 앱 컴포넌트 + 플로팅 메뉴
 │   └── index.tsx            # 진입점
 ├── public/
 │   └── index.html           # HTML 템플릿
@@ -107,18 +107,6 @@ Capacitor Storage를 사용한 로컬 저장소
 오프라인 캐싱 (24시간 TTL)
 - `getCachedPost()` / `setCachedPost()` - 포스트 캐시
 - `getCacheSize()` / `clearCache()` - 캐시 관리
-
-## 테마 시스템
-
-CSS 변수로 구현된 3가지 색상 팔레트:
-- **A**: 따뜻한 톤 (기본값) - `#d97757` (주색상)
-- **B**: 자연스러운 톤 - `#386641` (주색상)
-- **C**: 부드러운 톤 - `#ffafcc` (주색상)
-
-HTML `data-palette` 속성으로 전환됨:
-```html
-<html data-palette="A">
-```
 
 ## 백엔드 API 요구사항
 
