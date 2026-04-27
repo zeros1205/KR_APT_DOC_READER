@@ -148,6 +148,23 @@ class StorageService {
     }
   }
 
+  async getDeviceId(): Promise<string | null> {
+    try {
+      return await Storage.getItem(`${this.prefix}device-id`);
+    } catch (error) {
+      console.error('Failed to get device ID:', error);
+      return null;
+    }
+  }
+
+  async setDeviceId(deviceId: string): Promise<void> {
+    try {
+      await Storage.setItem(`${this.prefix}device-id`, deviceId);
+    } catch (error) {
+      console.error('Failed to set device ID:', error);
+    }
+  }
+
   async clear(): Promise<void> {
     try {
       await Storage.clear();

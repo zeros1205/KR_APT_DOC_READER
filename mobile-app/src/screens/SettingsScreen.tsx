@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { storageService, UserPreferences, AppearanceSettings } from '../services/storageService';
 import { cacheService } from '../services/cacheService';
+import { firebaseService } from '../services/firebaseService';
 
 const KOREAN_REGIONS = [
   '서울', '부산', '대구', '인천', '광주', '대전', '울산',
@@ -56,6 +57,7 @@ export default function SettingsScreen() {
         updated.regions = [...updated.regions, region];
       }
       await storageService.setUserPreferences(updated);
+      await firebaseService.updateRegions(updated.regions);
       setPrefs(updated);
     }
   };

@@ -3,6 +3,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { storageService } from './services/storageService';
 import { notificationService } from './services/notificationService';
+import { firebaseService } from './services/firebaseService';
 import OnboardingScreen from './screens/OnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import FavoritesScreen from './screens/FavoritesScreen';
@@ -30,6 +31,7 @@ function App() {
         }
 
         await notificationService.initialize();
+        await firebaseService.initialize();
       } catch (error) {
         console.error('App initialization error:', error);
       } finally {

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { cacheService } from './cacheService';
 
 interface PostMeta {
   post_id: string;
@@ -39,6 +40,7 @@ class ApiService {
       if (process.env.NODE_ENV === 'development') {
         const response = await fetch('/manifest.json');
         const data = await response.json();
+        await cacheService.setManifest(data);
 
         let posts: PostMeta[] = data.posts;
 
@@ -66,9 +68,26 @@ class ApiService {
         params.regions = regions.join(',');
       }
       const response = await this.api.get('/posts', { params });
+      await cacheService.setCachedPostsList(response.data.posts);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch posts:', error);
+
+      // 오프라인 모드: 캐시된 데이터 반환
+      if (!navigator.onLine) {
+        cacheService.setOfflineMode(true);
+        console.log('Offline mode: returning cached posts');
+        const cached = await cacheService.getCachedPostsList();
+        if (cached) {
+          let posts = cached;
+          if (regions && regions.length > 0) {
+            posts = posts.filter(p => regions.includes(p.region));
+          }
+          const paginated = posts.slice(offset, offset + limit);
+          return { posts: paginated, total: posts.length };
+        }
+      }
+
       throw error;
     }
   }
@@ -104,20 +123,35 @@ class ApiService {
           </p>
         `;
 
-        return {
+        const detail: PostDetail = {
           post_id: postId,
           apt_name: '샘플 아파트',
           content: sampleContent,
           notice_date: new Date().toISOString().split('T')[0],
           region: '서울',
         };
+
+        await cacheService.setCachedPost(postId, detail);
+        return detail;
       }
 
       // 프로덕션 환경: API 호출
       const response = await this.api.get(`/posts/${postId}`);
+      await cacheService.setCachedPost(postId, response.data);
       return response.data;
     } catch (error) {
       console.error(`Failed to fetch post ${postId}:`, error);
+
+      // 오프라인 모드: 캐시된 데이터 반환
+      if (!navigator.onLine) {
+        cacheService.setOfflineMode(true);
+        console.log(`Offline mode: returning cached post ${postId}`);
+        const cached = await cacheService.getCachedPost(postId);
+        if (cached) {
+          return cached;
+        }
+      }
+
       throw error;
     }
   }

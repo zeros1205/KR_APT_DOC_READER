@@ -26,6 +26,8 @@
     "@capacitor/local-notifications": "^5.7.0",
     "@capacitor/app": "^5.7.0",
     "@capacitor/permissions": "^5.7.0",
+    "@capacitor-firebase/messaging": "^5.4.0",
+    "firebase": "^10.7.0",
     "axios": "^1.6.0"
   },
   "devDependencies": {
