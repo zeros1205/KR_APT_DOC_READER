@@ -265,5 +265,26 @@
       "여수시 비규제지역 아파트 분양"
     ],
     "checked_at": "2026-04-26T23:31:43+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "4",
+    "source_pdf": "2026000036 e편한세상 여수 글렌츠 입주자모집공고문.pdf",
+    "source_page": 6
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "4",
+    "source_page": 6,
+    "source_pdf": "2026000036 e편한세상 여수 글렌츠 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(10%이내) 중도금(60%이내) 잔금",
+      "공급금액 계약금(10%이내) 중도금(60%이내) 잔금",
+      "세대 1차 2차 1회(15%이내) 2회(15%이내) 3회(15%이내) 4회(15%이내)"
+    ]
   }
 }

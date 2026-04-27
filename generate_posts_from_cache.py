@@ -23,12 +23,14 @@ from dotenv import load_dotenv
 load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import NoticeDocument
+from agents.pdf_finance import extract_finance_from_pdf, find_local_pdf
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
 
 
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
+PDF_DIR = BASE_DIR / "output" / "pdfs"
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
 
@@ -67,6 +69,22 @@ def _stringify_none(value: Any) -> Any:
 def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     data = dict(payload.get("document") or {})
     manual_regulation = payload.get("manual_regulation") or {}
+    manual_finance = dict(payload.get("manual_finance") or {})
+    notice_id = str(payload.get("notice_id") or data.get("notice_id") or "")
+    local_pdf = find_local_pdf(PDF_DIR, notice_id)
+    if local_pdf:
+        extracted_finance = extract_finance_from_pdf(local_pdf)
+        if extracted_finance.has_core_ratios:
+            manual_finance.update(
+                {
+                    "contract_ratio": extracted_finance.contract_ratio,
+                    "midterm_ratio": extracted_finance.midterm_ratio,
+                    "balance_ratio": extracted_finance.balance_ratio,
+                    "midterm_count": extracted_finance.midterm_count,
+                    "source_pdf": extracted_finance.source_pdf,
+                    "source_page": extracted_finance.source_page,
+                }
+            )
     if manual_regulation:
         data.update(
             {
@@ -101,6 +119,22 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
         ]
         doc.raw_text = f"{doc.raw_text}\n\n" + "\n".join(policy_lines)
         doc.pdf_policy_text = "\n".join(policy_lines)
+    if manual_finance:
+        finance_lines = [
+            "[자금계획]",
+            f"계약금: {manual_finance.get('contract_ratio', '')}%",
+            f"중도금: {manual_finance.get('midterm_ratio', '')}%",
+            f"잔금: {manual_finance.get('balance_ratio', '')}%",
+        ]
+        if manual_finance.get("midterm_count"):
+            finance_lines.append(f"중도금 납부 횟수: {manual_finance.get('midterm_count')}회")
+        if manual_finance.get("loan_info"):
+            finance_lines.append(f"중도금 대출: {manual_finance.get('loan_info')}")
+        if manual_finance.get("source_pdf"):
+            finance_lines.append(f"자금계획 출처 PDF: {manual_finance.get('source_pdf')}")
+        if manual_finance.get("source_page"):
+            finance_lines.append(f"자금계획 출처 페이지: {manual_finance.get('source_page')}")
+        doc.raw_text = f"{doc.raw_text}\n\n" + "\n".join(finance_lines)
     return doc
 
 

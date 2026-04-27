@@ -284,5 +284,27 @@
       "래미안 엘라비네 재당첨제한 전매제한"
     ],
     "checked_at": "2026-04-26T23:33:51+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2026000039 래미안 엘라비네 입주자모집공고문.pdf",
+    "source_page": 10
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_page": 10,
+    "source_pdf": "2026000039 래미안 엘라비네 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "주택형 세대수 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) 입주"
+    ]
   }
 }

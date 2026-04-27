@@ -191,5 +191,26 @@
       "아크로 드 서초 분양가상한제"
     ],
     "checked_at": "2026-04-26T21:51:20+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "60",
+    "balance_ratio": "20",
+    "midterm_count": "6",
+    "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
+    "source_page": 8
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "60",
+    "balance_ratio": "20",
+    "midterm_count": "6",
+    "source_page": 8,
+    "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 중도금(60%)",
+      "약식 공급 층 1회차(10%) 2회차(10%) 3회차(10%) 4회차(10%) 5회차(10%) 6회차(10%)",
+      "주택형 동호 세대 (20%) (20%)"
+    ]
   }
 }

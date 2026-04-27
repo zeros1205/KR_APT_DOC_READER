@@ -303,5 +303,25 @@
       "제주도 민간임대주택 전매제한"
     ],
     "checked_at": "2026-04-27T02:18:25+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000130 PH159 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000130 PH159 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금 중도금(60%) 잔금",
+      "약식 (10%) (30%)"
+    ]
   }
 }

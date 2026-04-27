@@ -228,5 +228,27 @@
       "이촌 르엘 실거주의무"
     ],
     "checked_at": "2026-04-26T23:47:46+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "60",
+    "balance_ratio": "20",
+    "midterm_count": "",
+    "source_pdf": "2026000048 이촌 르엘 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "60",
+    "balance_ratio": "20",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000048 이촌 르엘 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 중도금(60%)",
+      "약식표기 공급 계약금(20%) 잔금(20%)",
+      "약식표기 공급 계약금(20%) 잔금(20%)",
+      "동호수 1회(20%) 2회(20%) 3회(20%)"
+    ]
   }
 }

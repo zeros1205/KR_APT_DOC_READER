@@ -85,9 +85,9 @@
   ],
   "contract_ratio": "10",
   "contract_amount": "",
-  "midterm_ratio": "60",
-  "midterm_count": "6",
-  "balance_ratio": "30",
+  "midterm_ratio": "10",
+  "midterm_count": "2",
+  "balance_ratio": "90",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000063&pblancNo=2026000063",
   "generated_at": "2026-04-27T02:38:29.536881",
@@ -98,5 +98,17 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 오션포레베네스트하우스, 미단시티공동8BL, 인천중구분양, 인천청약, 중구아파트청약, 오션포레베네스트하우스분양가, 특별공급, 1순위청약, 비규제지역청약, 인천신축아파트",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "10",
+    "balance_ratio": "90",
+    "midterm_count": "2",
+    "source_page": 6,
+    "source_pdf": "2026000063 오션포레베네스트하우스(미단시티 공동8BL) 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(10%) 잔금",
+      "약식 1차(5%) 2차(5%) (90%)"
+    ]
   }
 }

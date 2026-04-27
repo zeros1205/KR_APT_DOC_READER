@@ -247,5 +247,26 @@
       "공덕역자이르네 분양가상한제 미적용"
     ],
     "checked_at": "2026-04-27T02:12:39+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000114 공덕역자이르네 입주자모집공고문 (2).pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000114 공덕역자이르네 입주자모집공고문 (2).pdf",
+    "evidence": [
+      "공급금액 계약금 (10%) 중도금 (60%) 잔금",
+      "공급금액 계약금 (10%) 중도금 (60%) 잔금",
+      "동ㆍ호 1회 2회 3회 4회 5회 6회 30%"
+    ]
   }
 }

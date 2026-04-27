@@ -169,5 +169,25 @@
       "구서 다움포레 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:34:49+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000040 구서 다움포레 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000040 구서 다움포레 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금 (10%)",
+      "분양가격 잔금(90%)"
+    ]
   }
 }

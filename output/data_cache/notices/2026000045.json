@@ -265,5 +265,27 @@
       "대전 롯데캐슬 더퍼스트 조합원 취소분 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:44:56+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000045 대전 롯데캐슬 더퍼스트(조합원 취소분) 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_page": 7,
+    "source_pdf": "2026000045 대전 롯데캐슬 더퍼스트(조합원 취소분) 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(5%) 중도금(60%)",
+      "계약금(5%) 중도금(60%)",
+      "잔금(35%)",
+      "1차 2차 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

@@ -169,5 +169,27 @@
       "전주시 비규제지역 아파트 분양"
     ],
     "checked_at": "2026-04-27T01:49:13+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000077 북전주 광신프로그레스 입주자모집공고문.pdf",
+    "source_page": 6
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 6,
+    "source_pdf": "2026000077 북전주 광신프로그레스 입주자모집공고문.pdf",
+    "evidence": [
+      "공급 분양가격 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급 분양가격 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급 분양가격 계약금(10%) 중도금(60%) 잔금(30%)",
+      "층 세대 계약 후 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

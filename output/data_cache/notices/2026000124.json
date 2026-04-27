@@ -226,5 +226,26 @@
       "고덕신도시 아테라 A-63블록 재당첨제한 전매제한 거주의무"
     ],
     "checked_at": "2026-04-27T02:15:28+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "7",
+    "source_pdf": "2026000124 고덕신도시 아테라 A-63블록 공공분양주택 입주자모집공고문 (2).pdf",
+    "source_page": 5
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "7",
+    "source_page": 5,
+    "source_pdf": "2026000124 고덕신도시 아테라 A-63블록 공공분양주택 입주자모집공고문 (2).pdf",
+    "evidence": [
+      "계약금 중도금(60%) 잔금(30%)",
+      "계약금 중도금(60%) 잔금(30%)",
+      "주택형 (약식 층별 공급금액 10% 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

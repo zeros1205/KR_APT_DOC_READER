@@ -83,11 +83,11 @@
     "2순위는 1순위에 해당하지 않거나 1순위 접수 후 남은 물량이 있을 때 공고문 일정에 따라 접수합니다.",
     "해당지역과 기타지역 접수일이 같더라도 거주지역 구분은 공고문 기준으로 확인해야 합니다."
   ],
-  "contract_ratio": "10",
+  "contract_ratio": "20",
   "contract_amount": "",
   "midterm_ratio": "60",
   "midterm_count": "6",
-  "balance_ratio": "30",
+  "balance_ratio": "20",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000497&pblancNo=2025000497",
   "generated_at": "2026-04-27T01:48:51.479113",
@@ -98,5 +98,18 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 아크로드서초, 서초동청약, 서초구분양, 서울청약, 민간분양, 특별공급, 1순위청약, 분양가상한제, 투기과열지구, 청약일정",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "60",
+    "balance_ratio": "20",
+    "midterm_count": "6",
+    "source_page": 8,
+    "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 중도금(60%)",
+      "약식 공급 층 1회차(10%) 2회차(10%) 3회차(10%) 4회차(10%) 5회차(10%) 6회차(10%)",
+      "주택형 동호 세대 (20%) (20%)"
+    ]
   }
 }

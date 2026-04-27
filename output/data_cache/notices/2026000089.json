@@ -285,5 +285,26 @@
       "강릉 우미 린 더 프리미어 분양가상한제"
     ],
     "checked_at": "2026-04-27T01:57:49+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000089 강릉 우미 린 더 프리미어 입주자모집공고문.pdf",
+    "source_page": 9
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 9,
+    "source_pdf": "2026000089 강릉 우미 린 더 프리미어 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(5%) 중도금(60%) 잔금",
+      "계약금(5%) 중도금(60%) 잔금",
+      "공급 층 해당 1회차 2회차 1회차 2회차 3회차 4회차 5회차 6회차 (35%)"
+    ]
   }
 }

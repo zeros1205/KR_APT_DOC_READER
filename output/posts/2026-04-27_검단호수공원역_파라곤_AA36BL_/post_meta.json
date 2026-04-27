@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "8",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000065&pblancNo=2026000065",
@@ -98,5 +98,18 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 검단호수공원역파라곤, 검단호수공원역파라곤AA36BL, 인천서구분양, 검단신도시청약, 불로동아파트, 인천청약일정, 분양가상한제, 비규제지역청약, 특별공급, 1순위청약",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "8",
+    "source_page": 7,
+    "source_pdf": "2026000065 검단호수공원역 파라곤(AA36BL) 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금 (10%) 중도금 (60%)",
+      "공급금액 계약금 (10%) 중도금 (60%)",
+      "(30%)"
+    ]
   }
 }

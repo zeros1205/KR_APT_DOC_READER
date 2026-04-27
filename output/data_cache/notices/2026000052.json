@@ -171,5 +171,26 @@
       "시흥거모B1 호반써밋 실거주 의무"
     ],
     "checked_at": "2026-04-26T23:50:45+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000052 시흥거모B1 호반써밋 입주자모집공고문.pdf",
+    "source_page": 9
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 9,
+    "source_pdf": "2026000052 시흥거모B1 호반써밋 입주자모집공고문.pdf",
+    "evidence": [
+      "공급 금액 계약금(5%) 중도금(60%)",
+      "공급 금액 계약금(5%) 중도금(60%)",
+      "약식 세대수 라인 층 해당 계약 계약 1회 2회 3회 4회 5회 6회 (35%)"
+    ]
   }
 }

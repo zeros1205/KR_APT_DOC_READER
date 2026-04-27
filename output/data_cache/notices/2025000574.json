@@ -189,5 +189,25 @@
       "무등산 더힐 조합원 취소분 분양가상한제"
     ],
     "checked_at": "2026-04-26T22:21:14+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2025000574 무등산 더힐(조합원 취소분) 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2025000574 무등산 더힐(조합원 취소분) 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 잔금(30%)",
+      "동별 공급 (10%) (30%) (30%)"
+    ]
   }
 }

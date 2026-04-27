@@ -77,9 +77,9 @@
   ],
   "contract_ratio": "10",
   "contract_amount": "",
-  "midterm_ratio": "60",
+  "midterm_ratio": "0",
   "midterm_count": "6",
-  "balance_ratio": "30",
+  "balance_ratio": "90",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000070&pblancNo=2026000070",
   "generated_at": "2026-04-27T02:43:18.063910",
@@ -90,5 +90,17 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 힐스테이트안양펠루스, 안양동청약, 안양시아파트분양, 만안구분양, 경기도청약, 특별공급, 1순위청약, 분양가정리, 청약일정, 비규제지역",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_page": 8,
+    "source_pdf": "2026000070 힐스테이트 안양펠루스 입주자모집공고문 (1).pdf",
+    "evidence": [
+      "층별 공급금액 계약금 (10%) 잔금 (90%)",
+      "층별 공급금액 계약금 (10%) 잔금 (90%)"
+    ]
   }
 }

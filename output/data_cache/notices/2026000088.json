@@ -284,5 +284,27 @@
       "분양가상한제 미적용 지역 용인"
     ],
     "checked_at": "2026-04-27T01:56:45+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000088 용인 양지 서희스타힐스 하이뷰 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_page": 7,
+    "source_pdf": "2026000088 용인 양지 서희스타힐스 하이뷰 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액(분양가격) 계약금(5%) 중도금(60%) 잔 금(35%)",
+      "공급금액(분양가격) 계약금(5%) 중도금(60%) 잔 금(35%)",
+      "공급금액(분양가격) 계약금(5%) 중도금(60%) 잔 금(35%)",
+      "1차 1회 (10%) 2회 (10%) 3회 (10%) 4회 (10%) 5회 (10%) 6회 (10%) 종료일 또는"
+    ]
   }
 }

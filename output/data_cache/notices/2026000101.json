@@ -209,5 +209,26 @@
       "온천장 하늘채 엘리시움 분양가상한제"
     ],
     "checked_at": "2026-04-27T02:03:56+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000101 온천장 하늘채 엘리시움 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000101 온천장 하늘채 엘리시움 입주자모집공고문.pdf",
+    "evidence": [
+      "층별 계약금 중도금(60%) 잔금(35%)",
+      "층별 계약금 중도금(60%) 잔금(35%)",
+      "약식 동별 층 공급 (5%) 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

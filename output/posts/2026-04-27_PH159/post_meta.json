@@ -57,5 +57,17 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: PH159, 제주청약, 제주시분양, 조천읍청약, 북촌리분양, 제주아파트청약, 청약일정, 분양가정보, 비규제지역, 실수요자청약",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000130 PH159 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금 중도금(60%) 잔금",
+      "약식 (10%) (30%)"
+    ]
   }
 }

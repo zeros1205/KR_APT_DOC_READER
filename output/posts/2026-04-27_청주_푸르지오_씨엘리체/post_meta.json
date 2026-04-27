@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "7",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000087&pblancNo=2026000087",
@@ -98,5 +98,17 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 청주푸르지오씨엘리체, 미평동분양, 청주청약, 청주아파트분양, 서원구분양, 충북청약, 특별공급, 1순위청약, 분양가정리, 청약일정",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "7",
+    "source_page": 7,
+    "source_pdf": "2026000087 청주 푸르지오 씨엘리체 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금 중도금 (60%) 잔금",
+      "약식 층 (10%) 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) (30%)"
+    ]
   }
 }

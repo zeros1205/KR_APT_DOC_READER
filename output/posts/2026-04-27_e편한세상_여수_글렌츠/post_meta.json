@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "4",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000036&pblancNo=2026000036",
@@ -98,5 +98,18 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: e편한세상여수글렌츠, 여수신기동, 여수아파트청약, 여수분양, 전남청약, 신기동아파트, 특별공급, 1순위청약, 분양가정리, 비규제지역",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "4",
+    "source_page": 6,
+    "source_pdf": "2026000036 e편한세상 여수 글렌츠 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(10%이내) 중도금(60%이내) 잔금",
+      "공급금액 계약금(10%이내) 중도금(60%이내) 잔금",
+      "세대 1차 2차 1회(15%이내) 2회(15%이내) 3회(15%이내) 4회(15%이내)"
+    ]
   }
 }

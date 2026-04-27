@@ -151,5 +151,27 @@
       "인천 부평구 비규제지역 청약 조건"
     ],
     "checked_at": "2026-04-27T01:37:14+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000062 중앙하이츠 갈산역 센트럴 입주자모집공고문.pdf",
+    "source_page": 9
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 9,
+    "source_pdf": "2026000062 중앙하이츠 갈산역 센트럴 입주자모집공고문.pdf",
+    "evidence": [
+      "중도금 (60%)",
+      "총 분 양 금 액 계약금(10%) 잔금(30%)",
+      "총 분 양 금 액 계약금(10%) 잔금(30%)",
+      "타입 1차(40%) 2차(20%)"
+    ]
   }
 }

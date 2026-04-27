@@ -226,5 +226,25 @@
       "힐스테이트 평거 센트럴 분양가상한제"
     ],
     "checked_at": "2026-04-27T01:53:24+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "85",
+    "balance_ratio": "10",
+    "midterm_count": "",
+    "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
+    "source_page": 4
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "85",
+    "balance_ratio": "10",
+    "midterm_count": "",
+    "source_page": 4,
+    "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
+    "evidence": [
+      "■ 분양권 전매는 계약금(총 공급금액의 5%) 완납 후 가능하오니, 이점 유의하시기 바랍니다.",
+      "체결한 약정에 대하여 권리의무를 포괄적으로 승계합니다. 단, 공급대금의 연체가 있는 경우 또는 잔금 납부금액이 총 분양가의 10%미만일 경우에는 분양권"
+    ]
   }
 }

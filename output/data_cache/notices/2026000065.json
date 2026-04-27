@@ -170,5 +170,26 @@
       "검단호수공원역 파라곤 실거주 의무"
     ],
     "checked_at": "2026-04-27T01:40:50+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "8",
+    "source_pdf": "2026000065 검단호수공원역 파라곤(AA36BL) 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "8",
+    "source_page": 7,
+    "source_pdf": "2026000065 검단호수공원역 파라곤(AA36BL) 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금 (10%) 중도금 (60%)",
+      "공급금액 계약금 (10%) 중도금 (60%)",
+      "(30%)"
+    ]
   }
 }

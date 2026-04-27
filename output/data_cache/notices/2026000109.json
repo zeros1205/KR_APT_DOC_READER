@@ -189,5 +189,26 @@
       "아산경남아너스빌 랜드마크49 재당첨제한"
     ],
     "checked_at": "2026-04-27T02:09:46+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000109 아산경남아너스빌 랜드마크49 입주자모집공고문.pdf",
+    "source_page": 6
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_page": 6,
+    "source_pdf": "2026000109 아산경남아너스빌 랜드마크49 입주자모집공고문.pdf",
+    "evidence": [
+      "주택형 계약금(5%) 중도금(60%) 잔금",
+      "주택형 계약금(5%) 중도금(60%) 잔금",
+      "(약식 층 1차 2차 1회차(10%) 2회차(10%) 3회차(10%) 4회차(10%) 5회차(10%) 6회차(10%) (35%)"
+    ]
   }
 }

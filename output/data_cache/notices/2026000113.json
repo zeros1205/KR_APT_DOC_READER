@@ -265,5 +265,26 @@
       "동탄 그웬 160 전매제한 실거주의무"
     ],
     "checked_at": "2026-04-27T02:12:07+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000113 동탄 그웬 160 (동탄2 B11BL) 입주자모집공고문 (1).pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000113 동탄 그웬 160 (동탄2 B11BL) 입주자모집공고문 (1).pdf",
+    "evidence": [
+      "중도금 (60%)",
+      "분양가격 계약금(5%) 1회 2회 3회 4회 5회 6회",
+      "약식 층 해당 (35%)"
+    ]
   }
 }

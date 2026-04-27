@@ -188,5 +188,27 @@
       "범어역 파크드림 디아르 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:46:47+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2026000047 범어역 파크드림 디아르 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_page": 7,
+    "source_pdf": "2026000047 범어역 파크드림 디아르 입주자모집공고문.pdf",
+    "evidence": [
+      "중도금 (60%) 잔금 (30%)",
+      "중도금 (60%) 잔금 (30%)",
+      "공급금액 계약금 (10%)",
+      "동호 해당 1차 (10%) 2차 (10%) 3차 (10%) 4차 (10%) 5차 (10%) 6차 (10%) 잔금"
+    ]
   }
 }

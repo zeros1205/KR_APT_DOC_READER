@@ -83,11 +83,11 @@
     "2순위는 1순위에 해당하지 않거나 1순위 접수 후 남은 물량이 있을 때 공고문 일정에 따라 접수합니다.",
     "해당지역과 기타지역 접수일이 같더라도 거주지역 구분은 공고문 기준으로 확인해야 합니다."
   ],
-  "contract_ratio": "10",
+  "contract_ratio": "5",
   "contract_amount": "",
-  "midterm_ratio": "60",
+  "midterm_ratio": "85",
   "midterm_count": "6",
-  "balance_ratio": "30",
+  "balance_ratio": "10",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000085&pblancNo=2026000085",
   "generated_at": "2026-04-27T01:54:13.222178",
@@ -98,5 +98,17 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 힐스테이트평거센트럴, 진주청약, 평거동분양, 진주아파트분양, 경남청약, 청약일정, 특별공급, 1순위청약, 분양가정리, 실수요자정보",
     "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "85",
+    "balance_ratio": "10",
+    "midterm_count": "",
+    "source_page": 4,
+    "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
+    "evidence": [
+      "■ 분양권 전매는 계약금(총 공급금액의 5%) 완납 후 가능하오니, 이점 유의하시기 바랍니다.",
+      "체결한 약정에 대하여 권리의무를 포괄적으로 승계합니다. 단, 공급대금의 연체가 있는 경우 또는 잔금 납부금액이 총 분양가의 10%미만일 경우에는 분양권"
+    ]
   }
 }

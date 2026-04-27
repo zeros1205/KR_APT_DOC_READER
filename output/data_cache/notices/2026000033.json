@@ -247,5 +247,26 @@
       "해링턴플레이스 오룡역 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:28:44+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000033 해링턴플레이스 오룡역 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000033 해링턴플레이스 오룡역 입주자모집공고문.pdf",
+    "evidence": [
+      "분양가격 계약금(5%) 중도금(60%) 잔금(35%)",
+      "분양가격 계약금(5%) 중도금(60%) 잔금(35%)",
+      "분양가격 계약금(5%) 중도금(60%) 잔금(35%)"
+    ]
   }
 }

@@ -225,5 +225,27 @@
       "에코델타시티 엘가 로제비앙 전매제한"
     ],
     "checked_at": "2026-04-26T23:52:35+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000057 에코델타시티 엘가 로제비앙 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_page": 7,
+    "source_pdf": "2026000057 에코델타시티 엘가 로제비앙 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(5%) 중도금(60%)",
+      "공급금액 계약금(5%) 중도금(60%)",
+      "타입 공급 잔금(35%)",
+      "동별 층 해당 1차 2차 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

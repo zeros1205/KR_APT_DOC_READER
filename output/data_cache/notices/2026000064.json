@@ -435,5 +435,27 @@
       "더샵 신길센트럴시티 분양가상한제"
     ],
     "checked_at": "2026-04-27T01:39:43+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000064 더샵 신길센트럴시티 입주자모집공고문.pdf",
+    "source_page": 9
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 9,
+    "source_pdf": "2026000064 더샵 신길센트럴시티 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "표기 층 세대수 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

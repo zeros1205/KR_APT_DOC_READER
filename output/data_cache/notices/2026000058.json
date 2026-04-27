@@ -362,5 +362,26 @@
       "공고문 첫 페이지 주요정보 표: 투기과열지구/청약과열지역, 재당첨제한 10년, 전매제한 3년, 거주의무기간 2년, 분양가상한제 적용"
     ],
     "checked_at": "2026-04-26T20:05:29+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "20",
+    "balance_ratio": "60",
+    "midterm_count": "",
+    "source_pdf": "2026000058 오티에르 반포.pdf",
+    "source_page": 10
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "20",
+    "balance_ratio": "60",
+    "midterm_count": "",
+    "source_page": 10,
+    "source_pdf": "2026000058 오티에르 반포.pdf",
+    "evidence": [
+      "주택형 공급 해당 분양가격 계약금(20%) 중도금(20%) 잔금(60%)",
+      "주택형 공급 해당 분양가격 계약금(20%) 중도금(20%) 잔금(60%)",
+      "주택형 공급 해당 분양가격 계약금(20%) 중도금(20%) 잔금(60%)"
+    ]
   }
 }

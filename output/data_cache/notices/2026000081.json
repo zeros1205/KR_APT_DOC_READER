@@ -189,5 +189,26 @@
       "선운지구다사로움 분양가상한제"
     ],
     "checked_at": "2026-04-27T01:51:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000081 선운지구다사로움 공가세대 일반공급 입주자모집공고문.pdf.pdf",
+    "source_page": 8
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_page": 8,
+    "source_pdf": "2026000081 선운지구다사로움 공가세대 일반공급 입주자모집공고문.pdf.pdf",
+    "evidence": [
+      "약식표기 동 호 공 급 면 적 계약금(10%) 잔금(90%) 난방방식",
+      "약식표기 동 호 공 급 면 적 계약금(10%) 잔금(90%) 난방방식",
+      "기타공용 계약면적 계(100%) 시기"
+    ]
   }
 }

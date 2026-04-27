@@ -208,5 +208,25 @@
       "한화포레나 부산당리 전매제한 기간"
     ],
     "checked_at": "2026-04-27T01:41:49+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000066 한화포레나 부산당리 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_page": 7,
+    "source_pdf": "2026000066 한화포레나 부산당리 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(5%) 중도금",
+      "표기 (라인) 세대수 (35%)"
+    ]
   }
 }

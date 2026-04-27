@@ -246,5 +246,25 @@
       "청주 푸르지오 씨엘리체 분양가상한제"
     ],
     "checked_at": "2026-04-27T01:55:38+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "7",
+    "source_pdf": "2026000087 청주 푸르지오 씨엘리체 입주자모집공고문.pdf",
+    "source_page": 7
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "7",
+    "source_page": 7,
+    "source_pdf": "2026000087 청주 푸르지오 씨엘리체 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금 중도금 (60%) 잔금",
+      "약식 층 (10%) 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) (30%)"
+    ]
   }
 }

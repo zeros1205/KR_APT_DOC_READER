@@ -387,11 +387,11 @@ def _fallback_fact_extraction(notice_text: str) -> dict:
             or _extract_first_match(text, (r"2순위\s*청약\s*[:：]\s*([0-9\-년월일\.~ ]+)",)),
             "winner_date": _extract_bracket_value(text, "당첨자발표"),
             "move_in_date": _extract_bracket_value(text, "입주예정"),
-            "contract_ratio": _extract_first_match(text, (r"계약금[^\d]*(\d+)\s*%", r"계약금\s*(\d+)\s*%"), "10"),
+            "contract_ratio": _extract_first_match(text, (r"계약금[^\d]*(\d+)\s*%", r"계약금\s*(\d+)\s*%")),
             "contract_amount": "",
-            "midterm_ratio": _extract_first_match(text, (r"중도금[^\d]*(\d+)\s*%", r"중도금\s*(\d+)\s*%"), "60"),
-            "midterm_count": _extract_first_match(text, (r"(\d+)\s*회\s*분납", r"(\d+)\s*회"), "6"),
-            "balance_ratio": _extract_first_match(text, (r"잔금[^\d]*(\d+)\s*%", r"잔금\s*(\d+)\s*%"), "30"),
+            "midterm_ratio": _extract_first_match(text, (r"중도금[^\d]*(\d+)\s*%", r"중도금\s*(\d+)\s*%")),
+            "midterm_count": _extract_first_match(text, (r"중도금\s*납부\s*횟수[^\d]*(\d+)\s*회", r"중도금[^\n]*(\d+)\s*회\s*분납")),
+            "balance_ratio": _extract_first_match(text, (r"잔금[^\d]*(\d+)\s*%", r"잔금\s*(\d+)\s*%")),
             "acquisition_tax_rate": "1~3%",
             "is_hot_zone": facts.get("is_hot_zone") or "N",
             "regulated_zone": facts.get("regulated_zone") or ("비규제지역" if facts.get("is_hot_zone") == "N" else "해당없음"),
@@ -944,10 +944,10 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
     unit_types = facts.get("unit_types", []) or []
     rank1_date = facts.get("rank1_date", "-")
     winner_date = facts.get("winner_date", "-")
-    contract_ratio = str(facts.get("contract_ratio") or "10")
-    midterm_ratio = str(facts.get("midterm_ratio") or "60")
-    midterm_count = str(facts.get("midterm_count") or "6")
-    balance_ratio = str(facts.get("balance_ratio") or "30")
+    contract_ratio = str(facts.get("contract_ratio") or "공고문 확인 필요")
+    midterm_ratio = str(facts.get("midterm_ratio") or "공고문 확인 필요")
+    midterm_count = str(facts.get("midterm_count") or "")
+    balance_ratio = str(facts.get("balance_ratio") or "공고문 확인 필요")
     regulated_zone = facts.get("regulated_zone") or "공고문 확인 필요"
     readmission_limit = facts.get("readmission_limit") or "공고문 확인 필요"
     live_requirement = facts.get("live_requirement") or "공고문 확인 필요"
@@ -998,7 +998,7 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         {
             "question": "계약금·중도금·잔금 구조는 어떻게 보나요?",
             "answer": (
-                f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 순서입니다. "
+                f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%{f'({midterm_count}회)' if midterm_count else ''}, 잔금 {balance_ratio}% 순서입니다. "
                 f"자금 마련 방식은 사람마다 다를 수 있어서, 실제 대출 가능 여부와 한도는 따로 확인해두는 편이 좋습니다. "
                 f"공고문에 비율만 적혀 있는 경우에는 납부 시점과 금융 조건을 같이 보면서 준비하는 쪽이 실수 없이 대응하기 좋습니다."
             ),
@@ -1026,7 +1026,7 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         "location_intro": location_data.get("location_intro")
         or f"{apt_name}의 입지는 {location or '공고문상 공급위치'}를 중심으로 교통과 생활권을 함께 보는 것이 핵심입니다.",
         "financial_intro": (
-            f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%({midterm_count}회), 잔금 {balance_ratio}% 구조를 먼저 확인하면 됩니다. "
+            f"자금계획은 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%{f'({midterm_count}회)' if midterm_count else ''}, 잔금 {balance_ratio}% 구조를 먼저 확인하면 됩니다. "
             f"실제 납부금액과 조달 방식은 타입별 조건과 개인별 금융 여건에 따라 달라질 수 있습니다."
         ),
         "qa_intro": "공고문을 볼 때 많이 헷갈리는 질문만 먼저 골라서 짧게 풀어봤어요.",

@@ -189,5 +189,27 @@
       "도안자이 센텀리체 전매제한 재당첨제한"
     ],
     "checked_at": "2026-04-27T02:07:34+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2026000105 도안자이 센텀리체 2단지 입주자모집공고문 (1).pdf",
+    "source_page": 6
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_page": 6,
+    "source_pdf": "2026000105 도안자이 센텀리체 2단지 입주자모집공고문 (1).pdf",
+    "evidence": [
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "주택형 (약식 층구분 1차 2차 3차 1차(10%)2차(10%)3차(10%)4차(10%)5차(10%)6차(10%)"
+    ]
   }
 }

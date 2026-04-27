@@ -111,11 +111,11 @@ class PostData:
     # 금융
     loan_info: str = ""
     resale_restriction: str = ""
-    contract_ratio: str = "10"
+    contract_ratio: str = "0"
     contract_amount: str = ""
-    midterm_ratio: str = "60"
-    midterm_count: str = "6"
-    balance_ratio: str = "30"
+    midterm_ratio: str = "0"
+    midterm_count: str = ""
+    balance_ratio: str = "0"
 
     # 세금
     acquisition_tax_rate: str = ""
@@ -394,10 +394,10 @@ def build_post_data(
     )
     supply_scale = _canonical_supply_scale(_stringify(facts.get("supply_scale")), total_households, unit_types)
     price_range = _stringify(facts.get("price_range"))
-    contract_ratio = _stringify(facts.get("contract_ratio") or "10")
-    midterm_ratio = _stringify(facts.get("midterm_ratio") or "60")
-    midterm_count = _stringify(facts.get("midterm_count") or "6")
-    balance_ratio = _stringify(facts.get("balance_ratio") or "30")
+    contract_ratio = _stringify(facts.get("contract_ratio") or "0")
+    midterm_ratio = _stringify(facts.get("midterm_ratio") or "0")
+    midterm_count = _stringify(facts.get("midterm_count") or "")
+    balance_ratio = _stringify(facts.get("balance_ratio") or "0")
     supply_units = sum(max(0, _safe_int(ut.general_units)) + max(0, _safe_int(ut.special_units)) for ut in unit_types)
     notice_date = _display_date(facts.get("notice_date"))
     special_supply_date = _display_date(facts.get("special_supply_date"))

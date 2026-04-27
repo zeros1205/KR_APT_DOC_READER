@@ -209,5 +209,26 @@
       "옥정중앙역 대방 디에트르 전매제한"
     ],
     "checked_at": "2026-04-26T23:48:43+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_pdf": "2026000049 옥정중앙역 대방 디에트르(중상1, 복합1BL) 입주자모집공고문.pdf",
+    "source_page": 8
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "",
+    "source_page": 8,
+    "source_pdf": "2026000049 옥정중앙역 대방 디에트르(중상1, 복합1BL) 입주자모집공고문.pdf",
+    "evidence": [
+      "세 공급금액 계약금 (10%) 중도금 (60%) 잔금",
+      "세 공급금액 계약금 (10%) 중도금 (60%) 잔금",
+      "층수 대 5% 5% 10% 10% 10% 10% 10% 10% 30%"
+    ]
   }
 }
