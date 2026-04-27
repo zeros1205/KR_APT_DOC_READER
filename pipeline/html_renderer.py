@@ -849,7 +849,9 @@ class BlogHTMLRenderer:
 # ──────────────────────────────────────────────────
 
 def save_post(data: PostData, html: str, output_root: Path) -> Path:
-    post_dir = output_root / "posts" / data.notice_id
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    safe = re.sub(r"[^\w가-힣]", "_", data.apt_name)
+    post_dir = output_root / "posts" / f"{date_str}_{safe}"
     post_dir.mkdir(parents=True, exist_ok=True)
 
     from config import SITE_URL
@@ -858,7 +860,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         PALETTE_INIT_JS, index_nav,
     )
 
-    post_slug = data.notice_id
+    post_slug = f"{date_str}_{safe}"
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
     nav_html = index_nav("../../")
