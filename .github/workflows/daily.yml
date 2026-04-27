@@ -1,4 +1,4 @@
-name: 분양공고 포스팅 자동화 (Gemini 3.1)
+name: 분양공고 포스팅 자동화
 
 on:
   schedule:
@@ -7,9 +7,12 @@ on:
     inputs:
       days:
         description: '최근 N일 공고 수집'
-        default: '7'
-      limit:
-        description: '최대 처리 건수'
+        default: '150'
+      collect_limit:
+        description: '수집 최대 건수 (0=무제한)'
+        default: '0'
+      generate_limit:
+        description: '포스트 생성 최대 건수 (0=무제한)'
         default: '3'
 
 jobs:
@@ -57,8 +60,6 @@ jobs:
           from dotenv import load_dotenv
           load_dotenv()
 
-          print('=== 환경 확인 ===')
-
           gemini_key = os.getenv('GEMINI_API_KEY', '')
           if gemini_key:
             print(f'✓ GEMINI_API_KEY: {gemini_key[:10]}...{gemini_key[-5:]} (길이: {len(gemini_key)})')
@@ -72,46 +73,70 @@ jobs:
           else:
             print('⚠️  PUBLIC_DATA_API_KEY: 설정되지 않음')
 
-          from pipeline.config import LLM_EXTRACT_MODEL, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL
+          from pipeline.config import LLM_EXTRACT_MODEL
           print(f'✓ LLM_EXTRACT_MODEL: {LLM_EXTRACT_MODEL}')
-          print(f'✓ LLM_CONTENT_MODEL: {LLM_CONTENT_MODEL}')
-          print(f'✓ LLM_FACTCHECK_MODEL: {LLM_FACTCHECK_MODEL}')
-          print(f'✓ LLM_LOCATION_MODEL: {LLM_LOCATION_MODEL}')
           "
 
-      - name: 파이프라인 실행
+      # ── Step 1: 공공데이터 API 수집 → data_cache 저장 ──────────────────
+      - name: 공고 데이터 수집
         run: |
-          DAYS=${{ github.event.inputs.days || '7' }}
-          LIMIT=${{ github.event.inputs.limit || '3' }}
-          python run.py --days $DAYS --limit $LIMIT
+          DAYS=${{ github.event.inputs.days || '150' }}
+          LIMIT=${{ github.event.inputs.collect_limit || '0' }}
+          if [ "$LIMIT" = "0" ]; then
+            python collect_notices_weekly.py --days $DAYS
+          else
+            python collect_notices_weekly.py --days $DAYS --limit $LIMIT
+          fi
 
-      - name: 결과 확인
+      - name: 수집 결과 확인
         if: always()
         run: |
-          echo "=== 생성 결과 ==="
+          echo "=== data_cache 현황 ==="
+          if [ -d "output/data_cache/notices" ]; then
+            COUNT=$(ls output/data_cache/notices/*.json 2>/dev/null | wc -l)
+            echo "📦 캐시된 공고: $COUNT개"
+          fi
+          if [ -f "output/data_cache/manual_review/missing_fields.csv" ]; then
+            MANUAL=$(tail -n +2 output/data_cache/manual_review/missing_fields.csv | wc -l)
+            echo "⚠️  수동 검토 필요: $MANUAL건"
+          fi
+
+      # ── Step 2: cache → 포스트 생성 + index/sitemap/robots 재빌드 ───────
+      - name: 포스트 생성
+        run: |
+          LIMIT=${{ github.event.inputs.generate_limit || '3' }}
+          if [ "$LIMIT" = "0" ]; then
+            python generate_posts_from_cache.py
+          else
+            python generate_posts_from_cache.py --limit $LIMIT
+          fi
+
+      - name: 생성 결과 확인
+        if: always()
+        run: |
+          echo "=== 포스트 생성 결과 ==="
           if [ -d "output/posts" ]; then
             COUNT=$(find output/posts -name "post.html" | wc -l)
             echo "📝 전체 포스팅: $COUNT개"
-            echo "--- 최근 생성 ---"
-            find output/posts -name "post_meta.json" -newer output/manifest.json 2>/dev/null \
-              | xargs -I{} sh -c 'python3 -c "import json; d=json.load(open(\"{}\"));print(d[\"apt_name\"])" 2>/dev/null' \
-              | head -10 || true
-          else
-            echo "📝 생성된 포스팅: 0개"
+          fi
+          if [ -f "output/processed_notices.json" ]; then
+            PROCESSED=$(python3 -c "import json; d=json.load(open('output/processed_notices.json')); print(len(d))")
+            echo "✅ 처리 완료 누적: $PROCESSED개"
           fi
 
-      - name: 포스팅 커밋 및 푸시
+      # ── Step 3: 변경사항 커밋 & 푸시 (Cloudflare Pages 자동 배포 트리거) ──
+      - name: 커밋 및 푸시
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # gitignore에 걸린 output 산출물을 강제 추가
-          git add -f output/posts/ output/index.html output/sitemap.xml 2>/dev/null || true
-          git add output/manifest.json output/processed_notices.json output/data_cache/ 2>/dev/null || true
+          # gitignore 제외 산출물 강제 추가
+          git add -f output/posts/ output/index.html output/sitemap.xml output/robots.txt 2>/dev/null || true
+          # 추적 대상 파일 추가
+          git add output/data_cache/ output/processed_notices.json output/manifest.json 2>/dev/null || true
 
           if ! git diff --cached --quiet; then
-            # push 전 최신 remote 반영 (race condition 방지)
             git pull --rebase origin main
             git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
             git push -u origin main
