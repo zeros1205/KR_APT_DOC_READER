@@ -144,8 +144,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # pull 먼저 (스테이징 전에 해야 rebase 충돌 없음)
-          git pull --rebase origin main
+          # pull 먼저 (--autostash: 미스테이징 변경도 자동 stash/unstash)
+          git pull --rebase --autostash origin main
 
           # gitignore 제외 산출물 강제 추가
           git add -f output/posts/ output/index.html output/sitemap.xml output/robots.txt 2>/dev/null || true
