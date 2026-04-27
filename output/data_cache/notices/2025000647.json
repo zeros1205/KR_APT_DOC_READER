@@ -10,8 +10,8 @@
     "house_manage_no": "2025000647",
     "apt_name": "구리갈매역세권 A-4블록 6년 분양전환공공임대주택(본청약)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "국민",
+    "supply_type": "분양전환 가능임대",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 구리시 갈매동 241-28 일원, 구리갈매역세권 공공주택지구 내 A-4블록",
@@ -121,11 +121,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "한국토지주택공사 경기북부지역본부",
     "CNSTRCT_ENTRPS_NM": "이수건설(주)",

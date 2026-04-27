@@ -10,8 +10,8 @@
     "house_manage_no": "2025000634",
     "apt_name": "영종국제도시 신일 비아프 크레스트(1단지)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "400",
     "region_name": "인천",
     "supply_address": "인천광역시 중구 운남동 1695-2(영종하늘도시 A19BL) ",
@@ -178,11 +178,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
     "CNSTRCT_ENTRPS_NM": "(주)신일",

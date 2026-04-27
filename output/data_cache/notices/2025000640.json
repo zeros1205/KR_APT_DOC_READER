@@ -10,8 +10,8 @@
     "house_manage_no": "2025000640",
     "apt_name": "강릉역 경남아너스빌 더 센트로(조합원 취소분)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "200",
     "region_name": "강원",
     "supply_address": "강원특별자치도 강릉시 명륜로 85번지",
@@ -159,11 +159,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "강릉교동센트럴파크지역주택조합",
     "CNSTRCT_ENTRPS_NM": "경남기업 주식회사",

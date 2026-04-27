@@ -10,8 +10,8 @@
     "house_manage_no": "2025000619",
     "apt_name": "안동리첼스카이파크",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "712",
     "region_name": "경북",
     "supply_address": "경상북도 안동시 송현동 529-1번지 일원",
@@ -197,11 +197,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "주식회사 삼태사",
     "CNSTRCT_ENTRPS_NM": "에쓰와이이앤씨 주식회사",

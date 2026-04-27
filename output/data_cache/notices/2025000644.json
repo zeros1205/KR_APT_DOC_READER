@@ -10,8 +10,8 @@
     "house_manage_no": "2025000644",
     "apt_name": "남양주진접2지구 B-1블록 공공분양(본청약)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "국민",
+    "supply_type": "분양주택",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 남양주시 진접읍 내각리, 연평리 일원 남양주진접2 공공주택지구 내 B-1블록",
@@ -140,11 +140,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "한국토지주택공사 경기북부지역본부",
     "CNSTRCT_ENTRPS_NM": "디엘건설",

@@ -10,8 +10,8 @@
     "house_manage_no": "2025000642",
     "apt_name": "인천영종지구 A24블록 공공분양주택(본청약)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "국민",
+    "supply_type": "분양주택",
     "region_code": "400",
     "region_name": "인천",
     "supply_address": "인천광역시 중구 운서동, 운남동, 운북동, 중산동 일원 영종하늘도시 내 A24블록",
@@ -140,11 +140,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "한국토지주택공사 인천지역본부",
     "CNSTRCT_ENTRPS_NM": "한신공영(주)",

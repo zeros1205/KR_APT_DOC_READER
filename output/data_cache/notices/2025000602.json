@@ -10,8 +10,8 @@
     "house_manage_no": "2025000602",
     "apt_name": "인천영종국제도시 디에트르 라 메르Ⅰ(RC4-1,2BL)(본청약)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "400",
     "region_name": "인천",
     "supply_address": "인천광역시 중구 중산동 1958-8,9 (인천광역시 중구 중산동 RC4-1,2BL)",
@@ -216,11 +216,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "디비종합건설주식회사,디비주택주식회사",
     "CNSTRCT_ENTRPS_NM": "대방건설 주식회사",

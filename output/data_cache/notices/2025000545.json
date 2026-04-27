@@ -10,8 +10,8 @@
     "house_manage_no": "2025000545",
     "apt_name": "이천 증포5지구 칸타빌 에듀파크",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 이천시 증포동 107-2번지 일원",
@@ -197,11 +197,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "디더블유대원주식회사,디더블유대원에이치주식회사",
     "CNSTRCT_ENTRPS_NM": "디더블유대원 주식회사",

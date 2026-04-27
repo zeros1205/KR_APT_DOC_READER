@@ -10,8 +10,8 @@
     "house_manage_no": "2025000591",
     "apt_name": "시흥거모 엘가 로제비앙",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 시흥시 시흥거모 공공주택지구 B-6BL",
@@ -159,11 +159,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "한아건설(주)",
     "CNSTRCT_ENTRPS_NM": "(주)모아주택산업,(주)로제비앙건설",

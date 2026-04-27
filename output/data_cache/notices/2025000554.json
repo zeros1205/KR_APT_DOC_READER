@@ -10,8 +10,8 @@
     "house_manage_no": "2025000554",
     "apt_name": "서수원 에피트 센트럴마크(M1BL)",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 수원시 권선구 당수동 3001번지 일원 (수원당수 공공주택지구 M1BL)",
@@ -159,11 +159,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "코리아신탁(주)",
     "CNSTRCT_ENTRPS_NM": "에이치엘디앤아이한라 주식회사",

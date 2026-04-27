@@ -10,8 +10,8 @@
     "house_manage_no": "2025000566",
     "apt_name": "역삼센트럴자이",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "100",
     "region_name": "서울",
     "supply_address": "서울특별시 강남구 역삼동 758번지 일원",
@@ -216,11 +216,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "역삼동(758, 은하수,760)주택재건축정비사업조합",
     "CNSTRCT_ENTRPS_NM": "지에스건설(주)",

@@ -10,8 +10,8 @@
     "house_manage_no": "2025000620",
     "apt_name": "전주 에코시티 더 클래스",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "560",
     "region_name": "전북",
     "supply_address": "전북특별자치도 전주시 덕진구 호성동2가 801-31번지 일원",
@@ -178,11 +178,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "(주)에코포르테",
     "CNSTRCT_ENTRPS_NM": "(유)원탑종합건설",

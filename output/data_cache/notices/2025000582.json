@@ -10,8 +10,8 @@
     "house_manage_no": "2025000582",
     "apt_name": "송도 한내들 센트럴리버",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "400",
     "region_name": "인천",
     "supply_address": "인천광역시 연수구 송도동 543번지(송도국제도시 11공구 RC3BL)",
@@ -197,11 +197,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "(주)동인개발,(주)창해건설",
     "CNSTRCT_ENTRPS_NM": "(주)유승건설,(주)유승종합건설",

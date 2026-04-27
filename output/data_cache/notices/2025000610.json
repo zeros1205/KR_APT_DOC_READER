@@ -10,8 +10,8 @@
     "house_manage_no": "2025000610",
     "apt_name": "태화강 센트럴 아이파크",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "680",
     "region_name": "울산",
     "supply_address": "울산광역시 중구 반구동 554-5번지 일원",
@@ -140,11 +140,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "한국자산신탁(주)",
     "CNSTRCT_ENTRPS_NM": "에이치디씨현대산업개발(주)",

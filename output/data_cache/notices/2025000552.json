@@ -10,8 +10,8 @@
     "house_manage_no": "2025000552",
     "apt_name": "한화포레나 부산대연",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "600",
     "region_name": "부산",
     "supply_address": "부산광역시 남구 대연동 455-25번지",
@@ -121,11 +121,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "대연3구역재건축정비사업조합",
     "CNSTRCT_ENTRPS_NM": "(주)한화 건설부문",

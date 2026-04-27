@@ -10,8 +10,8 @@
     "house_manage_no": "2025000595",
     "apt_name": "더샵 분당센트로",
     "house_type": "APT",
-    "house_detail_type": "",
-    "supply_type": "",
+    "house_detail_type": "민영",
+    "supply_type": "분양주택",
     "region_code": "410",
     "region_name": "경기",
     "supply_address": "경기도 성남시 분당구 미금로 66",
@@ -254,11 +254,9 @@
       ]
     }
   ],
-  "missing_fields": [
-    "supply_type"
-  ],
-  "requires_manual_input": true,
-  "manual_status": "pending",
+  "missing_fields": [],
+  "requires_manual_input": false,
+  "manual_status": "none",
   "detail_raw_retry": {
     "BSNS_MBY_NM": "무지개마을4단지리모델링주택조합",
     "CNSTRCT_ENTRPS_NM": "(주)포스코이앤씨",
