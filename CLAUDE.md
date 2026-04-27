@@ -62,13 +62,34 @@
 - 입지 분석 섹션과 자금 계획 섹션: 이미지 없음 (섹션 자체 디자인으로 충분)
 
 ## API 키 관리
-`.env` 파일에 보관. 코드에 직접 입력 금지.
-필요 키:
+
+### 로컬 개발 (`.env` 파일)
+```bash
+ANTHROPIC_API_KEY=sk-ant-...          # Claude Haiku
+OPENAI_API_KEY=sk-...                 # GPT-5.4
+GEMINI_API_KEY=AIzaSy...              # Gemini Flash
+UNSPLASH_ACCESS_KEY=...               # Unsplash 이미지
+PEXELS_API_KEY=...                    # Pexels 이미지
+PUBLIC_DATA_API_KEY=...               # 청약홈 OpenAPI
+```
+
+### GitHub Secrets (CI/CD 자동 실행)
+모든 API 키는 **GitHub Repository Secrets**에 저장됨. Claude Code 스크립트에서 접근 필요 시:
+```python
+from pipeline.config import PUBLIC_DATA_API_KEY  # 자동 로드
+```
+
+**필수 키 설명:**
 - `ANTHROPIC_API_KEY` — Claude Haiku (팩트 추출 보조 LLM)
-- `OPENAI_API_KEY` — GPT-5.4 콘텐츠 생성/검증 + OpenAI Embeddings (ChromaDB RAG용)
+- `OPENAI_API_KEY` — GPT-5.4 콘텐츠 생성/검증 + OpenAI Embeddings
 - `GEMINI_API_KEY` — Gemini Flash (Q&A 팩트체크)
 - `UNSPLASH_ACCESS_KEY` / `PEXELS_API_KEY` — 이미지 자동 수집
-- `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI
+- `PUBLIC_DATA_API_KEY` — 청약홈 공공데이터 OpenAPI (데이터 검증용)
+
+**PUBLIC_DATA_API_KEY 발급:**
+1. https://www.data.go.kr 회원가입
+2. "한국부동산원_청약홈 분양정보 조회 서비스" 검색 → 활용신청
+3. 개발계정 즉시 발급 (40,000회/일)
 
 ## 파이프라인 구조
 ```
@@ -84,25 +105,32 @@ pipeline/
 ```
 
 ## 실행 명령어 요약
-
-### 로컬 실행
 ```bash
-# Windows PowerShell
+# 로컬 (Windows)
 .venv\Scripts\Activate.ps1
 python run.py --sample            # 샘플 테스트
 python run.py --days 7 --limit 3  # 실제 공고 수집
 python test_pipeline.py --step 3  # HTML 렌더링 테스트 (API 불필요)
 python test_pipeline.py --step 6  # RAG 연동 전체 테스트
+
+# GitHub Actions: .github/workflows/daily.yml
+# 매일 UTC 00:00 (KST 09:00) 자동 실행 / workflow_dispatch 수동 실행
+# 기본값: --days 7 --limit 3 / timeout 60분
 ```
 
 ### GitHub Actions 워크플로우
 
 #### 📊 분양가·일정 감사 워크플로우
 **파일**: `.github/workflows/audit_prices.yml`
-**실행 위치**: `main` 브랜치
+**자동 트리거**: Daily 워크플로우 완료 후 자동 실행 (포스트 개수가 5개 배수일 때만)
 **대상 데이터**: `main` 브랜치의 모든 포스트 (output/posts/*/post_meta.json)
 
-**사용법**:
+**작동 원리**:
+- Daily 워크플로우가 완료될 때마다 자동으로 시작
+- 현재 포스트 개수가 5개, 10개, 15개... 등 5개 배수인 경우에만 감사 실행
+- 그 외의 경우는 자동으로 스킵 (LLM 토큰 소비 절감)
+
+**수동 실행** (선택사항):
 1. GitHub → **Actions** 탭
 2. **"분양가·일정 감사"** 워크플로우 선택
 3. **Run workflow** 버튼 (main 브랜치)

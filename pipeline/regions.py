@@ -39,6 +39,8 @@ CATEGORY_ORDER    = [name for name, _, _ in REGIONS]
 
 def region_name_to_category(region_name: str) -> str:
     """API region_name(예: '경기', '서울특별시') → 카테고리명(예: '경기도', '서울')"""
+    if not region_name:
+        return "기타"
     for cat, _, patterns in REGIONS:
         if any(p in region_name for p in patterns):
             return cat

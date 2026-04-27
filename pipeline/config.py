@@ -13,49 +13,12 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 
-# cwd/.env와 프로젝트 루트 .env를 모두 시도
-load_dotenv()
-load_dotenv(BASE_DIR / ".env")
-
-
-def _clear_dead_local_proxy() -> None:
-    """
-    잘못 주입된 로컬 프록시(127.0.0.1:9)를 제거한다.
-
-    Codex/터미널 환경에 따라 HTTP(S)_PROXY가 dead endpoint로 설정되는 경우가 있어
-    OpenAI/Chroma 임베딩/Gemini 외부 호출이 전부 Connection error로 실패한다.
-    실제 프록시를 쓰는 환경은 건드리지 않고, 죽어 있는 loopback:9 값만 제거한다.
-    """
-    dead_proxy_hosts = ("127.0.0.1:9", "localhost:9")
-    proxy_keys = (
-        "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
-        "http_proxy", "https_proxy", "all_proxy",
-    )
-    for key in proxy_keys:
-        value = os.getenv(key, "").strip()
-        if value and any(host in value for host in dead_proxy_hosts):
-            os.environ.pop(key, None)
-
-
-_clear_dead_local_proxy()
-
-# ── OpenAI ──
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-LLM_EXTRACT_MODEL = "gpt-5.4"      # 팩트 추출
-LLM_CONTENT_MODEL = "gpt-5.4"  # 서술형 콘텐츠 생성·검증
-LLM_EMBED_MODEL = "text-embedding-3-small"
-
-# ── Google Gemini (입지 분석 전용) ──
+# ── Google Gemini (모든 LLM 작업 통합) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite-preview")
-
-# ── OpenAI 팩트체크 ──
-LLM_FACTCHECK_MODEL = "gpt-5.4-mini"
-
-# ── 이미지 API ──
-UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")
-PEXELS_API_KEY = os.getenv("PEXELS_API_KEY", "")
-PREFERRED_IMAGE_SOURCE = "unsplash"   # "unsplash" | "pexels"
+LLM_EXTRACT_MODEL = "gemini-3.1-flash-lite-preview"        # 팩트 추출 (Google Grounding 포함)
+LLM_CONTENT_MODEL = "gemini-3.1-flash-lite-preview"        # 서술형 콘텐츠 생성·검증
+LLM_FACTCHECK_MODEL = "gemini-3.1-flash-lite-preview"      # 팩트 체크
+LLM_LOCATION_MODEL = "gemini-3.1-flash-lite-preview"       # 입지 분석 (Google Search Grounding)
 
 # ── 청약홈 공공데이터 API ──
 PUBLIC_DATA_API_KEY = os.getenv("PUBLIC_DATA_API_KEY", "")
@@ -72,7 +35,7 @@ CTA_TAX = os.getenv("CTA_TAX", "https://www.nts.go.kr/")
 CTA_KAKAO_CHANNEL = os.getenv("CTA_KAKAO_CHANNEL", "https://pf.kakao.com/")
 
 # ── 품질 게이트 ──
-MIN_QUALITY_SCORE = 70       # 이하 시 재생성
+MIN_QUALITY_SCORE = 60       # 이상 시 통과 / 미만 시 드랍
 MAX_CTA_PER_POST = 3         # 저품질 방어: 외부 링크 최대 3개
 MIN_CHAR_COUNT = 6000        # 최소 글자 수
 

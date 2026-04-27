@@ -27,6 +27,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import collect_from_api, get_sample_document
 from orchestrator import run_pipeline_from_doc
+from index_renderer import build_manifest
 
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
@@ -78,7 +79,9 @@ async def main() -> None:
         docs = [get_sample_document()]
     else:
         print(f"\n[수집] 최근 {args.days}일 공고 조회 중...")
+        print(f"[DEBUG] collect_from_api 호출 시작...")
         docs = await collect_from_api(days_back=args.days)
+        print(f"[DEBUG] collect_from_api 호출 완료: {len(docs)}건")
 
     if not docs:
         print("최근 공고 없음. 잠시 후 다시 시도하세요.")
@@ -136,6 +139,10 @@ async def main() -> None:
         print("\n생성된 포스팅:")
         for p in results:
             print(f"  {p / 'post.html'}")
+
+        # manifest.json 업데이트 (index.html은 수정 안 함)
+        print("\n[업데이트] manifest.json 갱신 중...")
+        build_manifest()
 
         if not args.open:
             latest = results[-1] / "post.html"

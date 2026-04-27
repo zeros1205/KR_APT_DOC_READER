@@ -5,7 +5,7 @@ ChromaDB 기반 Vector DB 구성 및 RAG 검색
 
 구조:
   - Collection: apartment_notices
-  - Embedding: OpenAI text-embedding-3-small
+  - Embedding: ChromaDB 기본 embedding
   - 청크 분할: 섹션별 (기본정보 / 자격조건 / 금융 / 입지)
 ────────────────────────────────────────────────────
 """
@@ -16,10 +16,9 @@ from pathlib import Path
 from dataclasses import dataclass
 
 import chromadb
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 sys.path.append(str(Path(__file__).parent.parent))
-from config import OPENAI_API_KEY, CHROMA_DIR
+from config import CHROMA_DIR
 from agents.collector import NoticeDocument
 
 
@@ -130,15 +129,8 @@ class ApartmentRAGStore:
 
         self.client = chromadb.PersistentClient(path=str(persist_dir))
 
-        # OpenAI 임베딩 함수
-        self.embed_fn = OpenAIEmbeddingFunction(
-            api_key=OPENAI_API_KEY,
-            model_name="text-embedding-3-small",
-        )
-
         self.collection = self.client.get_or_create_collection(
             name=self.COLLECTION_NAME,
-            embedding_function=self.embed_fn,
             metadata={"hnsw:space": "cosine"},
         )
 
@@ -253,6 +245,24 @@ class ApartmentRAGStore:
         docs = results.get("documents", [])
         metas = results.get("metadatas", [])
 
+        if not metas:
+            return ""
+
+        # 메타데이터에서 기본 정보 추출
+        first_meta = metas[0]
+        apt_name = first_meta.get("apt_name", "")
+        region = first_meta.get("region", "")
+        supply_date = first_meta.get("supply_date", "")
+
+        # 기본 정보 헤더 생성 (Agent 1이 apt_name을 추출할 수 있도록)
+        header_parts = []
+        if apt_name:
+            header_parts.append(f"【단지명】\n{apt_name}")
+        if region:
+            header_parts.append(f"【지역】\n{region}")
+        if supply_date:
+            header_parts.append(f"【공급일】\n{supply_date}")
+
         # 섹션 순서대로 정렬
         SECTION_ORDER = ["기본정보", "청약일정", "분양가", "자격조건", "금융", "제한사항", "입지", "기타"]
         sorted_pairs = sorted(
@@ -261,7 +271,7 @@ class ApartmentRAGStore:
             if x[0].get("section", "기타") in SECTION_ORDER else 99
         )
 
-        context_parts = [doc for _, doc in sorted_pairs]
+        context_parts = header_parts + [doc for _, doc in sorted_pairs]
         return "\n\n".join(context_parts)
 
     def list_notices(self) -> list[dict]:
@@ -303,11 +313,6 @@ if __name__ == "__main__":
     print("=" * 50)
     print("RAG Store 테스트 (샘플 공고)")
     print("=" * 50)
-
-    if not OPENAI_API_KEY or OPENAI_API_KEY == "":
-        print("⚠️  OPENAI_API_KEY 미설정 - 임베딩 테스트 건너뜀")
-        print("   .env 파일에 OPENAI_API_KEY를 설정하세요.")
-        sys.exit(0)
 
     doc = get_sample_document()
     store = ApartmentRAGStore()

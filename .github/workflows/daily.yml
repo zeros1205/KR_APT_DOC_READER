@@ -1,10 +1,6 @@
-name: 청약 공고 자동 수집 및 포스팅 생성
+name: 분양공고 포스팅 자동화 (Gemini 3.1)
 
 on:
-  schedule:
-    # 매일 오전 9시 KST (= UTC 00:00)
-    - cron: '0 0 * * *'
-  # 수동 실행 버튼 (GitHub Actions 탭에서 클릭 가능)
   workflow_dispatch:
     inputs:
       days:
@@ -12,10 +8,7 @@ on:
         default: '7'
       limit:
         description: '최대 처리 건수'
-        default: '3'
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+        default: '1'
 
 jobs:
   generate-posts:
@@ -23,6 +16,10 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
       - name: 코드 체크아웃
@@ -34,41 +31,118 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: ChromaDB 모델 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/chroma
+          key: chroma-models-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            chroma-models-
+
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
-      - name: .env 파일 생성 (GitHub Secrets → .env)
+      - name: 환경 변수 설정
         run: |
-          cat <<EOF > .env
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          cat > .env <<EOF
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           PUBLIC_DATA_API_KEY=${{ secrets.PUBLIC_DATA_API_KEY }}
           EOF
 
+      - name: 환경 검증
+        run: |
+          python -c "
+          import os
+          from dotenv import load_dotenv
+          load_dotenv()
+
+          print('=== 환경 확인 ===')
+
+          # Gemini API 키 확인
+          gemini_key = os.getenv('GEMINI_API_KEY', '')
+          if gemini_key:
+            print(f'✓ GEMINI_API_KEY: {gemini_key[:10]}...{gemini_key[-5:]} (길이: {len(gemini_key)})')
+          else:
+            print('❌ GEMINI_API_KEY: 설정되지 않음')
+            exit(1)
+
+          # PUBLIC_DATA_API_KEY 확인
+          public_key = os.getenv('PUBLIC_DATA_API_KEY', '')
+          if public_key:
+            print(f'✓ PUBLIC_DATA_API_KEY: {public_key[:10]}...{public_key[-5:]} (길이: {len(public_key)})')
+          else:
+            print('⚠️  PUBLIC_DATA_API_KEY: 설정되지 않음')
+
+          # 모델 설정 확인
+          from pipeline.config import LLM_EXTRACT_MODEL, LLM_CONTENT_MODEL, LLM_FACTCHECK_MODEL, LLM_LOCATION_MODEL
+          print(f'✓ LLM_EXTRACT_MODEL: {LLM_EXTRACT_MODEL}')
+          print(f'✓ LLM_CONTENT_MODEL: {LLM_CONTENT_MODEL}')
+          print(f'✓ LLM_FACTCHECK_MODEL: {LLM_FACTCHECK_MODEL}')
+          print(f'✓ LLM_LOCATION_MODEL: {LLM_LOCATION_MODEL}')
+          "
+
       - name: 파이프라인 실행
         run: |
           DAYS=${{ github.event.inputs.days || '7' }}
-          LIMIT=${{ github.event.inputs.limit || '3' }}
+          LIMIT=${{ github.event.inputs.limit || '1' }}
           python run.py --days $DAYS --limit $LIMIT
 
-      - name: 프론트페이지(index.html) 재생성
-        run: python pipeline/build_index.py
+      - name: 결과 확인
+        if: always()
+        run: |
+          echo "=== 생성 결과 ==="
+          if [ -d "output/posts" ]; then
+            COUNT=$(find output/posts -name "post.html" | wc -l)
+            echo "📝 생성된 포스팅: $COUNT개"
+          else
+            echo "📝 생성된 포스팅: 0개"
+          fi
 
-      - name: 생성된 포스팅 repo에 커밋
+      - name: manifest.json 업데이트
+        if: success()
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, 'pipeline')
+          from index_renderer import build_manifest
+          build_manifest()
+          "
+
+      - name: 포스팅 커밋 및 푸시
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/posts/ output/index.html output/sitemap.xml output/robots.txt output/processed_notices.json 2>/dev/null || true
-          git diff --cached --quiet && echo "커밋할 변경사항 없음" || \
-            git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
-          git push origin ${{ github.ref_name }}
+          git add output/ processed_notices.json 2>/dev/null || true
 
-      - name: 생성된 포스팅 업로드 (아티팩트 백업)
-        uses: actions/upload-artifact@v4
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 분양공고 포스팅 자동 생성 [$(date +%Y-%m-%d)]"
+            git push
+          fi
+
+      - name: Cloudflare Pages 배포
+        if: success()
+        run: |
+          if [ -d "output" ]; then
+            FILE_COUNT=$(find output/posts -name "post.html" 2>/dev/null | wc -l)
+            if [ "$FILE_COUNT" -gt 0 ] || [ -f "output/index.html" ]; then
+              npx wrangler pages deploy output \
+                --project-name=kr-apt-doc-reader
+              echo "✅ 배포 완료: $FILE_COUNT개 포스팅 + index.html"
+            else
+              echo "⚠️  배포할 파일 없음 - 배포 스킵"
+            fi
+          else
+            echo "⚠️  output 디렉토리 없음 - 배포 스킵"
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: 아티팩트 백업
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: posts-${{ github.run_id }}
+          name: posts-backup-${{ github.run_id }}
           path: output/posts/
           retention-days: 7
           if-no-files-found: ignore

@@ -1,0 +1,8 @@
+name = "kr-apt-doc-reader"
+account_id = "caf6650f6379b4b7230c317a1d16badf"
+
+# Cloudflare Pages 프로젝트 정보
+# Project Name: kr-apt-doc-reader
+# Custom Domain: apt-note.com
+# Zone ID: f0f2742f62778b3072a68b3b56cd1d3d
+# 배포: GitHub Actions에서 wrangler pages deploy 사용

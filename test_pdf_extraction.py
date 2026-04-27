@@ -7,7 +7,7 @@ PDF를 pdfplumber로 텍스트 추출하지 않고,
 대상 모델:
   A) GPT-5.4            (gpt-5.4)
   B) Claude Opus 4.7    (claude-opus-4-7)
-  C) Gemini 3.1 Pro     (gemini-3.1-pro-preview)
+  C) Gemini 3.1 Flash Lite     (gemini-3.1-flash-lite-preview)
 
 추출 항목:
   1. 규제지역 여부   2. 재당첨 제한   3. 전매제한
@@ -67,7 +67,7 @@ FIELD_LABELS = {"regulated_zone": "규제지역 여부", "readmission_limit": "�
 MODELS = [
     ("GPT-5.4", "openai", "gpt-5.4"),
     ("Opus 4.7",   "claude", "claude-opus-4-7"),
-    ("Gemini 3.1 Pro", "gemini", "gemini-3.1-pro-preview"),
+    ("Gemini 3.1 Flash Lite", "gemini", "gemini-3.1-flash-lite-preview"),
 ]
 
 

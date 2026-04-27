@@ -33,8 +33,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import httpx
+
 sys.path.append(str(Path(__file__).parent.parent))
-from config import PUBLIC_DATA_API_KEY
+from config import PUBLIC_DATA_API_KEY, OUTPUT_DIR
 
 
 # ══════════════════════════════════════════════════
@@ -68,39 +69,23 @@ class NoticeDocument:
     special_supply_end: str     # 특별공급 접수종료일
     rank1_local_start: str   # 해당지역 1순위 시작
     rank1_local_end: str     # 해당지역 1순위 종료
-    rank1_near_start: str    # 경기지역 1순위 시작
-    rank1_near_end: str      # 경기지역 1순위 종료
-    rank1_etc_start: str     # 기타지역 1순위 시작
-    rank1_etc_end: str       # 기타지역 1순위 종료
     rank2_local_start: str   # 해당지역 2순위 시작
     rank2_local_end: str     # 해당지역 2순위 종료
-    rank2_near_start: str    # 경기지역 2순위 시작
-    rank2_near_end: str      # 경기지역 2순위 종료
-    rank2_etc_start: str     # 기타지역 2순위 시작
-    rank2_etc_end: str       # 기타지역 2순위 종료
     winner_date: str         # 당첨자발표일
     contract_start: str      # 계약시작일
     contract_end: str        # 계약종료일
     move_in_month: str       # 입주예정월 (YYYY-MM)
 
     # 사업자
-    constructor: str         # 건설업체명(시공사)
-    developer: str           # 사업주체명(시행사)
-    contact: str             # 문의처
-    homepage: str            # 홈페이지주소
+    constructor: str         # 건설업체명(시공사) — 단지소개 글에 사용
     notice_url: str          # 모집공고홈페이지주소
 
     # 규제 여부 (Y/N)
     is_hot_zone: str         # 투기과열지구
     is_adj_zone: str         # 조정대상지역
     is_price_cap: str        # 분양가상한제
-    is_redevelop: str        # 정비사업
-    is_public_dist: str      # 공공주택지구
-    is_large_dev: str        # 대규모택지개발지구
-    is_metro_private: str    # 수도권내민영공공주택지구
 
     # 원문 텍스트 (RAG용)
-    pdf_policy_text: str = ""
     raw_text: str = ""
     tables: list = field(default_factory=list)
     pdf_path: str | None = None
@@ -109,7 +94,7 @@ class NoticeDocument:
     @property
     def supply_date(self) -> str:
         """1순위 접수 시작일 (대표 청약일)"""
-        return self.rank1_local_start or self.rank1_near_start or self.rank1_etc_start
+        return self.rank1_local_start
 
     @property
     def region(self) -> str:
@@ -126,7 +111,6 @@ class NoticeDocument:
         if self.is_hot_zone == "Y":   flags.append("투기과열지구")
         if self.is_adj_zone == "Y":   flags.append("조정대상지역")
         if self.is_price_cap == "Y":  flags.append("분양가상한제 적용")
-        if self.is_redevelop == "Y":  flags.append("정비사업")
 
         table_text = "\n".join(
             " | ".join(str(c) for c in row)
@@ -134,6 +118,7 @@ class NoticeDocument:
         )
 
         return f"""
+[공고번호] {self.notice_id}
 [단지명] {self.apt_name}
 [주택구분] {self.house_type} / {self.house_detail_type}
 [공급지역] {self.region_name}
@@ -147,11 +132,7 @@ class NoticeDocument:
 [계약] {self.contract_start} ~ {self.contract_end}
 [입주예정] {self.move_in_month}
 [시공사] {self.constructor}
-[시행사] {self.developer}
-[문의처] {self.contact}
 [규제사항] {', '.join(flags) if flags else '없음'}
-
-{self.pdf_policy_text}
 
 {self.raw_text}
 
@@ -173,8 +154,8 @@ def _from_openapi(d: dict) -> dict:
         "house_manage_no":     str(d.get("HOUSE_MANAGE_NO", "")),
         "apt_name":            d.get("HOUSE_NM", ""),
         "house_type":          d.get("HOUSE_SECD_NM", ""),
-        "house_detail_type":   d.get("RENTBSNS_HOUSE_SECD_NM") or d.get("HOUSE_DTL_SECD_NM", ""),
-        "supply_type":         d.get("SUBSCRPT_TYCD_NM") or d.get("RENT_SECD_NM") or d.get("HOUSE_DTL_SECD_NM", ""),
+        "house_detail_type":   d.get("RENTBSNS_HOUSE_SECD_NM", ""),
+        "supply_type":         d.get("SUBSCRPT_TYCD_NM", ""),
         "region_code":         d.get("SUBSCRPT_AREA_CODE", ""),
         "region_name":         d.get("SUBSCRPT_AREA_CODE_NM", ""),
         "supply_address":      d.get("HSSPLY_ADRES", ""),
@@ -184,32 +165,17 @@ def _from_openapi(d: dict) -> dict:
         "special_supply_end":  d.get("SPSPLY_RCEPT_ENDDE", ""),
         "rank1_local_start":   d.get("GNRL_RNK1_CRSPAREA_RCPTDE", ""),
         "rank1_local_end":     d.get("GNRL_RNK1_CRSPAREA_ENDDE", ""),
-        "rank1_near_start":    d.get("GNRL_RNK1_ETC_GG_RCPTDE", ""),
-        "rank1_near_end":      d.get("GNRL_RNK1_ETC_GG_ENDDE", ""),
-        "rank1_etc_start":     d.get("GNRL_RNK1_ETC_AREA_RCPTDE", ""),
-        "rank1_etc_end":       d.get("GNRL_RNK1_ETC_AREA_ENDDE", ""),
         "rank2_local_start":   d.get("GNRL_RNK2_CRSPAREA_RCPTDE", ""),
         "rank2_local_end":     d.get("GNRL_RNK2_CRSPAREA_ENDDE", ""),
-        "rank2_near_start":    d.get("GNRL_RNK2_ETC_GG_RCPTDE", ""),
-        "rank2_near_end":      d.get("GNRL_RNK2_ETC_GG_ENDDE", ""),
-        "rank2_etc_start":     d.get("GNRL_RNK2_ETC_AREA_RCPTDE", ""),
-        "rank2_etc_end":       d.get("GNRL_RNK2_ETC_AREA_ENDDE", ""),
         "winner_date":         d.get("PRZWNER_PRESNATN_DE", ""),
         "contract_start":      d.get("CNTRCT_CNCLS_BGNDE", ""),
         "contract_end":        d.get("CNTRCT_CNCLS_ENDDE", ""),
         "move_in_month":       d.get("MVN_PREARNGE_YM", ""),
         "constructor":         d.get("CNSTRCT_ENTRPS_NM", ""),
-        "developer":           d.get("BSNS_MBY_NM", ""),
-        "contact":             d.get("MDHS_TELNO", ""),
-        "homepage":            d.get("HMPG_ADRES", ""),
         "notice_url":          d.get("PBLANC_URL", ""),
         "is_hot_zone":         d.get("SPECLT_RDN_EARTH_AT", "N"),
         "is_adj_zone":         d.get("MDAT_TRGET_AREA_SECD", "N"),
         "is_price_cap":        d.get("PARCPRC_ULS_AT", "N"),
-        "is_redevelop":        d.get("IMPRMN_BSNS_AT", "N"),
-        "is_public_dist":      d.get("PUBLIC_HOUSE_EARTH_AT", "N"),
-        "is_large_dev":        d.get("LRSCL_BLDLND_AT", "N"),
-        "is_metro_private":    d.get("NPLN_PRVOPR_PUBLIC_HOUSE_AT", "N"),
     }
 
 
@@ -237,32 +203,17 @@ def _from_csv_row(d: dict) -> dict:
         "special_supply_end":  d.get("특별공급접수종료일", ""),
         "rank1_local_start":   d.get("해당지역1순위접수시작일", ""),
         "rank1_local_end":     d.get("해당지역1순위접수종료일", ""),
-        "rank1_near_start":    d.get("경기지역1순위접수시작일", ""),
-        "rank1_near_end":      d.get("경기지역1순위접수종료일", ""),
-        "rank1_etc_start":     d.get("기타지역1순위접수시작일", ""),
-        "rank1_etc_end":       d.get("기타지역1순위접수종료일", ""),
         "rank2_local_start":   d.get("해당지역2순위접수시작일", ""),
         "rank2_local_end":     d.get("해당지역2순위접수종료일", ""),
-        "rank2_near_start":    d.get("경기지역2순위접수시작일", ""),
-        "rank2_near_end":      d.get("경기지역2순위접수종료일", ""),
-        "rank2_etc_start":     d.get("기타지역2순위접수시작일", ""),
-        "rank2_etc_end":       d.get("기타지역2순위접수종료일", ""),
         "winner_date":         d.get("당첨자발표일", ""),
         "contract_start":      d.get("계약시작일", ""),
         "contract_end":        d.get("계약종료일", ""),
         "move_in_month":       d.get("입주예정월", ""),
         "constructor":         d.get("건설업체명_시공사", ""),
-        "developer":           d.get("사업주체명_시행사", ""),
-        "contact":             d.get("문의처", ""),
-        "homepage":            d.get("홈페이지주소", ""),
         "notice_url":          d.get("모집공고홈페이지주소", ""),
         "is_hot_zone":         d.get("투기과열지구", "N"),
         "is_adj_zone":         d.get("조정대상지역", "N"),
         "is_price_cap":        d.get("분양가상한제", "N"),
-        "is_redevelop":        d.get("정비사업", "N"),
-        "is_public_dist":      d.get("공공주택지구", "N"),
-        "is_large_dev":        d.get("대규모택지개발지구", "N"),
-        "is_metro_private":    d.get("수도권내민영공공주택지구", "N"),
     }
 
 
@@ -341,17 +292,6 @@ class CheongYakAPI:
         items = await self._get(f"{API_BASE}/getAPTLttotPblancDetail", params)
         return items[0] if items else {}
 
-    async def get_detail_by_notice_id(self, notice_id: str) -> dict:
-        """공고번호(PBLANC_NO) 기준으로 APT 분양정보 상세 조회."""
-        params = {
-            "serviceKey": self.api_key,
-            "page": 1,
-            "perPage": 1,
-            "cond[PBLANC_NO::EQ]": notice_id,
-        }
-        items = await self._get(f"{API_BASE}/getAPTLttotPblancDetail", params)
-        return items[0] if items else {}
-
     async def get_unit_types(self, house_manage_no: str) -> list[dict]:
         """
         APT 분양정보 주택형별 상세 조회 (getAPTLttotPblancMdl)
@@ -374,13 +314,24 @@ class CheongYakAPI:
         return await self._get(f"{API_BASE}/getAPTLttotPblancMdl", params)
 
     async def _get(self, url: str, params: dict) -> list[dict]:
+        print(f"  [API] _get() 호출됨 - URL: {url}")
+        print(f"  [API] 파라미터: {params}")
+
         if not self.api_key or "여기에" in str(self.api_key):
             print(f"  [API] serviceKey 미설정 → 샘플 데이터 사용")
             return []
 
+        # API 키 상태 확인 (처음에만 한 번)
+        if not hasattr(self, '_key_logged'):
+            key_preview = f"{self.api_key[:10]}...{self.api_key[-5:]}" if len(self.api_key) > 15 else "***"
+            print(f"  [API] API 키 확인: {key_preview} (길이: {len(self.api_key)})")
+            self._key_logged = True
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
+                print(f"  [API] GET 요청 시작...")
                 resp = await client.get(url, params=params)
+                print(f"  [API] 상태 코드: {resp.status_code}")
                 resp.raise_for_status()
                 data = resp.json()
                 items = data.get("data", [])
@@ -389,9 +340,12 @@ class CheongYakAPI:
                 return items
             except httpx.HTTPStatusError as e:
                 print(f"  [API] HTTP 오류 {e.response.status_code}: {url}")
+                print(f"  [API] 전체 응답: {e.response.text}")
                 return []
             except Exception as e:
                 print(f"  [API] 오류: {e}")
+                import traceback
+                traceback.print_exc()
                 return []
 
 
@@ -418,115 +372,7 @@ def load_from_csv(csv_path: Path) -> list[NoticeDocument]:
 
 
 # ══════════════════════════════════════════════════
-# 6. PDF 공고문 파싱 (legacy helper)
-# ══════════════════════════════════════════════════
-
-async def download_pdf(url: str, save_dir: Path, filename: str) -> Path | None:
-    """Deprecated: notice_url is preserved for users, not crawled for PDF downloads."""
-    raise RuntimeError("PDF download is disabled. Use notice_url as an external link only.")
-
-
-def parse_pdf(pdf_path: Path) -> tuple[str, list[list]]:
-    """Deprecated: PDF parsing is disabled for the collection pipeline."""
-    raise RuntimeError("PDF parsing is disabled. Use API data and grounded field enrichment.")
-
-
-_POLICY_RESALE_PATTERNS = [
-    r"소유권이전등기일로부터\s*(\d+년)",
-    r"전매제한\s*기간\s*[：:]\s*([^\n,。<]{3,40})",
-    r"전매제한\s*[：:]\s*([^\n,。<]{3,40})",
-    r"입주\s*후\s*(\d+년\s*(?:이상\s*)?전매제한)",
-    r"분양가상한제\s*적용\s*(\d+년)",
-    r"전매\s*제한\s*없음",
-    r"전매제한\s*없음",
-]
-
-_POLICY_LIVE_PATTERNS = [
-    r"거주\s*의무\s*기간\s*[：:]\s*([^\n,。<]{3,30})",
-    r"실거주\s*의무\s*[：:]\s*([^\n,。<]{3,30})",
-    r"실거주\s*의무\s*(\d+년\s*이상)",
-    r"거주\s*의무\s*(\d+년\s*이상)",
-    r"실거주\s*의무\s*(없음|해당\s*없음|비해당)",
-    r"거주\s*의무\s*(없음|해당\s*없음)",
-]
-
-
-def _clean_policy_text(value: str) -> str:
-    return re.sub(r"\s+", " ", value).strip(" :·,.;")
-
-
-def _first_match(text: str, patterns: list[str]) -> str:
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE | re.MULTILINE)
-        if m:
-            value = m.group(1) if m.lastindex else m.group(0)
-            value = _clean_policy_text(value)
-            if value:
-                return value
-    return ""
-
-
-def _extract_policy_summary(pdf_text: str) -> dict[str, str]:
-    """PDF 원문에서 규제 핵심 항목을 구조화한다."""
-    if not pdf_text:
-        return {}
-
-    text = pdf_text
-    summary: dict[str, str] = {}
-
-    if "비규제지역" in text or "비해당" in text or "해당없음" in text:
-        summary["regulated_zone"] = "비규제지역"
-        summary["is_hot_zone"] = "N"
-    else:
-        zones: list[str] = []
-        for label in ("투기과열지구", "청약과열지역", "조정대상지역"):
-            if label in text and label not in zones:
-                zones.append(label)
-        if zones:
-            summary["regulated_zone"] = ", ".join(zones)
-            summary["is_hot_zone"] = "Y"
-
-    resale = _first_match(text, _POLICY_RESALE_PATTERNS)
-    if resale:
-        summary["resale_restriction"] = resale
-
-    live_req = _first_match(text, _POLICY_LIVE_PATTERNS)
-    if live_req:
-        summary["live_requirement"] = live_req
-
-    readmission = _first_match(
-        text,
-        [
-            r"재당첨\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
-            r"재당첨\s*제한\s*(\d+년)",
-            r"재당첨\s*제한\s*(없음|해당\s*없음|비해당)",
-            r"재청약\s*제한\s*[：:]\s*([^\n,。<]{1,30})",
-            r"재청약\s*제한\s*(\d+년)",
-            r"재청약\s*제한\s*(없음|해당\s*없음|비해당)",
-        ],
-    )
-    if readmission:
-        summary["readmission_limit"] = readmission
-
-    price_cap = _first_match(
-        text,
-        [
-            r"분양가상한제\s*[：:]\s*(적용|미적용|없음|해당\s*없음)",
-            r"분양가상한제\s*(적용|미적용)",
-        ],
-    )
-    if not price_cap and "분양가상한제" in text:
-        if "미적용" in text or "없음" in text:
-            price_cap = "미적용"
-        elif "적용" in text:
-            price_cap = "적용"
-    if price_cap:
-        summary["price_cap"] = price_cap
-        summary["is_price_cap"] = "Y" if price_cap == "적용" else "N"
-
-    return summary
-# ══════════════════════════════════════════════════
-# 7. 통합 수집 함수
+# 6. 통합 수집 함수
 # ══════════════════════════════════════════════════
 
 _RESUPPLY_KEYWORDS = ("무순위", "잔여", "재공급", "취소후", "불법행위")
@@ -541,9 +387,12 @@ def _supply_category(supply_type: str) -> str:
 
 async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
     """OpenAPI로 최근 N일 공고 수집"""
+    print(f"[DEBUG] collect_from_api 시작: days_back={days_back}")
     api = CheongYakAPI()
+    print(f"[DEBUG] CheongYakAPI 초기화 완료")
     today = datetime.now()
     start = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    print(f"[DEBUG] 시작일: {start}")
 
     raw_list = await api.get_list(per_page=50, start_date=start)
     if not raw_list:
@@ -574,11 +423,6 @@ async def collect_from_api(days_back: int = 7) -> list[NoticeDocument]:
                         f"※ 분양가는 공고문 원문을 직접 확인하세요."
                     )
 
-        # notice_url은 상세 페이지의 "모집공고문 보기" 링크로만 보존한다.
-        # URL 안의 PDF 다운로드/파싱은 비용과 실패 경로를 줄이기 위해 수행하지 않는다.
-        if not doc.notice_url:
-            print(f"  [공고문 링크] URL 없음: {doc.apt_name}")
-
         docs.append(doc)
 
     print(f"\n  [수집 완료] {len(docs)}건")
@@ -590,7 +434,8 @@ def _units_to_text(units: list[dict]) -> str:
     lines = []
     for u in units:
         house_type = u.get("HOUSE_TY", "")
-        excl_ar    = u.get("EXCLUSE_AR") or u.get("EXCLUSE_AR_VALUE") or u.get("SUPLY_AR", "")
+        excl_ar    = u.get("EXCLUSE_AR", "")
+        suply_ar   = u.get("SUPLY_AR", "")
         # GNRL_HOSP_CO / SPSPLY_HOSP_CO: API 문서 기준 필드명
         # SUPLY_HSHLDCO / SPSPLY_HSHLDCO: 일부 응답 변형 대비 폴백
         gnrl_cnt   = u.get("GNRL_HOSP_CO") or u.get("SUPLY_HSHLDCO", "")
@@ -599,7 +444,7 @@ def _units_to_text(units: list[dict]) -> str:
         low_price  = u.get("LTTOT_LOWPR_AMOUNT", "")
         price_str  = f"{low_price}~{top_price}" if low_price and top_price and low_price != top_price else (top_price or "-")
         lines.append(
-            f"{house_type}타입 | 전용 {excl_ar}㎡ "
+            f"{house_type}타입 | 전용 {excl_ar}㎡ | 공급 {suply_ar}㎡ "
             f"| 일반 {gnrl_cnt}세대 | 특별 {spsply_cnt}세대 "
             f"| 분양가 {price_str}만원"
         )
@@ -607,87 +452,72 @@ def _units_to_text(units: list[dict]) -> str:
 
 
 # ══════════════════════════════════════════════════
-# 8. 샘플 데이터 (API 키 없을 때 테스트용)
+# 7. 샘플 데이터 (API 키 없을 때 테스트용)
 # ══════════════════════════════════════════════════
 
 def get_sample_document() -> NoticeDocument:
     """
-    테스트용 샘플 공고
+    테스트용 샘플 공고 - 오티에르 반포 (실제 공공데이터)
     실제 데이터 구조(필드명)와 동일하게 구성
     """
     doc = NoticeDocument(
-        notice_id           = "2026-SAMPLE-001",
-        house_manage_no     = "2026000001",
-        apt_name            = "힐스테이트 판교역",
+        notice_id           = "2026000058",
+        house_manage_no     = "2026000058",
+        apt_name            = "오티에르 반포",
         house_type          = "민영",
         house_detail_type   = "아파트",
         supply_type         = "분양",
-        region_code         = "41",
-        region_name         = "경기",
-        supply_address      = "경기도 성남시 분당구 삼평동 123",
-        total_units         = "842",
-        notice_date         = "2026-04-15",
-        special_supply_start= "2026-04-25",
-        special_supply_end  = "2026-04-25",
-        rank1_local_start   = "2026-04-28",
-        rank1_local_end     = "2026-04-28",
-        rank1_near_start    = "2026-04-29",
-        rank1_near_end      = "2026-04-29",
-        rank1_etc_start     = "2026-04-30",
-        rank1_etc_end       = "2026-04-30",
-        rank2_local_start   = "2026-05-01",
-        rank2_local_end     = "2026-05-01",
-        rank2_near_start    = "",
-        rank2_near_end      = "",
-        rank2_etc_start     = "",
-        rank2_etc_end       = "",
-        winner_date         = "2026-05-08",
-        contract_start      = "2026-05-15",
-        contract_end        = "2026-05-17",
-        move_in_month       = "2028-12",
-        constructor         = "현대건설",
-        developer           = "현대엔지니어링",
-        contact             = "1600-0000",
-        homepage            = "https://www.applyhome.co.kr",
-        notice_url          = "https://www.applyhome.co.kr",
-        is_hot_zone         = "N",
-        is_adj_zone         = "N",
+        region_code         = "100",
+        region_name         = "서울",
+        supply_address      = "서울특별시 서초구 잠원동 59-10번지 외 3필지",
+        total_units         = "86",
+        notice_date         = "2026-03-31",
+        special_supply_start= "2026-04-10",
+        special_supply_end  = "2026-04-10",
+        rank1_local_start   = "2026-04-13",
+        rank1_local_end     = "2026-04-13",
+        rank2_local_start   = "2026-04-15",
+        rank2_local_end     = "2026-04-15",
+        winner_date         = "2026-04-21",
+        contract_start      = "2026-05-06",
+        contract_end        = "2026-05-08",
+        move_in_month       = "2026-07",
+        constructor         = "㈜포스코이앤씨",
+        notice_url          = "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000058&pblancNo=2026000058",
+        is_hot_zone         = "Y",
+        is_adj_zone         = "Y",
         is_price_cap        = "N",
-        is_redevelop        = "N",
-        is_public_dist      = "N",
-        is_large_dev        = "N",
-        is_metro_private    = "N",
     )
 
     doc.raw_text = """
 [분양가 정보]
-59타입(59.99㎡) 전용: 분양가 7억5천~8억2천만원 / 3.3㎡당 약 4,100만원
-84A타입(84.97㎡) 전용: 분양가 9억5천~11억만원 / 3.3㎡당 약 3,700만원
-84B타입(84.98㎡) 전용: 분양가 9억7천~11억2천만원 / 3.3㎡당 약 3,700만원
+44.0000㎡ 전용: 분양가 1억4264만원 / 3.3㎡당 약 4,750만원
+44.8507B㎡ 전용: 분양가 1억4416만원 / 3.3㎡당 약 4,750만원
+45.0000㎡ 전용: 분양가 1억4453만원 / 3.3㎡당 약 4,750만원
 
 [중도금 대출]
-중도금 집단대출 가능 (분양가의 60%, 무이자, 6회 분납)
-DSR 40% 규제 적용 대상
+중도금 무이자 집단대출 가능 (분양가의 60%)
 
 [전매 제한]
-비투기과열지구 → 전매제한 3년 (입주 시 해제)
+전매제한 3년
 
 [주택형별 공급]
-59A타입 | 전용 59.99㎡ | 일반 120세대 | 특별 80세대 | 분양가상한 82000만원
-84A타입 | 전용 84.97㎡ | 일반 200세대 | 특별 130세대 | 분양가상한 110000만원
-84B타입 | 전용 84.98㎡ | 일반 180세대 | 특별 132세대 | 분양가상한 112000만원
+44.0000㎡ | 일반 5세대 | 특별 5세대 | 분양가 142,640만원
+44.8507B㎡ | 일반 2세대 | 특별 1세대 | 분양가 144,160만원
+45.0000㎡ 이상 | 일반 69세대 | 특별 (계속)
 
 [입지 정보]
-신분당선 판교역 도보 5분 / 판교테크노밸리 인근
-배정학교: 판교초등학교 (도보 7분)
-인근: 현대백화점 판교점 도보 10분, 분당서울대병원 차량 10분
+신분당선 반포역 인근 / 서초구 강남권 중심지
+강남대로 접근성 우수
+배정학교: (확인 필요)
+인근: 신세계백화점 강남점 인근, 서울성모병원 인근
 """.strip()
 
     doc.tables = [
-        [["타입", "전용(㎡)", "일반공급", "특별공급", "분양가 범위"],
-         ["59A", "59.99", "120", "80", "7.5억~8.2억"],
-         ["84A", "84.97", "200", "130", "9.5억~11억"],
-         ["84B", "84.98", "180", "132", "9.7억~11.2억"]]
+        [["타입", "전용(㎡)", "일반공급", "특별공급", "분양가"],
+         ["44.00", "44.00", "5", "5", "1.426억"],
+         ["44.85B", "44.85", "2", "1", "1.441억"],
+         ["45.00+", "45.00+", "69", "7", "1.445억+"]]
     ]
     return doc
 

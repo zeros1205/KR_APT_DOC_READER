@@ -5,9 +5,13 @@
 .venv/
 venv/
 
-# 생성된 출력물 중 용량 큰 바이너리만 제외 (posts/는 repo에 저장)
+# 생성된 출력물 제외 (동적 생성 파일)
 output/images/
 output/pdfs/
+output/posts/
+output/index.html
+output/sitemap.xml
+output/robots.txt
 
 # ChromaDB 벡터 저장소
 chroma_db/
@@ -26,3 +30,6 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# ⚠️ 구버전 프론트 페이지 렌더러 (index_renderer.py 사용)
+pipeline/build_index.py
