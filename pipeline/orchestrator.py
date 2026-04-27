@@ -29,9 +29,6 @@ from config import (
 from html_renderer import BlogHTMLRenderer, PostData, QABlock, UnitType, save_post
 from data_validators import validate_post_data, get_validation_score_penalties
 from agents.collector import NoticeDocument
-from database import SessionLocal
-from models import Apartment, Posting, PostingContent, PostingMeta
-
 import re as _re
 
 
@@ -1223,113 +1220,7 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     # Step 7: 로컬 저장
     saved_path = save_post(post_data, html, OUTPUT_DIR)
 
-    # Step 8: DB에 저장 (병렬 저장)
-    try:
-        _save_to_database(post_data, content, facts)
-        print(f"  [DB] {post_data.apt_name} → DB 저장 완료")
-    except Exception as e:
-        print(f"  [DB 경고] 저장 실패 (계속 진행): {e}")
-
     return saved_path
-
-
-def _save_to_database(post_data: PostData, content: dict, facts: dict) -> None:
-    """PostData → PostgreSQL DB 저장 (병렬 저장)"""
-    db = SessionLocal()
-    try:
-        # 1. Apartment 저장 또는 조회
-        api_notice_id = facts.get("notice_id", "")
-        apartment = db.query(Apartment).filter(
-            Apartment.api_notice_id == api_notice_id
-        ).first()
-
-        if not apartment:
-            apartment = Apartment(
-                api_notice_id=api_notice_id,
-                apt_name=post_data.apt_name,
-                supply_address=post_data.supply_address,
-                location=post_data.location,
-                supply_scale=post_data.supply_scale,
-                total_units=int(post_data.total_households) if post_data.total_households else None,
-                is_hot_zone=post_data.is_hot_zone or "N",
-                regulated_zone=post_data.regulated_zone,
-                readmission_limit=post_data.readmission_limit,
-                live_requirement=post_data.live_requirement,
-                price_cap=post_data.price_cap,
-                land_type=post_data.land_type,
-                constructor=facts.get("constructor", ""),
-                notice_url=post_data.notice_url,
-            )
-            db.add(apartment)
-            db.flush()
-
-        # 2. Posting 저장
-        post_slug = _re.sub(r'[^\w\s-]', '', post_data.post_title.lower())
-        post_slug = _re.sub(r'[-\s]+', '-', post_slug).strip('-')
-
-        posting = Posting(
-            apartment_id=apartment.id,
-            post_title=post_data.post_title,
-            post_subtitle=post_data.post_subtitle,
-            post_slug=post_slug,
-            theme=post_data.theme or "intercom",
-            quality_score=0,  # quality_score는 따로 계산됨
-            is_published=True,
-        )
-        db.add(posting)
-        db.flush()
-
-        # 3. PostingContent 저장
-        posting_content = PostingContent(
-            posting_id=posting.id,
-            apt_intro=post_data.apt_intro,
-            location_intro=post_data.location_intro,
-            financial_intro=post_data.financial_intro,
-            qa_intro=post_data.qa_intro,
-            schedule_desc=post_data.schedule_desc,
-            tax_desc=post_data.tax_desc,
-            unit_type_desc=post_data.unit_type_desc,
-            subway_score=post_data.subway_score,
-            subway_detail=post_data.subway_detail,
-            school_score=post_data.school_score,
-            school_detail=post_data.school_detail,
-            life_score=post_data.life_score,
-            life_detail=post_data.life_detail,
-            medical_score=post_data.medical_score,
-            medical_detail=post_data.medical_detail,
-            eligibility_special=post_data.eligibility_special,
-            eligibility_rank1=post_data.eligibility_rank1,
-            eligibility_rank2=post_data.eligibility_rank2,
-            qa_blocks=post_data.qa_blocks,
-            seo_tags=post_data.seo_tags,
-        )
-        db.add(posting_content)
-
-        # 4. PostingMeta 저장
-        posting_meta = PostingMeta(
-            posting_id=posting.id,
-            special_supply_date=post_data.special_supply_date,
-            rank1_date=post_data.rank1_date,
-            rank2_date=post_data.rank2_date,
-            winner_date=post_data.winner_date,
-            move_in_date=post_data.move_in_date,
-            contract_ratio=post_data.contract_ratio,
-            contract_amount=post_data.contract_amount,
-            midterm_ratio=post_data.midterm_ratio,
-            midterm_count=post_data.midterm_count,
-            balance_ratio=post_data.balance_ratio,
-            loan_info=post_data.loan_info,
-            resale_restriction=post_data.resale_restriction,
-            acquisition_tax_rate=post_data.acquisition_tax_rate,
-        )
-        db.add(posting_meta)
-
-        db.commit()
-    except Exception as e:
-        db.rollback()
-        raise
-    finally:
-        db.close()
 
 
 # ──────────────────────────────────────────────────
