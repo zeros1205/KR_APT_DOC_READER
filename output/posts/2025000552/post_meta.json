@@ -1,0 +1,67 @@
+{
+  "apt_name": "한화포레나 부산대연",
+  "title": "한화포레나 부산대연, 부산 남구의 새로운 주거 가치",
+  "subtitle": "부산 대연동에서 만나는 새로운 보금자리, 청약 정보 총정리",
+  "theme": "claude",
+  "tags": [
+    "한화포레나부산대연",
+    "부산아파트분양",
+    "대연동아파트",
+    "부산청약",
+    "포레나",
+    "내집마련",
+    "부산부동산",
+    "아파트청약",
+    "분양정보",
+    "부산남구"
+  ],
+  "location": "부산",
+  "region_category": "부산",
+  "supply_type": "분양주택",
+  "price_range": "8.14억~8.14억원",
+  "special_supply_date": "2025-12-22",
+  "rank1_date": "2025-12-23",
+  "rank2_date": "2025-12-24",
+  "notice_date": "2025-12-12",
+  "move_in_date": "2026년 05월",
+  "supply_address": "부산광역시 남구 대연동 455-25번지",
+  "total_households": "104",
+  "is_hot_zone": "비해당",
+  "regulated_zone": "",
+  "readmission_limit": "",
+  "live_requirement": "",
+  "price_cap": "",
+  "land_type": "",
+  "resale_restriction": "-",
+  "eligibility_special": [
+    {
+      "type_name": "특별공급 전체",
+      "quota": "총 49세대 (공고문 기준)",
+      "requirements": [
+        "신혼부부, 생애최초, 다자녀, 노부모부양, 기관추천 등 유형별 자격 요건 충족",
+        "무주택세대구성원(단, 신혼부부·생애최초는 세대원 포함 무주택, 노부모부양은 세대주 한정)",
+        "소득기준 및 자산기준 충족 필요"
+      ],
+      "factcheck_notes": "공고문 원문에 구체적인 특별공급 유형별 할당 세대수 및 자격요건이 누락되어 있음"
+    }
+  ],
+  "eligibility_rank1": [
+    "공고일 기준 부산광역시 1년 이상(또는 당해) 계속 거주자",
+    "청약통장 가입 24개월 경과 및 지역별 예치금 충족",
+    "세대주 한정(과밀억제권역 및 투기과열지구 등 규제지역 여부 확인 필요)",
+    "무주택 또는 1주택 소유 세대의 세대주(과거 5년 내 당첨 사실 없어야 함)"
+  ],
+  "eligibility_rank2": [
+    "1순위 미달 시 신청 가능",
+    "청약통장 가입 12개월 경과 및 지역별 예치금 충족",
+    "세대주 또는 세대원 모두 가능"
+  ],
+  "contract_ratio": "10",
+  "contract_amount": "약 8,140만원",
+  "midterm_ratio": "60",
+  "midterm_count": "6",
+  "balance_ratio": "30",
+  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000552&pblancNo=2025000552",
+  "generated_at": "2026-04-27T15:39:16.219413"
+}
