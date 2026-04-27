@@ -85,9 +85,10 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
         )
     fields = NoticeDocument.__dataclass_fields__
     normalized = {key: _stringify_none(data.get(key, "")) for key in fields}
-    normalized["tables"] = data.get("tables") or []
-    normalized["pdf_path"] = None
-    normalized["pdf_policy_text"] = ""
+    if "tables" in normalized:
+        normalized["tables"] = data.get("tables") or []
+    if "pdf_path" in normalized:
+        normalized["pdf_path"] = None
     doc = NoticeDocument(**normalized)
     if manual_regulation:
         policy_lines = [
@@ -100,7 +101,6 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
             f"[PDF 정책] is_price_cap: {manual_regulation.get('is_price_cap', '')}",
         ]
         doc.raw_text = f"{doc.raw_text}\n\n" + "\n".join(policy_lines)
-        doc.pdf_policy_text = "\n".join(policy_lines)
     return doc
 
 

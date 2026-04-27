@@ -1020,7 +1020,21 @@ def _parse_price_manwon(value) -> int:
     return total
 
 
-async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", supply_type: str = "", notice_url: str = "", api_is_hot_zone: str = "", api_supply_address: str = "") -> Path | None:
+async def run_pipeline(
+    notice_text: str,
+    max_retries: int = 2,
+    theme: str = "",
+    supply_type: str = "",
+    notice_url: str = "",
+    api_is_hot_zone: str = "",
+    api_supply_address: str = "",
+    doc_notice_id: str = "",
+    doc_apt_name: str = "",
+    doc_notice_date: str = "",
+    doc_location: str = "",
+    doc_supply_scale: str = "",
+    doc_total_units: str = "",
+) -> Path | None:
     """
     단일 공고문 → 블로그 포스팅 생성 파이프라인 실행
 
@@ -1040,6 +1054,19 @@ async def run_pipeline(notice_text: str, max_retries: int = 2, theme: str = "", 
     if not facts.get("apt_name"):
         print("❌ 팩트 추출 실패 - 단지명 없음. 파이프라인 중단.")
         return None
+
+    if doc_notice_id and not facts.get("notice_id"):
+        facts["notice_id"] = doc_notice_id
+    if doc_apt_name and not facts.get("apt_name"):
+        facts["apt_name"] = doc_apt_name
+    if doc_notice_date and not facts.get("notice_date"):
+        facts["notice_date"] = doc_notice_date
+    if doc_location and not facts.get("location"):
+        facts["location"] = doc_location
+    if doc_supply_scale and not facts.get("supply_scale"):
+        facts["supply_scale"] = doc_supply_scale
+    if doc_total_units and not facts.get("total_households"):
+        facts["total_households"] = doc_total_units
 
     apt_name = facts["apt_name"]
 
@@ -1286,7 +1313,7 @@ def _save_to_database(post_data: PostData, content: dict, facts: dict) -> None:
             eligibility_special=post_data.eligibility_special,
             eligibility_rank1=post_data.eligibility_rank1,
             eligibility_rank2=post_data.eligibility_rank2,
-            qa_blocks=post_data.qa_blocks,
+            qa_blocks=[{"question": qa.question, "answer": qa.answer} for qa in post_data.qa_blocks],
             seo_tags=post_data.seo_tags,
         )
         db.add(posting_content)
@@ -1344,7 +1371,21 @@ async def run_pipeline_from_doc(doc: NoticeDocument, max_retries: int = 2) -> Pa
         print(f"  [RAG] 초기화/조회 실패 → 원문 폴백: {e}")
         notice_text = doc.to_rag_text()
 
-    return await run_pipeline(notice_text, max_retries=max_retries, theme=theme, supply_type=doc.supply_type, notice_url=doc.notice_url, api_is_hot_zone=doc.is_hot_zone, api_supply_address=doc.supply_address)
+    return await run_pipeline(
+        notice_text,
+        max_retries=max_retries,
+        theme=theme,
+        supply_type=doc.supply_type,
+        notice_url=doc.notice_url,
+        api_is_hot_zone=doc.is_hot_zone,
+        api_supply_address=doc.supply_address,
+        doc_notice_id=doc.notice_id,
+        doc_apt_name=doc.apt_name,
+        doc_notice_date=doc.notice_date,
+        doc_location=doc.region_name,
+        doc_supply_scale=doc.total_units,
+        doc_total_units=doc.total_units,
+    )
 
 
 # ──────────────────────────────────────────────────
