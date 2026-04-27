@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-27T23:41:59+09:00",
+  "generated_at": "2026-04-28T00:08:47+09:00",
   "count": 138,
-  "ready_count": 97,
-  "manual_review_count": 41,
+  "ready_count": 138,
+  "manual_review_count": 0,
   "notices": [
     {
       "notice_id": "2025000497",
@@ -21,55 +21,43 @@
     {
       "notice_id": "2025000524",
       "apt_name": "용인 푸르지오 원클러스터파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000524.json"
     },
     {
       "notice_id": "2025000545",
       "apt_name": "이천 증포5지구 칸타빌 에듀파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000545.json"
     },
     {
       "notice_id": "2025000552",
       "apt_name": "한화포레나 부산대연",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000552.json"
     },
     {
       "notice_id": "2025000553",
       "apt_name": "서수원 에피트 센트럴마크(M2BL)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000553.json"
     },
     {
       "notice_id": "2025000554",
       "apt_name": "서수원 에피트 센트럴마크(M1BL)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000554.json"
     },
     {
       "notice_id": "2025000566",
       "apt_name": "역삼센트럴자이",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000566.json"
     },
     {
@@ -89,172 +77,134 @@
     {
       "notice_id": "2025000581",
       "apt_name": "이천 중리지구 B3블록 금성백조 예미지",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000581.json"
     },
     {
       "notice_id": "2025000582",
       "apt_name": "송도 한내들 센트럴리버",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000582.json"
     },
     {
       "notice_id": "2025000586",
       "apt_name": "e편한세상 내포 에듀플라츠(공공주택)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000586.json"
     },
     {
       "notice_id": "2025000587",
       "apt_name": "e편한세상 내포 에듀플라츠(민영주택)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000587.json"
     },
     {
       "notice_id": "2025000591",
       "apt_name": "시흥거모 엘가 로제비앙",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000591.json"
     },
     {
       "notice_id": "2025000595",
       "apt_name": "더샵 분당센트로",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000595.json"
     },
     {
       "notice_id": "2025000601",
       "apt_name": "창원 센트럴 아이파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000601.json"
     },
     {
       "notice_id": "2025000602",
       "apt_name": "인천영종국제도시 디에트르 라 메르Ⅰ(RC4-1,2BL)(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000602.json"
     },
     {
       "notice_id": "2025000605",
       "apt_name": "힐스테이트 선암호수공원 1단지",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000605.json"
     },
     {
       "notice_id": "2025000606",
       "apt_name": "힐스테이트 선암호수공원 2단지",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000606.json"
     },
     {
       "notice_id": "2025000610",
       "apt_name": "태화강 센트럴 아이파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000610.json"
     },
     {
       "notice_id": "2025000615",
       "apt_name": "둔산 자이 아이파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000615.json"
     },
     {
       "notice_id": "2025000616",
       "apt_name": "둔산 자이 아이파크(보류지)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000616.json"
     },
     {
       "notice_id": "2025000617",
       "apt_name": "영종하늘도시 대라수 어썸(A50BL)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000617.json"
     },
     {
       "notice_id": "2025000619",
       "apt_name": "안동리첼스카이파크",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000619.json"
     },
     {
       "notice_id": "2025000620",
       "apt_name": "전주 에코시티 더 클래스",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000620.json"
     },
     {
       "notice_id": "2025000622",
       "apt_name": "수지자이 에디시온",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000622.json"
     },
     {
       "notice_id": "2025000624",
       "apt_name": "해남 남외리 정하 에코프라임",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000624.json"
     },
     {
       "notice_id": "2025000625",
       "apt_name": "행정중심복합도시 5-1L1블록 공공분양주택",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000625.json"
     },
     {
@@ -267,37 +217,29 @@
     {
       "notice_id": "2025000629",
       "apt_name": "동래 푸르지오 에듀포레",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000629.json"
     },
     {
       "notice_id": "2025000632",
       "apt_name": "용인 푸르지오 클루센트",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000632.json"
     },
     {
       "notice_id": "2025000634",
       "apt_name": "영종국제도시 신일 비아프 크레스트(1단지)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000634.json"
     },
     {
       "notice_id": "2025000635",
       "apt_name": "영종국제도시 신일 비아프 크레스트(2단지)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000635.json"
     },
     {
@@ -310,37 +252,29 @@
     {
       "notice_id": "2025000640",
       "apt_name": "강릉역 경남아너스빌 더 센트로(조합원 취소분)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000640.json"
     },
     {
       "notice_id": "2025000642",
       "apt_name": "인천영종지구 A24블록 공공분양주택(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000642.json"
     },
     {
       "notice_id": "2025000643",
       "apt_name": "김포고촌2지구 A1블록 공공분양주택",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000643.json"
     },
     {
       "notice_id": "2025000644",
       "apt_name": "남양주진접2지구 B-1블록 공공분양(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000644.json"
     },
     {
@@ -353,37 +287,29 @@
     {
       "notice_id": "2025000646",
       "apt_name": "구리갈매역세권 A-4블록 공공분양주택(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000646.json"
     },
     {
       "notice_id": "2025000647",
       "apt_name": "구리갈매역세권 A-4블록 6년 분양전환공공임대주택(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000647.json"
     },
     {
       "notice_id": "2025000649",
       "apt_name": "울산다운2지구 A-10블록 공공분양주택",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000649.json"
     },
     {
       "notice_id": "2025000650",
       "apt_name": "힐스테이트 물금센트럴",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000650.json"
     },
     {
@@ -410,10 +336,8 @@
     {
       "notice_id": "2025000659",
       "apt_name": "과천주암지구 C1블록 공공분양주택(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000659.json"
     },
     {
@@ -426,28 +350,22 @@
     {
       "notice_id": "2025820016",
       "apt_name": "군포대야미 A2블록 신혼희망타운(공공분양)(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025820016.json"
     },
     {
       "notice_id": "2025820019",
       "apt_name": "남양주진접2 지구 A-3블록 신혼희망타운(공공분양)(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025820019.json"
     },
     {
       "notice_id": "2025820020",
       "apt_name": "과천주암지구 C1블록 신혼희망타운(공공분양)(본청약)",
-      "requires_manual_input": true,
-      "missing_fields": [
-        "supply_type"
-      ],
+      "requires_manual_input": false,
+      "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025820020.json"
     },
     {
