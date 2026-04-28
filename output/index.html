@@ -5454,8 +5454,10 @@ function goPage(page) {
   _renderPage(matched, _currentPage);
   _renderPagination(matched);
   var grid = document.getElementById('cards-grid');
-  if (grid && window.scrollY > grid.offsetTop - 120) {
-    window.scrollTo({ top: grid.offsetTop - 80, behavior: 'smooth' });
+  var dock = document.getElementById('filter-dock');
+  var stickyOffset = 54 + (dock ? dock.offsetHeight : 0) + 18;
+  if (grid && window.scrollY > grid.offsetTop - stickyOffset - 40) {
+    window.scrollTo({ top: grid.offsetTop - stickyOffset, behavior: 'smooth' });
   }
 }
 
