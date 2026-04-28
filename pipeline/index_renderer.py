@@ -344,6 +344,13 @@ def _fmt_notice_date(date_str: str) -> str:
         return "모집공고일 확인 필요"
 
 
+def _fmt_latest_notice_date(posts: list[dict]) -> str:
+    latest = max((_parse_date(post.get("notice_date")) for post in posts), default=None)
+    if not latest:
+        return "최근 업데이트 기준일 확인 필요"
+    return f"최근 업데이트 {latest.year}년 {latest.month}월 {latest.day}일"
+
+
 def _parse_date(value: object) -> date | None:
     text = str(value or "").strip()
     if not text or text in ("-", "null", "None"):
@@ -565,6 +572,7 @@ def build_front_index() -> None:
     html = html.replace("{{INDEX_NAV}}", index_nav("/"))
     html = html.replace("{{FEATURED_ITEMS}}", _render_featured_items(posts))
     html = html.replace("{{RESULT_COUNT_HTML}}", f'총 <strong style="color:var(--c-dark);">{total}</strong>건')
+    html = html.replace("{{LATEST_NOTICE_DATE}}", _fmt_latest_notice_date(posts))
     html = html.replace("{{LIST_SEARCH_BAR}}", _render_list_search_bar())
     html = html.replace("{{REGION_TABS}}", region_tabs)
     html = html.replace("{{SUPPLY_TABS}}", "")
