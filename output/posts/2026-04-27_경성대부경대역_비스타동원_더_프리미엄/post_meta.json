@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 8,
     "source_pdf": "2026000012 경성대부경대역 비스타동원 더 프리미엄 입주자모집공고문.pdf",
     "evidence": [
@@ -112,5 +113,6 @@
       "잔금(35%)",
       "약식 1차 2차 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

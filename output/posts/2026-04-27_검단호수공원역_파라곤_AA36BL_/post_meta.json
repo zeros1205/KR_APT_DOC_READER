@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "8",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000065 검단호수공원역 파라곤(AA36BL) 입주자모집공고문.pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "공급금액 계약금 (10%) 중도금 (60%)",
       "(30%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

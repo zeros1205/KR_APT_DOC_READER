@@ -189,5 +189,27 @@
       "해링턴플레이스 노원 센트럴 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:23:03+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000028 해링턴플레이스 노원 센트럴 입주자모집공고문.pdf",
+    "source_page": 9,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 9,
+    "source_pdf": "2026000028 해링턴플레이스 노원 센트럴 입주자모집공고문.pdf",
+    "evidence": [
+      "약식표기 공급 동 구분 해당 공급금액 계약금 (10%) 잔금 (90%)",
+      "약식표기 공급 동 구분 해당 공급금액 계약금 (10%) 잔금 (90%)"
+    ]
   }
 }

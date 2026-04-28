@@ -152,5 +152,29 @@
       "천안 휴먼빌 퍼스트시티 거주의무"
     ],
     "checked_at": "2026-04-27T02:16:25+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000127 천안 휴먼빌 퍼스트시티(2회차) 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000127 천안 휴먼빌 퍼스트시티(2회차) 입주자모집공고문.pdf",
+    "evidence": [
+      "중도금 (60%)",
+      "분양가격 계약금(5%) 잔금(35%)",
+      "분양가격 계약금(5%) 잔금(35%)",
+      "약식 동별 공급 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

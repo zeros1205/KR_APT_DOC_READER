@@ -190,5 +190,29 @@
       "포레나더샵 인천시청역 전매제한 실거주의무"
     ],
     "checked_at": "2026-04-26T22:20:26+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2025000572 포레나더샵 인천시청역 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2025000572 포레나더샵 인천시청역 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "약 표 식 기 세 공 대 급 수 (라 동 인 별 별) 층별 세 해 대 당 수 대지비 건축비 계 1차 (계 2 약 차 후 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) 입주지정일"
+    ]
   }
 }

@@ -196,13 +196,15 @@
     "balance_ratio": "35",
     "midterm_count": "6",
     "source_pdf": "2026000115 두산위브더제니스 구미(조합원취소분) 입주자모집공고문 (1).pdf",
-    "source_page": 7
+    "source_page": 7,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000115 두산위브더제니스 구미(조합원취소분) 입주자모집공고문 (1).pdf",
     "evidence": [

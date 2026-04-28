@@ -189,5 +189,29 @@
       "쌍용 더 플래티넘 온수역 실거주 의무"
     ],
     "checked_at": "2026-04-26T23:15:23+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000017 쌍용 더 플래티넘 온수역 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000017 쌍용 더 플래티넘 온수역 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "공급금액 계약금(5%) 중도금(60%) 잔금(35%)",
+      "동/라인 층 1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

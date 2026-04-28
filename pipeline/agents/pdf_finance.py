@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 from pathlib import Path
+import re
 
 import pdfplumber
 
@@ -26,6 +27,7 @@ class FinanceExtraction:
     midterm_ratio: str = ""
     balance_ratio: str = ""
     midterm_count: str = ""
+    midterm_fixed_amount: str = ""
     source_page: int | None = None
     source_pdf: str = ""
     evidence: list[str] | None = None
@@ -45,6 +47,14 @@ def find_local_pdf(pdf_dir: Path, notice_id: str) -> Path | None:
         return None
     matches = sorted(pdf_dir.glob(f"{notice_id}*.pdf"))
     return matches[0] if matches else None
+
+
+def find_local_pdf_in_dirs(pdf_dirs: list[Path] | tuple[Path, ...], notice_id: str) -> Path | None:
+    for pdf_dir in pdf_dirs:
+        found = find_local_pdf(pdf_dir, notice_id)
+        if found:
+            return found
+    return None
 
 
 def _percent_values(line: str) -> list[int]:
@@ -97,6 +107,34 @@ def _infer_missing_ratio(result: FinanceExtraction, header_has_balance: bool) ->
         inferred = 100 - midterm - balance
         if 0 <= inferred <= 100:
             result.contract_ratio = str(inferred)
+
+
+def _infer_from_amount_row(lines: list[str], result: FinanceExtraction) -> None:
+    if result.has_core_ratios:
+        return
+    for line in lines:
+        amounts = [int(value.replace(",", "")) for value in re.findall(r"\d{1,3}(?:,\d{3}){2,}", line)]
+        if len(amounts) < 3:
+            continue
+        payments = amounts[-3:]
+        total = sum(payments)
+        if total <= 0:
+            continue
+        ratios = [round(value / total * 100) for value in payments]
+        if sum(ratios) not in (99, 100, 101):
+            continue
+        if ratios[1] == 0 and payments[1] > 0:
+            manwon = payments[1] // 10000
+            result.midterm_fixed_amount = f"{manwon:,}만원" if manwon else f"{payments[1]:,}원"
+        if not result.contract_ratio:
+            result.contract_ratio = str(ratios[0])
+        if not result.midterm_ratio:
+            result.midterm_ratio = str(ratios[1])
+        if not result.balance_ratio:
+            result.balance_ratio = str(100 - int(result.contract_ratio) - int(result.midterm_ratio))
+        if result.evidence is not None:
+            result.evidence.append(line)
+        return
 
 
 def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
@@ -205,6 +243,11 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
                     _infer_missing_ratio(result, header_has_balance)
                     return result
 
+    if not result.has_core_ratios and MIDTERM not in joined_header and result.contract_ratio and header_has_balance:
+        result.midterm_ratio = "0"
+        result.balance_ratio = str(100 - int(result.contract_ratio))
+    _infer_from_amount_row(compact, result)
+    _infer_missing_ratio(result, header_has_balance)
     return result
 
 

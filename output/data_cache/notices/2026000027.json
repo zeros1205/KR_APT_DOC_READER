@@ -227,5 +227,28 @@
       "전주 완주 혁신도시 에코르 2단지 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:22:15+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000027 전주·완주 혁신도시 에코르 2단지 공가세대 일반공급 입주자모집공고문.pdf",
+    "source_page": 8,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 8,
+    "source_pdf": "2026000027 전주·완주 혁신도시 에코르 2단지 공가세대 일반공급 입주자모집공고문.pdf",
+    "evidence": [
+      "공 급 면 적 계약금(10%) 잔금(90%) 입주가능",
+      "공 급 면 적 계약금(10%) 잔금(90%) 입주가능",
+      "기타공용 계약면적 계(100%) 계약 후 시기"
+    ]
   }
 }

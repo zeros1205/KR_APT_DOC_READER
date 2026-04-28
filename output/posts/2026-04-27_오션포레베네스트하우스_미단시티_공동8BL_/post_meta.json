@@ -104,11 +104,13 @@
     "midterm_ratio": "10",
     "balance_ratio": "90",
     "midterm_count": "2",
+    "midterm_fixed_amount": "",
     "source_page": 6,
     "source_pdf": "2026000063 오션포레베네스트하우스(미단시티 공동8BL) 입주자모집공고문.pdf",
     "evidence": [
       "계약금(10%) 잔금",
       "약식 1차(5%) 2차(5%) (90%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

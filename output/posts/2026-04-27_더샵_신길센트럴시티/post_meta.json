@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000064&pblancNo=2026000064",
@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 9,
     "source_pdf": "2026000064 더샵 신길센트럴시티 입주자모집공고문.pdf",
     "evidence": [
@@ -112,5 +113,6 @@
       "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
       "표기 층 세대수 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

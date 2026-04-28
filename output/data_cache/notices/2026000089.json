@@ -292,13 +292,15 @@
     "balance_ratio": "35",
     "midterm_count": "",
     "source_pdf": "2026000089 강릉 우미 린 더 프리미어 입주자모집공고문.pdf",
-    "source_page": 9
+    "source_page": 9,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 9,
     "source_pdf": "2026000089 강릉 우미 린 더 프리미어 입주자모집공고문.pdf",
     "evidence": [

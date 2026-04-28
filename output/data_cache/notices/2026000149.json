@@ -189,5 +189,29 @@
       "엘리프 성성호수공원 전매제한 재당첨제한 거주의무"
     ],
     "checked_at": "2026-04-27T02:21:40+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2026000149 엘리프 성성호수공원 1BL 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2026000149 엘리프 성성호수공원 1BL 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(10%) 중도금 (60%) 잔금(30%)",
+      "계약금(10%) 중도금 (60%) 잔금(30%)",
+      "계약금(10%) 중도금 (60%) 잔금(30%)",
+      "약식 층 해당 1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

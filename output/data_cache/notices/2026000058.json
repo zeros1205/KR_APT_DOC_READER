@@ -369,13 +369,15 @@
     "balance_ratio": "60",
     "midterm_count": "",
     "source_pdf": "2026000058 오티에르 반포.pdf",
-    "source_page": 10
+    "source_page": 10,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "20",
     "midterm_ratio": "20",
     "balance_ratio": "60",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 10,
     "source_pdf": "2026000058 오티에르 반포.pdf",
     "evidence": [

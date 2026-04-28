@@ -151,5 +151,29 @@
       "e편한세상 센텀 하이베뉴 분양가상한제"
     ],
     "checked_at": "2026-04-26T22:49:40+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000002 e편한세상 센텀 하이베뉴 입주자모집공고문-1.pdf",
+    "source_page": 5,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 5,
+    "source_pdf": "2026000002 e편한세상 센텀 하이베뉴 입주자모집공고문-1.pdf",
+    "evidence": [
+      "중도금(60%)",
+      "주택형 분양금액 계약금(5%) 잔금(35%)",
+      "주택형 분양금액 계약금(5%) 잔금(35%)",
+      "공급 층 해당 1회(15%) 2회(15%) 3회(10%) 4회(10%) 5회(10%)"
+    ]
   }
 }

@@ -233,13 +233,15 @@
     "balance_ratio": "30",
     "midterm_count": "7",
     "source_pdf": "2026000124 고덕신도시 아테라 A-63블록 공공분양주택 입주자모집공고문 (2).pdf",
-    "source_page": 5
+    "source_page": 5,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "7",
+    "midterm_fixed_amount": "",
     "source_page": 5,
     "source_pdf": "2026000124 고덕신도시 아테라 A-63블록 공공분양주택 입주자모집공고문 (2).pdf",
     "evidence": [

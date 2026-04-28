@@ -189,5 +189,29 @@
       "평택화양 서희스타힐스 센트럴파크 분양가상한제"
     ],
     "checked_at": "2026-04-26T22:47:42+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2025000657 평택화양 서희스타힐스 센트럴파크(조합원 취소분) 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2025000657 평택화양 서희스타힐스 센트럴파크(조합원 취소분) 입주자모집공고문.pdf",
+    "evidence": [
+      "분양가격 계약금(10%) 중도금(60%) 잔 금(30%)",
+      "분양가격 계약금(10%) 중도금(60%) 잔 금(30%)",
+      "분양가격 계약금(10%) 중도금(60%) 잔 금(30%)",
+      "약식 동별 공급 층 해당 1차 2차 1회 (10%) 2회 (10%) 3회 (10%) 4회 (10%) 5회 (10%) 6회 (10%)"
+    ]
   }
 }

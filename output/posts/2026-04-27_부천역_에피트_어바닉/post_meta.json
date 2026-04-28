@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000043 부천역 에피트 어바닉 입주자모집공고문.pdf",
     "evidence": [
@@ -112,5 +113,6 @@
       "잔금(35%)",
       "1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

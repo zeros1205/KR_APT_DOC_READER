@@ -391,6 +391,7 @@ def _fallback_fact_extraction(notice_text: str) -> dict:
             "contract_amount": "",
             "midterm_ratio": _extract_first_match(text, (r"중도금[^\d]*(\d+)\s*%", r"중도금\s*(\d+)\s*%")),
             "midterm_count": _extract_first_match(text, (r"중도금\s*납부\s*횟수[^\d]*(\d+)\s*회", r"중도금[^\n]*(\d+)\s*회\s*분납")),
+            "midterm_fixed_amount": _extract_first_match(text, (r"중도금\s*정액\s*[:：]\s*([0-9,]+\s*만원)",)),
             "balance_ratio": _extract_first_match(text, (r"잔금[^\d]*(\d+)\s*%", r"잔금\s*(\d+)\s*%")),
             "acquisition_tax_rate": "1~3%",
             "is_hot_zone": facts.get("is_hot_zone") or "N",
@@ -947,6 +948,7 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
     contract_ratio = str(facts.get("contract_ratio") or "공고문 확인 필요")
     midterm_ratio = str(facts.get("midterm_ratio") or "공고문 확인 필요")
     midterm_count = str(facts.get("midterm_count") or "")
+    midterm_fixed_amount = str(facts.get("midterm_fixed_amount") or "")
     balance_ratio = str(facts.get("balance_ratio") or "공고문 확인 필요")
     regulated_zone = facts.get("regulated_zone") or "공고문 확인 필요"
     readmission_limit = facts.get("readmission_limit") or "공고문 확인 필요"
@@ -998,9 +1000,17 @@ def _fallback_content_generation(facts: dict, location_data: dict) -> dict:
         {
             "question": "계약금·중도금·잔금 구조는 어떻게 보나요?",
             "answer": (
-                f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%{f'({midterm_count}회)' if midterm_count else ''}, 잔금 {balance_ratio}% 순서입니다. "
-                f"자금 마련 방식은 사람마다 다를 수 있어서, 실제 대출 가능 여부와 한도는 따로 확인해두는 편이 좋습니다. "
-                f"공고문에 비율만 적혀 있는 경우에는 납부 시점과 금융 조건을 같이 보면서 준비하는 쪽이 실수 없이 대응하기 좋습니다."
+                (
+                    f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_fixed_amount}, 잔금 {balance_ratio}% 순서입니다. "
+                    if midterm_fixed_amount
+                    else (
+                        f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 없이 잔금 {balance_ratio}%를 납부하는 흐름입니다. "
+                        if midterm_ratio == "0"
+                        else f"기본 구조만 보면 계약금 {contract_ratio}%, 중도금 {midterm_ratio}%{f'({midterm_count}회)' if midterm_count else ''}, 잔금 {balance_ratio}% 순서입니다. "
+                    )
+                )
+                + "자금 마련 방식은 사람마다 다를 수 있어서, 실제 대출 가능 여부와 한도는 따로 확인해두는 편이 좋습니다. "
+                + "공고문에 비율만 적혀 있는 경우에는 납부 시점과 금융 조건을 같이 보면서 준비하는 쪽이 실수 없이 대응하기 좋습니다."
             ),
         },
     ]

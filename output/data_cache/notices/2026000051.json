@@ -329,13 +329,15 @@
     "balance_ratio": "30",
     "midterm_count": "6",
     "source_pdf": "2026000051 아산탕정자이 메트로시티(A3BL) 입주자모집공고문.pdf",
-    "source_page": 6
+    "source_page": 6,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 6,
     "source_pdf": "2026000051 아산탕정자이 메트로시티(A3BL) 입주자모집공고문.pdf",
     "evidence": [

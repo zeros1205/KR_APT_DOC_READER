@@ -265,5 +265,28 @@
       "금정산 하늘채 루미엘 분양가상한제 미적용"
     ],
     "checked_at": "2026-04-26T23:18:38+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000020 금정산 하늘채 루미엘 입주자모집공고문.pdf",
+    "source_page": 8,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 8,
+    "source_pdf": "2026000020 금정산 하늘채 루미엘 입주자모집공고문.pdf",
+    "evidence": [
+      "층별 계약금(5%) 중도금(60%) 잔금",
+      "층별 계약금(5%) 중도금(60%) 잔금",
+      "약식 동별 층 공급 1회 2회 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) (35%)"
+    ]
   }
 }

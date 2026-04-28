@@ -265,5 +265,28 @@
       "제주도 서귀포시 분양가상한제 적용 여부"
     ],
     "checked_at": "2026-04-26T22:23:06+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "30",
+    "balance_ratio": "50",
+    "midterm_count": "",
+    "source_pdf": "2025000639 서귀포시 서홍동 형남아파트6차 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "20",
+    "midterm_ratio": "30",
+    "balance_ratio": "50",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2025000639 서귀포시 서홍동 형남아파트6차 입주자모집공고문.pdf",
+    "evidence": [
+      "총 분양금액 계약금(20%) 중도금(30%) 잔금(50%)",
+      "총 분양금액 계약금(20%) 중도금(30%) 잔금(50%)",
+      "총 분양금액 계약금(20%) 중도금(30%) 잔금(50%)"
+    ]
   }
 }

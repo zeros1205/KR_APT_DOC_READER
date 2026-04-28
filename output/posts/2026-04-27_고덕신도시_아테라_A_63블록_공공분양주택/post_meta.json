@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "7",
+    "midterm_fixed_amount": "",
     "source_page": 5,
     "source_pdf": "2026000124 고덕신도시 아테라 A-63블록 공공분양주택 입주자모집공고문 (2).pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "계약금 중도금(60%) 잔금(30%)",
       "주택형 (약식 층별 공급금액 10% 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

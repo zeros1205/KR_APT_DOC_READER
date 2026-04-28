@@ -233,13 +233,15 @@
     "balance_ratio": "10",
     "midterm_count": "",
     "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
-    "source_page": 4
+    "source_page": 4,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "85",
     "balance_ratio": "10",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 4,
     "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
     "evidence": [

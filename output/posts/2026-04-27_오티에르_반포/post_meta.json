@@ -86,7 +86,7 @@
   "contract_ratio": "20",
   "contract_amount": "",
   "midterm_ratio": "20",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "60",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000058&pblancNo=2026000058",
@@ -104,6 +104,7 @@
     "midterm_ratio": "20",
     "balance_ratio": "60",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 10,
     "source_pdf": "2026000058 오티에르 반포.pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "주택형 공급 해당 분양가격 계약금(20%) 중도금(20%) 잔금(60%)",
       "주택형 공급 해당 분양가격 계약금(20%) 중도금(20%) 잔금(60%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

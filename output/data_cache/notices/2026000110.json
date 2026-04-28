@@ -197,13 +197,15 @@
     "balance_ratio": "30",
     "midterm_count": "",
     "source_pdf": "2026000110 엘리프 창원 입주자모집공고문 (1).pdf",
-    "source_page": 7
+    "source_page": 7,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000110 엘리프 창원 입주자모집공고문 (1).pdf",
     "evidence": [

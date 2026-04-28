@@ -226,5 +226,26 @@
       "파주금촌 금호어울림 분양가상한제"
     ],
     "checked_at": "2026-04-27T02:19:43+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "50",
+    "midterm_ratio": "1",
+    "balance_ratio": "49",
+    "midterm_count": "",
+    "source_pdf": "2026000143 파주금촌 금호어울림(조합원 취소분) 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "50",
+    "midterm_ratio": "1",
+    "balance_ratio": "49",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2026000143 파주금촌 금호어울림(조합원 취소분) 입주자모집공고문.pdf",
+    "evidence": [
+      "26 5 105동 14~18호 25,474,000 156,226,000 181,700,000 5,000,000 176,700,000"
+    ]
   }
 }

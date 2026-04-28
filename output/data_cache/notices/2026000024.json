@@ -170,5 +170,27 @@
       "힐스테이트 지석 조합원취소분 분양가상한제"
     ],
     "checked_at": "2026-04-26T23:21:21+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000024 힐스테이트 지석(조합원취소분) 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2026000024 힐스테이트 지석(조합원취소분) 입주자모집공고문.pdf",
+    "evidence": [
+      "분양가격 계약금(10%) 잔금(90%)",
+      "분양가격 계약금(10%) 잔금(90%)"
+    ]
   }
 }

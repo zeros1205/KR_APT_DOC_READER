@@ -86,7 +86,7 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "1",
+  "midterm_count": "",
   "balance_ratio": "35",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000089&pblancNo=2026000089",
@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 9,
     "source_pdf": "2026000089 강릉 우미 린 더 프리미어 입주자모집공고문.pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "계약금(5%) 중도금(60%) 잔금",
       "공급 층 해당 1회차 2회차 1회차 2회차 3회차 4회차 5회차 6회차 (35%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

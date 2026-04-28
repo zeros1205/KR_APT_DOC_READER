@@ -83,11 +83,11 @@
     "2순위는 1순위에 해당하지 않거나 1순위 접수 후 남은 물량이 있을 때 공고문 일정에 따라 접수합니다.",
     "해당지역과 기타지역 접수일이 같더라도 거주지역 구분은 공고문 기준으로 확인해야 합니다."
   ],
-  "contract_ratio": "10",
+  "contract_ratio": "5",
   "contract_amount": "",
-  "midterm_ratio": "60",
-  "midterm_count": "6",
-  "balance_ratio": "30",
+  "midterm_ratio": "0",
+  "midterm_count": "",
+  "balance_ratio": "95",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000035&pblancNo=2026000035",
   "generated_at": "2026-04-27T02:20:25.270944",
@@ -98,5 +98,19 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 연수월드메르디앙어반포레, 동춘동청약, 연수구분양, 인천아파트분양, 인천청약일정, 특별공급, 1순위청약, 비규제지역, 전매제한1년, 신혼부부특공",
     "step6": "카테고리 설정 후 발행"
-  }
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "0",
+    "balance_ratio": "95",
+    "midterm_count": "",
+    "midterm_fixed_amount": "100만원",
+    "source_page": 8,
+    "source_pdf": "2026000035 연수 월드메르디앙 어반포레 입주자모집공고문.pdf",
+    "evidence": [
+      "약식표기 해당 공 급 금 액 계약금(5%) 중도금 잔금",
+      "2층 2 175,200,000 262,800,000 438,000,000 21,900,000 1,000,000 415,100,000"
+    ]
+  },
+  "midterm_fixed_amount": "100만원"
 }

@@ -245,5 +245,28 @@
       "울산신복역 비스타 메트로 전매제한"
     ],
     "checked_at": "2026-04-27T02:05:28+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "source_pdf": "2026000102 울산신복역 비스타 메트로 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2026000102 울산신복역 비스타 메트로 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(5%) 중도금(60%) 잔금(35%)",
+      "계약금(5%) 중도금(60%) 잔금(35%)",
+      "계약금(5%) 중도금(60%) 잔금(35%)"
+    ]
   }
 }

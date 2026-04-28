@@ -170,5 +170,29 @@
       "기장 이진캐스빌 포레 분양가상한제"
     ],
     "checked_at": "2026-04-27T02:20:40+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "source_pdf": "2026000146 기장 이진캐스빌 포레 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2026000146 기장 이진캐스빌 포레 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(5%) 중도금(60%)",
+      "계약금(5%) 중도금(60%)",
+      "공급금액 잔금(35%)",
+      "약식 해당 1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

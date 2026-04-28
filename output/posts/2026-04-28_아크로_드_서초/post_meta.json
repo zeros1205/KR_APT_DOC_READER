@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "20",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 8,
     "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "약식 공급 층 1회차(10%) 2회차(10%) 3회차(10%) 4회차(10%) 5회차(10%) 6회차(10%)",
       "주택형 동호 세대 (20%) (20%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

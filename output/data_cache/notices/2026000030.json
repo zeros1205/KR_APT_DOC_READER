@@ -189,5 +189,27 @@
       "힐스테이트 오산 더퍼스트 전매제한"
     ],
     "checked_at": "2026-04-26T23:27:46+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000030 힐스테이트 오산 더퍼스트(조합원 자격상실 및 제명세대)(2회차) 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000030 힐스테이트 오산 더퍼스트(조합원 자격상실 및 제명세대)(2회차) 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(10%) 잔금(90%)",
+      "계약금(10%) 잔금(90%)"
+    ]
   }
 }

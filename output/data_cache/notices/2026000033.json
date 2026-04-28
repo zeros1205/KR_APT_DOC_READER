@@ -254,13 +254,15 @@
     "balance_ratio": "35",
     "midterm_count": "",
     "source_pdf": "2026000033 해링턴플레이스 오룡역 입주자모집공고문.pdf",
-    "source_page": 7
+    "source_page": 7,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000033 해링턴플레이스 오룡역 입주자모집공고문.pdf",
     "evidence": [

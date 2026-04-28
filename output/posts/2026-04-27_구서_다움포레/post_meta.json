@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "0",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "90",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000040&pblancNo=2026000040",
@@ -104,11 +104,13 @@
     "midterm_ratio": "0",
     "balance_ratio": "90",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000040 구서 다움포레 입주자모집공고문.pdf",
     "evidence": [
       "계약금 (10%)",
       "분양가격 잔금(90%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

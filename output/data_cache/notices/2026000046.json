@@ -207,5 +207,26 @@
       "대전 서구 부동산 규제지역 해제"
     ],
     "checked_at": "2026-04-26T23:45:54+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "source_pdf": "2026000046 변동 동건아파트 우선분양전환 후 잔여세대 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000046 변동 동건아파트 우선분양전환 후 잔여세대 입주자모집공고문.pdf",
+    "evidence": [
+      "분양금액 계약금(10%) 잔금"
+    ]
   }
 }

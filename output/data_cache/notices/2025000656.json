@@ -303,5 +303,29 @@
       "사우역 지엔하임 전매제한"
     ],
     "checked_at": "2026-04-26T22:46:43+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2025000656 사우역 지엔하임 입주자모집공고문.pdf",
+    "source_page": 7,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 7,
+    "source_pdf": "2025000656 사우역 지엔하임 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(10%) 중도금(60%)",
+      "계약금(10%) 중도금(60%)",
+      "공급금액 잔금(30%)",
+      "약식 구분 해당 1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

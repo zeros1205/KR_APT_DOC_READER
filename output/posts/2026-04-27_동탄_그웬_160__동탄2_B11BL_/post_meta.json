@@ -62,7 +62,7 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "35",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000113&pblancNo=2026000113",
@@ -80,6 +80,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000113 동탄 그웬 160 (동탄2 B11BL) 입주자모집공고문 (1).pdf",
     "evidence": [
@@ -87,5 +88,6 @@
       "분양가격 계약금(5%) 1회 2회 3회 4회 5회 6회",
       "약식 층 해당 (35%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

@@ -208,5 +208,27 @@
       "연수 월드메르디앙 어반포레 전매제한"
     ],
     "checked_at": "2026-04-26T23:30:42+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "0",
+    "balance_ratio": "95",
+    "midterm_count": "",
+    "source_pdf": "2026000035 연수 월드메르디앙 어반포레 입주자모집공고문.pdf",
+    "source_page": 8,
+    "midterm_fixed_amount": "100만원"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "0",
+    "balance_ratio": "95",
+    "midterm_count": "",
+    "midterm_fixed_amount": "100만원",
+    "source_page": 8,
+    "source_pdf": "2026000035 연수 월드메르디앙 어반포레 입주자모집공고문.pdf",
+    "evidence": [
+      "약식표기 해당 공 급 금 액 계약금(5%) 중도금 잔금",
+      "2층 2 175,200,000 262,800,000 438,000,000 21,900,000 1,000,000 415,100,000"
+    ]
   }
 }

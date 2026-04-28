@@ -253,13 +253,15 @@
     "balance_ratio": "35",
     "midterm_count": "",
     "source_pdf": "2026000152 e편한세상 부천 어반스퀘어 입주자모집공고문.pdf",
-    "source_page": 5
+    "source_page": 5,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 5,
     "source_pdf": "2026000152 e편한세상 부천 어반스퀘어 입주자모집공고문.pdf",
     "evidence": [

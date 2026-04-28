@@ -115,6 +115,7 @@ class PostData:
     contract_amount: str = ""
     midterm_ratio: str = "0"
     midterm_count: str = ""
+    midterm_fixed_amount: str = ""
     balance_ratio: str = "0"
 
     # 세금
@@ -398,6 +399,21 @@ def build_post_data(
     midterm_ratio = _stringify(facts.get("midterm_ratio") or "0")
     midterm_count = _stringify(facts.get("midterm_count") or "")
     balance_ratio = _stringify(facts.get("balance_ratio") or "0")
+    midterm_fixed_amount = _stringify(facts.get("midterm_fixed_amount") or "")
+    loan_info = _display_value(
+        facts.get("loan_info"),
+        default="중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
+    )
+    if midterm_fixed_amount:
+        loan_info = (
+            f"중도금은 비율이 아니라 {midterm_fixed_amount} 정액으로 표시되어 있어요. "
+            "계약금 이후 남은 금액은 잔금으로 납부하는 구조이므로, 실제 납부 시점과 금액은 공고문 기준으로 확인해보세요."
+        )
+    elif midterm_ratio == "0":
+        loan_info = (
+            "이 공고는 중도금 납부 단계가 별도로 없고, 계약금 이후 잔금만 납부하는 구조로 확인됩니다. "
+            "잔금 납부 시점과 실제 납부 금액은 공고문 기준으로 확인해보세요."
+        )
     supply_units = sum(max(0, _safe_int(ut.general_units)) + max(0, _safe_int(ut.special_units)) for ut in unit_types)
     notice_date = _display_date(facts.get("notice_date"))
     special_supply_date = _display_date(facts.get("special_supply_date"))
@@ -429,15 +445,13 @@ def build_post_data(
         rank2_date=rank2_date,
         winner_date=_display_date(facts.get("winner_date")),
         move_in_date=_display_value(facts.get("move_in_date"), default="미정"),
-        loan_info=_display_value(
-            facts.get("loan_info"),
-            default="중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-        ),
+        loan_info=loan_info,
         resale_restriction=_display_value(facts.get("resale_restriction"), default="미기재"),
         contract_ratio=contract_ratio,
         contract_amount=_normalize_contract_amount(_stringify(facts.get("contract_amount")), contract_ratio, unit_types),
         midterm_ratio=midterm_ratio,
         midterm_count=midterm_count,
+        midterm_fixed_amount=midterm_fixed_amount,
         balance_ratio=balance_ratio,
         acquisition_tax_rate=_display_value(facts.get("acquisition_tax_rate"), default="1~3%"),
         acquisition_tax_amount="-",
@@ -924,6 +938,21 @@ class BlogHTMLRenderer:
             _render_seo_tags(data.seo_tags, t),
         )
 
+        if data.midterm_fixed_amount:
+            html = re.sub(
+                r"중도금\s*—\s*\d+%\s*\([^<]*분납\)",
+                f"중도금 — {data.midterm_fixed_amount}",
+                html,
+            )
+            html = html.replace("■ 중도금 0%", f"■ 중도금 {data.midterm_fixed_amount}")
+        elif str(data.midterm_ratio).strip() == "0":
+            html = re.sub(
+                r"중도금\s*—\s*0%\s*\([^<]*분납\)",
+                "중도금 — 없음",
+                html,
+            )
+            html = html.replace("■ 중도금 0%", "■ 중도금 없음")
+
         # 미처리 플레이스홀더 확인
         remaining = set(re.findall(r"\{\{[A-Z_0-9]+\}\}", html))
         # 테마 토큰 미처리는 무시 (이미 처리됨), 데이터 토큰만 경고
@@ -1021,6 +1050,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "contract_amount":       data.contract_amount,
         "midterm_ratio":         data.midterm_ratio,
         "midterm_count":         data.midterm_count,
+        "midterm_fixed_amount":  data.midterm_fixed_amount,
         "balance_ratio":         data.balance_ratio,
         "loan_info":             data.loan_info,
         "notice_url":           data.notice_url,

@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 8,
     "source_pdf": "2026000071 르네오션 고성 퍼스트뷰 입주자모집공고문.pdf",
     "evidence": [
@@ -111,5 +112,6 @@
       "공급금액 계약금(5%) 중도금(60%)",
       "약식 동 (35%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

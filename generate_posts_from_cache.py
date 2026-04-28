@@ -23,14 +23,14 @@ from dotenv import load_dotenv
 load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import NoticeDocument
-from agents.pdf_finance import extract_finance_from_pdf, find_local_pdf
+from agents.pdf_finance import extract_finance_from_pdf, find_local_pdf_in_dirs
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
 
 
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
-PDF_DIR = BASE_DIR / "output" / "pdfs"
+PDF_DIRS = (BASE_DIR.parent / "PDF", BASE_DIR / "output" / "pdfs")
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
 
@@ -71,7 +71,7 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     manual_regulation = payload.get("manual_regulation") or {}
     manual_finance = dict(payload.get("manual_finance") or {})
     notice_id = str(payload.get("notice_id") or data.get("notice_id") or "")
-    local_pdf = find_local_pdf(PDF_DIR, notice_id)
+    local_pdf = find_local_pdf_in_dirs(PDF_DIRS, notice_id)
     if local_pdf:
         extracted_finance = extract_finance_from_pdf(local_pdf)
         if extracted_finance.has_core_ratios:
@@ -81,6 +81,7 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
                     "midterm_ratio": extracted_finance.midterm_ratio,
                     "balance_ratio": extracted_finance.balance_ratio,
                     "midterm_count": extracted_finance.midterm_count,
+                    "midterm_fixed_amount": extracted_finance.midterm_fixed_amount,
                     "source_pdf": extracted_finance.source_pdf,
                     "source_page": extracted_finance.source_page,
                 }
@@ -128,6 +129,8 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
         ]
         if manual_finance.get("midterm_count"):
             finance_lines.append(f"중도금 납부 횟수: {manual_finance.get('midterm_count')}회")
+        if manual_finance.get("midterm_fixed_amount"):
+            finance_lines.append(f"중도금 정액: {manual_finance.get('midterm_fixed_amount')}")
         if manual_finance.get("loan_info"):
             finance_lines.append(f"중도금 대출: {manual_finance.get('loan_info')}")
         if manual_finance.get("source_pdf"):

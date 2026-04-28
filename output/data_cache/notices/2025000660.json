@@ -475,5 +475,29 @@
       "드파인 연희 전매제한"
     ],
     "checked_at": "2026-04-26T22:48:40+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2025000660 드파인 연희 입주자모집공고문.pdf",
+    "source_page": 8,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 8,
+    "source_pdf": "2025000660 드파인 연희 입주자모집공고문.pdf",
+    "evidence": [
+      "계약금(10%) 중도금(60%) 잔금(30%)",
+      "계약금(10%) 중도금(60%) 잔금(30%)",
+      "계약금(10%) 중도금(60%) 잔금(30%)",
+      "동/호 구분 층구분 1차 2차 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
+    ]
   }
 }

@@ -44,9 +44,9 @@
   ],
   "contract_ratio": "10",
   "contract_amount": "",
-  "midterm_ratio": "60",
-  "midterm_count": "6",
-  "balance_ratio": "30",
+  "midterm_ratio": "0",
+  "midterm_count": "",
+  "balance_ratio": "90",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000046&pblancNo=2026000046",
   "generated_at": "2026-04-27T02:28:47.635674",
@@ -57,5 +57,18 @@
     "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
     "step5": "태그 입력: 변동동건아파트, 변동동건아파트우선분양전환후잔여세대, 대전서구청약, 변동아파트분양, 대전아파트청약, 우선분양전환, 잔여세대청약, 대전분양가, 청약일정, 비규제지역",
     "step6": "카테고리 설정 후 발행"
-  }
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000046 변동 동건아파트 우선분양전환 후 잔여세대 입주자모집공고문.pdf",
+    "evidence": [
+      "분양금액 계약금(10%) 잔금"
+    ]
+  },
+  "midterm_fixed_amount": ""
 }

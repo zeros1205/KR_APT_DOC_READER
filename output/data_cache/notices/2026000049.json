@@ -216,13 +216,15 @@
     "balance_ratio": "30",
     "midterm_count": "",
     "source_pdf": "2026000049 옥정중앙역 대방 디에트르(중상1, 복합1BL) 입주자모집공고문.pdf",
-    "source_page": 8
+    "source_page": 8,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 8,
     "source_pdf": "2026000049 옥정중앙역 대방 디에트르(중상1, 복합1BL) 입주자모집공고문.pdf",
     "evidence": [

@@ -265,5 +265,29 @@
       "천안 동문 디 이스트 파크시티 전매제한"
     ],
     "checked_at": "2026-04-27T02:02:37+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "65",
+    "balance_ratio": "5",
+    "midterm_count": "6",
+    "source_pdf": "2026000096 천안 동문 디 이스트 파크시티 입주자모집공고문.pdf",
+    "source_page": 6,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "65",
+    "balance_ratio": "5",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 6,
+    "source_pdf": "2026000096 천안 동문 디 이스트 파크시티 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(5%) 중도금(65%) 잔금(30%)",
+      "공급금액 계약금(5%) 중도금(65%) 잔금(30%)",
+      "공급금액 계약금(5%) 중도금(65%) 잔금(30%)",
+      "층별 계약후 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) 7차(5%)"
+    ]
   }
 }

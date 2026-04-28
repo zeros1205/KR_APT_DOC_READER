@@ -196,13 +196,15 @@
     "balance_ratio": "30",
     "midterm_count": "6",
     "source_pdf": "2026000105 도안자이 센텀리체 2단지 입주자모집공고문 (1).pdf",
-    "source_page": 6
+    "source_page": 6,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 6,
     "source_pdf": "2026000105 도안자이 센텀리체 2단지 입주자모집공고문 (1).pdf",
     "evidence": [

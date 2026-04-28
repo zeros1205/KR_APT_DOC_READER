@@ -198,13 +198,15 @@
     "balance_ratio": "20",
     "midterm_count": "6",
     "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
-    "source_page": 8
+    "source_page": 8,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "20",
     "midterm_ratio": "60",
     "balance_ratio": "20",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 8,
     "source_pdf": "2025000497 아크로 드 서초 입주자모집공고문.pdf",
     "evidence": [

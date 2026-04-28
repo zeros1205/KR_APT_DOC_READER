@@ -246,5 +246,29 @@
       "안양역 센트럴 아이파크 수자인 비규제지역"
     ],
     "checked_at": "2026-04-26T22:28:20+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "source_pdf": "2025000652 안양역 센트럴 아이파크 수자인 입주자모집공고문.pdf",
+    "source_page": 9,
+    "midterm_fixed_amount": ""
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "midterm_count": "6",
+    "midterm_fixed_amount": "",
+    "source_page": 9,
+    "source_pdf": "2025000652 안양역 센트럴 아이파크 수자인 입주자모집공고문.pdf",
+    "evidence": [
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
+      "동별 공급 1차 2차 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
+    ]
   }
 }

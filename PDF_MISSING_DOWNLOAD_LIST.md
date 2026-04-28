@@ -1,10 +1,12 @@
-# PDF 다운로드 대상 공고 목록
+# PDF ??? ?? URL ??
 
-- 생성 기준: origin/main `output/data_cache/notices`
-- 생성 시각: 2026-04-28 19:54:53
-- 총 공고 수: 204건
+- ?? ???: `origin/main` `output/data_cache/notices`
+- ?? ??: 2026-04-28 07:06:42
+- ?? ?? ?: 204?
+- ?? PDF ?? ?? ?: 59?
+- PDF ??? ?? ?: 145?
 
-| 공고번호 | 모집공고일 | 아파트명 | 청약홈 상세페이지 URL |
+| ???? | ????? | ???? | ??? ????? URL |
 |---|---:|---|---|
 | 2026000156 | 2026-04-27 | 더 리치먼드 미아 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000156&pblancNo=2026000156 |
 | 2026000146 | 2026-04-24 | 기장 이진캐스빌 포레 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000146&pblancNo=2026000146 |
@@ -15,68 +17,9 @@
 | 2026000096 | 2026-04-24 | 천안 동문 디 이스트 파크시티 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000096&pblancNo=2026000096 |
 | 2026000091 | 2026-04-24 | 소제지구 A4BL 중흥S-클래스 우미린 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000091&pblancNo=2026000091 |
 | 2026000090 | 2026-04-24 | 소제지구 A3BL 중흥S-클래스 우미린 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000090&pblancNo=2026000090 |
-| 2026000152 | 2026-04-23 | e편한세상 부천 어반스퀘어 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000152&pblancNo=2026000152 |
 | 2026000150 | 2026-04-23 | 엘리프 성성호수공원 2BL | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000150&pblancNo=2026000150 |
 | 2026000149 | 2026-04-23 | 엘리프 성성호수공원 1BL | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000149&pblancNo=2026000149 |
-| 2026000130 | 2026-04-20 | PH159 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000130&pblancNo=2026000130 |
-| 2026000088 | 2026-04-20 | 용인 양지 서희스타힐스 하이뷰 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000088&pblancNo=2026000088 |
-| 2026000124 | 2026-04-17 | 고덕신도시 아테라 A-63블록 공공분양주택 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000124&pblancNo=2026000124 |
-| 2026000115 | 2026-04-17 | 두산위브더제니스 구미(조합원취소분) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000115&pblancNo=2026000115 |
-| 2026000114 | 2026-04-17 | 공덕역자이르네 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000114&pblancNo=2026000114 |
-| 2026000107 | 2026-04-17 | 경기광주역 롯데캐슬 시그니처 1단지 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000107&pblancNo=2026000107 |
-| 2026000089 | 2026-04-17 | 강릉 우미 린 더 프리미어 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000089&pblancNo=2026000089 |
-| 2026000113 | 2026-04-16 | 동탄 그웬 160 (동탄2 B11BL) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000113&pblancNo=2026000113 |
 | 2026000135 | 2026-04-15 | 인천가정2지구 B2블록 공공분양주택(후속사업) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000135&pblancNo=2026000135 |
-| 2026000121 | 2026-04-10 | 문수로 라티에르 673 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000121&pblancNo=2026000121 |
-| 2026000112 | 2026-04-10 | 용인 고림 동문 디 이스트 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000112&pblancNo=2026000112 |
-| 2026000110 | 2026-04-10 | 엘리프 창원 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000110&pblancNo=2026000110 |
-| 2026000109 | 2026-04-10 | 아산경남아너스빌 랜드마크49 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000109&pblancNo=2026000109 |
-| 2026000105 | 2026-04-10 | 도안자이 센텀리체 2단지 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000105&pblancNo=2026000105 |
-| 2026000104 | 2026-04-10 | 도안자이 센텀리체 1단지 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000104&pblancNo=2026000104 |
-| 2026000087 | 2026-04-10 | 청주 푸르지오 씨엘리체 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000087&pblancNo=2026000087 |
-| 2026000085 | 2026-04-10 | 힐스테이트 평거 센트럴 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000085&pblancNo=2026000085 |
-| 2026000082 | 2026-04-10 | 골드클래스 시그니처 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000082&pblancNo=2026000082 |
-| 2026000093 | 2026-04-09 | 더샵 안동더퍼스트 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000093&pblancNo=2026000093 |
-| 2026000049 | 2026-04-09 | 옥정중앙역 대방 디에트르(중상1, 복합1BL) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000049&pblancNo=2026000049 |
-| 2026000069 | 2026-04-06 | 야목역 서희스타힐스 그랜드힐 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000069&pblancNo=2026000069 |
-| 2026000101 | 2026-04-03 | 온천장 하늘채 엘리시움 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000101&pblancNo=2026000101 |
-| 2026000094 | 2026-04-03 | 라클라체자이드파인 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000094&pblancNo=2026000094 |
-| 2026000086 | 2026-04-03 | 업성 푸르지오 레이크시티 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000086&pblancNo=2026000086 |
-| 2026000077 | 2026-04-03 | 북전주 광신프로그레스 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000077&pblancNo=2026000077 |
-| 2026000073 | 2026-04-03 | 풍무역세권 수자인 그라센트 2차 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000073&pblancNo=2026000073 |
-| 2026000071 | 2026-04-03 | 르네오션 고성 퍼스트뷰 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000071&pblancNo=2026000071 |
-| 2026000058 | 2026-03-31 | 오티에르 반포 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000058&pblancNo=2026000058 |
-| 2026000048 | 2026-03-30 | 이촌 르엘 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000048&pblancNo=2026000048 |
-| 2026000040 | 2026-03-30 | 구서 다움포레 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000040&pblancNo=2026000040 |
-| 2026000078 | 2026-03-27 | 천안 동일하이빌 파크레인 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000078&pblancNo=2026000078 |
-| 2026000074 | 2026-03-27 | 엄궁역 트라비스 하늘채 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000074&pblancNo=2026000074 |
-| 2026000070 | 2026-03-27 | 힐스테이트 안양펠루스 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000070&pblancNo=2026000070 |
-| 2026000065 | 2026-03-27 | 검단호수공원역 파라곤(AA36BL) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000065&pblancNo=2026000065 |
-| 2026000062 | 2026-03-27 | 중앙하이츠 갈산역 센트럴 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000062&pblancNo=2026000062 |
-| 2026000047 | 2026-03-27 | 범어역 파크드림 디아르 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000047&pblancNo=2026000047 |
-| 2026000012 | 2026-03-27 | 경성대부경대역 비스타동원 더 프리미엄 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000012&pblancNo=2026000012 |
-| 2026000055 | 2026-03-26 | 의정부역 센트럴 아이파크 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000055&pblancNo=2026000055 |
-| 2026000081 | 2026-03-24 | 선운지구다사로움 공가세대 일반공급 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000081&pblancNo=2026000081 |
-| 2026000075 | 2026-03-20 | 창원자이 더 스카이 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000075&pblancNo=2026000075 |
-| 2026000066 | 2026-03-20 | 한화포레나 부산당리 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000066&pblancNo=2026000066 |
-| 2026000064 | 2026-03-20 | 더샵 신길센트럴시티 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000064&pblancNo=2026000064 |
-| 2026000051 | 2026-03-20 | 아산탕정자이 메트로시티(A3BL) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000051&pblancNo=2026000051 |
-| 2026000045 | 2026-03-20 | 대전 롯데캐슬 더퍼스트(조합원 취소분) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000045&pblancNo=2026000045 |
-| 2025000497 | 2026-03-20 | 아크로 드 서초 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000497&pblancNo=2025000497 |
-| 2026000063 | 2026-03-18 | 오션포레베네스트하우스(미단시티 공동8BL) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000063&pblancNo=2026000063 |
-| 2026000057 | 2026-03-16 | 에코델타시티 엘가 로제비앙 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000057&pblancNo=2026000057 |
-| 2026000052 | 2026-03-13 | 시흥거모B1 호반써밋 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000052&pblancNo=2026000052 |
-| 2026000044 | 2026-03-13 | 용인 플랫폼시티 라온프라이빗 아르디에 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000044&pblancNo=2026000044 |
-| 2026000033 | 2026-03-13 | 해링턴플레이스 오룡역 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000033&pblancNo=2026000033 |
-| 2025000574 | 2026-03-13 | 무등산 더힐(조합원 취소분) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000574&pblancNo=2025000574 |
-| 2026000023 | 2026-03-12 | 더샵 프리엘라 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000023&pblancNo=2026000023 |
-| 2026000038 | 2026-03-09 | 상주자이르네 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000038&pblancNo=2026000038 |
-| 2026000043 | 2026-03-06 | 부천역 에피트 어바닉 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000043&pblancNo=2026000043 |
-| 2026000039 | 2026-03-06 | 래미안 엘라비네 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000039&pblancNo=2026000039 |
-| 2026000036 | 2026-03-06 | e편한세상 여수 글렌츠 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000036&pblancNo=2026000036 |
-| 2026000029 | 2026-03-06 | 썬밸리 오드카운티 가평설악 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000029&pblancNo=2026000029 |
-| 2026000046 | 2026-03-05 | 변동 동건아파트 우선분양전환 후 잔여세대 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000046&pblancNo=2026000046 |
-| 2026000035 | 2026-03-03 | 연수 월드메르디앙 어반포레 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000035&pblancNo=2026000035 |
 | 2026000041 | 2026-02-27 | 마곡지구 17단지 토지임대부(본청약) | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000041&pblancNo=2026000041 |
 | 2025000510 | 2026-02-27 | 두산위브 더센트럴 수원 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000510&pblancNo=2025000510 |
 | 2026000008 | 2026-02-26 | 경산 상방공원 호반써밋 1단지 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000008&pblancNo=2026000008 |

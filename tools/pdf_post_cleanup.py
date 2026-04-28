@@ -18,6 +18,7 @@ from pipeline.index_renderer import build_front_index
 
 POSTS_DIR = ROOT / "output" / "posts"
 PDF_DIR = ROOT / "output" / "pdfs"
+EXTERNAL_PDF_DIR = ROOT.parent / "PDF"
 CACHE_DIR = ROOT / "output" / "data_cache" / "notices"
 PROCESSED_FILE = ROOT / "output" / "processed_notices.json"
 DOWNLOAD_LIST = ROOT / "PDF_DOWNLOAD_LIST.md"
@@ -57,9 +58,29 @@ def patch_finance_html(html: str, finance: dict[str, object]) -> str:
     midterm = str(finance["midterm_ratio"])
     balance = str(finance["balance_ratio"])
     count = str(finance.get("midterm_count") or "").strip()
-    midterm_title = f"{MIDTERM} — {midterm}% ({count}회 분납)" if count else f"{MIDTERM} — {midterm}%"
-    qa_ratio = f"{CONTRACT} {contract}%, {MIDTERM} {midterm}%"
-    if count:
+    fixed_amount = str(finance.get("midterm_fixed_amount") or "").strip()
+    if fixed_amount:
+        midterm_title = f"{MIDTERM} — {fixed_amount}"
+        midterm_desc = (
+            f"중도금은 비율이 아니라 {fixed_amount} 정액으로 표시되어 있어요. "
+            "계약금 이후 남은 금액은 잔금으로 납부하는 구조이므로, 실제 납부 시점과 금액은 공고문 기준으로 확인해보세요."
+        )
+    elif midterm == "0":
+        midterm_title = f"{MIDTERM} — 없음"
+        midterm_desc = (
+            "이 공고는 중도금 납부 단계가 별도로 없고, 계약금 이후 잔금만 납부하는 구조로 확인됩니다. "
+            "잔금 납부 시점과 실제 납부 금액은 공고문 기준으로 확인해보세요."
+        )
+    else:
+        midterm_title = f"{MIDTERM} — {midterm}% ({count}회 분납)" if count else f"{MIDTERM} — {midterm}%"
+        midterm_desc = "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요."
+    if fixed_amount:
+        qa_ratio = f"{CONTRACT} {contract}%, {MIDTERM} {fixed_amount}"
+    elif midterm == "0":
+        qa_ratio = f"{CONTRACT} {contract}%, {MIDTERM} 없음"
+    else:
+        qa_ratio = f"{CONTRACT} {contract}%, {MIDTERM} {midterm}%"
+    if count and not fixed_amount and midterm != "0":
         qa_ratio += f"({count}회)"
     qa_ratio += f", {BALANCE} {balance}%"
 
@@ -92,10 +113,14 @@ def patch_finance_html(html: str, finance: dict[str, object]) -> str:
     for label, ratio in ((CONTRACT, contract), (MIDTERM, midterm), (BALANCE, balance)):
         pattern, replacement = label_ratio(label, ratio)
         section = re.sub(pattern, replacement, section)
+    if fixed_amount:
+        section = re.sub(re.escape(MIDTERM) + r"\s*0%", f"{MIDTERM} {fixed_amount}", section)
+    elif midterm == "0":
+        section = re.sub(re.escape(MIDTERM) + r"\s*0%", f"{MIDTERM} 없음", section)
 
     section = re.sub(re.escape(CONTRACT) + r"\s*—\s*\d+%", f"{CONTRACT} — {contract}%", section)
     section = re.sub(
-        re.escape(MIDTERM) + r"\s*—\s*\d+%\s*(?:\(\d+회 분납\))?",
+        re.escape(MIDTERM) + r"\s*—\s*[^<\n]+",
         midterm_title,
         section,
     )
@@ -108,6 +133,12 @@ def patch_finance_html(html: str, finance: dict[str, object]) -> str:
     )
 
     html = prefix + section + suffix
+    html = re.sub(
+        r"(<!-- 2\. 중도금 -->[\s\S]*?<p style=\"font-size: 16px; color: var\(--c-mid, [^>]+>)[\s\S]*?(</p>)",
+        rf"\g<1>{midterm_desc}\g<2>",
+        html,
+        count=1,
+    )
     html = re.sub(
         re.escape(CONTRACT) + r"\s*\d+%,\s*" + re.escape(MIDTERM) + r"\s*\d+%\(\d+회\),\s*" + re.escape(BALANCE) + r"\s*\d+%",
         qa_ratio,
@@ -141,11 +172,13 @@ def git_blob(path: str) -> dict | None:
 
 
 def main() -> None:
-    pdf_by_notice = {
-        path.name.split(" ", 1)[0]: path
-        for path in PDF_DIR.glob("*.pdf")
-        if path.name[:10].isdigit()
-    }
+    pdf_by_notice = {}
+    for pdf_dir in (PDF_DIR, EXTERNAL_PDF_DIR):
+        if not pdf_dir.exists():
+            continue
+        for path in pdf_dir.glob("*.pdf"):
+            if path.name[:10].isdigit():
+                pdf_by_notice.setdefault(path.name.split(" ", 1)[0], path)
 
     finance_by_notice: dict[str, dict[str, object]] = {}
     failed_pdf: list[tuple[str, str, list[str]]] = []
@@ -169,6 +202,7 @@ def main() -> None:
                 "midterm_ratio": finance["midterm_ratio"],
                 "balance_ratio": finance["balance_ratio"],
                 "midterm_count": finance.get("midterm_count") or "",
+                "midterm_fixed_amount": finance.get("midterm_fixed_amount") or "",
                 "source_pdf": finance.get("source_pdf") or "",
                 "source_page": finance.get("source_page"),
             }
@@ -203,8 +237,8 @@ def main() -> None:
         meta["contract_ratio"] = str(finance["contract_ratio"])
         meta["midterm_ratio"] = str(finance["midterm_ratio"])
         meta["balance_ratio"] = str(finance["balance_ratio"])
-        if finance.get("midterm_count"):
-            meta["midterm_count"] = str(finance["midterm_count"])
+        meta["midterm_count"] = str(finance.get("midterm_count") or "")
+        meta["midterm_fixed_amount"] = str(finance.get("midterm_fixed_amount") or "")
         meta["pdf_extracted_finance"] = finance
         write_json(meta_path, meta)
 
@@ -274,7 +308,7 @@ def main() -> None:
     )
     report_lines.extend(["", "## 패치한 포스트"])
     report_lines.extend(
-        f"- {name} ({notice_id}): 계약금 {finance['contract_ratio']}%, 중도금 {finance['midterm_ratio']}%, 잔금 {finance['balance_ratio']}%"
+        f"- {name} ({notice_id}): 계약금 {finance['contract_ratio']}%, 중도금 {finance.get('midterm_fixed_amount') or str(finance['midterm_ratio']) + '%'}, 잔금 {finance['balance_ratio']}%"
         for name, notice_id, finance in patched_posts
     )
     REPORT.write_text("\n".join(report_lines) + "\n", encoding="utf-8")

@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "10",
     "midterm_count": "7",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000075 창원자이 더 스카이 입주자모집공고문.pdf",
     "evidence": [
@@ -112,5 +113,6 @@
       "공급금액 계약금(10%) 중도금 (60%) 잔금 (30%)",
       "약식표기 층 1차 (5%) 2차 (5%) 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

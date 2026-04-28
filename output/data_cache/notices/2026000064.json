@@ -442,13 +442,15 @@
     "balance_ratio": "30",
     "midterm_count": "",
     "source_pdf": "2026000064 더샵 신길센트럴시티 입주자모집공고문.pdf",
-    "source_page": 9
+    "source_page": 9,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "10",
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 9,
     "source_pdf": "2026000064 더샵 신길센트럴시티 입주자모집공고문.pdf",
     "evidence": [

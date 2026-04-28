@@ -45,7 +45,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000574&pblancNo=2025000574",
@@ -63,11 +63,13 @@
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2025000574 무등산 더힐(조합원 취소분) 입주자모집공고문.pdf",
     "evidence": [
       "공급금액 잔금(30%)",
       "동별 공급 (10%) (30%) (30%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

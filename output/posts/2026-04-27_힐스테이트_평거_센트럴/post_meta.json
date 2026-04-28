@@ -86,7 +86,7 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "85",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "10",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000085&pblancNo=2026000085",
@@ -104,11 +104,13 @@
     "midterm_ratio": "85",
     "balance_ratio": "10",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 4,
     "source_pdf": "2026000085 힐스테이트 평거 센트럴 입주자모집공고문.pdf",
     "evidence": [
       "■ 분양권 전매는 계약금(총 공급금액의 5%) 완납 후 가능하오니, 이점 유의하시기 바랍니다.",
       "체결한 약정에 대하여 권리의무를 포괄적으로 승계합니다. 단, 공급대금의 연체가 있는 경우 또는 잔금 납부금액이 총 분양가의 10%미만일 경우에는 분양권"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }

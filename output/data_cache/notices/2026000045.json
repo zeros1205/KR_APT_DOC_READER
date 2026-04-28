@@ -272,13 +272,15 @@
     "balance_ratio": "35",
     "midterm_count": "6",
     "source_pdf": "2026000045 대전 롯데캐슬 더퍼스트(조합원 취소분) 입주자모집공고문.pdf",
-    "source_page": 7
+    "source_page": 7,
+    "midterm_fixed_amount": ""
   },
   "pdf_extracted_finance": {
     "contract_ratio": "5",
     "midterm_ratio": "60",
     "balance_ratio": "35",
     "midterm_count": "6",
+    "midterm_fixed_amount": "",
     "source_page": 7,
     "source_pdf": "2026000045 대전 롯데캐슬 더퍼스트(조합원 취소분) 입주자모집공고문.pdf",
     "evidence": [

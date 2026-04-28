@@ -86,7 +86,7 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "",
   "balance_ratio": "30",
   "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000062&pblancNo=2026000062",
@@ -104,6 +104,7 @@
     "midterm_ratio": "60",
     "balance_ratio": "30",
     "midterm_count": "",
+    "midterm_fixed_amount": "",
     "source_page": 9,
     "source_pdf": "2026000062 중앙하이츠 갈산역 센트럴 입주자모집공고문.pdf",
     "evidence": [
@@ -112,5 +113,6 @@
       "총 분 양 금 액 계약금(10%) 잔금(30%)",
       "타입 1차(40%) 2차(20%)"
     ]
-  }
+  },
+  "midterm_fixed_amount": ""
 }
