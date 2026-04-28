@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9968A타입 | 전용 110.4742㎡ | 일반 56세대 | 특별 68세대 | 분양가 56990만원\n084.9578B타입 | 전용 111.3339㎡ | 일반 5세대 | 특별 10세대 | 분양가 55200만원\n084.9807C타입 | 전용 110.7129㎡ | 일반 13세대 | 특별 12세대 | 분양가 55990만원\n084.7759D타입 | 전용 110.2161㎡ | 일반 36세대 | 특별 44세대 | 분양가 56290만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:42.557230"
+    "collected_at": "2026-04-28T20:28:42.557230",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 우경주택건설",
@@ -186,5 +191,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "송천 아르티엠 더 숲 재당첨제한 | 송천 아르티엠 더 숲 전매제한",
+    "evidence_queries": [
+      "송천 아르티엠 더 숲 재당첨제한",
+      "송천 아르티엠 더 숲 전매제한"
+    ],
+    "checked_at": "2026-04-28T21:12:05+09:00"
+  }
 }

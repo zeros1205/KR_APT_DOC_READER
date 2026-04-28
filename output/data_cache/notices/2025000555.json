@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9941A타입 | 전용 85.8022㎡ | 일반 91세대 | 특별 170세대 | 분양가 55830만원\n059.9976B타입 | 전용 85.5000㎡ | 일반 21세대 | 특별 39세대 | 분양가 55720만원\n084.9939 타입 | 전용 112.2346㎡ | 일반 264세대 | 특별 486세대 | 분양가 70650만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:48.767301"
+    "collected_at": "2026-04-28T20:28:48.767301",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)비에스한양",
@@ -167,5 +172,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "풍무역세권 수자인 그라센트 1차 규제지역 | 풍무역세권 수자인 그라센트 1차 분양가상한제 | 풍무역세권 수자인 그라센트 1차 전매제한 재당첨제한 | 풍무역세권 수자인 그라센트 1차 실거주의무",
+    "evidence_queries": [
+      "풍무역세권 수자인 그라센트 1차 규제지역",
+      "풍무역세권 수자인 그라센트 1차 분양가상한제",
+      "풍무역세권 수자인 그라센트 1차 전매제한 재당첨제한",
+      "풍무역세권 수자인 그라센트 1차 실거주의무"
+    ],
+    "checked_at": "2026-04-28T21:39:59+09:00"
+  }
 }

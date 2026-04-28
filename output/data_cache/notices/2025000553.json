@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9800 타입 | 전용 100.3479㎡ | 일반 34세대 | 특별 57세대 | 분양가 73100만원\n084.9100A타입 | 전용 113.0247㎡ | 일반 26세대 | 특별 45세대 | 분양가 81000만원\n084.9900B타입 | 전용 115.2232㎡ | 일반 19세대 | 특별 29세대 | 분양가 79900만원\n103.9500A타입 | 전용 137.9677㎡ | 일반 21세대 | 특별 2세대 | 분양가 90500만원\n103.6500B타입 | 전용 138.5780㎡ | 일반 41세대 | 특별 5세대 | 분양가 89500만원\n117.9800 타입 | 전용 158.0769㎡ | 일반 1세대 | 특별 0세대 | 분양가 126600만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:47.949728"
+    "collected_at": "2026-04-28T20:28:47.949728",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "코리아신탁(주)",
@@ -224,5 +229,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "서수원 에피트 센트럴마크 규제지역 | 서수원 에피트 센트럴마크 전매제한 | 서수원 에피트 센트럴마크 실거주의무 | 서수원 에피트 센트럴마크 분양가상한제",
+    "evidence_queries": [
+      "서수원 에피트 센트럴마크 규제지역",
+      "서수원 에피트 센트럴마크 전매제한",
+      "서수원 에피트 센트럴마크 실거주의무",
+      "서수원 에피트 센트럴마크 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:29:41+09:00"
+  }
 }

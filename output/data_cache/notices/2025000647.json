@@ -42,7 +42,7 @@
     "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000647&pblancNo=2025000647",
     "is_hot_zone": "N",
     "is_adj_zone": "N",
-    "is_price_cap": "N",
+    "is_price_cap": "Y",
     "is_redevelop": "N",
     "is_public_dist": "Y",
     "is_large_dev": "Y",
@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.0000O타입 | 전용 83.0000㎡ | 일반 5세대 | 특별 103세대 | 분양가 9767만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:05.669217"
+    "collected_at": "2026-04-28T20:29:05.669217",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한국토지주택공사 경기북부지역본부",
@@ -129,5 +134,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "구리갈매역세권 A-4블록 규제지역 | 구리갈매역세권 A-4블록 분양가상한제 | 구리갈매역세권 A-4블록 재당첨제한 | 구리갈매역세권 A-4블록 실거주의무",
+    "evidence_queries": [
+      "구리갈매역세권 A-4블록 규제지역",
+      "구리갈매역세권 A-4블록 분양가상한제",
+      "구리갈매역세권 A-4블록 재당첨제한",
+      "구리갈매역세권 A-4블록 실거주의무"
+    ],
+    "checked_at": "2026-04-28T22:46:30+09:00"
+  }
 }

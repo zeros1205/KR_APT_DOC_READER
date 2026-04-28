@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.7861A타입 | 전용 83.4907㎡ | 일반 52세대 | 특별 66세대 | 분양가 36400만원\n059.9447B타입 | 전용 84.6673㎡ | 일반 7세대 | 특별 8세대 | 분양가 37100만원\n074.8409 타입 | 전용 99.2707㎡ | 일반 74세대 | 특별 90세대 | 분양가 44100만원\n084.3782A타입 | 전용 108.3001㎡ | 일반 125세대 | 특별 160세대 | 분양가 49100만원\n084.9628B타입 | 전용 109.1003㎡ | 일반 51세대 | 특별 59세대 | 분양가 48600만원\n114.9006 타입 | 전용 142.7501㎡ | 일반 12세대 | 특별 1세대 | 분양가 62800만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:33.438064"
+    "collected_at": "2026-04-28T20:28:33.438064",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "운천주공재건축정비사업조합",
@@ -224,5 +229,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "두산위브더제니스 청주 센트럴파크 규제지역 | 두산위브더제니스 청주 센트럴파크 분양가상한제 | 두산위브더제니스 청주 센트럴파크 전매제한 | 두산위브더제니스 청주 센트럴파크 재당첨제한",
+    "evidence_queries": [
+      "두산위브더제니스 청주 센트럴파크 규제지역",
+      "두산위브더제니스 청주 센트럴파크 분양가상한제",
+      "두산위브더제니스 청주 센트럴파크 전매제한",
+      "두산위브더제니스 청주 센트럴파크 재당첨제한"
+    ],
+    "checked_at": "2026-04-28T20:45:43+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.7588A타입 | 전용 111.9103㎡ | 일반 331세대 | 특별 399세대 | 분양가 49790만원\n084.8689B타입 | 전용 112.1823㎡ | 일반 118세대 | 특별 139세대 | 분양가 48850만원\n084.8214C타입 | 전용 112.8877㎡ | 일반 99세대 | 특별 116세대 | 분양가 48760만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:52.939607"
+    "collected_at": "2026-04-28T20:28:52.939607",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "청암프로젝트(주)",
@@ -167,5 +172,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "두산위브더제니스 센트럴 천안 규제지역 | 천안시 분양가상한제 적용 여부",
+    "evidence_queries": [
+      "두산위브더제니스 센트럴 천안 규제지역",
+      "천안시 분양가상한제 적용 여부"
+    ],
+    "checked_at": "2026-04-28T21:51:55+09:00"
+  }
 }

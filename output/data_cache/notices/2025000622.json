@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9772A타입 | 전용 111.7521㎡ | 일반 50세대 | 특별 57세대 | 분양가 156500만원\n084.9892B타입 | 전용 113.1625㎡ | 일반 17세대 | 특별 21세대 | 분양가 149200만원\n084.9875C타입 | 전용 112.2221㎡ | 일반 102세대 | 특별 122세대 | 분양가 154900만원\n084.9671D타입 | 전용 113.0816㎡ | 일반 32세대 | 특별 38세대 | 분양가 151300만원\n120.8061 타입 | 전용 157.3839㎡ | 일반 34세대 | 특별 5세대 | 분양가 219800만원\n144.8653P타입 | 전용 191.7351㎡ | 일반 1세대 | 특별 0세대 | 분양가 500000만원\n155.7575P타입 | 전용 206.2159㎡ | 일반 1세대 | 특별 0세대 | 분양가 520000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:02.469818"
+    "collected_at": "2026-04-28T20:29:02.469818",
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한국자산신탁(주)",
@@ -243,5 +248,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "수지자이 에디시온 규제지역 | 수지자이 에디시온 전매제한 재당첨제한 | 수지자이 에디시온 분양가상한제",
+    "evidence_queries": [
+      "수지자이 에디시온 규제지역",
+      "수지자이 에디시온 전매제한 재당첨제한",
+      "수지자이 에디시온 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T22:28:36+09:00"
+  }
 }

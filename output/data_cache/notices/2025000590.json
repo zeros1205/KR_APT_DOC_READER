@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9606A타입 | 전용 110.1763㎡ | 일반 46세대 | 특별 43세대 | 분양가 36083만원\n084.9094B타입 | 전용 111.0785㎡ | 일반 18세대 | 특별 17세대 | 분양가 36381만원\n084.9261C타입 | 전용 110.0186㎡ | 일반 9세대 | 특별 5세대 | 분양가 36032만원\n146.9988 타입 | 전용 192.7668㎡ | 일반 2세대 | 특별 0세대 | 분양가 67350만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:56.639019"
+    "collected_at": "2026-04-28T20:28:56.639019",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "영산지역주택조합",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "나주영산 윤슬의아침 더정원 분양가상한제 | 나주영산 윤슬의아침 더정원 전매제한 | 나주영산 윤슬의아침 더정원 비규제지역",
+    "evidence_queries": [
+      "나주영산 윤슬의아침 더정원 분양가상한제",
+      "나주영산 윤슬의아침 더정원 전매제한",
+      "나주영산 윤슬의아침 더정원 비규제지역"
+    ],
+    "checked_at": "2026-04-28T22:11:26+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9800 타입 | 전용 102.6575㎡ | 일반 40세대 | 특별 54세대 | 분양가 74300만원\n084.9100A타입 | 전용 115.6401㎡ | 일반 19세대 | 특별 29세대 | 분양가 82100만원\n103.9500A타입 | 전용 141.1696㎡ | 일반 43세대 | 특별 5세대 | 분양가 93600만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:48.360114"
+    "collected_at": "2026-04-28T20:28:48.360114",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "코리아신탁(주)",
@@ -167,5 +172,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "서수원 에피트 센트럴마크 규제지역 | 서수원 에피트 센트럴마크 재당첨제한 | 서수원 에피트 센트럴마크 전매제한 | 서수원 에피트 센트럴마크 실거주 의무",
+    "evidence_queries": [
+      "서수원 에피트 센트럴마크 규제지역",
+      "서수원 에피트 센트럴마크 재당첨제한",
+      "서수원 에피트 센트럴마크 전매제한",
+      "서수원 에피트 센트럴마크 실거주 의무"
+    ],
+    "checked_at": "2026-04-28T21:30:51+09:00"
+  }
 }

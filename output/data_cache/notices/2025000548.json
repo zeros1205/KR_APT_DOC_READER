@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.8736A타입 | 전용 82.3492㎡ | 일반 458세대 | 특별 0세대 | 분양가 18855만원\n059.9808B타입 | 전용 83.4417㎡ | 일반 93세대 | 특별 0세대 | 분양가 18869만원\n059.9520C타입 | 전용 82.8657㎡ | 일반 107세대 | 특별 0세대 | 분양가 18779만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:45.882821"
+    "collected_at": "2026-04-28T20:28:45.882821",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "에스엠하이플러스(주)",
@@ -167,5 +172,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "부산 강서구 부동산 규제지역 여부 | 명지화전 우방아이유쉘 잔여세대 청약 정보",
+    "evidence_queries": [
+      "부산 강서구 부동산 규제지역 여부",
+      "명지화전 우방아이유쉘 잔여세대 청약 정보"
+    ],
+    "checked_at": "2026-04-28T21:24:20+09:00"
+  }
 }

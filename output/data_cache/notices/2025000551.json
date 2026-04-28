@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.4035A타입 | 전용 119.8715㎡ | 일반 86세대 | 특별 82세대 | 분양가 74335만원\n084.4035B타입 | 전용 119.8715㎡ | 일반 41세대 | 특별 41세대 | 분양가 73610만원\n084.9324C타입 | 전용 121.8764㎡ | 일반 18세대 | 특별 23세대 | 분양가 71891만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:47.127349"
+    "collected_at": "2026-04-28T20:28:47.127349",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "신영부동산신탁 주식회사",
@@ -167,5 +172,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "동래 에코팰리스 아시아드 리안 분양가상한제 | 동래 에코팰리스 아시아드 리안 전매제한 | 동래 에코팰리스 아시아드 리안 규제지역",
+    "evidence_queries": [
+      "동래 에코팰리스 아시아드 리안 분양가상한제",
+      "동래 에코팰리스 아시아드 리안 전매제한",
+      "동래 에코팰리스 아시아드 리안 규제지역"
+    ],
+    "checked_at": "2026-04-28T21:27:41+09:00"
+  }
 }

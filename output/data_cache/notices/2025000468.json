@@ -42,7 +42,7 @@
     "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000468&pblancNo=2025000468",
     "is_hot_zone": "N",
     "is_adj_zone": "N",
-    "is_price_cap": "Y",
+    "is_price_cap": "N",
     "is_redevelop": "N",
     "is_public_dist": "N",
     "is_large_dev": "N",
@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9933A타입 | 전용 111.7376㎡ | 일반 96세대 | 특별 176세대 | 분양가 42130만원\n084.9226B타입 | 전용 111.5358㎡ | 일반 24세대 | 특별 51세대 | 분양가 41840만원\n084.9826C타입 | 전용 112.5083㎡ | 일반 17세대 | 특별 33세대 | 분양가 42210만원\n084.8918D타입 | 전용 112.7413㎡ | 일반 7세대 | 특별 18세대 | 분양가 42300만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:33.848620"
+    "collected_at": "2026-04-28T20:28:33.848620",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 남악오룡2피에프브이",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "오룡2지구 지엔하임 38블록 규제지역 | 오룡2지구 지엔하임 38블록 전매제한 | 오룡2지구 지엔하임 38블록 분양가상한제",
+    "evidence_queries": [
+      "오룡2지구 지엔하임 38블록 규제지역",
+      "오룡2지구 지엔하임 38블록 전매제한",
+      "오룡2지구 지엔하임 38블록 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T20:46:41+09:00"
+  }
 }

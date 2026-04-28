@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.4484A타입 | 전용 111.6991㎡ | 일반 60세대 | 특별 114세대 | 분양가 124900만원\n084.9330B타입 | 전용 111.9714㎡ | 일반 26세대 | 특별 48세대 | 분양가 119900만원\n084.6066C타입 | 전용 112.4495㎡ | 일반 24세대 | 특별 43세대 | 분양가 124300만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:43.390189"
+    "collected_at": "2026-04-28T20:28:43.390189",
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "성남복정1피에프브이(주)",
@@ -167,5 +172,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "성남복정1지구 B1블록 복정역 에피트 규제지역 | 복정역 에피트 재당첨제한 전매제한 거주의무 | 복정역 에피트 분양가상한제",
+    "evidence_queries": [
+      "성남복정1지구 B1블록 복정역 에피트 규제지역",
+      "복정역 에피트 재당첨제한 전매제한 거주의무",
+      "복정역 에피트 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:14:00+09:00"
+  }
 }

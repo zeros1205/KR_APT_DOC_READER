@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9714A타입 | 전용 112.3910㎡ | 일반 192세대 | 특별 237세대 | 분양가 81500만원\n084.9447B타입 | 전용 112.9850㎡ | 일반 123세대 | 특별 152세대 | 분양가 81200만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:59.990301"
+    "collected_at": "2026-04-28T20:28:59.990301",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한국자산신탁(주)",
@@ -148,5 +153,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "태화강 센트럴 아이파크 규제지역 | 태화강 센트럴 아이파크 전매제한 | 태화강 센트럴 아이파크 재당첨제한 거주의무 | 태화강 센트럴 아이파크 분양가상한제",
+    "evidence_queries": [
+      "태화강 센트럴 아이파크 규제지역",
+      "태화강 센트럴 아이파크 전매제한",
+      "태화강 센트럴 아이파크 재당첨제한 거주의무",
+      "태화강 센트럴 아이파크 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T22:21:01+09:00"
+  }
 }

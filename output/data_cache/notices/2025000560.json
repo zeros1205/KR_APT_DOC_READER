@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9801 타입 | 전용 83.3375㎡ | 일반 73세대 | 특별 84세대 | 분양가 47770만원\n075.9096 타입 | 전용 103.1348㎡ | 일반 71세대 | 특별 82세대 | 분양가 59980만원\n084.9771A타입 | 전용 114.8830㎡ | 일반 258세대 | 특별 311세대 | 분양가 67080만원\n084.9966B타입 | 전용 114.8490㎡ | 일반 114세대 | 특별 137세대 | 분양가 64090만원\n084.8478C타입 | 전용 114.9252㎡ | 일반 38세대 | 특별 44세대 | 분양가 63140만원\n101.9556 타입 | 전용 136.5624㎡ | 일반 80세대 | 특별 12세대 | 분양가 79440만원\n110.7134 타입 | 전용 149.1861㎡ | 일반 37세대 | 특별 5세대 | 분양가 87640만원\n136.0030P타입 | 전용 188.0943㎡ | 일반 3세대 | 특별 0세대 | 분양가 133750만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:50.030103"
+    "collected_at": "2026-04-28T20:28:50.030103",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "코리아신탁(주)",
@@ -262,5 +267,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "시티오씨엘 8단지 규제지역 | 시티오씨엘 8단지 분양가상한제 | 시티오씨엘 8단지 전매제한",
+    "evidence_queries": [
+      "시티오씨엘 8단지 규제지역",
+      "시티오씨엘 8단지 분양가상한제",
+      "시티오씨엘 8단지 전매제한"
+    ],
+    "checked_at": "2026-04-28T21:43:10+09:00"
+  }
 }

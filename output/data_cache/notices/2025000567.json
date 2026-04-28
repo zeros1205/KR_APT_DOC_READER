@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9900 타입 | 전용 77.7500㎡ | 일반 8세대 | 특별 6세대 | 분양가 51000만원\n063.9100 타입 | 전용 82.5900㎡ | 일반 6세대 | 특별 10세대 | 분양가 53600만원\n084.9500 타입 | 전용 109.1200㎡ | 일반 3세대 | 특별 3세대 | 분양가 69300만원\n108.6900 타입 | 전용 141.6500㎡ | 일반 1세대 | 특별 0세대 | 분양가 99900만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:52.104338"
+    "collected_at": "2026-04-28T20:28:52.104338",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "여월동 광남복지 가로주택정비사업조합",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "여월 중앙하이츠 아르비채 분양가상한제 | 여월 중앙하이츠 아르비채 전매제한 | 여월 중앙하이츠 아르비채 규제지역",
+    "evidence_queries": [
+      "여월 중앙하이츠 아르비채 분양가상한제",
+      "여월 중앙하이츠 아르비채 전매제한",
+      "여월 중앙하이츠 아르비채 규제지역"
+    ],
+    "checked_at": "2026-04-28T21:48:39+09:00"
+  }
 }

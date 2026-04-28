@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9900A타입 | 전용 111.2151㎡ | 일반 12세대 | 특별 0세대 | 분양가 67800만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:00.407825"
+    "collected_at": "2026-04-28T20:29:00.407825",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "숭어리샘주택재건축정비사업조합",
@@ -129,5 +134,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "둔산 자이 아이파크 보류지 분양 규제 | 둔산 자이 아이파크 재당첨제한 | 둔산 자이 아이파크 분양가상한제 | 둔산 자이 아이파크 전매제한",
+    "evidence_queries": [
+      "둔산 자이 아이파크 보류지 분양 규제",
+      "둔산 자이 아이파크 재당첨제한",
+      "둔산 자이 아이파크 분양가상한제",
+      "둔산 자이 아이파크 전매제한"
+    ],
+    "checked_at": "2026-04-28T22:21:58+09:00"
+  }
 }

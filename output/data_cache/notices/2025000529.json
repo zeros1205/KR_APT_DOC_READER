@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9616 타입 | 전용 83.5187㎡ | 일반 98세대 | 특별 185세대 | 분양가 39700만원\n084.9945A타입 | 전용 114.7103㎡ | 일반 97세대 | 특별 182세대 | 분양가 56200만원\n084.9948B타입 | 전용 116.6220㎡ | 일반 166세대 | 특별 302세대 | 분양가 56600만원\n084.9987C타입 | 전용 115.0566㎡ | 일반 68세대 | 특별 124세대 | 분양가 56400만원\n106.9995 타입 | 전용 144.1380㎡ | 일반 329세대 | 특별 49세대 | 분양가 71110만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:41.739703"
+    "collected_at": "2026-04-28T20:28:41.739703",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)월드컵",
@@ -205,5 +210,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "브레인시티 비스타동원 분양가상한제 | 브레인시티 비스타동원 전매제한 | 브레인시티 비스타동원 재당첨제한 | 브레인시티 비스타동원 거주의무",
+    "evidence_queries": [
+      "브레인시티 비스타동원 분양가상한제",
+      "브레인시티 비스타동원 전매제한",
+      "브레인시티 비스타동원 재당첨제한",
+      "브레인시티 비스타동원 거주의무"
+    ],
+    "checked_at": "2026-04-28T21:10:10+09:00"
+  }
 }

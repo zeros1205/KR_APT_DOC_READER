@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9800 타입 | 전용 77.8807㎡ | 일반 6세대 | 특별 4세대 | 분양가 201200만원\n084.9700A타입 | 전용 109.0082㎡ | 일반 19세대 | 특별 23세대 | 분양가 281300만원\n084.9600B타입 | 전용 109.7761㎡ | 일반 6세대 | 특별 7세대 | 분양가 269700만원\n084.9800C타입 | 전용 109.6503㎡ | 일반 6세대 | 특별 5세대 | 분양가 275000만원\n084.9600D타입 | 전용 110.0261㎡ | 일반 2세대 | 특별 3세대 | 분양가 281100만원\n122.9900 타입 | 전용 157.4426㎡ | 일반 5세대 | 특별 1세대 | 분양가 379800만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:51.695271"
+    "collected_at": "2026-04-28T20:28:51.695271",
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "2년",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "역삼동(758, 은하수,760)주택재건축정비사업조합",
@@ -224,5 +229,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "2년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "역삼센트럴자이 분양 규제지역 | 역삼센트럴자이 재당첨제한 | 역삼센트럴자이 전매제한 거주의무 | 역삼센트럴자이 분양가상한제",
+    "evidence_queries": [
+      "역삼센트럴자이 분양 규제지역",
+      "역삼센트럴자이 재당첨제한",
+      "역삼센트럴자이 전매제한 거주의무",
+      "역삼센트럴자이 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:47:35+09:00"
+  }
 }

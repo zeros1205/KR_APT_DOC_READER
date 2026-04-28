@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n072.4640 타입 | 전용 94.0213㎡ | 일반 16세대 | 특별 31세대 | 분양가 46570만원\n074.0874 타입 | 전용 96.0199㎡ | 일반 66세대 | 특별 70세대 | 분양가 47110만원\n084.9629A타입 | 전용 109.7614㎡ | 일반 52세대 | 특별 60세대 | 분양가 55770만원\n084.7345B타입 | 전용 109.4115㎡ | 일반 38세대 | 특별 50세대 | 분양가 55030만원\n084.9188C타입 | 전용 109.9523㎡ | 일반 31세대 | 특별 35세대 | 분양가 55770만원\n117.5352A타입 | 전용 154.7707㎡ | 일반 1세대 | 특별 0세대 | 분양가 138430만원\n117.9557B타입 | 전용 155.4746㎡ | 일반 2세대 | 특별 0세대 | 분양가 138430만원\n117.9547C타입 | 전용 153.3034㎡ | 일반 3세대 | 특별 0세대 | 분양가 138430만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:34.277218"
+    "collected_at": "2026-04-28T20:28:34.277218",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
@@ -262,5 +267,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "효성해링턴 플레이스 양평 규제지역 | 효성해링턴 플레이스 양평 재당첨제한 | 효성해링턴 플레이스 양평 전매제한 | 효성해링턴 플레이스 양평 분양가상한제",
+    "evidence_queries": [
+      "효성해링턴 플레이스 양평 규제지역",
+      "효성해링턴 플레이스 양평 재당첨제한",
+      "효성해링턴 플레이스 양평 전매제한",
+      "효성해링턴 플레이스 양평 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T20:47:51+09:00"
+  }
 }

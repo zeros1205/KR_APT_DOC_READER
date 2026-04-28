@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9784A타입 | 전용 110.1846㎡ | 일반 73세대 | 특별 95세대 | 분양가 59870만원\n084.9910B타입 | 전용 111.7573㎡ | 일반 28세대 | 특별 38세대 | 분양가 59870만원\n102.7011 타입 | 전용 132.0254㎡ | 일반 15세대 | 특별 3세대 | 분양가 74570만원\n116.7297 타입 | 전용 151.0262㎡ | 일반 52세대 | 특별 9세대 | 분양가 86720만원\n118.1152 타입 | 전용 153.7941㎡ | 일반 35세대 | 특별 7세대 | 분양가 88310만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:44.628996"
+    "collected_at": "2026-04-28T20:28:44.628996",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "디더블유대원주식회사,디더블유대원에이치주식회사",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "이천 증포5지구 칸타빌 에듀파크 규제지역 | 이천 증포5지구 칸타빌 에듀파크 전매제한 | 이천시 분양가상한제 적용 여부",
+    "evidence_queries": [
+      "이천 증포5지구 칸타빌 에듀파크 규제지역",
+      "이천 증포5지구 칸타빌 에듀파크 전매제한",
+      "이천시 분양가상한제 적용 여부"
+    ],
+    "checked_at": "2026-04-28T21:21:05+09:00"
+  }
 }

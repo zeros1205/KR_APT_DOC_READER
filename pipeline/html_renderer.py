@@ -14,13 +14,36 @@ import sys
 import re
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 from dataclasses import dataclass, field
 from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 from image_finder import ImageResult, render_image_html, build_credit_html
 from themes import get_theme, THEMES
+
+
+FINANCIAL_INTRO_TEXT = (
+    "입주자모집공고문에 명시된 납부 일정에 맞춰 대금을 입금해야 당첨 지위가 유지됩니다. "
+    "각 회차별 날짜와 납입 금액을 꼼꼼히 확인하고, 내가 가진 자금과 대출이 실행되는 시점이 서로 어긋나지 않는지 미리 체크해 보세요. "
+    "예상치 못한 자금 공백이 생기지 않도록 구체적인 계획을 세우는 것이 무엇보다 중요합니다."
+)
+CONTRACT_DESC_TEXT = (
+    "계약금은 당첨된 권리를 확정 짓는 '확약금'입니다. "
+    "아파트 담보대출이 불가능한 단계이고 단기간에 납부해야 하므로, 반드시 본인이 즉시 인출할 수 있는 현금으로 준비해야 합니다. "
+    "계약금 납부가 완료되어야만 향후 중도금 대출 신청이나 분양권 승계 같은 후속 절차를 진행할 수 있으니 가장 우선적으로 확보하십시오."
+)
+MIDTERM_DESC_TEXT = (
+    "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. "
+    "대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. "
+    "무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다."
+)
+BALANCE_DESC_TEXT = (
+    "최종 입주 시점에 납부하는 잔금은 '기존 중도금 대출의 상환'과 '잔금 대출(담보대출)로의 전환'이 동시에 일어나는 핵심 구간입니다. "
+    "입주 시점의 KB시세나 감정평가액에 따라 대출 한도가 재산정되므로, 금리 변동성 및 개인의 신용도를 고려한 입체적인 자금 조달 시나리오를 미리 수립해 두는 것이 안전합니다."
+)
+QA_INTRO_TEXT = "공고문에서 많이 궁금해하시는 부분에 대해서 쉽게 정리해드릴게요."
+EXPIRED_HEADER_BG = "linear-gradient(135deg, #6F746F 0%, #555B56 60%, #3F4540 100%)"
 
 
 # ──────────────────────────────────────────────────
@@ -231,6 +254,22 @@ def _has_schedule(value: object) -> bool:
     return _stringify(value) not in _DISPLAY_EMPTY_VALUES
 
 
+def _parse_date(value: object) -> date | None:
+    text = _stringify(value)
+    if text in _DISPLAY_EMPTY_VALUES:
+        return None
+    text = text.split(" ~ ", 1)[0].strip()
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def _is_expired_post(data: "PostData") -> bool:
+    winner = _parse_date(data.winner_date)
+    return bool(winner and winner < date.today())
+
+
 def _safe_int(value: object) -> int:
     try:
         return int(str(value).strip() or 0)
@@ -404,20 +443,11 @@ def build_post_data(
     midterm_count = _stringify(facts.get("midterm_count") or "")
     balance_ratio = _stringify(facts.get("balance_ratio") or "0")
     midterm_fixed_amount = _stringify(facts.get("midterm_fixed_amount") or "")
-    loan_info = _display_value(
-        facts.get("loan_info"),
-        default="중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-    )
+    loan_info = MIDTERM_DESC_TEXT
     if midterm_fixed_amount:
-        loan_info = (
-            f"중도금은 비율이 아니라 {midterm_fixed_amount} 정액으로 표시되어 있어요. "
-            "계약금 이후 남은 금액은 잔금으로 납부하는 구조이므로, 실제 납부 시점과 금액은 공고문 기준으로 확인해보세요."
-        )
+        loan_info = MIDTERM_DESC_TEXT
     elif midterm_ratio == "0":
-        loan_info = (
-            "이 공고는 중도금 납부 단계가 별도로 없고, 계약금 이후 잔금만 납부하는 구조로 확인됩니다. "
-            "잔금 납부 시점과 실제 납부 금액은 공고문 기준으로 확인해보세요."
-        )
+        loan_info = MIDTERM_DESC_TEXT
     supply_units = sum(max(0, _safe_int(ut.general_units)) + max(0, _safe_int(ut.special_units)) for ut in unit_types)
     notice_date = _display_date(facts.get("notice_date"))
     special_supply_date = _display_date(facts.get("special_supply_date"))
@@ -478,8 +508,8 @@ def build_post_data(
             unit_types=unit_types,
         ),
         location_intro=_stringify(content.get("location_intro")) or f"{location or apt_name} 입지를 살펴보겠습니다.",
-        financial_intro=_stringify(content.get("financial_intro")) or "자금 계획을 미리 세워두는 것이 중요합니다.",
-        qa_intro=_stringify(content.get("qa_intro")) or "자주 받는 질문에 답해드릴게요.",
+        financial_intro=FINANCIAL_INTRO_TEXT,
+        qa_intro=QA_INTRO_TEXT,
         unit_type_desc=_stringify(content.get("unit_type_desc")) or f"{apt_name}은 아래와 같은 타입으로 공급됩니다.",
         schedule_desc=_stringify(content.get("schedule_desc")) or "청약 일정을 미리 확인하고 준비하세요.",
         tax_desc=_stringify(content.get("tax_desc")) or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
@@ -642,6 +672,7 @@ def _render_seo_tags(tags: list[str], t: dict) -> str:
 
 def _render_eligibility(data: "PostData", t: dict) -> str:
     """04 · 청약 신청자격 섹션 HTML 렌더링"""
+    card_color = t["text2"]
 
     # ── 특별공급 카드들 ──
     sp_cards = ""
@@ -651,14 +682,15 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         req_items = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
-            f'<span style="color:{t["accent"]};font-weight:700;margin-right:6px;">·</span>{r}</li>'
+            f'<span style="color:{card_color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
             for r in reqs
         )
         sp_cards += (
             f'<div style="flex:1 1 calc(50% - 8px);min-width:200px;'
             f'background:{t["surface"]};border:1px solid {t["border"]};'
-            f'border-radius:{t["radius_md"]};padding:16px 18px;">'
-            f'<div style="font-size:14px;font-weight:800;color:{t["text"]};'
+            f'border-top:3px solid {card_color};border-radius:{t["radius_md"]};'
+            f'padding:16px 18px;">'
+            f'<div style="font-size:14px;font-weight:800;color:{card_color};'
             f'margin-bottom:10px;">{type_name}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
             f'</div>'
@@ -680,30 +712,32 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         )
 
     # ── 1순위 / 2순위 ──
-    def _rank_block(label: str, items: list[str], color: str) -> str:
+    def _rank_block(label: str, items: list[str]) -> str:
         if not items:
             items = [f"{label.replace(' 자격', '')} 일반공급 관련 정보가 없습니다. 입주자모집공고문을 확인하세요."]
         li_html = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
-            f'<span style="color:{color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
+            f'<span style="color:{card_color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
             for r in items
         )
         return (
             f'<div style="flex:1 1 calc(50% - 8px);min-width:200px;'
             f'background:{t["surface"]};border:1px solid {t["border"]};'
-            f'border-top:3px solid {color};border-radius:{t["radius_md"]};'
+            f'border-top:3px solid {card_color};border-radius:{t["radius_md"]};'
             f'padding:16px 18px;">'
-            f'<div style="font-size:14px;font-weight:800;color:{color};'
+            f'<div style="font-size:14px;font-weight:800;color:{card_color};'
             f'margin-bottom:12px;">{label}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{li_html}</ul>'
             f'</div>'
         )
 
     rank_blocks = (
+        f'<div style="font-size:13px;font-weight:700;color:{t["accent"]};'
+        f'letter-spacing:0.5px;margin-bottom:12px;">일반공급</div>'
         f'<div style="display:flex;flex-wrap:wrap;gap:10px;">'
-        f'{_rank_block("1순위 자격", data.eligibility_rank1, t["accent"])}'
-        f'{_rank_block("2순위 자격", data.eligibility_rank2, t["text2"])}'
+        f'{_rank_block("1순위 자격", data.eligibility_rank1)}'
+        f'{_rank_block("2순위 자격", data.eligibility_rank2)}'
         f'</div>'
     )
 
@@ -714,6 +748,56 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     )
 
     return special_block + rank_blocks + notice
+
+
+def _render_schedule_timeline(data: "PostData", t: dict) -> str:
+    """Render only schedule steps that have a usable date, with sequential step numbers."""
+    items = [
+        ("NOTICE", "모집공고일", data.notice_date),
+        ("SPECIAL", "특별공급", data.special_supply_date),
+        ("1ST PRIORITY", "일반공급 1순위", data.rank1_date),
+        ("2ND PRIORITY", "일반공급 2순위", data.rank2_date),
+        ("WINNER", "당첨자 발표", data.winner_date),
+    ]
+    visible = [
+        (kicker, label, _stringify(value))
+        for kicker, label, value in items
+        if _has_schedule(value)
+    ]
+    if not visible:
+        visible = [("NOTICE", "모집공고일", "공고문 확인")]
+
+    rows: list[str] = []
+    last_index = len(visible) - 1
+    for index, (kicker, label, value) in enumerate(visible, start=1):
+        margin = "" if index - 1 == last_index else " margin-bottom: 6px;"
+        rows.append(
+            f"""
+    <div style="display: flex; gap: 18px; align-items: flex-start;{margin}">
+      <div style="
+        flex-shrink: 0; width: 38px; height: 38px;
+        background: var(--c-primary, {t["accent"]}); color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 15px; font-weight: 800;
+      ">{index}</div>
+      <div style="flex: 1; padding-top: 5px;">
+        <div style="font-size: 12px; color: {t["muted"]}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">{kicker}</div>
+        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, {t["text"]}); margin-bottom: 3px;">{label}</div>
+        <div style="font-size: 17px; color: var(--c-primary, {t["accent"]}); font-weight: 800;">{value}</div>
+      </div>
+    </div>""".rstrip()
+        )
+        if index - 1 != last_index:
+            rows.append(
+                f'<div style="margin-left: 19px; height: 22px; width: 2px; background: {t["border"]};"></div>'
+            )
+
+    return (
+        f'<div style="background: {t["surface"]}; border: 1px solid {t["border"]};'
+        f' border-radius: {t["radius_lg"]}; padding: 26px 22px; margin-bottom: 36px;">'
+        + "\n".join(rows)
+        + "\n  </div>"
+    )
 
 
 def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
@@ -826,6 +910,8 @@ class BlogHTMLRenderer:
 
         # Step 1: 테마 토큰 치환
         html = _apply_theme(html, t)
+        if _is_expired_post(data):
+            html = html.replace(t["header_bg"], EXPIRED_HEADER_BG)
 
         # Step 2: 데이터 플레이스홀더 치환
         total_general = sum(u.general_units for u in data.unit_types)
@@ -842,6 +928,7 @@ class BlogHTMLRenderer:
             "{{SUPPLY_TYPE_TAG}}": _render_header_tag(supply_label, pill_r),
             "{{REGION_TAG}}":      _render_header_tag(region_label, pill_r),
             "{{HEADER_META_ROWS}}": _header_meta_rows(data, t["header_text"], t["header_sub"]),
+            "{{SCHEDULE_TIMELINE}}": _render_schedule_timeline(data, t),
             # 포스팅 메타
             "{{POST_TITLE}}":     data.post_title,
             "{{POST_SUBTITLE}}":  _header_subtitle(data),
@@ -851,8 +938,8 @@ class BlogHTMLRenderer:
             # 내러티브
             "{{APT_INTRO}}":       data.apt_intro or f"{data.apt_name} 분양 정보를 안내해 드립니다.",
             "{{LOCATION_INTRO}}":  data.location_intro or f"{data.location} 입지를 살펴보겠습니다.",
-            "{{FINANCIAL_INTRO}}": data.financial_intro or "자금 계획을 미리 세워두는 것이 중요합니다.",
-            "{{QA_INTRO}}":        data.qa_intro or "자주 받는 질문에 답해드릴게요.",
+            "{{FINANCIAL_INTRO}}": data.financial_intro or FINANCIAL_INTRO_TEXT,
+            "{{QA_INTRO}}":        data.qa_intro or QA_INTRO_TEXT,
             "{{UNIT_TYPE_DESC}}":  data.unit_type_desc or f"{data.apt_name}은 아래와 같은 타입으로 공급됩니다.",
             "{{SCHEDULE_DESC}}":   data.schedule_desc or "청약 일정을 미리 확인하고 준비하세요.",
             "{{TAX_DESC}}":        data.tax_desc or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
@@ -974,7 +1061,24 @@ class BlogHTMLRenderer:
 def save_post(data: PostData, html: str, output_root: Path) -> Path:
     date_str = datetime.now().strftime("%Y-%m-%d")
     safe = re.sub(r"[^\w가-힣]", "_", data.apt_name)
-    post_dir = output_root / "posts" / f"{date_str}_{safe}"
+    post_slug = f"{date_str}_{safe}"
+    post_dir = output_root / "posts" / post_slug
+    notice_id_match = re.search(r"(?:pblancNo|houseManageNo)=([0-9]+)", data.notice_url or "")
+    notice_id_for_slug = notice_id_match.group(1) if notice_id_match else ""
+    if post_dir.exists() and notice_id_for_slug:
+        try:
+            import json
+            existing_meta = json.loads((post_dir / "post_meta.json").read_text(encoding="utf-8"))
+            existing_notice_id = str(existing_meta.get("notice_id") or "")
+            if not existing_notice_id:
+                existing_url = str(existing_meta.get("notice_url") or "")
+                existing_match = re.search(r"(?:pblancNo|houseManageNo)=([0-9]+)", existing_url)
+                existing_notice_id = existing_match.group(1) if existing_match else ""
+        except Exception:
+            existing_notice_id = ""
+        if existing_notice_id and existing_notice_id != notice_id_for_slug:
+            post_slug = f"{post_slug}_{notice_id_for_slug}"
+            post_dir = output_root / "posts" / post_slug
     post_dir.mkdir(parents=True, exist_ok=True)
 
     from config import SITE_URL
@@ -983,7 +1087,6 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         PALETTE_INIT_JS, detail_nav,
     )
 
-    post_slug = f"{date_str}_{safe}"
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
     nav_html = detail_nav("../../")
@@ -993,6 +1096,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-8234120897033274">
 <title>정과장의 청약노트</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{post_canonical}">
@@ -1038,6 +1142,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
         "rank1_date":           data.rank1_date,
         "rank2_date":           data.rank2_date,
         "notice_date":          data.notice_date,
+        "winner_date":          data.winner_date,
         "move_in_date":         data.move_in_date,
         "supply_location":      data.supply_location,
         "total_households":     data.total_households,

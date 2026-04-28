@@ -27,6 +27,14 @@ on:
         options:
           - "false"
           - "true"
+      require_pdf:
+        description: "PDF가 있는 공고만 생성"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -71,6 +79,7 @@ jobs:
           NOTICE_ID="${{ github.event.inputs.notice_id || '' }}"
           INCLUDE_MANUAL="${{ github.event.inputs.include_manual || 'false' }}"
           INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
+          REQUIRE_PDF="${{ github.event.inputs.require_pdf || 'true' }}"
 
           CMD="python generate_posts_from_cache.py --limit $LIMIT"
           if [ -n "$NOTICE_ID" ]; then
@@ -81,6 +90,9 @@ jobs:
           fi
           if [ "$INCLUDE_PROCESSED" = "true" ]; then
             CMD="$CMD --include-processed"
+          fi
+          if [ "$REQUIRE_PDF" = "true" ]; then
+            CMD="$CMD --require-pdf"
           fi
 
           echo "$CMD"

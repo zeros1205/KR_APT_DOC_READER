@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.6797A타입 | 전용 103.3987㎡ | 일반 22세대 | 특별 21세대 | 분양가 69680만원\n084.8830A타입 | 전용 119.3374㎡ | 일반 18세대 | 특별 18세대 | 분양가 79670만원\n084.6971B타입 | 전용 118.8488㎡ | 일반 17세대 | 특별 17세대 | 분양가 79340만원\n084.9819C타입 | 전용 118.5072㎡ | 일반 24세대 | 특별 19세대 | 분양가 79860만원\n084.8666D타입 | 전용 117.3636㎡ | 일반 24세대 | 특별 19세대 | 분양가 79090만원\n084.7247E타입 | 전용 118.0184㎡ | 일반 24세대 | 특별 19세대 | 분양가 79530만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:40.069897"
+    "collected_at": "2026-04-28T20:28:40.069897",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "우리자산신탁 주식회사",
@@ -224,5 +229,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "해링턴플레이스 명륜역 규제지역 | 해링턴플레이스 명륜역 재당첨제한 전매제한 | 해링턴플레이스 명륜역 분양가상한제",
+    "evidence_queries": [
+      "해링턴플레이스 명륜역 규제지역",
+      "해링턴플레이스 명륜역 재당첨제한 전매제한",
+      "해링턴플레이스 명륜역 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:05:24+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n061.9953 타입 | 전용 82.0805㎡ | 일반 44세대 | 특별 73세대 | 분양가 45880만원\n084.9877A타입 | 전용 111.9606㎡ | 일반 97세대 | 특별 171세대 | 분양가 58670만원\n084.9909B타입 | 전용 111.8838㎡ | 일반 36세대 | 특별 59세대 | 분양가 57890만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:57.056685"
+    "collected_at": "2026-04-28T20:28:57.056685",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한아건설(주)",
@@ -167,5 +172,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "시흥거모 엘가 로제비앙 규제지역 | 시흥거모 엘가 로제비앙 분양가상한제 | 시흥거모 엘가 로제비앙 전매제한 실거주의무",
+    "evidence_queries": [
+      "시흥거모 엘가 로제비앙 규제지역",
+      "시흥거모 엘가 로제비앙 분양가상한제",
+      "시흥거모 엘가 로제비앙 전매제한 실거주의무"
+    ],
+    "checked_at": "2026-04-28T22:12:33+09:00"
+  }
 }

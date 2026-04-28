@@ -1,0 +1,69 @@
+name: codex-청약홈 링크 목록 만들기
+
+on:
+  workflow_dispatch:
+    inputs:
+      include_processed:
+        description: "이미 생성된 공고 포함 여부"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      include_with_pdf:
+        description: "이미 PDF가 있는 공고 포함 여부"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  export-notice-urls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Export cached notice URLs
+        run: |
+          INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
+          INCLUDE_WITH_PDF="${{ github.event.inputs.include_with_pdf || 'false' }}"
+
+          CMD="python export_notice_urls.py"
+          if [ "$INCLUDE_PROCESSED" = "true" ]; then
+            CMD="$CMD --include-processed"
+          fi
+          if [ "$INCLUDE_WITH_PDF" = "true" ]; then
+            CMD="$CMD --include-with-pdf"
+          fi
+
+          echo "$CMD"
+          eval "$CMD"
+
+      - name: Commit URL export
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/notice_url_exports
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: export notice urls [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No URL export changes."
+          fi

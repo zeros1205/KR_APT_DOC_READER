@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n083.1404A타입 | 전용 108.6275㎡ | 일반 142세대 | 특별 329세대 | 분양가 50957만원\n083.1679B타입 | 전용 108.9878㎡ | 일반 12세대 | 특별 24세대 | 분양가 50614만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:44.219121"
+    "collected_at": "2026-04-28T20:28:44.219121",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)유승종합건설",
@@ -148,5 +153,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "울산 다운2지구 유승한내들 에듀포레 분양가상한제 | 울산 다운2지구 유승한내들 에듀포레 전매제한 기간 | 울산 다운2지구 유승한내들 에듀포레 재당첨제한",
+    "evidence_queries": [
+      "울산 다운2지구 유승한내들 에듀포레 분양가상한제",
+      "울산 다운2지구 유승한내들 에듀포레 전매제한 기간",
+      "울산 다운2지구 유승한내들 에듀포레 재당첨제한"
+    ],
+    "checked_at": "2026-04-28T21:16:15+09:00"
+  }
 }

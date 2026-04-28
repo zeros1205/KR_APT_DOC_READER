@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9371A타입 | 전용 110.3712㎡ | 일반 110세대 | 특별 221세대 | 분양가 70860만원\n084.9284B타입 | 전용 110.3797㎡ | 일반 62세대 | 특별 121세대 | 분양가 68900만원\n112.9387A타입 | 전용 144.4325㎡ | 일반 355세대 | 특별 53세대 | 분양가 88760만원\n112.8889B타입 | 전용 144.0423㎡ | 일반 24세대 | 특별 4세대 | 분양가 86130만원\n186.8963P타입 | 전용 243.4426㎡ | 일반 6세대 | 특별 0세대 | 분양가 165440만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:36.359691"
+    "collected_at": "2026-04-28T20:28:36.359691",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)호반건설",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "김포 풍무역세권 B5블록 호반써밋 분양가상한제 | 김포 풍무역세권 B5블록 호반써밋 규제지역 | 김포 풍무역세권 B5블록 호반써밋 재당첨제한 전매제한",
+    "evidence_queries": [
+      "김포 풍무역세권 B5블록 호반써밋 분양가상한제",
+      "김포 풍무역세권 B5블록 호반써밋 규제지역",
+      "김포 풍무역세권 B5블록 호반써밋 재당첨제한 전매제한"
+    ],
+    "checked_at": "2026-04-28T20:53:35+09:00"
+  }
 }

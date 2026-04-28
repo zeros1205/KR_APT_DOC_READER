@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n066.9500 타입 | 전용 88.5046㎡ | 일반 86세대 | 특별 111세대 | 분양가 54000만원\n066.9695 타입 | 전용 88.9774㎡ | 일반 50세대 | 특별 68세대 | 분양가 54300만원\n084.9582 타입 | 전용 111.1135㎡ | 일반 93세대 | 특별 119세대 | 분양가 67800만원\n084.7529 타입 | 전용 112.1308㎡ | 일반 26세대 | 특별 37세대 | 분양가 68500만원\n104.7405 타입 | 전용 140.0800㎡ | 일반 9세대 | 특별 1세대 | 분양가 97400만원\n104.9590 타입 | 전용 140.8241㎡ | 일반 3세대 | 특별 0세대 | 분양가 97900만원\n127.4605 타입 | 전용 169.1577㎡ | 일반 6세대 | 특별 1세대 | 분양가 117600만원\n127.7132 타입 | 전용 171.1277㎡ | 일반 2세대 | 특별 0세대 | 분양가 119000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:52.526872"
+    "collected_at": "2026-04-28T20:28:52.526872",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "신영부동산신탁(주)",
@@ -262,5 +267,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "김포북변 칸타빌 디 에디션 규제지역 | 김포북변 칸타빌 디 에디션 전매제한 | 김포북변 칸타빌 디 에디션 분양가상한제",
+    "evidence_queries": [
+      "김포북변 칸타빌 디 에디션 규제지역",
+      "김포북변 칸타빌 디 에디션 전매제한",
+      "김포북변 칸타빌 디 에디션 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:50:50+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9800C타입 | 전용 75.7387㎡ | 일반 8세대 | 특별 12세대 | 분양가 52030만원\n059.9200C타입 | 전용 74.8273㎡ | 일반 5세대 | 특별 6세대 | 분양가 50420만원\n059.9600C타입 | 전용 74.8849㎡ | 일반 27세대 | 특별 25세대 | 분양가 50300만원\n072.2300B타입 | 전용 90.6308㎡ | 일반 5세대 | 특별 2세대 | 분양가 62150만원\n074.8600B타입 | 전용 93.5115㎡ | 일반 4세대 | 특별 4세대 | 분양가 62510만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:46.711852"
+    "collected_at": "2026-04-28T20:28:46.711852",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "원종공항연립가로주택정비사업조합",
@@ -205,5 +210,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "엘리프 원종 규제지역 | 엘리프 원종 분양가상한제 | 엘리프 원종 전매제한 | 엘리프 원종 재당첨제한 거주의무",
+    "evidence_queries": [
+      "엘리프 원종 규제지역",
+      "엘리프 원종 분양가상한제",
+      "엘리프 원종 전매제한",
+      "엘리프 원종 재당첨제한 거주의무"
+    ],
+    "checked_at": "2026-04-28T21:26:37+09:00"
+  }
 }

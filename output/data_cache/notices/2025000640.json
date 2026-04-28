@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.6657A타입 | 전용 82.4844㎡ | 일반 3세대 | 특별 0세대 | 분양가 42415만원\n059.9458B타입 | 전용 84.9490㎡ | 일반 9세대 | 특별 0세대 | 분양가 43673만원\n084.9907 타입 | 전용 116.1467㎡ | 일반 4세대 | 특별 0세대 | 분양가 59721만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:05.254024"
+    "collected_at": "2026-04-28T20:29:05.254024",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "강릉교동센트럴파크지역주택조합",
@@ -167,5 +172,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "강릉역 경남아너스빌 더 센트로 조합원 취소분 규제지역 | 강릉역 경남아너스빌 더 센트로 분양가상한제 | 강릉역 경남아너스빌 더 센트로 재당첨제한 전매제한",
+    "evidence_queries": [
+      "강릉역 경남아너스빌 더 센트로 조합원 취소분 규제지역",
+      "강릉역 경남아너스빌 더 센트로 분양가상한제",
+      "강릉역 경남아너스빌 더 센트로 재당첨제한 전매제한"
+    ],
+    "checked_at": "2026-04-28T22:44:07+09:00"
+  }
 }

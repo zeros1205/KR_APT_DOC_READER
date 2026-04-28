@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.0352A타입 | 전용 108.6941㎡ | 일반 85세대 | 특별 155세대 | 분양가 89860만원\n084.0236B타입 | 전용 108.9094㎡ | 일반 16세대 | 특별 25세대 | 분양가 88290만원\n084.0158C타입 | 전용 109.2429㎡ | 일반 59세대 | 특별 103세대 | 분양가 89000만원\n084.0044D타입 | 전용 110.9814㎡ | 일반 22세대 | 특별 32세대 | 분양가 87580만원\n084.0000P타입 | 전용 113.1772㎡ | 일반 4세대 | 특별 0세대 | 분양가 125000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:54.583060"
+    "collected_at": "2026-04-28T20:28:54.583060",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)동인개발,(주)창해건설",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "송도 한내들 센트럴리버 규제지역 | 송도 한내들 센트럴리버 분양가상한제 | 송도 한내들 센트럴리버 전매제한",
+    "evidence_queries": [
+      "송도 한내들 센트럴리버 규제지역",
+      "송도 한내들 센트럴리버 분양가상한제",
+      "송도 한내들 센트럴리버 전매제한"
+    ],
+    "checked_at": "2026-04-28T21:56:26+09:00"
+  }
 }

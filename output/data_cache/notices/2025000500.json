@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n050.8330A타입 | 전용 71.1103㎡ | 일반 16세대 | 특별 0세대 | 분양가 11615만원\n050.5420B타입 | 전용 71.1169㎡ | 일반 2세대 | 특별 0세대 | 분양가 11230만원\n050.5530C타입 | 전용 71.6115㎡ | 일반 5세대 | 특별 0세대 | 분양가 11420만원\n059.7510A타입 | 전용 83.9341㎡ | 일반 4세대 | 특별 0세대 | 분양가 13270만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:36.767275"
+    "collected_at": "2026-04-28T20:28:36.767275",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "3년",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "전북개발공사",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "3년",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "전주·완주 혁신도시 에코르 2단지 재당첨제한 | 전주·완주 혁신도시 에코르 2단지 전매제한 | 전주·완주 혁신도시 에코르 2단지 분양가상한제",
+    "evidence_queries": [
+      "전주·완주 혁신도시 에코르 2단지 재당첨제한",
+      "전주·완주 혁신도시 에코르 2단지 전매제한",
+      "전주·완주 혁신도시 에코르 2단지 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T20:54:34+09:00"
+  }
 }

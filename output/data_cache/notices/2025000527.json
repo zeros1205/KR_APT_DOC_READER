@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9400A타입 | 전용 78.2624㎡ | 일반 103세대 | 특별 120세대 | 분양가 208800만원\n059.9800B타입 | 전용 79.4706㎡ | 일반 58세대 | 특별 71세대 | 분양가 213100만원\n059.8500C타입 | 전용 78.3139㎡ | 일반 13세대 | 특별 13세대 | 분양가 200600만원\n059.9100D타입 | 전용 78.4862㎡ | 일반 34세대 | 특별 44세대 | 분양가 206700만원\n084.9100A타입 | 전용 110.8474㎡ | 일반 6세대 | 특별 8세대 | 분양가 268400만원\n084.9600B타입 | 전용 110.5676㎡ | 일반 14세대 | 특별 15세대 | 분양가 274900만원\n084.9600C타입 | 전용 111.1676㎡ | 일반 2세대 | 특별 5세대 | 분양가 270700만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:41.319236"
+    "collected_at": "2026-04-28T20:28:41.319236",
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "반포아파트(제3주구) 주택재건축정비사업조합",
@@ -243,5 +248,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "반포 래미안 트리니원 전매제한 기간 | 반포 래미안 트리니원 실거주 의무 기간 | 반포 래미안 트리니원 재당첨제한 | 반포 래미안 트리니원 분양가상한제",
+    "evidence_queries": [
+      "반포 래미안 트리니원 전매제한 기간",
+      "반포 래미안 트리니원 실거주 의무 기간",
+      "반포 래미안 트리니원 재당첨제한",
+      "반포 래미안 트리니원 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:08:52+09:00"
+  }
 }

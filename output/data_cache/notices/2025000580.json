@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9836 타입 | 전용 81.5098㎡ | 일반 25세대 | 특별 37세대 | 분양가 52400만원\n084.9688A타입 | 전용 114.4677㎡ | 일반 23세대 | 특별 36세대 | 분양가 69700만원\n084.8414B타입 | 전용 113.8117㎡ | 일반 22세대 | 특별 35세대 | 분양가 69700만원\n084.8705C타입 | 전용 113.8173㎡ | 일반 13세대 | 특별 19세대 | 분양가 68700만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:53.770528"
+    "collected_at": "2026-04-28T20:28:53.770528",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "아이에스동서(주)",
@@ -186,5 +191,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "울산 호수공원 에일린의 뜰 2단지 재당첨 제한 | 울산 호수공원 에일린의 뜰 2단지 거주의무 기간 | 울산 호수공원 에일린의 뜰 2단지 전매제한 | 울산 호수공원 에일린의 뜰 분양가상한제",
+    "evidence_queries": [
+      "울산 호수공원 에일린의 뜰 2단지 재당첨 제한",
+      "울산 호수공원 에일린의 뜰 2단지 거주의무 기간",
+      "울산 호수공원 에일린의 뜰 2단지 전매제한",
+      "울산 호수공원 에일린의 뜰 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:54:14+09:00"
+  }
 }

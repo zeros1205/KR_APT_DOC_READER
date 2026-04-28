@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9851A타입 | 전용 112.0650㎡ | 일반 289세대 | 특별 104세대 | 분양가 53338만원\n084.9803B타입 | 전용 112.4486㎡ | 일반 82세대 | 특별 31세대 | 분양가 53489만원\n098.8709 타입 | 전용 129.9227㎡ | 일반 193세대 | 특별 12세대 | 분양가 60540만원\n110.9923 타입 | 전용 145.0280㎡ | 일반 69세대 | 특별 4세대 | 분양가 67578만원\n128.1583 타입 | 전용 167.5430㎡ | 일반 43세대 | 특별 2세대 | 분양가 78070만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:35.948560"
+    "collected_at": "2026-04-28T20:28:35.948560",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
@@ -205,5 +210,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "트리븐 서산 규제지역 | 트리븐 서산 비규제지역 혜택",
+    "evidence_queries": [
+      "트리븐 서산 규제지역",
+      "트리븐 서산 비규제지역 혜택"
+    ],
+    "checked_at": "2026-04-28T20:52:34+09:00"
+  }
 }

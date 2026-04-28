@@ -38,11 +38,16 @@ CATEGORY_ORDER    = [name for name, _, _ in REGIONS]
 
 
 def region_name_to_category(region_name: str) -> str:
-    """API region_name(예: '경기', '서울특별시') → 카테고리명(예: '경기도', '서울')"""
+    """API region_name/주소 문자열 → 광역 카테고리명."""
+    text = region_name or ""
+    alias_text = (
+        text.replace("전주시", "전북 전주시")
+        .replace("완주군", "전북 완주군")
+    )
     for cat, _, patterns in REGIONS:
-        if any(p in region_name for p in patterns):
+        if any(p in alias_text for p in patterns):
             return cat
-    return region_name or "기타"
+    return text or "기타"
 
 
 def category_to_code(category: str) -> str:

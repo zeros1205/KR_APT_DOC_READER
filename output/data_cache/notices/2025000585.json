@@ -51,7 +51,9 @@
     "raw_text": "[주택형별 정보]\n084.9955A타입 | 전용 111.6286㎡ | 일반 25세대 | 특별 39세대 | 분양가 55810만원\n084.9697B타입 | 전용 111.2341㎡ | 일반 59세대 | 특별 100세대 | 분양가 56590만원\n084.9692C타입 | 전용 111.1767㎡ | 일반 24세대 | 특별 38세대 | 분양가 56190만원\n084.9328D타입 | 전용 111.7643㎡ | 일반 20세대 | 특별 33세대 | 분양가 54290만원\n097.9655 타입 | 전용 124.9052㎡ | 일반 70세대 | 특별 9세대 | 분양가 61680만원\n097.9655P타입 | 전용 124.9052㎡ | 일반 66세대 | 특별 9세대 | 분양가 64280만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:55.402530"
+    "collected_at": "2026-04-28T20:28:55.402530",
+    "regulated_zone": "비규제지역",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "티에스리빙 주식회사",
@@ -224,5 +226,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "미기재",
+    "resale_restriction": "미기재",
+    "live_requirement": "미기재",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "인천 검단신도시 AB13블록 호반써밋Ⅲ 분양가상한제 | 호반써밋Ⅲ 규제지역 비규제지역 | 검단신도시 호반써밋Ⅲ 청약 본청약",
+    "evidence_queries": [
+      "인천 검단신도시 AB13블록 호반써밋Ⅲ 분양가상한제",
+      "호반써밋Ⅲ 규제지역 비규제지역",
+      "검단신도시 호반써밋Ⅲ 청약 본청약"
+    ],
+    "checked_at": "2026-04-28T21:58:38+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9241 타입 | 전용 82.7214㎡ | 일반 16세대 | 특별 7세대 | 분양가 66580만원\n066.6115A타입 | 전용 91.7496㎡ | 일반 6세대 | 특별 5세대 | 분양가 73850만원\n066.6793B타입 | 전용 93.3775㎡ | 일반 5세대 | 특별 5세대 | 분양가 75910만원\n075.7005 타입 | 전용 104.3906㎡ | 일반 1세대 | 특별 2세대 | 분양가 78290만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:34.691327"
+    "collected_at": "2026-04-28T20:28:34.691327",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "석수동적성아파트가로주택정비사업조합",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "만안역 중앙하이츠 포레 규제지역 | 만안역 중앙하이츠 포레 재당첨제한 전매제한 | 만안역 중앙하이츠 포레 분양가상한제",
+    "evidence_queries": [
+      "만안역 중앙하이츠 포레 규제지역",
+      "만안역 중앙하이츠 포레 재당첨제한 전매제한",
+      "만안역 중앙하이츠 포레 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T20:49:00+09:00"
+  }
 }

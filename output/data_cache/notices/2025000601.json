@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.6040C타입 | 전용 84.5393㎡ | 일반 18세대 | 특별 18세대 | 분양가 68530만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:58.345446"
+    "collected_at": "2026-04-28T20:28:58.345446",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "신월2주택재건축정비사업조합",
@@ -129,5 +134,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "창원 센트럴 아이파크 비규제지역 | 창원 센트럴 아이파크 전매제한 | 창원 센트럴 아이파크 재당첨제한 | 창원 센트럴 아이파크 분양가상한제",
+    "evidence_queries": [
+      "창원 센트럴 아이파크 비규제지역",
+      "창원 센트럴 아이파크 전매제한",
+      "창원 센트럴 아이파크 재당첨제한",
+      "창원 센트럴 아이파크 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T22:15:50+09:00"
+  }
 }

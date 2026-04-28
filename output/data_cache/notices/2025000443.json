@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9037 타입 | 전용 82.4475㎡ | 일반 11세대 | 특별 15세대 | 분양가 37830만원\n074.9524A타입 | 전용 102.3487㎡ | 일반 3세대 | 특별 5세대 | 분양가 46960만원\n074.5915B타입 | 전용 103.1039㎡ | 일반 3세대 | 특별 1세대 | 분양가 46740만원\n084.7657A타입 | 전용 115.6474㎡ | 일반 84세대 | 특별 100세대 | 분양가 53380만원\n084.7696B타입 | 전용 116.1025㎡ | 일반 52세대 | 특별 61세대 | 분양가 52950만원\n108.6080 타입 | 전용 147.0840㎡ | 일반 56세대 | 특별 8세대 | 분양가 71700만원\n152.0000A타입 | 전용 210.6973㎡ | 일반 2세대 | 특별 0세대 | 분양가 130810만원\n152.0000B타입 | 전용 210.2892㎡ | 일반 2세대 | 특별 0세대 | 분양가 130810만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:31.348370"
+    "collected_at": "2026-04-28T20:28:31.348370",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "구미중앙숲지역주택조합",
@@ -262,5 +267,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "두산위브더제니스 구미 규제지역 | 두산위브더제니스 구미 전매제한 재당첨제한 | 두산위브더제니스 구미 분양가상한제",
+    "evidence_queries": [
+      "두산위브더제니스 구미 규제지역",
+      "두산위브더제니스 구미 전매제한 재당첨제한",
+      "두산위브더제니스 구미 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T20:40:24+09:00"
+  }
 }

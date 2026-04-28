@@ -11,7 +11,7 @@ index_renderer.py
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 try:
@@ -26,6 +26,7 @@ OUT_FILE = OUTPUT_DIR / "index.html"
 TEMPLATE_PATH = ROOT / "templates" / "front_index_template.html"
 
 SITE_URL = "https://apt-note.com"
+EXPIRED_GRAD = "linear-gradient(135deg, #6F746F 0%, #555B56 60%, #3F4540 100%)"
 _PUBLIC_KW = (
     "공공분양", "공공임대", "행복주택", "국민임대", "lh", "sh공사",
     "경기주택", "인천도시공사", "주공", "공공지원",
@@ -71,12 +72,21 @@ function _renderPagination(matched) {
     + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
     + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
   var html = '';
-  for (var i = 1; i <= pages; i++) {
+  var blockSize = 5;
+  var startPage = Math.floor((_currentPage - 1) / blockSize) * blockSize + 1;
+  var endPage = Math.min(pages, startPage + blockSize - 1);
+  if (startPage > 1) {
+    html += '<button ' + btnBase + ' aria-label="이전 5페이지" onclick="goPage(' + (startPage - 1) + ')">&lsaquo;</button>';
+  }
+  for (var i = startPage; i <= endPage; i++) {
     if (i === _currentPage) {
       html += '<button ' + btnActive + '>' + i + '</button>';
     } else {
       html += '<button ' + btnBase + ' onclick="goPage(' + i + ')">' + i + '</button>';
     }
+  }
+  if (endPage < pages) {
+    html += '<button ' + btnBase + ' aria-label="다음 5페이지" onclick="goPage(' + (endPage + 1) + ')">&rsaquo;</button>';
   }
   box.innerHTML = html;
 }
@@ -349,6 +359,22 @@ def _fmt_notice_date(date_str: str) -> str:
         return "모집공고일 확인 필요"
 
 
+def _parse_date(value: object) -> date | None:
+    text = str(value or "").strip()
+    if not text or text in ("-", "null", "None"):
+        return None
+    text = text.split(" ~ ", 1)[0].strip()
+    try:
+        return datetime.strptime(text[:10], "%Y-%m-%d").date()
+    except Exception:
+        return None
+
+
+def _is_expired(post: dict) -> bool:
+    winner = _parse_date(post.get("winner_date"))
+    return bool(winner and winner < date.today())
+
+
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:
     combined = title + " " + apt_name
     resupply_map = [
@@ -426,6 +452,8 @@ def _render_card(post: dict) -> str:
     url = post["post_url"]
     tags = (post.get("tags") or [])[:4]
     supply_label, header_grad, tag_type = _supply_info(title, apt_name)
+    if _is_expired(post):
+        header_grad = EXPIRED_GRAD
     supply_key = _supply_filter_key(title, apt_name)
     price_range = (post.get("price_range") or "분양가 확인 필요").replace("약", "").strip()
     move_in = post.get("move_in_date") or "입주 시기 확인 필요"

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.8815A타입 | 전용 115.9040㎡ | 일반 17세대 | 특별 17세대 | 분양가 57500만원\n084.7689B타입 | 전용 115.6885㎡ | 일반 17세대 | 특별 18세대 | 분양가 57500만원\n084.5654C타입 | 전용 115.4852㎡ | 일반 17세대 | 특별 17세대 | 분양가 57500만원\n084.8284D타입 | 전용 116.0974㎡ | 일반 32세대 | 특별 38세대 | 분양가 57300만원\n103.7368 타입 | 전용 139.5713㎡ | 일반 61세대 | 특별 9세대 | 분양가 69800만원\n114.9805 타입 | 전용 154.3766㎡ | 일반 31세대 | 특별 4세대 | 분양가 81700만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:32.181106"
+    "collected_at": "2026-04-28T20:28:32.181106",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
@@ -224,5 +229,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "효성해링턴 플레이스 여수 전매제한 거주의무 분양가상한제 | 효성해링턴 플레이스 여수 규제지역 여부",
+    "evidence_queries": [
+      "효성해링턴 플레이스 여수 전매제한 거주의무 분양가상한제",
+      "효성해링턴 플레이스 여수 규제지역 여부"
+    ],
+    "checked_at": "2026-04-28T20:42:35+09:00"
+  }
 }

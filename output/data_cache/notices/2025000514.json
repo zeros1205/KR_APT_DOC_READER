@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.0807A타입 | 전용 99.0066㎡ | 일반 206세대 | 특별 388세대 | 분양가 63500만원\n074.0362B타입 | 전용 99.4476㎡ | 일반 77세대 | 특별 178세대 | 분양가 63300만원\n084.6290A타입 | 전용 112.0710㎡ | 일반 179세대 | 특별 411세대 | 분양가 71000만원\n084.9946B타입 | 전용 113.4048㎡ | 일반 40세대 | 특별 16세대 | 분양가 69100만원\n084.5088C타입 | 전용 111.3131㎡ | 일반 22세대 | 특별 7세대 | 분양가 71000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:39.245777"
+    "collected_at": "2026-04-28T20:28:39.245777",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)대우건설,디에스케이피에프브이주식회사",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "풍무역 푸르지오 더 마크 규제지역 | 풍무역 푸르지오 더 마크 재당첨제한 전매제한 | 풍무역 푸르지오 더 마크 분양가상한제",
+    "evidence_queries": [
+      "풍무역 푸르지오 더 마크 규제지역",
+      "풍무역 푸르지오 더 마크 재당첨제한 전매제한",
+      "풍무역 푸르지오 더 마크 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:03:06+09:00"
+  }
 }

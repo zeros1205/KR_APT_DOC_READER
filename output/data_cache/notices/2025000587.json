@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n119.7031A타입 | 전용 154.2777㎡ | 일반 105세대 | 특별 15세대 | 분양가 58960만원\n119.7199P타입 | 전용 158.8362㎡ | 일반 2세대 | 특별 0세대 | 분양가 72000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:56.229060"
+    "collected_at": "2026-04-28T20:28:56.229060",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "충청남도개발공사",
@@ -148,5 +153,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "e편한세상 내포 에듀플라츠 분양가상한제 재당첨제한 | e편한세상 내포 에듀플라츠 전매제한 실거주의무",
+    "evidence_queries": [
+      "e편한세상 내포 에듀플라츠 분양가상한제 재당첨제한",
+      "e편한세상 내포 에듀플라츠 전매제한 실거주의무"
+    ],
+    "checked_at": "2026-04-28T22:10:14+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9355A타입 | 전용 117.2913㎡ | 일반 97세대 | 특별 111세대 | 분양가 69710만원\n084.9450B타입 | 전용 116.4571㎡ | 일반 233세대 | 특별 280세대 | 분양가 69710만원\n084.9856G타입 | 전용 117.6340㎡ | 일반 22세대 | 특별 21세대 | 분양가 69910만원\n084.9373H타입 | 전용 117.0286㎡ | 일반 14세대 | 특별 11세대 | 분양가 69570만원\n101.8981 타입 | 전용 139.7359㎡ | 일반 148세대 | 특별 22세대 | 분양가 81390만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:30.932000"
+    "collected_at": "2026-04-28T20:28:30.932000",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "아이월드 주식회사",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "인하대역 수자인 로이센트 규제지역 | 인하대역 수자인 로이센트 전매제한 1년 | 인하대역 수자인 로이센트 재당첨제한 거주의무 없음",
+    "evidence_queries": [
+      "인하대역 수자인 로이센트 규제지역",
+      "인하대역 수자인 로이센트 전매제한 1년",
+      "인하대역 수자인 로이센트 재당첨제한 거주의무 없음"
+    ],
+    "checked_at": "2026-04-28T20:39:19+09:00"
+  }
 }

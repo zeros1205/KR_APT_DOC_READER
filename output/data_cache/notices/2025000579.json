@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9279A타입 | 전용 110.9233㎡ | 일반 73세대 | 특별 112세대 | 분양가 69200만원\n084.8705B타입 | 전용 111.0131㎡ | 일반 15세대 | 특별 23세대 | 분양가 69200만원\n084.8152C타입 | 전용 110.8330㎡ | 일반 11세대 | 특별 13세대 | 분양가 69200만원\n102.9967A타입 | 전용 134.5268㎡ | 일반 16세대 | 특별 3세대 | 분양가 83700만원\n102.9605B타입 | 전용 134.5213㎡ | 일반 37세대 | 특별 7세대 | 분양가 83700만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:53.361069"
+    "collected_at": "2026-04-28T20:28:53.361069",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "아이에스동서(주)",
@@ -205,5 +210,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "울산 호수공원 에일린의 뜰 1단지 규제 | 울산 호수공원 에일린의 뜰 1단지 재당첨제한 | 울산 호수공원 에일린의 뜰 1단지 전매제한 | 울산 남구 비규제지역 분양가상한제",
+    "evidence_queries": [
+      "울산 호수공원 에일린의 뜰 1단지 규제",
+      "울산 호수공원 에일린의 뜰 1단지 재당첨제한",
+      "울산 호수공원 에일린의 뜰 1단지 전매제한",
+      "울산 남구 비규제지역 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T21:53:04+09:00"
+  }
 }

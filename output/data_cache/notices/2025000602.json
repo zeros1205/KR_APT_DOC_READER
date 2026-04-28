@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9670A타입 | 전용 114.0257㎡ | 일반 29세대 | 특별 99세대 | 분양가 69292만원\n084.9966B타입 | 전용 115.6358㎡ | 일반 30세대 | 특별 99세대 | 분양가 62720만원\n112.9721A타입 | 전용 149.8627㎡ | 일반 61세대 | 특별 22세대 | 분양가 90683만원\n112.9810B타입 | 전용 150.6178㎡ | 일반 51세대 | 특별 17세대 | 분양가 82754만원\n104.9940A타입 | 전용 139.2509㎡ | 일반 188세대 | 특별 59세대 | 분양가 87895만원\n104.9695B타입 | 전용 139.1270㎡ | 일반 189세대 | 특별 59세대 | 분양가 79751만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:58.749080"
+    "collected_at": "2026-04-28T20:28:58.749080",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "디비종합건설주식회사,디비주택주식회사",
@@ -224,5 +229,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "인천영종국제도시 디에트르 라 메르 분양가상한제 | 인천영종국제도시 디에트르 라 메르 재당첨제한 | 인천영종국제도시 디에트르 라 메르 전매제한 | 인천영종국제도시 디에트르 라 메르 규제지역",
+    "evidence_queries": [
+      "인천영종국제도시 디에트르 라 메르 분양가상한제",
+      "인천영종국제도시 디에트르 라 메르 재당첨제한",
+      "인천영종국제도시 디에트르 라 메르 전매제한",
+      "인천영종국제도시 디에트르 라 메르 규제지역"
+    ],
+    "checked_at": "2026-04-28T22:17:15+09:00"
+  }
 }

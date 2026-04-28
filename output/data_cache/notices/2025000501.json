@@ -40,7 +40,7 @@
     "contact": "18006552",
     "homepage": "https://더샵분당티에르원.kr",
     "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000501&pblancNo=2025000501",
-    "is_hot_zone": "N",
+    "is_hot_zone": "Y",
     "is_adj_zone": "N",
     "is_price_cap": "N",
     "is_redevelop": "N",
@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n066.0000 타입 | 전용 92.9704㎡ | 일반 20세대 | 특별 24세대 | 분양가 197400만원\n074.0000 타입 | 전용 103.1692㎡ | 일반 4세대 | 특별 1세대 | 분양가 231800만원\n084.9500 타입 | 전용 118.0367㎡ | 일반 5세대 | 특별 9세대 | 분양가 268400만원\n084.7000 타입 | 전용 117.6893㎡ | 일반 2세대 | 특별 3세대 | 분양가 267700만원\n084.6900 타입 | 전용 117.6754㎡ | 일반 1세대 | 특별 0세대 | 분양가 256700만원\n084.6200 타입 | 전용 117.5782㎡ | 일반 3세대 | 특별 1세대 | 분양가 250900만원\n084.3200 타입 | 전용 117.1613㎡ | 일반 1세대 | 특별 0세대 | 분양가 250200만원\n084.0000 타입 | 전용 117.9672㎡ | 일반 11세대 | 특별 17세대 | 분양가 253200만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:37.174980"
+    "collected_at": "2026-04-28T20:28:37.174980",
+    "regulated_zone": "청약과열지역",
+    "readmission_limit": "7년",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "느티마을3단지 리모델링주택조합",
@@ -262,5 +267,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "7년",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "더샵 분당티에르원 청약 규제지역 | 더샵 분당티에르원 분양가상한제 | 더샵 분당티에르원 전매제한 재당첨제한",
+    "evidence_queries": [
+      "더샵 분당티에르원 청약 규제지역",
+      "더샵 분당티에르원 분양가상한제",
+      "더샵 분당티에르원 전매제한 재당첨제한"
+    ],
+    "checked_at": "2026-04-28T20:57:20+09:00"
+  }
 }

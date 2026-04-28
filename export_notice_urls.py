@@ -1,95 +1,152 @@
 """
-청약홈 공공데이터 API에서 최근 공고의 단지명과 상세페이지 URL만 추출한다.
+Export CheongYakHome detail URLs from cached public-data notices.
 
-출력:
-  - output/notice_urls.csv
-  - output/notice_urls.md
+This script does not call the public data API. It reads
+`output/data_cache/notices/*.json` and writes a date-stamped Markdown file for
+manual PDF download.
 """
 
 from __future__ import annotations
 
 import argparse
-import asyncio
-import csv
-import sys
+import json
+import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from datetime import datetime, timedelta
-
-from dotenv import load_dotenv
+from typing import Any
 
 BASE_DIR = Path(__file__).parent
-sys.path.insert(0, str(BASE_DIR / "pipeline"))
-
-load_dotenv(BASE_DIR / ".env")
-
-from agents.collector import CheongYakAPI  # noqa: E402
-
-OUTPUT_DIR = BASE_DIR / "output"
+NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
+PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
+EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
+PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR / "output" / "pdfs")
 
 
-def _write_outputs(rows: list[dict[str, str]]) -> tuple[Path, Path]:
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    csv_path = OUTPUT_DIR / "notice_urls.csv"
-    md_path = OUTPUT_DIR / "notice_urls.md"
+def _kst_today() -> str:
+    return datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d")
 
-    with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["apt_name", "notice_url"])
-        writer.writeheader()
-        writer.writerows(rows)
+
+def _load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def _load_processed() -> set[str]:
+    if not PROCESSED_FILE.exists():
+        return set()
+    try:
+        data = json.loads(PROCESSED_FILE.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return set()
+    return {str(item) for item in data}
+
+
+def _safe_cell(value: object) -> str:
+    return str(value or "").strip().replace("|", "\\|")
+
+
+def _notice_url(payload: dict[str, Any]) -> str:
+    doc = payload.get("document") or {}
+    raw = payload.get("detail_raw") or {}
+    return str(doc.get("notice_url") or raw.get("PBLANC_URL") or "").strip()
+
+
+def _expected_pdf_name(notice_id: str, apt_name: str) -> str:
+    safe_name = re.sub(r'[<>:"/\\\\|?*]+', "_", apt_name).strip()
+    return f"{notice_id} {safe_name} 입주자모집공고문.pdf"
+
+
+def _has_pdf(notice_id: str) -> bool:
+    if not notice_id:
+        return False
+    for directory in PDF_DIRS:
+        if not directory.exists():
+            continue
+        for path in directory.glob(f"{notice_id}*.pdf"):
+            if path.is_file():
+                return True
+    return False
+
+
+def _iter_rows(*, include_processed: bool, include_with_pdf: bool) -> list[dict[str, str]]:
+    processed = _load_processed()
+    rows: list[dict[str, str]] = []
+    if not NOTICE_CACHE_DIR.exists():
+        return rows
+
+    for path in sorted(NOTICE_CACHE_DIR.glob("*.json")):
+        payload = _load_json(path)
+        doc = payload.get("document") or {}
+        notice_id = str(payload.get("notice_id") or doc.get("notice_id") or path.stem).strip()
+        apt_name = str(payload.get("apt_name") or doc.get("apt_name") or "").strip()
+        notice_url = _notice_url(payload)
+        has_pdf = _has_pdf(notice_id)
+
+        if not include_processed and notice_id in processed:
+            continue
+        if not include_with_pdf and has_pdf:
+            continue
+        if not notice_id or not apt_name or not notice_url:
+            continue
+
+        rows.append(
+            {
+                "notice_id": notice_id,
+                "apt_name": apt_name,
+                "notice_date": str(doc.get("notice_date") or ""),
+                "winner_date": str(doc.get("winner_date") or ""),
+                "notice_url": notice_url,
+                "expected_pdf": _expected_pdf_name(notice_id, apt_name),
+            }
+        )
+    return rows
+
+
+def _write_md(rows: list[dict[str, str]], filename_date: str) -> Path:
+    EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+    md_path = EXPORT_DIR / f"{filename_date}_notice_urls.md"
 
     lines = [
         "# 청약홈 상세페이지 URL 목록",
         "",
-        "| 단지명 | 청약홈 상세페이지 URL |",
-        "|---|---|",
+        f"- 생성일: {filename_date}",
+        f"- 대상 공고: {len(rows)}건",
+        f"- PDF 업로드 폴더: `input/pdfs/`",
+        "",
+        "| 공고번호 | 단지명 | 모집공고일 | 당첨자 발표일 | 청약홈 링크 | 권장 PDF 파일명 |",
+        "|---|---|---:|---:|---|---|",
     ]
     for row in rows:
-        apt_name = row["apt_name"].replace("|", "\\|")
-        notice_url = row["notice_url"].replace("|", "\\|")
-        lines.append(f"| {apt_name} | {notice_url} |")
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _safe_cell(row["notice_id"]),
+                    _safe_cell(row["apt_name"]),
+                    _safe_cell(row["notice_date"]),
+                    _safe_cell(row["winner_date"]),
+                    _safe_cell(row["notice_url"]),
+                    f"`{_safe_cell(row['expected_pdf'])}`",
+                ]
+            )
+            + " |"
+        )
 
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return csv_path, md_path
+    return md_path
 
 
-async def main() -> None:
-    parser = argparse.ArgumentParser(description="청약홈 상세페이지 URL 추출")
-    parser.add_argument("--days", type=int, default=7, help="최근 N일 공고 수집")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Export cached CheongYakHome notice URLs to Markdown")
+    parser.add_argument("--include-processed", action="store_true", help="Include notices already listed in processed_notices.json")
+    parser.add_argument("--include-with-pdf", action="store_true", help="Include notices that already have matching PDFs")
+    parser.add_argument("--date", default=_kst_today(), help="Output filename date, YYYY-MM-DD")
     args = parser.parse_args()
 
-    print(f"[수집] 최근 {args.days}일 공고 조회 중...")
-    api = CheongYakAPI()
-    start_date = (datetime.now() - timedelta(days=args.days)).strftime("%Y-%m-%d")
-
-    docs: list[dict] = []
-    page = 1
-    per_page = 50
-    while True:
-        items = await api.get_list(page=page, per_page=per_page, start_date=start_date)
-        if not items:
-            break
-        docs.extend(items)
-        if len(items) < per_page:
-            break
-        page += 1
-
-    seen: set[str] = set()
-    rows: list[dict[str, str]] = []
-    for doc in docs:
-        apt_name = str(doc.get("HOUSE_NM", "")).strip()
-        notice_url = str(doc.get("PBLANC_URL", "")).strip()
-        if not apt_name or not notice_url:
-            continue
-        if notice_url in seen:
-            continue
-        seen.add(notice_url)
-        rows.append({"apt_name": apt_name, "notice_url": notice_url})
-
-    csv_path, md_path = _write_outputs(rows)
-    print(f"[완료] {len(rows)}건 저장")
-    print(f"CSV: {csv_path}")
-    print(f"MD : {md_path}")
+    rows = _iter_rows(include_processed=args.include_processed, include_with_pdf=args.include_with_pdf)
+    md_path = _write_md(rows, args.date)
+    print(f"[export] {len(rows)} rows")
+    print(f"[export] {md_path}")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

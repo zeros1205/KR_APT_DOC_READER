@@ -51,7 +51,11 @@
     "raw_text": "[주택형별 정보]\n084.9197A타입 | 전용 108.5060㎡ | 일반 37세대 | 특별 65세대 | 분양가 43800만원\n084.8903B타입 | 전용 109.0391㎡ | 일반 28세대 | 특별 52세대 | 분양가 46300만원\n113.8143A타입 | 전용 144.8714㎡ | 일반 98세대 | 특별 14세대 | 분양가 58500만원\n113.7967B타입 | 전용 145.2014㎡ | 일반 48세대 | 특별 7세대 | 분양가 61600만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:35.107825"
+    "collected_at": "2026-04-28T20:28:35.107825",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "1년",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
@@ -186,5 +190,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "1년",
+    "live_requirement": "미기재",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "김천혁신도시 동일하이빌 파크레인 분양가상한제 | 김천혁신도시 동일하이빌 파크레인 전매제한 | 김천혁신도시 동일하이빌 파크레인 재당첨제한",
+    "evidence_queries": [
+      "김천혁신도시 동일하이빌 파크레인 분양가상한제",
+      "김천혁신도시 동일하이빌 파크레인 전매제한",
+      "김천혁신도시 동일하이빌 파크레인 재당첨제한"
+    ],
+    "checked_at": "2026-04-28T20:50:22+09:00"
+  }
 }

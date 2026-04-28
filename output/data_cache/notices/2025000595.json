@@ -40,7 +40,7 @@
     "contact": "18335255",
     "homepage": "http://더샵분당센트로.kr",
     "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000595&pblancNo=2025000595",
-    "is_hot_zone": "N",
+    "is_hot_zone": "Y",
     "is_adj_zone": "N",
     "is_price_cap": "N",
     "is_redevelop": "N",
@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n060.5700A타입 | 전용 85.4800㎡ | 일반 2세대 | 특별 1세대 | 분양가 149000만원\n060.9400C타입 | 전용 86.1710㎡ | 일반 1세대 | 특별 1세대 | 분양가 149200만원\n064.3800A타입 | 전용 92.2460㎡ | 일반 1세대 | 특별 0세대 | 분양가 164000만원\n071.5900D타입 | 전용 103.2850㎡ | 일반 1세대 | 특별 0세대 | 분양가 182200만원\n073.5400B타입 | 전용 103.8620㎡ | 일반 1세대 | 특별 0세대 | 분양가 188300만원\n073.5900B타입 | 전용 103.2300㎡ | 일반 1세대 | 특별 1세대 | 분양가 183300만원\n078.4400N타입 | 전용 110.6250㎡ | 일반 22세대 | 특별 20세대 | 분양가 199700만원\n084.0800N타입 | 전용 117.5290㎡ | 일반 11세대 | 특별 21세대 | 분양가 218000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:57.922088"
+    "collected_at": "2026-04-28T20:28:57.922088",
+    "regulated_zone": "투기과열지구",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "무지개마을4단지리모델링주택조합",
@@ -262,5 +267,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구",
+    "is_hot_zone": "Y",
+    "readmission_limit": "없음",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "더샵 분당센트로 입주자모집공고 규제지역 | 더샵 분당센트로 분양가상한제 | 더샵 분당센트로 재당첨제한 | 더샵 분당센트로 전매제한",
+    "evidence_queries": [
+      "더샵 분당센트로 입주자모집공고 규제지역",
+      "더샵 분당센트로 분양가상한제",
+      "더샵 분당센트로 재당첨제한",
+      "더샵 분당센트로 전매제한"
+    ],
+    "checked_at": "2026-04-28T22:14:44+09:00"
+  }
 }

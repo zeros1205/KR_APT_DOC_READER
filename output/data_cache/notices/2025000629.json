@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.5107A타입 | 전용 97.4756㎡ | 일반 8세대 | 특별 12세대 | 분양가 70390만원\n076.9205A타입 | 전용 101.6037㎡ | 일반 5세대 | 특별 10세대 | 분양가 72280만원\n084.8424A타입 | 전용 110.7327㎡ | 일반 199세대 | 특별 240세대 | 분양가 82930만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:03.586038"
+    "collected_at": "2026-04-28T20:29:03.586038",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "안락1구역주택재건축정비사업조합",
@@ -167,5 +172,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "동래 푸르지오 에듀포레 전매제한 | 동래 푸르지오 에듀포레 분양가상한제 | 동래 푸르지오 에듀포레 규제지역 | 동래 푸르지오 에듀포레 재당첨제한",
+    "evidence_queries": [
+      "동래 푸르지오 에듀포레 전매제한",
+      "동래 푸르지오 에듀포레 분양가상한제",
+      "동래 푸르지오 에듀포레 규제지역",
+      "동래 푸르지오 에듀포레 재당첨제한"
+    ],
+    "checked_at": "2026-04-28T22:32:13+09:00"
+  }
 }

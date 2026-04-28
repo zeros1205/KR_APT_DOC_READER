@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9200A타입 | 전용 97.5993㎡ | 일반 33세대 | 특별 57세대 | 분양가 70900만원\n084.9900A타입 | 전용 110.7176㎡ | 일반 27세대 | 특별 47세대 | 분양가 79500만원\n084.9900B타입 | 전용 110.7176㎡ | 일반 61세대 | 특별 116세대 | 분양가 77600만원\n084.9900C타입 | 전용 110.7176㎡ | 일반 13세대 | 특별 22세대 | 분양가 75800만원\n084.9900D타입 | 전용 110.7176㎡ | 일반 22세대 | 특별 40세대 | 분양가 79800만원\n084.9900E타입 | 전용 110.7176㎡ | 일반 2세대 | 특별 0세대 | 분양가 103650만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:28.853688"
+    "collected_at": "2026-04-28T20:28:28.853688",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "수원당수피에프브이 주식회사,계룡건설산업(주)",
@@ -224,5 +229,23 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "엘리프 한신더휴 수원 C3블록 규제지역 | 엘리프 한신더휴 수원 C3블록 분양가상한제 | 엘리프 한신더휴 수원 C3블록 전매제한 재당첨제한 | 엘리프 한신더휴 수원 C3블록 실거주의무",
+    "evidence_queries": [
+      "엘리프 한신더휴 수원 C3블록 규제지역",
+      "엘리프 한신더휴 수원 C3블록 분양가상한제",
+      "엘리프 한신더휴 수원 C3블록 전매제한 재당첨제한",
+      "엘리프 한신더휴 수원 C3블록 실거주의무"
+    ],
+    "checked_at": "2026-04-28T20:33:28+09:00"
+  }
 }

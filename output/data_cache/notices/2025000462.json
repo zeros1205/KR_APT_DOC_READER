@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9957A타입 | 전용 111.7080㎡ | 일반 248세대 | 특별 304세대 | 분양가 59530만원\n084.9958B타입 | 전용 113.0354㎡ | 일반 65세대 | 특별 78세대 | 분양가 58930만원\n084.9914C타입 | 전용 111.2515㎡ | 일반 60세대 | 특별 75세대 | 분양가 58330만원\n084.9852T타입 | 전용 110.8193㎡ | 일반 12세대 | 특별 10세대 | 분양가 60730만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:32.595017"
+    "collected_at": "2026-04-28T20:28:32.595017",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "대한토지신탁(주)",
@@ -186,5 +191,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "더파크 비스타동원 비규제지역 | 더파크 비스타동원 전매제한 6개월 | 더파크 비스타동원 분양가상한제 미적용",
+    "evidence_queries": [
+      "더파크 비스타동원 비규제지역",
+      "더파크 비스타동원 전매제한 6개월",
+      "더파크 비스타동원 분양가상한제 미적용"
+    ],
+    "checked_at": "2026-04-28T20:43:34+09:00"
+  }
 }

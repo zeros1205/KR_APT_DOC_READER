@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n046.9755 타입 | 전용 64.5256㎡ | 일반 63세대 | 특별 50세대 | 분양가 49640만원\n051.6612 타입 | 전용 71.5288㎡ | 일반 46세대 | 특별 55세대 | 분양가 61740만원\n059.7982A타입 | 전용 83.0317㎡ | 일반 185세대 | 특별 234세대 | 분양가 79460만원\n059.7763B타입 | 전용 82.8207㎡ | 일반 67세대 | 특별 86세대 | 분양가 77700만원\n074.7931A타입 | 전용 102.5909㎡ | 일반 24세대 | 특별 23세대 | 분양가 91160만원\n074.7807B타입 | 전용 102.3117㎡ | 일반 38세대 | 특별 39세대 | 분양가 89270만원\n084.7394A타입 | 전용 115.5682㎡ | 일반 15세대 | 특별 12세대 | 분양가 100720만원\n084.7665B타입 | 전용 115.4386㎡ | 일반 12세대 | 특별 9세대 | 분양가 99640만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:46.297279"
+    "collected_at": "2026-04-28T20:28:46.297279",
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "고천나구역주택재개발정비사업조합",
@@ -262,5 +267,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "의왕시청역 SK VIEW IPARK 규제지역 | 의왕시청역 SK VIEW IPARK 분양가상한제 | 의왕시청역 SK VIEW IPARK 재당첨제한 전매제한",
+    "evidence_queries": [
+      "의왕시청역 SK VIEW IPARK 규제지역",
+      "의왕시청역 SK VIEW IPARK 분양가상한제",
+      "의왕시청역 SK VIEW IPARK 재당첨제한 전매제한"
+    ],
+    "checked_at": "2026-04-28T21:25:20+09:00"
+  }
 }

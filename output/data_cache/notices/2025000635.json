@@ -51,7 +51,10 @@
     "raw_text": "[주택형별 정보]\n084.9770A타입 | 전용 110.6706㎡ | 일반 95세대 | 특별 278세대 | 분양가 57280만원\n084.9081B타입 | 전용 111.1246㎡ | 일반 5세대 | 특별 15세대 | 분양가 55790만원\n084.8156C타입 | 전용 111.4800㎡ | 일반 12세대 | 특별 26세대 | 분양가 57120만원\n084.6387D타입 | 전용 110.4892㎡ | 일반 5세대 | 특별 15세대 | 분양가 54680만원\n114.2778 타입 | 전용 148.1545㎡ | 일반 52세대 | 특별 13세대 | 분양가 79064만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:04.827748"
+    "collected_at": "2026-04-28T20:29:04.827748",
+    "regulated_zone": "비규제지역",
+    "live_requirement": "없음",
+    "price_cap": "적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)한국토지신탁",
@@ -205,5 +208,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "미기재",
+    "resale_restriction": "미기재",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "gemini_grounding",
+    "query": "영종국제도시 신일 비아프 크레스트 분양가상한제 | 영종국제도시 신일 비아프 크레스트 실거주의무 | 영종국제도시 비규제지역",
+    "evidence_queries": [
+      "영종국제도시 신일 비아프 크레스트 분양가상한제",
+      "영종국제도시 신일 비아프 크레스트 실거주의무",
+      "영종국제도시 비규제지역"
+    ],
+    "checked_at": "2026-04-28T22:41:59+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.2012A타입 | 전용 111.3255㎡ | 일반 46세대 | 특별 73세대 | 분양가 92540만원\n084.2326B타입 | 전용 112.9291㎡ | 일반 51세대 | 특별 67세대 | 분양가 93490만원\n084.2593C타입 | 전용 112.5034㎡ | 일반 46세대 | 특별 73세대 | 분양가 93140만원\n084.4517D타입 | 전용 113.0286㎡ | 일반 33세대 | 특별 47세대 | 분양가 93950만원\n172.8751 타입 | 전용 232.4820㎡ | 일반 1세대 | 특별 0세대 | 분양가 247945만원\n176.3716 타입 | 전용 237.7944㎡ | 일반 1세대 | 특별 0세대 | 분양가 248445만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:28:59.163819"
+    "collected_at": "2026-04-28T20:28:59.163819",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "교보자산신탁(주)",
@@ -224,5 +229,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "힐스테이트 선암호수공원 비규제지역 | 힐스테이트 선암호수공원 전매제한 6개월 | 힐스테이트 선암호수공원 재당첨제한 거주의무",
+    "evidence_queries": [
+      "힐스테이트 선암호수공원 비규제지역",
+      "힐스테이트 선암호수공원 전매제한 6개월",
+      "힐스테이트 선암호수공원 재당첨제한 거주의무"
+    ],
+    "checked_at": "2026-04-28T22:18:26+09:00"
+  }
 }

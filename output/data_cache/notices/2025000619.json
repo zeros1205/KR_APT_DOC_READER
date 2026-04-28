@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9973A타입 | 전용 99.3762㎡ | 일반 33세대 | 특별 24세대 | 분양가 41840만원\n084.9639A타입 | 전용 113.2380㎡ | 일반 43세대 | 특별 31세대 | 분양가 47330만원\n084.7618B타입 | 전용 115.3580㎡ | 일반 47세대 | 특별 33세대 | 분양가 45050만원\n084.9639C타입 | 전용 113.2380㎡ | 일반 30세대 | 특별 22세대 | 분양가 46090만원\n158.2518P타입 | 전용 213.9866㎡ | 일반 1세대 | 특별 0세대 | 분양가 108748만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-28T20:29:01.643833"
+    "collected_at": "2026-04-28T20:29:01.643833",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 삼태사",
@@ -205,5 +210,21 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "안동리첼스카이파크 입주자모집공고 규제지역 | 안동리첼스카이파크 분양가상한제",
+    "evidence_queries": [
+      "안동리첼스카이파크 입주자모집공고 규제지역",
+      "안동리첼스카이파크 분양가상한제"
+    ],
+    "checked_at": "2026-04-28T22:25:19+09:00"
+  }
 }

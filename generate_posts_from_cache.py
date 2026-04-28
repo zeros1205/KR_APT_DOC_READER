@@ -30,7 +30,7 @@ from pipeline.index_renderer import build_front_index
 
 
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
-PDF_DIRS = (BASE_DIR.parent / "PDF", BASE_DIR / "output" / "pdfs")
+PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR.parent / "PDF", BASE_DIR / "output" / "pdfs")
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 
 
@@ -141,6 +141,12 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     return doc
 
 
+def _has_local_pdf(payload: dict[str, Any]) -> bool:
+    data = payload.get("document") or {}
+    notice_id = str(payload.get("notice_id") or data.get("notice_id") or "")
+    return bool(find_local_pdf_in_dirs(PDF_DIRS, notice_id))
+
+
 def _iter_payloads(*, include_manual: bool) -> list[tuple[Path, dict[str, Any]]]:
     if not NOTICE_CACHE_DIR.exists():
         return []
@@ -166,6 +172,7 @@ async def main() -> None:
     parser.add_argument("--include-processed", action="store_true", help="Do not skip processed_notices.json entries")
     parser.add_argument("--skip-ui-freeze-check", action="store_true", help="Skip frozen UI/layout hash check")
     parser.add_argument("--no-build-index", action="store_true", help="Skip front page/sitemap/robots regeneration")
+    parser.add_argument("--require-pdf", action="store_true", help="Only generate notices that have a matching local PDF")
     parser.add_argument("--dry-run", action="store_true", help="Load cache and print selected notices without generation")
     args = parser.parse_args()
 
@@ -186,6 +193,9 @@ async def main() -> None:
         if args.notice_id and notice_id not in {str(item) for item in args.notice_id}:
             continue
         if notice_id in processed_ids and not args.include_processed:
+            continue
+        if args.require_pdf and not _has_local_pdf(payload):
+            print(f"[cache] PDF 없음 -> 건너뜀: {notice_id} {payload.get('apt_name')}")
             continue
         selected.append((path, payload))
         if args.limit > 0 and len(selected) >= args.limit:
