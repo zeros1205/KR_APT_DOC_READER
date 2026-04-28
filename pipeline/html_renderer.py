@@ -227,6 +227,10 @@ def _display_date(value: object) -> str:
     return _display_value(value, default="")
 
 
+def _has_schedule(value: object) -> bool:
+    return _stringify(value) not in _DISPLAY_EMPTY_VALUES
+
+
 def _safe_int(value: object) -> int:
     try:
         return int(str(value).strip() or 0)
@@ -479,9 +483,9 @@ def build_post_data(
         unit_type_desc=_stringify(content.get("unit_type_desc")) or f"{apt_name}은 아래와 같은 타입으로 공급됩니다.",
         schedule_desc=_stringify(content.get("schedule_desc")) or "청약 일정을 미리 확인하고 준비하세요.",
         tax_desc=_stringify(content.get("tax_desc")) or "취득·보유·양도 단계별로 발생하는 세금을 미리 파악해두세요.",
-        eligibility_special=facts.get("eligibility_special") or [],
+        eligibility_special=(facts.get("eligibility_special") or []) if _has_schedule(special_supply_date) else [],
         eligibility_rank1=facts.get("eligibility_rank1") or [],
-        eligibility_rank2=facts.get("eligibility_rank2") or [],
+        eligibility_rank2=(facts.get("eligibility_rank2") or []) if _has_schedule(rank2_date) else [],
         qa_blocks=qa_blocks,
         seo_tags=content.get("seo_tags", [apt_name, "청약", "분양"]),
         images={},
@@ -671,14 +675,14 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         special_block = (
             f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
-            f'font-size:14px;color:{t["muted"]};">특별공급 자격 정보를 공고문에서 찾지 못했습니다. '
-            f'공식 모집공고문을 다시 확인하세요.</div>'
+            f'font-size:14px;color:{t["muted"]};">특별공급 관련 정보가 없습니다. '
+            f'입주자모집공고문을 확인하세요.</div>'
         )
 
     # ── 1순위 / 2순위 ──
     def _rank_block(label: str, items: list[str], color: str) -> str:
         if not items:
-            items = ["공고문에서 해당 자격 항목을 찾지 못했습니다."]
+            items = [f"{label.replace(' 자격', '')} 일반공급 관련 정보가 없습니다. 입주자모집공고문을 확인하세요."]
         li_html = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
