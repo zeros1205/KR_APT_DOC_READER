@@ -1105,9 +1105,11 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta property="og:title" content="{data.post_title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{post_canonical}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="{SITE_URL}/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{SITE_URL}/og-image.jpg">
 <meta name="robots" content="index, follow">
 <link rel="icon" type="image/x-icon" href="{SITE_URL}/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="{SITE_URL}/favicon-16x16.png">

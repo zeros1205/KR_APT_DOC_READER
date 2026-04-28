@@ -266,22 +266,6 @@ function _bindCardTitleMarquee() {
   });
 }
 
-function _bindUserGuideDismiss() {
-  var card = document.getElementById('user-guide-card');
-  var btn = document.getElementById('dismiss-user-guide');
-  if (!card || !btn) return;
-  var today = new Date().toISOString().slice(0, 10);
-  var key = 'apt-hide-user-guide-until';
-  if (localStorage.getItem(key) === today) {
-    card.style.display = 'none';
-    return;
-  }
-  btn.addEventListener('click', function() {
-    localStorage.setItem(key, today);
-    card.style.display = 'none';
-  });
-}
-
 function _bindFilterDockProgress() {
   var progress = document.getElementById('filter-dock-progress');
   if (!progress) return;
@@ -309,7 +293,6 @@ if (defaultSupplyBtn) defaultSupplyBtn.classList.add('active');
 _bindSearchInputs();
 _bindFilterDockProgress();
 _bindScrollTopButton();
-_bindUserGuideDismiss();
 _applyFilters();
 </script>"""
 
