@@ -716,14 +716,14 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         special_block = (
             f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
-            f'font-size:14px;color:{t["muted"]};">특별공급 관련 정보가 없습니다. '
+            f'font-size:14px;color:{t["muted"]};">특별공급 관련 정보가 없습니다.  '
             f'입주자모집공고문을 확인하세요.</div>'
         )
 
     # ── 1순위 / 2순위 ──
     def _rank_block(label: str, items: list[str]) -> str:
         if not items:
-            items = [f"{label.replace(' 자격', '')} 일반공급 관련 정보가 없습니다. 입주자모집공고문을 확인하세요."]
+            items = [f"{label.replace(' 자격', '')} 일반공급 관련  정보가 없습니다.  입주자모집공고문을 확인하세요."]
         li_html = "".join(
             f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
