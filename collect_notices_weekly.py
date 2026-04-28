@@ -311,6 +311,7 @@ async def main() -> None:
         start_date = args.start_date.strip() or (datetime.now() - timedelta(days=args.days)).strftime("%Y-%m-%d")
         print(f"[collect] 공공데이터 API 조회 시작: {start_date} 이후")
         raw_list = []
+        seen_ids: set[str] = set()
         page = 1
         per_page = 50
         target = args.limit if args.limit > 0 else 0
@@ -318,24 +319,20 @@ async def main() -> None:
             page_items = await api.get_list(page=page, per_page=per_page, start_date=start_date)
             if not page_items:
                 break
-            raw_list.extend(page_items)
+            for item in page_items:
+                normalized = _from_openapi(item)
+                notice_id = str(normalized.get("notice_id") or "").strip()
+                if not notice_id or notice_id in existing_notice_ids or notice_id in seen_ids:
+                    continue
+                seen_ids.add(notice_id)
+                raw_list.append(item)
+                if target and len(raw_list) >= target:
+                    break
+            if target and len(raw_list) >= target:
+                break
             if len(page_items) < per_page:
                 break
-            if target and len(raw_list) >= target + len(existing_notice_ids):
-                break
             page += 1
-        deduped_raw_list = []
-        seen_ids: set[str] = set()
-        for item in raw_list:
-            normalized = _from_openapi(item)
-            notice_id = str(normalized.get("notice_id") or "").strip()
-            if not notice_id or notice_id in existing_notice_ids or notice_id in seen_ids:
-                continue
-            seen_ids.add(notice_id)
-            deduped_raw_list.append(item)
-        raw_list = deduped_raw_list
-        if args.limit > 0:
-            raw_list = raw_list[: args.limit]
 
     new_payloads: list[dict[str, Any]] = []
     for i, item in enumerate(raw_list, 1):
