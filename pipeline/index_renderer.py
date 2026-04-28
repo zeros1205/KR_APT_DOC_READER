@@ -509,6 +509,11 @@ def _build_sitemap(posts: list[dict]) -> None:
     urls = [
         f"<url><loc>{SITE_URL}/</loc><lastmod>{now}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>"
     ]
+    for static_path in ("privacy.html", "terms.html"):
+        urls.append(
+            f"<url><loc>{SITE_URL}/{static_path}</loc><lastmod>{now}</lastmod>"
+            f"<changefreq>monthly</changefreq><priority>0.4</priority></url>"
+        )
     for post in posts:
         urls.append(
             f"<url><loc>{SITE_URL}/{post['post_url']}</loc><lastmod>{now}</lastmod>"
@@ -517,7 +522,7 @@ def _build_sitemap(posts: list[dict]) -> None:
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>"
     out = OUTPUT_DIR / "sitemap.xml"
     out.write_text(sitemap, encoding="utf-8")
-    print(f"✅ sitemap.xml 생성 완료: {out}  ({len(posts) + 1}개 URL)")
+    print(f"✅ sitemap.xml 생성 완료: {out}  ({len(urls)}개 URL)")
 
 
 def _build_robots() -> None:

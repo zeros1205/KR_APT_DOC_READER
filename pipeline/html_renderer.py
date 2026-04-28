@@ -1109,6 +1109,10 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="robots" content="index, follow">
+<link rel="icon" type="image/x-icon" href="{SITE_URL}/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="{SITE_URL}/favicon-16x16.png">
+<link rel="apple-touch-icon" href="{SITE_URL}/apple-touch-icon.png">
+<link rel="manifest" href="{SITE_URL}/manifest.json">
 {FONT_LINK}
 {PALETTE_INIT_JS}
 <style>
