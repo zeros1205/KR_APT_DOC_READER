@@ -1,9 +1,6 @@
 name: codex-분양공고 데이터 가져오기
 
 on:
-  schedule:
-    # 매주 월요일 00:00 KST
-    - cron: "0 15 * * 0"
   workflow_dispatch:
     inputs:
       days:
