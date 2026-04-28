@@ -123,14 +123,21 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     if manual_finance:
         finance_lines = [
             "[자금계획]",
-            f"계약금: {manual_finance.get('contract_ratio', '')}%",
-            f"중도금: {manual_finance.get('midterm_ratio', '')}%",
-            f"잔금: {manual_finance.get('balance_ratio', '')}%",
         ]
-        if manual_finance.get("midterm_count"):
-            finance_lines.append(f"중도금 납부 횟수: {manual_finance.get('midterm_count')}회")
+        if manual_finance.get("contract_amount"):
+            finance_lines.append(f"계약금 금액: {manual_finance.get('contract_amount')}")
+        else:
+            finance_lines.append(f"계약금: {manual_finance.get('contract_ratio', '')}%")
         if manual_finance.get("midterm_fixed_amount"):
             finance_lines.append(f"중도금 정액: {manual_finance.get('midterm_fixed_amount')}")
+        else:
+            finance_lines.append(f"중도금: {manual_finance.get('midterm_ratio', '')}%")
+        if manual_finance.get("balance_label"):
+            finance_lines.append(f"잔금: {manual_finance.get('balance_label')}")
+        else:
+            finance_lines.append(f"잔금: {manual_finance.get('balance_ratio', '')}%")
+        if manual_finance.get("midterm_count"):
+            finance_lines.append(f"중도금 납부 횟수: {manual_finance.get('midterm_count')}회")
         if manual_finance.get("loan_info"):
             finance_lines.append(f"중도금 대출: {manual_finance.get('loan_info')}")
         if manual_finance.get("source_pdf"):

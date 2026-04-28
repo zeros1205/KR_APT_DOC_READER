@@ -303,5 +303,16 @@
       "제주도 아파트 전매제한 비규제지역"
     ],
     "checked_at": "2026-04-26T23:16:30+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "0",
+    "contract_amount": "3,000만원",
+    "midterm_ratio": "0",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "balance_ratio": "0",
+    "balance_label": "잔여금",
+    "source": "manual_review",
+    "note": "정액 계약금 3,000만원, 중도금 없음, 잔금은 분양대금에서 계약금을 제외한 잔여금 구조"
   }
 }

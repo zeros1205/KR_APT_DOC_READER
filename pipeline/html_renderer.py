@@ -399,6 +399,15 @@ def _normalize_contract_amount(contract_amount: str, contract_ratio: str, unit_t
     return ""
 
 
+def _is_zero_ratio(value: object) -> bool:
+    text = _stringify(value).strip()
+    return text in {"", "0", "0%", "0.0", "0.0%"}
+
+
+def _finance_uses_non_ratio_display(data: "PostData") -> bool:
+    return bool(data.contract_amount and _is_zero_ratio(data.contract_ratio))
+
+
 def build_post_data(
     *,
     facts: dict,
@@ -1043,6 +1052,26 @@ class BlogHTMLRenderer:
                 html,
             )
             html = html.replace("■ 중도금 0%", "■ 중도금 없음")
+
+        if _finance_uses_non_ratio_display(data):
+            html = re.sub(
+                r'<div style="display: flex; height: 34px; border-radius: 999px; overflow: hidden; margin-bottom: 12px; background: #E8E1D7;">.*?<div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">.*?</div>\s*</div>',
+                "",
+                html,
+                flags=re.S,
+            )
+            html = re.sub(
+                r"계약금\s*—\s*0%",
+                f"계약금 — {data.contract_amount}",
+                html,
+            )
+            html = html.replace("■ 계약금 0%", f"■ 계약금 {data.contract_amount}")
+            if _is_zero_ratio(data.midterm_ratio):
+                html = re.sub(
+                    r"잔금\s*—\s*0%\s*\(입주 시\)",
+                    "잔금 — 잔여금 (입주 시)",
+                    html,
+                )
 
         # 미처리 플레이스홀더 확인
         remaining = set(re.findall(r"\{\{[A-Z_0-9]+\}\}", html))
