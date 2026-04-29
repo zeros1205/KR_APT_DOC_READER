@@ -55,9 +55,10 @@ function _getMatchedCards() {
 function _renderPage(matched, page) {
   var start = (page - 1) * POSTS_PER_PAGE;
   var end = start + POSTS_PER_PAGE;
+  var visibleCards = matched.slice(start, end);
   document.querySelectorAll('.post-card').forEach(function(card) { card.style.display = 'none'; });
-  matched.slice(start, end).forEach(function(card) { card.style.display = ''; });
-  requestAnimationFrame(_bindCardTitleMarquee);
+  visibleCards.forEach(function(card) { card.style.display = ''; });
+  requestAnimationFrame(function() { _bindCardTitleMarquee(visibleCards); });
 }
 
 function _showCardLoadError() {
@@ -293,8 +294,17 @@ function _bindSearchInputs() {
   });
 }
 
-function _bindCardTitleMarquee() {
-  document.querySelectorAll('.card-title').forEach(function(title) {
+function _bindCardTitleMarquee(cards) {
+  var titles = [];
+  if (Array.isArray(cards) && cards.length) {
+    cards.forEach(function(card) {
+      var title = card.querySelector('.card-title');
+      if (title) titles.push(title);
+    });
+  } else {
+    titles = Array.from(document.querySelectorAll('.post-card:not([style*="display: none"]) .card-title'));
+  }
+  titles.forEach(function(title) {
     var track = title.querySelector('.card-title-track');
     if (!track) return;
     title.classList.remove('is-marquee');
@@ -335,7 +345,6 @@ document.querySelector('.tab-btn[data-group="region"][data-value="전체"]').cla
 var defaultSupplyBtn = document.querySelector('.tab-btn[data-group="supply"][data-value="전체"]');
 if (defaultSupplyBtn) defaultSupplyBtn.classList.add('active');
 _bindSearchInputs();
-_bindFilterDockProgress();
 _bindScrollTopButton();
 _loadPostsIndex();
 </script>"""
