@@ -12,8 +12,9 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 try:
     from shared_ui import PALETTE_INIT_JS, index_nav
@@ -30,6 +31,7 @@ TEMPLATE_PATH = ROOT / "templates" / "front_index_template.html"
 
 SITE_URL = "https://apt-note.com"
 EXPIRED_GRAD = "linear-gradient(135deg, #6F746F 0%, #555B56 60%, #3F4540 100%)"
+SEOUL_TZ = ZoneInfo("Asia/Seoul")
 _PUBLIC_KW = (
     "공공분양", "공공임대", "행복주택", "국민임대", "lh", "sh공사",
     "경기주택", "인천도시공사", "주공", "공공지원",
@@ -415,7 +417,8 @@ def _parse_date(value: object) -> date | None:
 
 def _is_expired(post: dict) -> bool:
     winner = _parse_date(post.get("winner_date"))
-    return bool(winner and winner < date.today())
+    today = datetime.now(SEOUL_TZ).date()
+    return bool(winner and winner < today)
 
 
 def _supply_info(title: str, apt_name: str) -> tuple[str, str, str]:

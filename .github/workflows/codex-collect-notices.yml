@@ -172,3 +172,19 @@ jobs:
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_CHAT_ID}" \
             --data-urlencode "text=${MESSAGE}"
+
+      - name: Refresh dynamic front card data
+        run: python pipeline/index_renderer.py --data-only
+
+      - name: Commit front card status changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/posts_index.json output/posts_index.js output/sitemap.xml output/robots.txt
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh front card status [$(TZ=Asia/Seoul date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No front card status changes."
+          fi
