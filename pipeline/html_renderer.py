@@ -1088,26 +1088,15 @@ class BlogHTMLRenderer:
 # ──────────────────────────────────────────────────
 
 def save_post(data: PostData, html: str, output_root: Path) -> Path:
-    date_str = datetime.now().strftime("%Y-%m-%d")
-    safe = re.sub(r"[^\w가-힣]", "_", data.apt_name)
-    post_slug = f"{date_str}_{safe}"
-    post_dir = output_root / "posts" / post_slug
     notice_id_match = re.search(r"(?:pblancNo|houseManageNo)=([0-9]+)", data.notice_url or "")
     notice_id_for_slug = notice_id_match.group(1) if notice_id_match else ""
-    if post_dir.exists() and notice_id_for_slug:
-        try:
-            import json
-            existing_meta = json.loads((post_dir / "post_meta.json").read_text(encoding="utf-8"))
-            existing_notice_id = str(existing_meta.get("notice_id") or "")
-            if not existing_notice_id:
-                existing_url = str(existing_meta.get("notice_url") or "")
-                existing_match = re.search(r"(?:pblancNo|houseManageNo)=([0-9]+)", existing_url)
-                existing_notice_id = existing_match.group(1) if existing_match else ""
-        except Exception:
-            existing_notice_id = ""
-        if existing_notice_id and existing_notice_id != notice_id_for_slug:
-            post_slug = f"{post_slug}_{notice_id_for_slug}"
-            post_dir = output_root / "posts" / post_slug
+    if notice_id_for_slug:
+        post_slug = notice_id_for_slug
+    else:
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        safe = re.sub(r"[^\w가-힣]", "_", data.apt_name)
+        post_slug = f"{date_str}_{safe}"
+    post_dir = output_root / "posts" / post_slug
     post_dir.mkdir(parents=True, exist_ok=True)
 
     from config import SITE_URL
@@ -1142,6 +1131,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="robots" content="index, follow">
 <link rel="icon" type="image/x-icon" href="{SITE_URL}/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="{SITE_URL}/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="{SITE_URL}/favicon-32x32.png">
 <link rel="apple-touch-icon" href="{SITE_URL}/apple-touch-icon.png">
 <link rel="manifest" href="{SITE_URL}/manifest.json">
 {FONT_LINK}
@@ -1174,6 +1164,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-b
     region_category = region_name_to_category(data.location)
 
     meta = {
+        "notice_id":       notice_id_for_slug,
         "apt_name":        data.apt_name,
         "title":           data.post_title,
         "subtitle":        data.post_subtitle,

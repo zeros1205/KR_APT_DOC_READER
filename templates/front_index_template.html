@@ -2,8 +2,9 @@
 <html lang="ko" data-palette="A">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="google-adsense-account" content="ca-pub-8234120897033274">
+<meta name="theme-color" content="#2b261f">
 <title>정과장의 청약노트 - 아파트 분양 공고 분석</title>
 <meta name="description" content="복잡한 청약 공고문을 쉽게 정리해 드리는 정과장의 청약노트. 전국 아파트 분양 공고 분석 모음.">
 <link rel="canonical" href="https://apt-note.com/">
@@ -30,10 +31,12 @@
 </script>
 <link rel="icon" type="image/x-icon" href="https://apt-note.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://apt-note.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://apt-note.com/favicon-32x32.png">
 <link rel="apple-touch-icon" href="https://apt-note.com/apple-touch-icon.png">
 <link rel="manifest" href="https://apt-note.com/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="posts_index.js"></script>
 {{PALETTE_INIT_JS}}
 <style>
 /* ─── 팔레트 A : Claude / Anthropic (기본값) ─── */
@@ -126,7 +129,9 @@ html[data-palette="C"] {
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-  background: var(--c-bg);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(217,119,87,0.13), transparent 30%),
+    linear-gradient(135deg, #fffaf3 0%, #f4eadf 100%);
   color: var(--c-dark);
   -webkit-text-size-adjust: 100%;
 }
@@ -177,6 +182,63 @@ body {
 }
 
 @media (max-width: 580px) {
+  .site-header-v3-inner {
+    min-height: 56px;
+    padding: 0 24px;
+  }
+  .site-header-v3-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+  }
+  .site-header-v3-brand {
+    min-width: 0;
+    gap: 9px;
+  }
+  .site-header-v3-title {
+    max-width: 158px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 15px;
+  }
+  .site-header-v3-actions {
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+  .hero-art-anchor {
+    bottom: 0;
+  }
+  .hero-skyline {
+    left: -18%;
+    right: auto;
+    width: 136%;
+    opacity: 0.1;
+  }
+  .section-search {
+    width: 100%;
+  }
+  .section-search .search-input,
+  .section-search .search-input:focus {
+    width: 100%;
+  }
+  #filter-dock {
+    top: calc(56px + env(safe-area-inset-top));
+    background:
+      radial-gradient(circle at 90% 0%, rgba(217,119,87,0.13), transparent 30%),
+      linear-gradient(135deg, #fffaf3 0%, #f4eadf 100%);
+    backdrop-filter: blur(10px);
+  }
+  .site-footer {
+    padding: 28px 16px calc(34px + env(safe-area-inset-bottom));
+  }
+  .site-footer-card {
+    align-items: flex-start;
+    padding: 0;
+  }
+  .site-footer-links {
+    width: 100%;
+    justify-content: flex-start;
+  }
   .guide-card {
     padding-left: 18px !important;
     padding-right: 18px !important;
@@ -213,6 +275,40 @@ body {
   box-shadow: 0 12px 32px rgba(0,0,0,0.10);
 }
 .post-card.hidden { display: none !important; }
+
+.cards-loading,
+.cards-load-error {
+  grid-column: 1 / -1;
+  min-height: 220px;
+  border: 1px solid var(--c-light-gray);
+  border-radius: 18px;
+  background: var(--c-surface);
+  color: var(--c-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.7;
+  box-shadow: 0 18px 40px rgba(36, 32, 28, 0.06);
+}
+.cards-load-error {
+  flex-direction: column;
+  gap: 14px;
+}
+.cards-load-error p { margin: 0; }
+.cards-load-error button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--c-primary);
+  color: #fff;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cards-load-error button:hover { background: var(--c-primary-dark); }
 
 /* ── 카드 헤더 ── */
 .card-header {
@@ -263,14 +359,49 @@ body {
 }
 .card-cta:hover { background: var(--c-cta-hover); }
 
-/* ── 히어로 줄무늬 ── */
-.hero-stripe {
-  position: absolute; inset: 0;
-  background-image: repeating-linear-gradient(
-    -55deg, transparent, transparent 28px,
-    var(--c-primary-stripe) 28px, var(--c-primary-stripe) 29px
-  );
+/* ── 히어로 배경 ── */
+.front-hero {
+  background:
+    linear-gradient(120deg, rgba(217,119,87,0.08), transparent 26%),
+    repeating-linear-gradient(135deg, rgba(217,119,87,0.05) 0 1px, transparent 1px 34px),
+    #fffaf3;
+}
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  width: min(560px, 100%);
+}
+.hero-art-anchor {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 0;
+  height: 0;
+  z-index: 1;
   pointer-events: none;
+}
+.hero-skyline {
+  position: absolute;
+  left: -24px;
+  right: -24px;
+  bottom: 0;
+  width: calc(100% + 48px);
+  height: auto;
+  color: #2b261f;
+  opacity: 0.13;
+}
+.hero-skyline path,
+.hero-skyline line,
+.hero-skyline polyline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hero-skyline .detail {
+  stroke-width: 1.8;
+  opacity: 0.82;
 }
 
 /* ── 검색 ── */
@@ -297,6 +428,27 @@ body {
   width: 220px;
   border-color: var(--c-primary);
   box-shadow: 0 0 0 4px rgba(217,119,87,0.12);
+}
+.section-search {
+  margin-right: 0;
+  flex: 0 1 280px;
+  z-index: 45;
+}
+.section-search::after {
+  display: none;
+}
+.section-search .search-input {
+  width: 260px;
+  height: 40px;
+  background: rgba(255,255,255,0.9);
+}
+.section-search .search-input:focus {
+  width: 300px;
+}
+.section-search .search-suggestions {
+  left: auto;
+  right: 0;
+  width: min(360px, 86vw);
 }
 .search-wrap::after {
   content: '';
@@ -351,7 +503,7 @@ body {
   box-shadow: 0 18px 40px rgba(36, 32, 28, 0.12);
   overflow: hidden;
   display: none;
-  z-index: 30;
+  z-index: 80;
   max-height: 286px;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -402,23 +554,138 @@ body {
 }
 #filter-dock {
   position: sticky;
-  top: 54px;
+  top: calc(68px + env(safe-area-inset-top));
   z-index: 35;
-  background: var(--c-bg);
-  margin: 0 -24px 32px;
-  padding: 14px 24px 16px;
-  border-bottom: 1px solid rgba(217,119,87,0.24);
-  box-shadow: 0 18px 32px rgba(36,32,28,0.12);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(217,119,87,0.13), transparent 30%),
+    linear-gradient(135deg, #fffaf3 0%, #f4eadf 100%);
+  margin: 0 -24px 28px;
+  padding: 10px 24px;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  overflow: visible;
+}
+
+.site-header-v3 {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding-top: env(safe-area-inset-top);
+  background: linear-gradient(180deg, rgba(43,38,31,0.84), rgba(43,38,31,0.72));
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+.site-header-v3-inner {
+  max-width: 1160px;
+  min-height: 68px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.site-header-v3-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.site-header-v3-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+}
+.site-header-v3-title {
+  display: block;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+.site-header-v3-sub {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255,255,255,0.56);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+.site-header-v3-actions {
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.site-header-v3 .search-icon { color: rgba(255,255,255,0.78); }
+
+.site-footer {
+  position: relative;
   overflow: hidden;
+  background: radial-gradient(circle at 12% 0%, rgba(217,119,87,0.18), transparent 28%),
+    linear-gradient(135deg, #2b261f 0%, #1f1b17 100%);
+  padding: 34px 24px calc(38px + env(safe-area-inset-bottom));
+  color: #fff;
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 30px);
+  pointer-events: none;
+}
+.site-footer-inner {
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.site-footer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0;
+}
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.site-footer-links a {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: color 160ms;
+}
+.site-footer-links a:hover {
+  color: #fff;
+}
+.site-footer-notice {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.site-footer-notice p,
+.site-footer-copy { margin: 0; }
+.site-footer-copy {
+  margin-top: 18px;
+  color: #fff;
+  font-size: 12px;
 }
 #filter-dock-progress {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 0;
-  background: linear-gradient(90deg, var(--c-primary), #ef9a74);
-  transition: width 120ms ease-out;
+  display: none;
 }
 #scroll-top-btn {
   position: fixed;
@@ -460,31 +727,52 @@ body {
 
 
 <!-- ══ 히어로 ══ -->
-<section style="background:var(--c-hero-bg);padding:72px 24px 40px;position:relative;overflow:hidden;">
-  <div class="hero-stripe"></div>
-  <div style="position:absolute;right:-60px;top:-60px;width:320px;height:320px;
-              border-radius:50%;border:1px solid var(--c-primary-stripe);pointer-events:none;"></div>
+<section class="front-hero" style="padding:32px 0;position:relative;overflow:hidden;">
+  <div class="front-hero-inner" style="max-width:1160px;margin:0 auto;padding:0 24px;position:relative;">
 
-  <div style="max-width:1160px;margin:0 auto;position:relative;">
+    <div class="hero-copy">
+      <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:var(--c-dark);
+                 line-height:1.05;margin-bottom:18px;padding-bottom:6px;word-break:keep-all;letter-spacing:-1.5px;">
+        <span style="color:#8f8a84;">복잡한</span><br>
+        아파트 분양 공고문,<br>
+        <span style="color:var(--c-primary);">정과장이 쉽게!</span><br>
+        정리해드립니다.
+      </h1>
 
-    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:var(--c-dark);
-               line-height:1.18;margin-bottom:18px;word-break:keep-all;letter-spacing:-1.5px;">
-      복잡한 아파트 분양 공고문,<br>
-      <span style="color:var(--c-primary);">정과장이 쉽게</span> 정리해 드립니다
-    </h1>
+      <p style="font-size:16px;color:#2c2925;opacity:1;line-height:1.25;
+                max-width:460px;margin-bottom:0;word-break:keep-all;">
+        한국부동산원 청약홈 데이터를 꼼꼼히 분석했어요.<br>
+        분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인해보세요.
+      </p>
+    </div>
 
-    <p style="font-size:16px;color:#2c2925;opacity:1;line-height:1.75;
-              max-width:460px;margin-bottom:20px;word-break:keep-all;">
-      한국부동산원 청약홈 데이터를 꼼꼼히 분석했어요.<br>
-      분양가 · 일정 · 입지 · Q&amp;A를 한 눈에 확인해보세요.
-    </p>
-
-    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
-      <span style="display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;
-                   background:rgba(255,255,255,0.78);border:1px solid rgba(0,0,0,0.06);
-                   font-size:13px;font-weight:700;color:var(--c-dark);">
-        {{LATEST_NOTICE_DATE}}
-      </span>
+    <div class="hero-art-anchor" aria-hidden="true">
+      <svg class="hero-skyline" viewBox="0 0 1200 240" focusable="false">
+        <path d="M0 202 H48 V168 H76 V132 H114 L142 154 V202 H166 V122 L196 92 L226 122 V202 H250 V154 H286 L316 186 V202 H344 V138 L372 108 L400 138 V202 H430 V164 H462 V112 L496 78 H538 L572 110 V202 H594 V92 L628 64 H672 L706 96 V202 H728 V52 H784 V202 H806 V132 L840 96 L876 132 V202 H900 V158 H930 V126 H964 V202 H986 V146 H1014 V112 H1048 V202 H1070 V156 L1098 132 L1128 156 V202 H1150 V164 H1178 V142 H1200" />
+        <path d="M48 202 V184 H64 V168" />
+        <path d="M142 154 V238" />
+        <path d="M226 202 V240" />
+        <path d="M286 154 V222" />
+        <path d="M344 138 V198" />
+        <path d="M400 138 V230" />
+        <path d="M462 112 V202" />
+        <path d="M572 110 V226" />
+        <path d="M594 92 V202" />
+        <path d="M706 96 V224" />
+        <path d="M806 132 V202" />
+        <path d="M876 132 V226" />
+        <path d="M986 146 V214" />
+        <path d="M1048 112 V202" />
+        <path d="M1128 156 V236" />
+        <path class="detail" d="M500 94 H562 M500 116 H562 M500 138 H562 M500 160 H562" />
+        <path class="detail" d="M620 82 H690 M620 106 H690 M620 130 H690 M620 154 H690" />
+        <path class="detail" d="M748 52 V202 M768 52 V202" />
+        <path class="detail" d="M840 108 V188 M858 112 V192" />
+        <path class="detail" d="M930 126 V202 M948 126 V202" />
+        <path class="detail" d="M1014 126 H1048 M1014 146 H1048 M1014 166 H1048" />
+        <path class="detail" d="M1098 144 V202" />
+        <path class="detail" d="M1170 150 V202" />
+      </svg>
     </div>
 
   </div>
@@ -502,6 +790,9 @@ body {
       <h2 style="font-size:22px;font-weight:800;color:var(--c-dark);letter-spacing:-0.5px;">
         분양 정보
       </h2>
+    </div>
+    <div class="section-search">
+      {{LIST_SEARCH_BAR}}
     </div>
   </div>
 
@@ -523,34 +814,21 @@ body {
 
 
 <!-- ══ 푸터 ══ -->
-<footer style="background:var(--c-nav-bg);padding:40px 24px;">
-  <div style="max-width:1160px;margin:0 auto;">
-    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px;
-                padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">
-      <div>
-        <div style="display:flex;align-items:flex-start;gap:14px;">
-          <img src="jung_reader_logo.png" alt="정과장의 청약노트 로고"
-               style="width:80px;height:80px;border-radius:18px;object-fit:cover;flex-shrink:0;display:block;">
-          <div style="text-align:left;">
-            <p style="color:#fff;font-size:22px;font-weight:800;margin-bottom:8px;">정과장의 청약노트</p>
-            <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:2.2;">
-              <p>📌 데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
-              <p>⚠️ 모든 데이터와 시각 자료는 투자·청약 판단을 대신할 수 없으며, 최종 의사결정과 그에 따른 법적·금전적 책임은 사용자 본인에게 있습니다.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <p style="color:rgba(255,255,255,0.65);font-size:11px;font-weight:600;letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase;">정보</p>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <a href="/privacy.html" style="color:rgba(255,255,255,0.7);font-size:12px;text-decoration:none;transition:color 200ms;border:none;padding-bottom:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">개인정보 보호정책</a>
-          <a href="/terms.html" style="color:rgba(255,255,255,0.7);font-size:12px;text-decoration:none;transition:color 200ms;border:none;padding-bottom:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">이용약관</a>
-        </div>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-card">
+      <div class="site-footer-links" aria-label="서비스 정보">
+        <a href="/privacy.html">개인정보 보호정책</a>
+        <a href="/terms.html">이용약관</a>
       </div>
     </div>
-    <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:20px;">
-      Copyright © 2026 정과장의 청약노트 All rights reserved.
-    </p>
+
+    <div class="site-footer-notice">
+      <p>데이터 출처: 한국부동산원 청약홈 · 공공데이터포털</p>
+      <p>모든 데이터와 시각 자료는 투자·청약 판단을 대신할 수 없으며, 최종 의사결정과 그에 따른 법적·금전적 책임은 사용자 본인에게 있습니다.</p>
+    </div>
+
+    <p class="site-footer-copy">Copyright © 2026 정과장의 청약노트 All rights reserved.</p>
   </div>
 </footer>
 

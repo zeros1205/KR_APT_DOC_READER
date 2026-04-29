@@ -10,6 +10,7 @@ index_renderer.py
 
 from __future__ import annotations
 
+import argparse
 import json
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -23,6 +24,8 @@ ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = ROOT / "output"
 POSTS_DIR = OUTPUT_DIR / "posts"
 OUT_FILE = OUTPUT_DIR / "index.html"
+POSTS_INDEX_FILE = OUTPUT_DIR / "posts_index.json"
+POSTS_INDEX_JS_FILE = OUTPUT_DIR / "posts_index.js"
 TEMPLATE_PATH = ROOT / "templates" / "front_index_template.html"
 
 SITE_URL = "https://apt-note.com"
@@ -55,6 +58,45 @@ function _renderPage(matched, page) {
   document.querySelectorAll('.post-card').forEach(function(card) { card.style.display = 'none'; });
   matched.slice(start, end).forEach(function(card) { card.style.display = ''; });
   requestAnimationFrame(_bindCardTitleMarquee);
+}
+
+function _showCardLoadError() {
+  var grid = document.getElementById('cards-grid');
+  if (grid) {
+    grid.innerHTML = '<div class="cards-load-error">'
+      + '<p>분양 공고 목록을 불러오지 못했어요.<br>잠시 후 새로고침해 주세요.</p>'
+      + '<button type="button" onclick="location.reload()">새로고침</button>'
+      + '</div>';
+  }
+  var resultCount = document.getElementById('result-count');
+  if (resultCount) {
+    resultCount.innerHTML = '총 <strong style="color:var(--c-dark);">0</strong>건';
+  }
+}
+
+function _loadPostsIndex() {
+  function applyPayload(payload) {
+    var grid = document.getElementById('cards-grid');
+    if (!grid) return;
+    var cards = Array.isArray(payload.cards) ? payload.cards : [];
+    grid.innerHTML = cards.map(function(card) { return card.html || ''; }).join('');
+    _currentPage = 1;
+    _applyFilters();
+  }
+  if (window.__APT_POSTS_INDEX__) {
+    applyPayload(window.__APT_POSTS_INDEX__);
+    return;
+  }
+  fetch('posts_index.json', { cache: 'no-store' })
+    .then(function(response) {
+      if (!response.ok) throw new Error('posts_index.json ' + response.status);
+      return response.json();
+    })
+    .then(applyPayload)
+    .catch(function(error) {
+      console.error('[posts-index] load failed', error);
+      _showCardLoadError();
+    });
 }
 
 function _renderPagination(matched) {
@@ -134,7 +176,7 @@ function _buildSuggestions(query) {
     var name = (card.dataset.name || '').trim();
     var url = (card.dataset.url || '').trim();
     if (!name || !url) return false;
-    var key = name + '|' + url;
+    var key = name.replace(/\\s+/g, '').toLowerCase();
     if (seen.has(key)) return false;
     var matched = name.toLowerCase().includes(q);
     if (matched) seen.add(key);
@@ -295,7 +337,7 @@ if (defaultSupplyBtn) defaultSupplyBtn.classList.add('active');
 _bindSearchInputs();
 _bindFilterDockProgress();
 _bindScrollTopButton();
-_applyFilters();
+_loadPostsIndex();
 </script>"""
 
 
@@ -484,6 +526,37 @@ def _render_card(post: dict) -> str:
 </article>"""
 
 
+def _build_posts_index(posts: list[dict]) -> None:
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "total": len(posts),
+        "cards": [
+            {
+                "apt_name": post.get("apt_name", ""),
+                "notice_id": post.get("notice_id", ""),
+                "post_url": post.get("post_url", ""),
+                "region": post.get("region_category", "기타"),
+                "notice_date": post.get("notice_date", ""),
+                "winner_date": post.get("winner_date", ""),
+                "html": _render_card(post),
+            }
+            for post in posts
+        ],
+    }
+    POSTS_INDEX_FILE.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    POSTS_INDEX_JS_FILE.write_text(
+        "window.__APT_POSTS_INDEX__ = "
+        + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        + ";\n",
+        encoding="utf-8",
+    )
+    print(f"✅ posts_index.json 생성 완료: {POSTS_INDEX_FILE}  ({len(posts)}건)")
+    print(f"✅ posts_index.js 생성 완료: {POSTS_INDEX_JS_FILE}  ({len(posts)}건)")
+
+
 def _render_list_search_bar() -> str:
     return """<div class="search-wrap">
       <span class="search-icon">
@@ -523,9 +596,16 @@ def _build_robots() -> None:
     print(f"✅ robots.txt 생성 완료: {out}")
 
 
-def build_front_index() -> None:
+def build_front_index(*, render_shell: bool = True) -> None:
     posts = load_posts()
     print(f"  포스트 {len(posts)}건 로드")
+    if not render_shell:
+        _build_posts_index(posts)
+        _build_sitemap(posts)
+        _build_robots()
+        print("✅ 동적 카드 데이터만 갱신 완료 (index.html 유지)")
+        return
+
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
 
     region_counts: dict[str, int] = {}
@@ -576,14 +656,22 @@ def build_front_index() -> None:
     html = html.replace("{{LIST_SEARCH_BAR}}", _render_list_search_bar())
     html = html.replace("{{REGION_TABS}}", region_tabs)
     html = html.replace("{{SUPPLY_TABS}}", "")
-    html = html.replace("{{CARDS_HTML}}", "\n".join(_render_card(post) for post in posts))
+    html = html.replace("{{CARDS_HTML}}", '<div class="cards-loading">분양 공고 목록을 불러오는 중입니다.</div>')
     html = html.replace("{{INDEX_RUNTIME_SCRIPT}}", INDEX_RUNTIME_SCRIPT)
 
     OUT_FILE.write_text(html, encoding="utf-8")
     print(f"✅ index.html 생성 완료: {OUT_FILE}  ({len(posts)}건)")
+    _build_posts_index(posts)
     _build_sitemap(posts)
     _build_robots()
 
 
 if __name__ == "__main__":
-    build_front_index()
+    parser = argparse.ArgumentParser(description="Build front page shell or dynamic post index data")
+    parser.add_argument(
+        "--data-only",
+        action="store_true",
+        help="Update posts_index.json/sitemap/robots without regenerating output/index.html",
+    )
+    args = parser.parse_args()
+    build_front_index(render_shell=not args.data_only)

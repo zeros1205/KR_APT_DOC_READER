@@ -1,6 +1,9 @@
 name: codex-분양공고 데이터 가져오기
 
 on:
+  schedule:
+    # 09:00 Asia/Seoul = 00:00 UTC
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       days:
@@ -21,6 +24,8 @@ env:
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
 jobs:
   collect-notices:
@@ -64,7 +69,24 @@ jobs:
           echo "$CMD"
           eval "$CMD"
 
+      - name: Detect new notice cache files
+        id: cache_changes
+        run: |
+          NOTICE_CHANGES="$(git status --porcelain -- output/data_cache/notices | wc -l | tr -d ' ')"
+          if [ "$NOTICE_CHANGES" -gt 0 ]; then
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_new=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "notice_changes=$NOTICE_CHANGES" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed_files<<EOF"
+            git status --porcelain -- output/data_cache/notices | awk '{print $2}' | head -20
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Commit cache changes
+        if: steps.cache_changes.outputs.has_new == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -76,3 +98,29 @@ jobs:
           else
             echo "No cache changes."
           fi
+
+      - name: Notify Telegram when new notices are collected
+        if: steps.cache_changes.outputs.has_new == 'true'
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets are not configured. Skipping notification."
+            exit 0
+          fi
+
+          COMMIT_SHA="$(git rev-parse --short HEAD)"
+          MESSAGE="$(cat <<EOF
+정과장의 청약노트 신규 공고 데이터 수집 완료
+
+- 신규/변경 공고 파일: ${{ steps.cache_changes.outputs.notice_changes }}건
+- 실행 시간: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+- 브랜치: ${GITHUB_REF_NAME}
+- 커밋: ${COMMIT_SHA}
+
+변경 파일:
+${{ steps.cache_changes.outputs.changed_files }}
+EOF
+)"
+
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}"

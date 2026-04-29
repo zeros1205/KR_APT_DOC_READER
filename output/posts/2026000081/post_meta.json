@@ -1,0 +1,78 @@
+{
+  "apt_name": "선운지구다사로움 공가세대 일반공급",
+  "title": "선운지구다사로움 공가세대 일반공급, 광산구 1억대 청약",
+  "subtitle": "광주광역시 광산구 선운로 34 (선운지구다사로움아파트)",
+  "theme": "claude",
+  "tags": [
+    "선운지구다사로움공가세대일반공급",
+    "광주광역시광산구",
+    "선운지구다사로움",
+    "광주청약",
+    "광산구청약",
+    "일반공급",
+    "공가세대",
+    "아파트분양",
+    "청약일정",
+    "분양가"
+  ],
+  "location": "광주광역시 광산구",
+  "region_category": "광주",
+  "supply_type": "분양주택",
+  "price_range": "1억 9,250만원 ~ 2억 9,550만원",
+  "special_supply_date": "",
+  "rank1_date": "2026-04-03",
+  "rank2_date": "2026-04-06",
+  "notice_date": "2026-03-24",
+  "move_in_date": "2026년 06월",
+  "supply_location": "광주광역시 광산구 선운로 34 (선운지구다사로움아파트)",
+  "total_households": "27",
+  "is_hot_zone": "N",
+  "regulated_zone": "비규제지역",
+  "readmission_limit": "3년",
+  "live_requirement": "없음",
+  "price_cap": "미적용",
+  "resale_restriction": "없음",
+  "eligibility_special": [],
+  "eligibility_rank1": [
+    "해당지역 1순위는 광주광역시 광산구 공고문상 해당지역 거주자를 기준으로 접수합니다.",
+    "기타지역 1순위는 공고문에서 정한 기타지역 거주자를 기준으로 접수합니다.",
+    "청약통장 가입기간, 예치금, 세대구성 등 1순위 기본 요건도 함께 충족해야 합니다."
+  ],
+  "eligibility_rank2": [
+    "2순위는 1순위에 해당하지 않거나 1순위 접수 후 남은 물량이 있을 때 공고문 일정에 따라 접수합니다.",
+    "해당지역과 기타지역 접수일이 같더라도 거주지역 구분은 공고문 기준으로 확인해야 합니다."
+  ],
+  "contract_ratio": "10",
+  "contract_amount": "",
+  "midterm_ratio": "0",
+  "midterm_count": "",
+  "balance_ratio": "90",
+  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000081&pblancNo=2026000081",
+  "generated_at": "2026-04-27T01:52:07.315545",
+  "naver_blog_guide": {
+    "step1": "네이버 블로그 → 글쓰기",
+    "step2": "스마트에디터 ONE → [HTML] 버튼",
+    "step3": "post.html 전체 붙여넣기",
+    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
+    "step5": "태그 입력: 선운지구다사로움공가세대일반공급, 광주광역시광산구, 선운지구다사로움, 광주청약, 광산구청약, 일반공급, 공가세대, 아파트분양, 청약일정, 분양가",
+    "step6": "카테고리 설정 후 발행"
+  },
+  "pdf_extracted_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "midterm_count": "",
+    "midterm_fixed_amount": "",
+    "source_page": 8,
+    "source_pdf": "2026000081 선운지구다사로움 공가세대 일반공급 입주자모집공고문.pdf.pdf",
+    "evidence": [
+      "약식표기 동 호 공 급 면 적 계약금(10%) 잔금(90%) 난방방식",
+      "약식표기 동 호 공 급 면 적 계약금(10%) 잔금(90%) 난방방식",
+      "기타공용 계약면적 계(100%) 시기"
+    ]
+  },
+  "midterm_fixed_amount": "",
+  "winner_date": "2026-04-10",
+  "notice_id": "2026000081"
+}

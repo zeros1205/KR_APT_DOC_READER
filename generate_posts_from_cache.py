@@ -178,7 +178,12 @@ async def main() -> None:
     parser.add_argument("--include-manual", action="store_true", help="Also process notices marked for manual review")
     parser.add_argument("--include-processed", action="store_true", help="Do not skip processed_notices.json entries")
     parser.add_argument("--skip-ui-freeze-check", action="store_true", help="Skip frozen UI/layout hash check")
-    parser.add_argument("--no-build-index", action="store_true", help="Skip front page/sitemap/robots regeneration")
+    parser.add_argument("--no-build-index", action="store_true", help="Skip front post index/sitemap/robots regeneration")
+    parser.add_argument(
+        "--build-index-shell",
+        action="store_true",
+        help="Also regenerate output/index.html. Default only updates posts_index.json/sitemap/robots.",
+    )
     parser.add_argument("--require-pdf", action="store_true", help="Only generate notices that have a matching local PDF")
     parser.add_argument("--dry-run", action="store_true", help="Load cache and print selected notices without generation")
     args = parser.parse_args()
@@ -239,7 +244,7 @@ async def main() -> None:
         print(f"[processed] updated: {PROCESSED_FILE.relative_to(BASE_DIR)}")
 
     if not args.no_build_index:
-        build_front_index()
+        build_front_index(render_shell=args.build_index_shell)
 
     print(f"[generate] success={len(results)} failed={len(failed)}")
     if failed:

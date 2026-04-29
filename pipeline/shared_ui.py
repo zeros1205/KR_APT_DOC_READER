@@ -97,6 +97,83 @@ html[data-palette="C"] {
   --c-tag-resupply-text:    #6ab0e0;
 }"""
 
+SITE_HEADER_V3_CSS = """\
+.site-header-v3 {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding-top: env(safe-area-inset-top);
+  background: linear-gradient(180deg, rgba(43,38,31,0.84), rgba(43,38,31,0.72));
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+.site-header-v3-inner {
+  max-width: 1160px;
+  min-height: 68px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.site-header-v3-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.site-header-v3-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+}
+.site-header-v3-title {
+  display: block;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+.site-header-v3-sub {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255,255,255,0.56);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+@media (max-width: 580px) {
+  .site-header-v3-inner {
+    min-height: 56px;
+    padding: 0 24px;
+  }
+  .site-header-v3-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+  }
+  .site-header-v3-brand {
+    min-width: 0;
+    gap: 9px;
+  }
+  .site-header-v3-title {
+    max-width: 158px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 15px;
+  }
+}"""
+
+PALETTE_CSS = f"{PALETTE_CSS}\n\n{SITE_HEADER_V3_CSS}"
+
 # head에 삽입 — FOUC 방지 (DOM 파싱 전에 팔레트 클래스 설정)
 PALETTE_INIT_JS = (
     '<script>'
@@ -135,8 +212,8 @@ _PALETTE_BTN_SVG = (
 
 def _logo_src(home_href: str) -> str:
     if home_href == "/":
-        return "jung_reader_logo.png"
-    return f"{home_href}jung_reader_logo.png"
+        return "app_logo_80x80_rounded.png"
+    return f"{home_href}app_logo_80x80_rounded.png"
 
 
 def shared_nav(
@@ -219,18 +296,21 @@ def shared_nav(
 
 
 def index_nav(home_href: str = "/") -> str:
-    return shared_nav(
-        home_href=home_href,
-        include_palette=False,
-        include_search=True,
-        include_applyhome=False,
+    logo_src = _logo_src(home_href)
+    return (
+        f'<header class="site-header-v3">'
+        f'<div class="site-header-v3-inner">'
+        f'<a href="{home_href}" class="site-header-v3-brand">'
+        f'<img src="{logo_src}" alt="정과장의 청약노트 로고" class="site-header-v3-logo">'
+        f'<span>'
+        f'<span class="site-header-v3-title">정과장의 청약노트</span>'
+        f'<span class="site-header-v3-sub">APT-NOTE.COM</span>'
+        f'</span>'
+        f'</a>'
+        f'</div>'
+        f'</header>'
     )
 
 
 def detail_nav(home_href: str = "../../") -> str:
-    return shared_nav(
-        home_href=home_href,
-        include_palette=False,
-        include_search=False,
-        include_applyhome=False,
-    )
+    return index_nav(home_href)
