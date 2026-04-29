@@ -108,18 +108,66 @@ jobs:
           fi
 
           COMMIT_SHA="$(git rev-parse --short HEAD)"
+          NOTICE_DETAILS="$(python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          changed = subprocess.check_output(
+              ["git", "show", "--name-only", "--format=", "HEAD"],
+              text=True,
+              encoding="utf-8",
+          ).splitlines()
+
+          notice_files = [
+              Path(path)
+              for path in changed
+              if path.startswith("output/data_cache/notices/") and path.endswith(".json")
+          ]
+
+          rows = []
+          for path in notice_files[:10]:
+              try:
+                  payload = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  continue
+              doc = payload.get("document") or {}
+              raw = payload.get("detail_raw") or {}
+              notice_id = str(payload.get("notice_id") or doc.get("notice_id") or raw.get("PBLANC_NO") or path.stem)
+              apt_name = str(doc.get("apt_name") or raw.get("HOUSE_NM") or payload.get("apt_name") or "").strip()
+              notice_date = str(doc.get("notice_date") or raw.get("RCRIT_PBLANC_DE") or "").strip()
+              notice_url = str(doc.get("notice_url") or raw.get("PBLANC_URL") or "").strip()
+              rows.append((notice_id, apt_name, notice_date, notice_url))
+
+          lines = []
+          for idx, (notice_id, apt_name, notice_date, notice_url) in enumerate(rows, 1):
+              lines.append(f"{idx}. {apt_name or '단지명 미기재'}")
+              lines.append(f"공고번호: {notice_id}")
+              if notice_date:
+                  lines.append(f"모집공고일: {notice_date}")
+              if notice_url:
+                  lines.append(f"청약홈 URL: {notice_url}")
+              lines.append("")
+
+          extra = len(notice_files) - len(rows)
+          if extra > 0:
+              lines.append(f"외 {extra}건은 GitHub 변경 파일 목록을 확인하세요.")
+
+          print("\\n".join(lines).strip())
+          PY
+          )"
           MESSAGE="$(cat <<EOF
-정과장의 청약노트 신규 공고 데이터 수집 완료
+          정과장의 청약노트 신규 공고 데이터 수집 완료
 
-- 신규/변경 공고 파일: ${{ steps.cache_changes.outputs.notice_changes }}건
-- 실행 시간: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
-- 브랜치: ${GITHUB_REF_NAME}
-- 커밋: ${COMMIT_SHA}
+          - 신규/변경 공고 파일: ${{ steps.cache_changes.outputs.notice_changes }}건
+          - 실행 시간: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          - 브랜치: ${GITHUB_REF_NAME}
+          - 커밋: ${COMMIT_SHA}
 
-변경 파일:
-${{ steps.cache_changes.outputs.changed_files }}
-EOF
-)"
+          청약홈 URL:
+          ${NOTICE_DETAILS}
+          EOF
+          )"
 
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_CHAT_ID}" \
