@@ -103,7 +103,7 @@ SITE_HEADER_V3_CSS = """\
   top: 0;
   z-index: 50;
   padding-top: env(safe-area-inset-top);
-  background: transparent;
+  background: #fffaf3;
   color: #2C2925;
   border-bottom: 0;
   backdrop-filter: none;
