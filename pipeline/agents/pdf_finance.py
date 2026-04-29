@@ -165,7 +165,8 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
     for line in compact:
         no_space = line.replace(" ", "")
         if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space) and len(_percent_values(no_space)) >= 3:
-            count = len(_percent_values(no_space))
+            installment_labels = re.findall(r"\d+\ucc28", no_space)
+            count = len(installment_labels) or len(_percent_values(no_space))
             if count:
                 result.midterm_count = str(count)
                 break
@@ -181,6 +182,9 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
         no_space = line.replace(" ", "")
         if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space) and len(_percent_values(no_space)) >= 3:
             values = _percent_values(no_space)
+            installment_labels = re.findall(r"\d+\ucc28", no_space)
+            if installment_labels and len(values) > len(installment_labels):
+                values = values[-len(installment_labels) :]
             if values:
                 midterm_values = values
                 if header_has_balance and len(set(values)) > 1 and sum(values[:-1]) + values[-1] <= 100:
