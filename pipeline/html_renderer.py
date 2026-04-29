@@ -1150,6 +1150,16 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 {PALETTE_CSS}
 body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-bg); }}
 </style>
+<!-- ga4-injected:G-D5SCQRYKSM -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D5SCQRYKSM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D5SCQRYKSM');
+</script>
 </head>
 <body>
 {nav_html}
