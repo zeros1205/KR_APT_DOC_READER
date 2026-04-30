@@ -99,8 +99,8 @@ jobs:
             echo "No cache changes."
           fi
 
-      - name: Notify Telegram when new notices are collected
-        if: steps.cache_changes.outputs.has_new == 'true'
+      - name: Notify Telegram when notice collection is complete
+        if: always()
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets are not configured. Skipping notification."
@@ -108,7 +108,8 @@ jobs:
           fi
 
           COMMIT_SHA="$(git rev-parse --short HEAD)"
-          NOTICE_DETAILS="$(python - <<'PY'
+          if [ "${{ steps.cache_changes.outputs.has_new }}" = "true" ]; then
+            NOTICE_DETAILS="$(python - <<'PY'
           import json
           import subprocess
           from pathlib import Path
@@ -155,8 +156,8 @@ jobs:
 
           print("\\n".join(lines).strip())
           PY
-          )"
-          MESSAGE="$(cat <<EOF
+            )"
+            MESSAGE="$(cat <<EOF
           정과장의 청약노트 신규 공고 데이터 수집 완료
 
           - 신규/변경 공고 파일: ${{ steps.cache_changes.outputs.notice_changes }}건
@@ -167,7 +168,20 @@ jobs:
           청약홈 URL:
           ${NOTICE_DETAILS}
           EOF
-          )"
+            )"
+          else
+            MESSAGE="$(cat <<EOF
+          정과장의 청약노트 공고 데이터 수집 완료
+
+          - 신규/변경 공고 파일: 0건
+          - 실행 시간: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST')
+          - 브랜치: ${GITHUB_REF_NAME}
+          - 커밋: ${COMMIT_SHA}
+
+          새로 추가된 청약홈 URL은 없습니다.
+          EOF
+            )"
+          fi
 
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_CHAT_ID}" \
