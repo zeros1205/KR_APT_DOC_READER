@@ -1119,7 +1119,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <html lang="ko" data-palette="A">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="google-adsense-account" content="ca-pub-8234120897033274">
 <title>정과장의 청약노트</title>
 <meta name="description" content="{desc}">
@@ -1150,7 +1150,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   position: fixed;
   left: 0;
   right: 0;
-  top: calc(env(safe-area-inset-top) + 68px);
+  top: var(--post-header-height, 68px);
   z-index: 45;
   padding: 0 16px;
   pointer-events: none;
@@ -1201,7 +1201,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
 }}
 @media (max-width: 580px) {{
   .post-compact-bar {{
-    top: calc(env(safe-area-inset-top) + 56px);
+    top: var(--post-header-height, 56px);
     padding: 0 12px;
   }}
   .post-compact-card {{
@@ -1251,13 +1251,19 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
     bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
   }}
 
+  function syncHeaderHeight() {{
+    var header = document.querySelector('.site-header-v3');
+    var headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 68;
+    document.documentElement.style.setProperty('--post-header-height', headerHeight + 'px');
+    return headerHeight;
+  }}
+
   var ticking = false;
   function onScroll() {{
     if (ticking) return;
     ticking = true;
     window.requestAnimationFrame(function() {{
-      var header = document.querySelector('.site-header-v3');
-      var headerHeight = header ? header.getBoundingClientRect().height : 68;
+      var headerHeight = syncHeaderHeight();
       setVisible(hero.getBoundingClientRect().top <= headerHeight);
       ticking = false;
     }});
