@@ -220,10 +220,6 @@ body {
   .section-search .search-input:focus {
     width: 100%;
   }
-  .section-search .search-suggestions {
-    width: calc(100vw - 36px);
-    max-width: calc(100vw - 36px);
-  }
   #filter-dock {
     top: calc(56px + env(safe-area-inset-top));
     background:
@@ -514,6 +510,28 @@ body {
 .search-suggestions.show {
   display: block;
 }
+
+/* 모바일 검색 오버라이드 — 라인 216~ 의 동일 selector @media 룰이
+   더 뒤에 선언된 default 규칙(.section-search { flex: 0 1 280px }
+   등)에 source-order 패배로 무효화되는 문제를 해결하기 위해
+   default 뒤로 재배치. */
+@media (max-width: 580px) {
+  .section-search {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+  .section-search .search-input,
+  .section-search .search-input:focus {
+    width: 100%;
+  }
+  .section-search .search-suggestions {
+    left: auto;
+    right: 0;
+    width: calc(100vw - 36px);
+    max-width: calc(100vw - 36px);
+  }
+}
+
 .search-suggestion {
   width: 100%;
   border: 0;
