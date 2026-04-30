@@ -92,7 +92,7 @@ jobs:
           else
             ROW_COUNT="$(grep -c '^| [0-9]' "$EXPORT_FILE" || true)"
             EXPORT_BASENAME="$(basename "$EXPORT_FILE")"
-            EXPORT_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/output/notice_url_exports/${EXPORT_BASENAME}"
+            EXPORT_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/main/output/notice_url_exports/${EXPORT_BASENAME}"
             MESSAGE="$(cat <<EOF
           정과장의 청약노트 청약홈 링크 목록 생성 완료
 
