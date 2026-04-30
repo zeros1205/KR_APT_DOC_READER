@@ -23,7 +23,7 @@ html {
   --c-primary-light:  #fdf0ea;
   --c-primary-stripe: rgba(217,119,87,0.05);
   --c-accent:         #6a9bcc;
-  --c-bg:             #faf9f5;
+  --c-bg:             #fffaf3;
   --c-surface:        #ffffff;
   --c-dark:           #2c2925;
   --c-mid:            #767370;

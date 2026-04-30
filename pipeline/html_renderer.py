@@ -1138,7 +1138,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 {PALETTE_INIT_JS}
 <style>
 {PALETTE_CSS}
-body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: var(--c-bg); }}
+body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; }}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
