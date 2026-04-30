@@ -11,13 +11,15 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 MANIFEST_FILE = BASE_DIR / "UI_FREEZE_MANIFEST.json"
+TEXT_SUFFIXES = {".html", ".py", ".css", ".js", ".json", ".md", ".txt", ".yml", ".yaml"}
 
 
 def _sha256(path: Path) -> str:
     h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
+    data = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES:
+        data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    h.update(data)
     return h.hexdigest().upper()
 
 
