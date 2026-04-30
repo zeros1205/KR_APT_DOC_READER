@@ -69,6 +69,37 @@ def _clean_value(value: str) -> str:
     return value
 
 
+def _clean_policy_period(value: str) -> str:
+    value = _clean_value(value)
+    if not value:
+        return ""
+    # 표 머리글을 값으로 잘못 잡은 경우는 폐기한다.
+    header_tokens = ("재당첨제한", "전매제한", "거주의무기간", "분양가상한제", "택지유형")
+    if any(token in value for token in header_tokens):
+        return ""
+    valid_patterns = (
+        r"^\d+\s*년$",
+        r"^\d+\s*개월$",
+        r"^없음$",
+        r"^해당\s*없음$",
+        r"^비해당$",
+        r"^소유권\s*이전\s*등기(?:일|시)?(?:까지)?$",
+        r"^소유권이전등기(?:일|시)?(?:까지)?$",
+    )
+    if any(re.search(pattern, value) for pattern in valid_patterns):
+        return re.sub(r"\s+", " ", value)
+    return ""
+
+
+def _clean_price_cap(value: str) -> str:
+    value = _clean_value(value)
+    if value in {"적용", "미적용"}:
+        return value
+    if value in {"없음", "해당 없음", "비해당"}:
+        return "미적용"
+    return ""
+
+
 def _find_first_line(lines: list[str], *needles: str) -> int:
     for idx, line in enumerate(lines):
         if all(needle in line for needle in needles):
@@ -87,35 +118,97 @@ def _pick_value_after_header(lines: list[str], header_needles: tuple[str, ...]) 
     return ""
 
 
+def _extract_regulated_zone(lines: list[str], normalized: str) -> tuple[str, str]:
+    header_idx = _find_first_line(lines, "규제지역여부")
+    search_text = "\n".join(lines[header_idx + 1 : header_idx + 6]) if header_idx >= 0 else ""
+    if not search_text:
+        # 머리글을 찾지 못한 예외 PDF에서만 전체 텍스트를 보조로 사용한다.
+        search_text = normalized[:3000]
+
+    compact = search_text.replace(" ", "")
+    if "비규제지역" in compact or "비규제지 역" in search_text or "비규제 지역" in search_text:
+        return "비규제지역", "N"
+
+    zones: list[str] = []
+    if "투기과열지구" in compact:
+        zones.append("투기과열지구")
+    if "조정대상지역" in compact:
+        zones.append("조정대상지역")
+    if "청약과열지역" in compact:
+        zones.append("청약과열지역")
+    if zones:
+        return ", ".join(dict.fromkeys(zones)), "Y"
+
+    return "", ""
+
+
 def _extract_table_tokens(text: str) -> list[str]:
+    value_pattern = re.compile(
+        r"(?P<readmission>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"(?P<resale>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"(?P<live>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"(?P<price_cap>적용|미적용|해당\s*없음|비해당)"
+    )
+
     inline_match = re.search(
-        r"재당첨제한\s*(?P<readmission>\S+)\s+전매제한\s*(?P<resale>\S+)\s+거주의무기간\s*(?P<live>\S+)\s+분양가상한제\s*(?P<price_cap>\S+)\s+택지유형\s*(?P<land_type>\S+)",
+        r"재당첨제한\s+전매제한\s+거주의무기간\s+분양가상한제\s+택지유형(?P<body>.*?)(?=\n구분|\n■|\Z)",
         text,
+        re.DOTALL,
     )
     if inline_match:
+        body = inline_match.group("body")
+        value_match = value_pattern.search(body)
+        if value_match:
+            land_type = ""
+            if "공공택지" in body:
+                land_type = "공공택지"
+            elif "민간택지" in body:
+                land_type = "민간택지"
+            return [
+                value_match.group("readmission"),
+                value_match.group("resale"),
+                value_match.group("live"),
+                value_match.group("price_cap"),
+                land_type,
+            ]
+
+    inline_value_match = re.search(
+        r"재당첨제한\s*(?P<readmission>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"전매제한\s*(?P<resale>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"거주의무기간\s*(?P<live>\d+\s*년|없음|해당\s*없음|비해당)\s+"
+        r"분양가상한제\s*(?P<price_cap>적용|미적용|해당\s*없음|비해당)\s+"
+        r"택지유형\s*(?P<land_type>공공택지|민간택지)?",
+        text,
+    )
+    if inline_value_match:
         return [
-            inline_match.group("readmission"),
-            inline_match.group("resale"),
-            inline_match.group("live"),
-            inline_match.group("price_cap"),
-            inline_match.group("land_type"),
+            inline_value_match.group("readmission"),
+            inline_value_match.group("resale"),
+            inline_value_match.group("live"),
+            inline_value_match.group("price_cap"),
+            inline_value_match.group("land_type") or "",
         ]
 
     lines = [line for line in text.splitlines() if line.strip()]
     header_idx = _find_first_line(lines, "재당첨제한", "전매제한", "거주의무기간", "분양가상한제", "택지유형")
     if header_idx < 0:
         return []
-    collected: list[str] = []
-    for line in lines[header_idx + 1 : header_idx + 5]:
-        tokens = [
-            token
-            for token in line.split()
-            if token not in {"재당첨제한", "전매제한", "거주의무기간", "분양가상한제", "택지유형"}
+    window = "\n".join(lines[header_idx + 1 : header_idx + 6])
+    value_match = value_pattern.search(window)
+    if value_match:
+        land_type = ""
+        if "공공택지" in window:
+            land_type = "공공택지"
+        elif "민간택지" in window:
+            land_type = "민간택지"
+        return [
+            value_match.group("readmission"),
+            value_match.group("resale"),
+            value_match.group("live"),
+            value_match.group("price_cap"),
+            land_type,
         ]
-        collected.extend(tokens)
-        if len(collected) >= 5:
-            return collected[:5]
-    return collected[:5]
+    return []
 
 
 def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
@@ -129,27 +222,17 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
 
     table_tokens = _extract_table_tokens(normalized)
     if len(table_tokens) >= 5:
-        result["readmission_limit"] = _clean_value(table_tokens[0])
-        result["resale_restriction"] = _clean_value(table_tokens[1])
-        result["live_requirement"] = _clean_value(table_tokens[2])
-        result["price_cap"] = _clean_value(table_tokens[3])
+        result["readmission_limit"] = _clean_policy_period(table_tokens[0])
+        result["resale_restriction"] = _clean_policy_period(table_tokens[1])
+        result["live_requirement"] = _clean_policy_period(table_tokens[2])
+        result["price_cap"] = _clean_price_cap(table_tokens[3])
         result["land_type"] = _clean_value(table_tokens[4])
 
-    # 규제지역 여부
-    if any(token in normalized for token in ("비규제지역", "비투기과열지구", "비청약과열지역")):
-        result["regulated_zone"] = "비규제지역"
-        result["is_hot_zone"] = "N"
-    else:
-        zones: list[str] = []
-        if "투기과열지구" in normalized:
-            zones.append("투기과열지구")
-        if "조정대상지역" in normalized:
-            zones.append("조정대상지역")
-        if "청약과열지역" in normalized:
-            zones.append("청약과열지역")
-        if zones:
-            result["regulated_zone"] = ", ".join(dict.fromkeys(zones))
-            result["is_hot_zone"] = "Y"
+    # 규제지역 여부: 공고 첫 페이지의 "단지 주요정보" 표를 우선한다.
+    zone, is_hot_zone = _extract_regulated_zone(lines, normalized)
+    if zone:
+        result["regulated_zone"] = zone
+        result["is_hot_zone"] = is_hot_zone
 
     # 재당첨 제한
     readmission_patterns = [
@@ -159,7 +242,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     for pat in readmission_patterns:
         m = re.search(pat, normalized)
         if m and not result["readmission_limit"]:
-            result["readmission_limit"] = _clean_value(m.group(1))
+            result["readmission_limit"] = _clean_policy_period(m.group(1))
             break
     if any(phrase in normalized for phrase in ("재당첨 제한을 적용받지", "재당첨제한을 적용받지", "재당첨 제한 없음", "재당첨제한 없음")):
         result["readmission_limit"] = "없음"
@@ -173,7 +256,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     for pat in resale_patterns:
         m = re.search(pat, normalized)
         if m and not result["resale_restriction"]:
-            result["resale_restriction"] = _clean_value(m.group(1))
+            result["resale_restriction"] = _clean_policy_period(m.group(1))
             break
     if any(phrase in normalized for phrase in ("전매제한 없음", "전매 제한 없음", "전매제한기간 전매제한 없음")):
         result["resale_restriction"] = "없음"
@@ -187,7 +270,7 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     for pat in live_patterns:
         m = re.search(pat, normalized)
         if m and not result["live_requirement"]:
-            result["live_requirement"] = _clean_value(m.group(1))
+            result["live_requirement"] = _clean_policy_period(m.group(1))
             break
     if any(phrase in normalized for phrase in ("거주의무 없음", "실거주 의무 없음", "거주의무기간 없음", "실거주 의무 없음", "거주의무 없음")):
         result["live_requirement"] = "없음"
@@ -211,3 +294,22 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
             result[key] = ""
 
     return result
+
+
+def extract_policy_from_pdf(pdf_path: Path, *, max_pages: int = 2) -> dict[str, str]:
+    """로컬 PDF 파일에서 규제 정보를 직접 추출한다."""
+    try:
+        import pdfplumber
+    except Exception:
+        return {key: "" for key in _POLICY_KEYS}
+
+    try:
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            texts = [
+                page.extract_text() or ""
+                for page in pdf.pages[:max(1, max_pages)]
+            ]
+    except Exception:
+        return {key: "" for key in _POLICY_KEYS}
+
+    return extract_policy_from_pdf_text("\n".join(texts))

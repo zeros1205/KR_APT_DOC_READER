@@ -24,6 +24,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import NoticeDocument
 from agents.pdf_finance import extract_finance_from_pdf, find_local_pdf_in_dirs
+from agents.pdf_policy import extract_policy_from_pdf
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
@@ -73,6 +74,24 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
     notice_id = str(payload.get("notice_id") or data.get("notice_id") or "")
     local_pdf = find_local_pdf_in_dirs(PDF_DIRS, notice_id)
     if local_pdf:
+        extracted_policy = extract_policy_from_pdf(local_pdf)
+        pdf_regulation = {
+            key: extracted_policy[key]
+            for key in (
+                "regulated_zone",
+                "is_hot_zone",
+                "readmission_limit",
+                "resale_restriction",
+                "live_requirement",
+                "price_cap",
+                "is_price_cap",
+            )
+            if extracted_policy.get(key)
+        }
+        if extracted_policy.get("price_cap"):
+            pdf_regulation["is_price_cap"] = "Y" if extracted_policy["price_cap"] == "적용" else "N"
+        if pdf_regulation:
+            manual_regulation = {**manual_regulation, **pdf_regulation}
         extracted_finance = extract_finance_from_pdf(local_pdf)
         if extracted_finance.has_core_ratios:
             manual_finance.update(

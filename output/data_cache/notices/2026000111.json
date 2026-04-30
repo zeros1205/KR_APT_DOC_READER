@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.8854 타입 | 전용 97.3477㎡ | 일반 32세대 | 특별 32세대 | 분양가 47800만원\n084.8949 타입 | 전용 109.2797㎡ | 일반 78세대 | 특별 88세대 | 분양가 53900만원\n115.8766 타입 | 전용 148.1781㎡ | 일반 80세대 | 특별 11세대 | 분양가 74600만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-30T01:56:54.372070"
+    "collected_at": "2026-04-30T01:56:54.372070",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "평택송화지구현대지역주택조합",
@@ -167,5 +172,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "더 플래티넘 파인애비뉴 규제지역 | 더 플래티넘 파인애비뉴 분양가상한제 | 더 플래티넘 파인애비뉴 전매제한",
+    "evidence_queries": [
+      "더 플래티넘 파인애비뉴 규제지역",
+      "더 플래티넘 파인애비뉴 분양가상한제",
+      "더 플래티넘 파인애비뉴 전매제한"
+    ],
+    "checked_at": "2026-05-01T00:41:50+09:00"
+  }
 }

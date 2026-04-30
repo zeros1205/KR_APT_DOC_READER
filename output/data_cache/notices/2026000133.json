@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9469 타입 | 전용 103.4214㎡ | 일반 4세대 | 특별 2세대 | 분양가 70200만원\n075.9849 타입 | 전용 105.7979㎡ | 일반 2세대 | 특별 0세대 | 분양가 70000만원\n084.9630A타입 | 전용 108.4411㎡ | 일반 2세대 | 특별 10세대 | 분양가 74900만원\n084.9650B타입 | 전용 108.7147㎡ | 일반 4세대 | 특별 4세대 | 분양가 75100만원\n084.8968C타입 | 전용 109.3721㎡ | 일반 3세대 | 특별 5세대 | 분양가 74000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-04-30T01:56:55.939558"
+    "collected_at": "2026-04-30T01:56:55.939558",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "학성동지역주택조합",
@@ -205,5 +210,22 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "더샵 시에르네 조합원 취소분 규제지역 | 더샵 시에르네 조합원 취소분 전매제한 | 더샵 시에르네 분양가상한제",
+    "evidence_queries": [
+      "더샵 시에르네 조합원 취소분 규제지역",
+      "더샵 시에르네 조합원 취소분 전매제한",
+      "더샵 시에르네 분양가상한제"
+    ],
+    "checked_at": "2026-05-01T00:42:52+09:00"
+  }
 }
