@@ -105,7 +105,7 @@ SITE_HEADER_V3_CSS = """\
   padding-top: env(safe-area-inset-top);
   background: #fffaf3;
   color: #2C2925;
-  border-bottom: 0;
+  border-bottom: 1px solid rgba(44, 41, 37, 0.08);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
