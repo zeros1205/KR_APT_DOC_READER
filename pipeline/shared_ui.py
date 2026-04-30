@@ -111,6 +111,8 @@ SITE_HEADER_V3_CSS = """\
 }
 .site-header-v3-inner {
   max-width: 1160px;
+  width: 100%;
+  box-sizing: border-box;
   min-height: 68px;
   margin: 0 auto;
   padding: 0 24px;
