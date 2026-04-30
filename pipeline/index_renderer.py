@@ -534,7 +534,7 @@ def _render_card(post: dict) -> str:
     <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 {location if location else "위치 정보 없음"}</p>
   </div>
   <div style="padding:12px 16px 9px;flex:1;">{tag_items}</div>
-  <a href="{url}" class="card-cta" onclick="event.stopPropagation()">공고 분석 전문 보기 →</a>
+  <a href="{url}" class="card-cta" onclick="event.stopPropagation()">분석결과 보기</a>
 </article>"""
 
 
