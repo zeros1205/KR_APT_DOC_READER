@@ -1311,14 +1311,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
         "loan_info":             data.loan_info,
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
-        "naver_blog_guide": {
-            "step1": "네이버 블로그 → 글쓰기",
-            "step2": "스마트에디터 ONE → [HTML] 버튼",
-            "step3": "post.html 전체 붙여넣기",
-            "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-            "step5": f"태그 입력: {', '.join(data.seo_tags[:10])}",
-            "step6": "카테고리 설정 후 발행",
-        },
     }
     import json
     (post_dir / "post_meta.json").write_text(
@@ -1330,7 +1322,4 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
     print(f"   📄 HTML  : post.html ({len(html):,}자) | 테마: {data.theme}")
     print(f"   📋 메타  : post_meta.json")
     print(f"{'='*50}")
-    print("\n📌 네이버 블로그 등록 방법:")
-    for k, v in meta["naver_blog_guide"].items():
-        print(f"   {k.upper()}: {v}")
     return post_dir
