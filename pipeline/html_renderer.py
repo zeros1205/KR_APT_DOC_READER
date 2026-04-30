@@ -1138,6 +1138,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <link rel="icon" type="image/x-icon" href="{SITE_URL}/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="{SITE_URL}/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="{SITE_URL}/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="{SITE_URL}/android-chrome-192x192.png">
 <link rel="apple-touch-icon" href="{SITE_URL}/apple-touch-icon.png">
 <link rel="manifest" href="{SITE_URL}/manifest.json">
 {FONT_LINK}

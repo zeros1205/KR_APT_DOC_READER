@@ -134,12 +134,17 @@ SITE_HEADER_V3_CSS = """\
   display: block;
   box-shadow: 0 10px 28px rgba(0,0,0,0.24);
 }
+.site-header-v3-brand > span {
+  display: block;
+  line-height: 1;
+}
 .site-header-v3-title {
   display: block;
   color: #2C2925;
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.05em;
+  line-height: 1.05;
   white-space: nowrap;
 }
 .site-header-v3-sub {
@@ -149,6 +154,7 @@ SITE_HEADER_V3_CSS = """\
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.14em;
+  line-height: 1.05;
 }
 @media (max-width: 580px) {
   .site-header-v3-inner {

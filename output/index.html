@@ -24,14 +24,28 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": "https://apt-note.com/#website",
   "name": "정과장의 청약노트",
   "alternateName": "apt-note",
-  "url": "https://apt-note.com/"
+  "url": "https://apt-note.com/",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://apt-note.com/#organization",
+    "name": "정과장의 청약노트",
+    "url": "https://apt-note.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apt-note.com/android-chrome-512x512.png",
+      "width": 512,
+      "height": 512
+    }
+  }
 }
 </script>
 <link rel="icon" type="image/x-icon" href="https://apt-note.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://apt-note.com/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://apt-note.com/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://apt-note.com/android-chrome-192x192.png">
 <link rel="apple-touch-icon" href="https://apt-note.com/apple-touch-icon.png">
 <link rel="manifest" href="https://apt-note.com/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -595,12 +609,17 @@ body {
   display: block;
   box-shadow: 0 10px 28px rgba(0,0,0,0.24);
 }
+.site-header-v3-brand > span {
+  display: block;
+  line-height: 1;
+}
 .site-header-v3-title {
   display: block;
   color: #2C2925;
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.05em;
+  line-height: 1.05;
   white-space: nowrap;
 }
 .site-header-v3-sub {
@@ -610,6 +629,7 @@ body {
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.14em;
+  line-height: 1.05;
 }
 .site-header-v3-actions {
   min-width: 0;
