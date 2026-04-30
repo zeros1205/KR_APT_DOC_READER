@@ -108,6 +108,75 @@ html[data-palette="C"] {
   --c-tag-resupply-text:    #6ab0e0;
 }
 body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif; margin: 0; padding: 0; background: #fffaf3; }
+.post-compact-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: calc(env(safe-area-inset-top) + 68px);
+  z-index: 45;
+  padding: 0 16px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.post-compact-bar.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.post-compact-card {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 14px 18px 16px;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(135deg, #CC5F3F 0%, #A84830 62%, #8B3A24 100%);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(44, 41, 37, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+.post-compact-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 96px;
+  background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.045) 10px, rgba(255,255,255,0.045) 20px);
+  pointer-events: none;
+}
+.post-compact-title {
+  position: relative;
+  margin: 0 0 6px;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+.post-compact-subtitle {
+  position: relative;
+  margin: 0;
+  color: rgba(255,255,255,0.82);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+@media (max-width: 580px) {
+  .post-compact-bar {
+    top: calc(env(safe-area-inset-top) + 56px);
+    padding: 0 12px;
+  }
+  .post-compact-card {
+    border-radius: 0 0 16px 16px;
+    padding: 12px 16px 14px;
+  }
+  .post-compact-title {
+    font-size: 18px;
+  }
+  .post-compact-subtitle {
+    font-size: 13px;
+  }
+}
 
 .site-header-v3 {
   position: sticky;
@@ -196,7 +265,13 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 </head>
 <body>
 <header class="site-header-v3"><div class="site-header-v3-inner"><a href="../../" class="site-header-v3-brand"><img src="../../app_logo_80x80_rounded.png" alt="정과장의 청약노트 로고" class="site-header-v3-logo"><span><span class="site-header-v3-title">정과장의 청약노트</span><span class="site-header-v3-sub">APT-NOTE.COM</span></span></a></div></header>
-<div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
+<div id="post-compact-bar" class="post-compact-bar" aria-hidden="true">
+  <div class="post-compact-card">
+    <p class="post-compact-title">더샵 신길센트럴시티</p>
+    <p class="post-compact-subtitle">서울특별시 영등포구 신길동 413-8번지 일원</p>
+  </div>
+</div>
+<div id="post-body" style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
 <!--
   네이버 블로그 포스팅 템플릿 v3.0
   ── 모바일 퍼스트 / 최소 16px / 고정 인트로 / CSS 차트 ──
@@ -1073,5 +1148,41 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 </div><!-- end 전체 래퍼 -->
 
 </div>
+<script>
+(function() {
+  var bar = document.getElementById('post-compact-bar');
+  var body = document.getElementById('post-body');
+  if (!bar || !body) return;
+  var hero = body.querySelector('div');
+  if (!hero) return;
+
+  function setVisible(visible) {
+    bar.classList.toggle('is-visible', visible);
+    bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      setVisible(!entries[0].isIntersecting);
+    }, {
+      threshold: 0,
+      rootMargin: '-76px 0px 0px 0px'
+    });
+    observer.observe(hero);
+  } else {
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function() {
+        setVisible(hero.getBoundingClientRect().bottom <= 76);
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+})();
+</script>
 </body>
 </html>

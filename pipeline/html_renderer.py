@@ -13,6 +13,7 @@ html_renderer.py v2.0
 import sys
 import re
 import json
+from html import escape
 from pathlib import Path
 from datetime import date, datetime
 from dataclasses import dataclass, field
@@ -1108,6 +1109,8 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
     nav_html = detail_nav("../../")
+    compact_title = escape(data.apt_name)
+    compact_subtitle = escape(_header_subtitle(data))
 
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
@@ -1139,6 +1142,75 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <style>
 {PALETTE_CSS}
 body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; }}
+.post-compact-bar {{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: calc(env(safe-area-inset-top) + 68px);
+  z-index: 45;
+  padding: 0 16px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}}
+.post-compact-bar.is-visible {{
+  opacity: 1;
+  transform: translateY(0);
+}}
+.post-compact-card {{
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 14px 18px 16px;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(135deg, #CC5F3F 0%, #A84830 62%, #8B3A24 100%);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(44, 41, 37, 0.18);
+  position: relative;
+  overflow: hidden;
+}}
+.post-compact-card::after {{
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 96px;
+  background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.045) 10px, rgba(255,255,255,0.045) 20px);
+  pointer-events: none;
+}}
+.post-compact-title {{
+  position: relative;
+  margin: 0 0 6px;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}}
+.post-compact-subtitle {{
+  position: relative;
+  margin: 0;
+  color: rgba(255,255,255,0.82);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+}}
+@media (max-width: 580px) {{
+  .post-compact-bar {{
+    top: calc(env(safe-area-inset-top) + 56px);
+    padding: 0 12px;
+  }}
+  .post-compact-card {{
+    border-radius: 0 0 16px 16px;
+    padding: 12px 16px 14px;
+  }}
+  .post-compact-title {{
+    font-size: 18px;
+  }}
+  .post-compact-subtitle {{
+    font-size: 13px;
+  }}
+}}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -1153,9 +1225,51 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
 </head>
 <body>
 {nav_html}
-<div style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
+<div id="post-compact-bar" class="post-compact-bar" aria-hidden="true">
+  <div class="post-compact-card">
+    <p class="post-compact-title">{compact_title}</p>
+    <p class="post-compact-subtitle">{compact_subtitle}</p>
+  </div>
+</div>
+<div id="post-body" style="max-width:740px;margin:0 auto;padding:32px 16px 80px;">
 {html}
 </div>
+<script>
+(function() {{
+  var bar = document.getElementById('post-compact-bar');
+  var body = document.getElementById('post-body');
+  if (!bar || !body) return;
+  var hero = body.querySelector('div');
+  if (!hero) return;
+
+  function setVisible(visible) {{
+    bar.classList.toggle('is-visible', visible);
+    bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }}
+
+  if ('IntersectionObserver' in window) {{
+    var observer = new IntersectionObserver(function(entries) {{
+      setVisible(!entries[0].isIntersecting);
+    }}, {{
+      threshold: 0,
+      rootMargin: '-76px 0px 0px 0px'
+    }});
+    observer.observe(hero);
+  }} else {{
+    var ticking = false;
+    function onScroll() {{
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function() {{
+        setVisible(hero.getBoundingClientRect().bottom <= 76);
+        ticking = false;
+      }});
+    }}
+    window.addEventListener('scroll', onScroll, {{ passive: true }});
+    onScroll();
+  }}
+}})();
+</script>
 </body>
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
