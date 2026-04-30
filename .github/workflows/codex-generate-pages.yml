@@ -117,6 +117,16 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard output)" ]; then
+            echo "No generated page changes."
+            exit 0
+          fi
+
+          git stash push -u -m "generated-pages-before-rebase"
+          git pull --rebase origin main
+          git stash pop
+
           git add -f output/posts output/posts_index.json output/posts_index.js output/sitemap.xml output/robots.txt output/processed_notices.json \
             output/favicon.ico output/favicon-16x16.png output/favicon-32x32.png output/apple-touch-icon.png \
             output/android-chrome-192x192.png output/android-chrome-512x512.png output/manifest.json output/site.webmanifest \
@@ -124,7 +134,6 @@ jobs:
 
           if ! git diff --cached --quiet; then
             git commit -m "chore: generate pages [$(date +%Y-%m-%d)]"
-            git pull --rebase origin main
             git push
           else
             echo "No generated page changes."
