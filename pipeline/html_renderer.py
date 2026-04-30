@@ -1184,7 +1184,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   margin: 0 0 6px;
   font-size: 20px;
   line-height: 1.25;
-  font-weight: 850;
+  font-weight: 700;
   letter-spacing: -0.04em;
 }}
 .post-compact-subtitle {{
