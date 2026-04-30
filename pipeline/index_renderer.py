@@ -335,6 +335,13 @@ function _bindFilterDockProgress() {
   window.addEventListener('resize', updateProgress);
 }
 
+function _syncFrontHeaderHeight() {
+  var header = document.querySelector('.site-header-v3');
+  var headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 68;
+  document.documentElement.style.setProperty('--front-header-height', headerHeight + 'px');
+  return headerHeight;
+}
+
 function _bindScrollTopButton() {
   var btn = document.getElementById('scroll-top-btn');
   if (!btn) return;
@@ -348,6 +355,9 @@ var defaultSupplyBtn = document.querySelector('.tab-btn[data-group="supply"][dat
 if (defaultSupplyBtn) defaultSupplyBtn.classList.add('active');
 _bindSearchInputs();
 _bindScrollTopButton();
+_syncFrontHeaderHeight();
+window.addEventListener('resize', _syncFrontHeaderHeight);
+window.addEventListener('orientationchange', _syncFrontHeaderHeight);
 _loadPostsIndex();
 </script>"""
 
