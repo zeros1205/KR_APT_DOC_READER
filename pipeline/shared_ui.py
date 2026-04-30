@@ -134,7 +134,6 @@ SITE_HEADER_V3_CSS = """\
   border-radius: 14px;
   object-fit: cover;
   display: block;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.24);
 }
 .site-header-v3-brand > span {
   display: block;
