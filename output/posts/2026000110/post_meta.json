@@ -1,19 +1,20 @@
 {
+  "notice_id": "2026000110",
   "apt_name": "엘리프 창원",
-  "title": "엘리프 창원 청약 총정리, 5억대 분양가 체크",
+  "title": "엘리프 창원 분양가 5억대, 청약 일정 한눈에",
   "subtitle": "경상남도 창원시 의창구 창원명곡 공공주택지구 B-1BL",
   "theme": "claude",
   "tags": [
     "엘리프창원",
     "창원분양",
-    "의창구청약",
+    "의창구아파트",
     "창원명곡공공주택지구",
     "청약일정",
     "특별공급",
     "1순위청약",
     "분양가상한제",
     "비규제지역",
-    "창원아파트분양"
+    "창원청약"
   ],
   "location": "경상남도 창원시 의창구",
   "region_category": "경상남도",
@@ -23,12 +24,13 @@
   "rank1_date": "2026-04-21",
   "rank2_date": "2026-04-22",
   "notice_date": "2026-04-10",
+  "winner_date": "2026-04-29",
   "move_in_date": "2028년 07월",
   "supply_location": "경상남도 창원시 의창구 창원명곡 공공주택지구 B-1BL",
   "total_households": "349",
   "is_hot_zone": "N",
   "regulated_zone": "비규제지역",
-  "readmission_limit": "없음",
+  "readmission_limit": "10년",
   "live_requirement": "없음",
   "price_cap": "적용",
   "resale_restriction": "1년",
@@ -86,35 +88,10 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "",
-  "balance_ratio": "30",
-  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000110&pblancNo=2026000110",
-  "generated_at": "2026-04-27T02:10:49.940083",
-  "naver_blog_guide": {
-    "step1": "네이버 블로그 → 글쓰기",
-    "step2": "스마트에디터 ONE → [HTML] 버튼",
-    "step3": "post.html 전체 붙여넣기",
-    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-    "step5": "태그 입력: 엘리프창원, 창원분양, 의창구청약, 창원명곡공공주택지구, 청약일정, 특별공급, 1순위청약, 분양가상한제, 비규제지역, 창원아파트분양",
-    "step6": "카테고리 설정 후 발행"
-  },
-  "pdf_extracted_finance": {
-    "contract_ratio": "10",
-    "midterm_ratio": "60",
-    "balance_ratio": "30",
-    "midterm_count": "",
-    "midterm_fixed_amount": "",
-    "source_page": 7,
-    "source_pdf": "2026000110 엘리프 창원 입주자모집공고문 (1).pdf",
-    "evidence": [
-      "공급금액 계약금(10%) 중도금 (60%) 잔금(30%)",
-      "공급금액 계약금(10%) 중도금 (60%) 잔금(30%)",
-      "공급금액 계약금(10%) 중도금 (60%) 잔금(30%)",
-      "층 세대수 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
-    ]
-  },
+  "midterm_count": "6",
   "midterm_fixed_amount": "",
-  "winner_date": "2026-04-29",
-  "notice_id": "2026000110"
+  "balance_ratio": "30",
+  "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000110&pblancNo=2026000110",
+  "generated_at": "2026-05-01T00:59:57.344840"
 }

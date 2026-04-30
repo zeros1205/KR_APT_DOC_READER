@@ -1,4 +1,5 @@
 {
+  "notice_id": "2025000660",
   "apt_name": "드파인 연희",
   "title": "드파인 연희 청약 정리, 연희동 12억대부터",
   "subtitle": "서울특별시 서대문구 연희동 533-5번지 일원",
@@ -7,13 +8,13 @@
     "드파인연희",
     "연희동분양",
     "서대문구청약",
-    "서울아파트청약",
+    "서울아파트분양",
+    "청약일정",
     "특별공급",
     "1순위청약",
-    "분양가정리",
-    "청약일정",
     "전매제한",
-    "재당첨제한"
+    "재당첨제한",
+    "분양가정리"
   ],
   "location": "서울특별시 서대문구 연희동",
   "region_category": "서울",
@@ -23,11 +24,12 @@
   "rank1_date": "2026-01-20 ~ 2026-01-21",
   "rank2_date": "2026-01-22",
   "notice_date": "2026-01-09",
+  "winner_date": "2026-01-28",
   "move_in_date": "2029년 01월",
   "supply_location": "서울특별시 서대문구 연희동 533-5번지 일원",
   "total_households": "332",
   "is_hot_zone": "Y",
-  "regulated_zone": "투기과열지구, 청약과열지역, 토지거래허가구역",
+  "regulated_zone": "투기과열지구, 청약과열지역",
   "readmission_limit": "10년",
   "live_requirement": "없음",
   "price_cap": "미적용",
@@ -86,20 +88,10 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "2",
   "midterm_fixed_amount": "",
   "balance_ratio": "30",
   "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2025000660&pblancNo=2025000660",
-  "generated_at": "2026-04-28T22:53:06.344821",
-  "naver_blog_guide": {
-    "step1": "네이버 블로그 → 글쓰기",
-    "step2": "스마트에디터 ONE → [HTML] 버튼",
-    "step3": "post.html 전체 붙여넣기",
-    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-    "step5": "태그 입력: 드파인연희, 연희동분양, 서대문구청약, 서울아파트청약, 특별공급, 1순위청약, 분양가정리, 청약일정, 전매제한, 재당첨제한",
-    "step6": "카테고리 설정 후 발행"
-  },
-  "winner_date": "2026-01-28",
-  "notice_id": "2025000660"
+  "generated_at": "2026-05-01T01:03:09.751964"
 }

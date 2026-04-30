@@ -1695,11 +1695,14 @@ async def agent_regulation_grounding(facts: dict, notice_id: str) -> dict:
     grounded = payload.get("grounded_regulation") or {}
     if grounded:
         print("  [Agent 1C] 기존 규제 캐시 재사용")
+        missing_markers = {"", "미기재", "공고문 확인 필요", "해당없음", None}
         facts.update(
             {
                 key: grounded[key]
                 for key in ("regulated_zone", "is_hot_zone", "readmission_limit", "resale_restriction", "live_requirement", "price_cap", "is_price_cap")
-                if key in grounded and grounded.get(key) not in (None, "", "미기재")
+                if key in grounded
+                and grounded.get(key) not in (None, "", "미기재")
+                and facts.get(key) in missing_markers
             }
         )
         return facts
