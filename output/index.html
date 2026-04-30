@@ -637,6 +637,31 @@ body {
   justify-content: flex-end;
 }
 .site-header-v3 .search-icon { color: rgba(255,255,255,0.78); }
+@media (max-width: 580px) {
+  .site-header-v3-inner {
+    min-height: 56px;
+    padding: 0 24px;
+  }
+  .site-header-v3-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+  }
+  .site-header-v3-brand {
+    min-width: 0;
+    gap: 9px;
+  }
+  .site-header-v3-title {
+    max-width: 158px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 15px;
+  }
+  .site-header-v3-actions {
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+}
 
 .site-footer {
   position: relative;
