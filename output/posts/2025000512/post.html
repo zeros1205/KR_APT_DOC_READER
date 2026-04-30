@@ -1044,27 +1044,20 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
   }
 
-  if ('IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function(entries) {
-      setVisible(!entries[0].isIntersecting);
-    }, {
-      threshold: 0,
-      rootMargin: '-76px 0px 0px 0px'
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function() {
+      var header = document.querySelector('.site-header-v3');
+      var headerHeight = header ? header.getBoundingClientRect().height : 68;
+      setVisible(hero.getBoundingClientRect().top <= headerHeight);
+      ticking = false;
     });
-    observer.observe(hero);
-  } else {
-    var ticking = false;
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(function() {
-        setVisible(hero.getBoundingClientRect().bottom <= 76);
-        ticking = false;
-      });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
   }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
 })();
 </script>
 </body>
