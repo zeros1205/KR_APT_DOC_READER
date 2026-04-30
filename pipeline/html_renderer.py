@@ -1110,7 +1110,10 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
     nav_html = detail_nav("../../")
     compact_title = escape(data.apt_name)
-    compact_subtitle = escape(_header_subtitle(data))
+    compact_notice_date = _stringify(data.notice_date)
+    compact_subtitle = escape(
+        f"모집공고일 {compact_notice_date}" if compact_notice_date else "모집공고일 확인 필요"
+    )
 
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
