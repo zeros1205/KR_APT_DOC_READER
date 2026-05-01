@@ -428,9 +428,35 @@ def _finance_uses_non_ratio_display(data: "PostData") -> bool:
     ]
     if any(ratio is None for ratio in ratios):
         return True
-    if _is_zero_ratio(data.midterm_ratio):
-        return True
     return sum(ratios) != 100
+
+
+def _remove_no_midterm_from_ratio_bar(html: str) -> str:
+    html = re.sub(
+        r'\s*<div style="\s*background: #[0-9A-Fa-f]{6};\s*flex: 1;\s*display: flex; align-items: center; justify-content: center;\s*color: #fff; font-size: 16px; font-weight: 800;\s*">\s*0%\s*</div>',
+        "",
+        html,
+        flags=re.S,
+    )
+    return re.sub(
+        r'\s*<span style="font-size: 14px; letter-spacing: 0.025em; color: #[0-9A-Fa-f]{6}; font-weight: 700;">■ 중도금 (?:0%|없음)</span>',
+        "",
+        html,
+    )
+
+
+def _remove_no_midterm_timeline_step(html: str) -> str:
+    start = html.find("<!-- 2. 중도금 -->")
+    end = html.find("<!-- 3. 잔금 -->", start)
+    if start != -1 and end != -1:
+        html = html[:start] + html[end:]
+    html = html.replace("<!-- 3. 잔금 -->", "<!-- 2. 잔금 -->", 1)
+    return re.sub(
+        r'(<div style="\s*position: absolute; left: -36px; top: 2px;\s*width: 26px; height: 26px;\s*background: #[0-9A-Fa-f]{6}; color: #fff; border-radius: 50%;\s*display: flex; align-items: center; justify-content: center;\s*font-size: 13px; font-weight: 800;\s*">)3(</div>\s*<div style="font-size: 18px; font-weight: 800; color: #[0-9A-Fa-f]{6}; margin-bottom: 10px;">잔금)',
+        r"\g<1>2\2",
+        html,
+        flags=re.S,
+    )
 
 
 def _remove_finance_ratio_bar(html: str) -> str:
@@ -454,6 +480,17 @@ def remove_special_finance_ratio_bar_from_html(html: str) -> str:
         html,
         flags=re.S,
     )
+
+
+def adapt_no_midterm_finance_html(html: str) -> str:
+    html = _remove_no_midterm_from_ratio_bar(html)
+    html = _remove_no_midterm_timeline_step(html)
+    return re.sub(
+        r'\s*<p style="font-size: 17px; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;"></p>',
+        "",
+        html,
+    )
+
     return re.sub(
         r'\s*<div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">'
         r'.*?</div>\s*</div>(?=\s*<!-- 납부 단계 수직 타임라인 -->)',
@@ -1109,10 +1146,7 @@ class BlogHTMLRenderer:
                 html,
             )
             html = html.replace("■ 중도금 0%", "■ 중도금 없음")
-            html = html.replace(
-                "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
-                "이 공고는 중도금 납부 단계가 별도로 표시되지 않은 구조입니다. 계약금 납부 후에는 공고문에 정해진 잔금 납부 시점과 금액을 중심으로 자금 일정을 확인해야 합니다. 실제 납부 조건은 입주자모집공고문과 계약 안내문을 함께 확인해 주세요.",
-            )
+            html = adapt_no_midterm_finance_html(html)
 
         if _finance_uses_non_ratio_display(data):
             html = remove_special_finance_ratio_bar_from_html(html)
