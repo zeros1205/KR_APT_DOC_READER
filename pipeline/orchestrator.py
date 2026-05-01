@@ -1666,7 +1666,7 @@ def _normalize_regulation_result(result: dict, facts: dict) -> dict:
         elif facts.get("is_hot_zone") == "N":
             zone = "비규제지역"
 
-    if price_cap not in {"적용", "미적용"}:
+    if price_cap not in {"적용", "미적용", "해당 없음"}:
         if str(facts.get("is_price_cap") or "").strip() == "Y":
             price_cap = "적용"
         elif str(facts.get("is_price_cap") or "").strip() == "N":
@@ -1681,7 +1681,7 @@ def _normalize_regulation_result(result: dict, facts: dict) -> dict:
         "resale_restriction": resale_restriction or str(facts.get("resale_restriction") or "").strip() or "미기재",
         "live_requirement": live_requirement or str(facts.get("live_requirement") or "").strip() or "미기재",
         "price_cap": price_cap,
-        "is_price_cap": "Y" if price_cap == "적용" else ("N" if price_cap == "미적용" else str(facts.get("is_price_cap") or "")),
+        "is_price_cap": "Y" if price_cap == "적용" else ("N" if price_cap in {"미적용", "해당 없음"} else str(facts.get("is_price_cap") or "")),
         "source": "gemini_grounding",
         "query": " | ".join(evidence_queries),
         "evidence_queries": evidence_queries,

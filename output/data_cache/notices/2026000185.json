@@ -51,7 +51,18 @@
     "raw_text": "[주택형별 정보]\n067.7016A타입 | 전용 93.1853㎡ | 일반 96세대 | 특별 0세대 | 분양가 14425만원\n067.8493B타입 | 전용 92.9847㎡ | 일반 101세대 | 특별 0세대 | 분양가 14315만원\n084.9785A타입 | 전용 111.0259㎡ | 일반 77세대 | 특별 0세대 | 분양가 17563만원\n084.9948B타입 | 전용 110.8278㎡ | 일반 76세대 | 특별 0세대 | 분양가 17671만원\n084.9134C타입 | 전용 111.3624㎡ | 일반 26세대 | 특별 0세대 | 분양가 17360만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-01T02:44:18.704501"
+    "collected_at": "2026-05-01T02:44:18.704501",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "midterm_count": "",
+    "balance_ratio": "90",
+    "midterm_fixed_amount": "",
+    "contract_amount": ""
   },
   "detail_raw": {
     "BSNS_MBY_NM": "덕진종합건설주식회사",
@@ -205,5 +216,44 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "midterm_count": "",
+    "balance_ratio": "90",
+    "midterm_fixed_amount": "",
+    "contract_amount": "",
+    "source": "manual_review",
+    "note": "사용자 제공 이미지 기준 계약금/중도금/잔금 검수 반영"
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "해당 없음",
+    "resale_restriction": "해당 없음",
+    "live_requirement": "해당 없음",
+    "price_cap": "해당 없음",
+    "is_price_cap": "N",
+    "source": "manual_review_image",
+    "note": "사용자 제공 공고문 이미지 단지 주요정보 표 기준 검수 반영"
+  },
+  "grounded_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "gemini_grounding",
+    "query": "덕진 거제의 봄 분양전환 공가세대 규제지역 | 덕진 거제의 봄 분양전환 재당첨제한 | 덕진 거제의 봄 분양전환 실거주의무 | 거제시 아주동 비규제지역",
+    "evidence_queries": [
+      "덕진 거제의 봄 분양전환 공가세대 규제지역",
+      "덕진 거제의 봄 분양전환 재당첨제한",
+      "덕진 거제의 봄 분양전환 실거주의무",
+      "거제시 아주동 비규제지역"
+    ],
+    "checked_at": "2026-05-01T12:17:13+09:00"
+  }
 }

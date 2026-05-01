@@ -51,7 +51,18 @@
     "raw_text": "[주택형별 정보]\n095.3811A타입 | 전용 123.4494㎡ | 일반 28세대 | 특별 4세대 | 분양가 106040만원\n095.3591B타입 | 전용 123.3792㎡ | 일반 5세대 | 특별 1세대 | 분양가 105970만원\n095.9676C타입 | 전용 125.2286㎡ | 일반 9세대 | 특별 1세대 | 분양가 107560만원\n095.9677D타입 | 전용 125.2287㎡ | 일반 11세대 | 특별 1세대 | 분양가 107560만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-01T02:44:28.748395"
+    "collected_at": "2026-05-01T02:44:28.748395",
+    "regulated_zone": "투기과열지구 / 청약과열지역",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "30",
+    "midterm_fixed_amount": "",
+    "contract_amount": ""
   },
   "detail_raw": {
     "BSNS_MBY_NM": "경기주택도시공사",
@@ -186,5 +197,26 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "30",
+    "midterm_fixed_amount": "",
+    "contract_amount": "",
+    "source": "manual_review",
+    "note": "사용자 제공 이미지 기준 계약금/중도금/잔금 검수 반영"
+  },
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구 / 청약과열지역",
+    "is_hot_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "manual_review_image",
+    "note": "사용자 제공 공고문 이미지 단지 주요정보 표 기준 검수 반영"
+  }
 }

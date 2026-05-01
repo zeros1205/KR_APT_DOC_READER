@@ -51,7 +51,18 @@
     "raw_text": "[주택형별 정보]\n084.9584A타입 | 전용 111.7593㎡ | 일반 164세대 | 특별 241세대 | 분양가 43900만원\n084.9739B타입 | 전용 111.1040㎡ | 일반 61세대 | 특별 86세대 | 분양가 42800만원\n104.9424 타입 | 전용 132.2623㎡ | 일반 44세대 | 특별 8세대 | 분양가 54000만원\n116.9709 타입 | 전용 144.0895㎡ | 일반 87세대 | 특별 18세대 | 분양가 58800만원\n132.8427 타입 | 전용 160.7740㎡ | 일반 84세대 | 특별 18세대 | 분양가 65700만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-01T02:44:30.122127"
+    "collected_at": "2026-05-01T02:44:30.122127",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "30",
+    "midterm_fixed_amount": "",
+    "contract_amount": ""
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 리우",
@@ -205,5 +216,26 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "30",
+    "midterm_fixed_amount": "",
+    "contract_amount": "",
+    "source": "manual_review",
+    "note": "사용자 제공 이미지 기준 계약금/중도금/잔금 검수 반영"
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "manual_review_image",
+    "note": "사용자 제공 공고문 이미지 단지 주요정보 표 기준 검수 반영"
+  }
 }

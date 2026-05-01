@@ -485,9 +485,14 @@ def remove_special_finance_ratio_bar_from_html(html: str) -> str:
 def adapt_no_midterm_finance_html(html: str) -> str:
     html = _remove_no_midterm_from_ratio_bar(html)
     html = _remove_no_midterm_timeline_step(html)
-    return re.sub(
+    html = re.sub(
         r'\s*<p style="font-size: 17px; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;"></p>',
         "",
+        html,
+    )
+    return re.sub(
+        r"기본 구조만 보면 계약금 ([0-9.]+)%, 중도금 [^,<>]+, 잔금 ([0-9.]+)% 순서입니다\.",
+        r"기본 구조만 보면 계약금 \1%, 중도금 없이 잔금 \2%를 납부하는 흐름입니다.",
         html,
     )
 

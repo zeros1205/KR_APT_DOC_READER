@@ -51,7 +51,18 @@
     "raw_text": "[주택형별 정보]\n059.8844A타입 | 전용 85.9676㎡ | 일반 100세대 | 특별 122세대 | 분양가 39970만원\n059.8891B타입 | 전용 85.9933㎡ | 일반 14세대 | 특별 13세대 | 분양가 39790만원\n072.7669A타입 | 전용 96.8796㎡ | 일반 115세대 | 특별 138세대 | 분양가 43930만원\n072.4631B타입 | 전용 96.3602㎡ | 일반 53세대 | 특별 61세대 | 분양가 43650만원\n084.6653A타입 | 전용 114.6700㎡ | 일반 12세대 | 특별 15세대 | 분양가 54670만원\n084.6222B타입 | 전용 114.5775㎡ | 일반 42세대 | 특별 54세대 | 분양가 54620만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-01T02:44:22.317928"
+    "collected_at": "2026-05-01T02:44:22.317928",
+    "regulated_zone": "비규제지역",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "35",
+    "midterm_fixed_amount": "",
+    "contract_amount": ""
   },
   "detail_raw": {
     "BSNS_MBY_NM": "자산구역재개발정비사업조합",
@@ -224,5 +235,26 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "midterm_count": "6",
+    "balance_ratio": "35",
+    "midterm_fixed_amount": "",
+    "contract_amount": "",
+    "source": "manual_review",
+    "note": "사용자 제공 이미지 기준 계약금/중도금/잔금 검수 반영"
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "manual_review_image",
+    "note": "사용자 제공 공고문 이미지 단지 주요정보 표 기준 검수 반영"
+  }
 }
