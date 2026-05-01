@@ -1121,6 +1121,14 @@ class BlogHTMLRenderer:
                 f"계약금 — {data.contract_amount}",
                 html,
             )
+            if data.contract_amount:
+                html = re.sub(
+                    r'\s*<p style="font-size: 17px; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;">'
+                    + re.escape(data.contract_amount)
+                    + r"</p>",
+                    "",
+                    html,
+                )
             html = html.replace("■ 계약금 0%", f"■ 계약금 {data.contract_amount}")
             if _is_zero_ratio(data.midterm_ratio):
                 html = html.replace("■ 잔금 0%", "■ 잔금 잔여금")
