@@ -313,11 +313,11 @@
     "manual_finance":  {
                            "midterm_fixed_amount":  "",
                            "source":  "manual_review",
-                           "note":  "사용자 확인: 계약금 3억원, 중도금 없음, 잔금은 나머지",
+                           "note":  "사용자 확인: 계약금 3천만원, 중도금 없음, 잔금은 나머지",
                            "midterm_ratio":  "0",
                            "balance_ratio":  "0",
                            "midterm_count":  "",
-                           "contract_amount":  "3억원",
+                           "contract_amount":  "3천만원",
                            "contract_ratio":  "0",
                            "balance_label":  "잔여금"
                        }

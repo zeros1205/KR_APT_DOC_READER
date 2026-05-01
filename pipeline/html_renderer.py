@@ -405,8 +405,62 @@ def _is_zero_ratio(value: object) -> bool:
     return text in {"", "0", "0%", "0.0", "0.0%"}
 
 
+def _parse_ratio(value: object) -> int | None:
+    text = _stringify(value).strip().replace("%", "")
+    if not text:
+        return None
+    try:
+        ratio = float(text)
+    except ValueError:
+        return None
+    if not ratio.is_integer():
+        return None
+    return int(ratio)
+
+
 def _finance_uses_non_ratio_display(data: "PostData") -> bool:
-    return bool(data.contract_amount and _is_zero_ratio(data.contract_ratio))
+    if data.contract_amount or data.midterm_fixed_amount:
+        return True
+    ratios = [
+        _parse_ratio(data.contract_ratio),
+        _parse_ratio(data.midterm_ratio),
+        _parse_ratio(data.balance_ratio),
+    ]
+    if any(ratio is None for ratio in ratios):
+        return True
+    if _is_zero_ratio(data.midterm_ratio):
+        return True
+    return sum(ratios) != 100
+
+
+def _remove_finance_ratio_bar(html: str) -> str:
+    return re.sub(
+        r"\s*<!-- FINANCE_RATIO_BAR_START -->.*?<!-- FINANCE_RATIO_BAR_END -->",
+        "",
+        html,
+        flags=re.S,
+    )
+
+
+def remove_special_finance_ratio_bar_from_html(html: str) -> str:
+    """Remove existing ratio bars from generated special-case finance sections."""
+    html = _remove_finance_ratio_bar(html)
+    html = re.sub(
+        r'\s*<!-- 납부 비율 시각화 바 \(CSS 차트\) -->\s*'
+        r'<div style="margin-bottom: 32px;">\s*'
+        r'<div style="font-size: 15px; font-weight: 700; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin-bottom: 12px;">📊 분양가 납부 비율</div>'
+        r'.*?</div>\s*</div>',
+        "",
+        html,
+        flags=re.S,
+    )
+    return re.sub(
+        r'\s*<div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">'
+        r'.*?</div>\s*</div>(?=\s*<!-- 납부 단계 수직 타임라인 -->)',
+        "",
+        html,
+        flags=re.S,
+    )
 
 
 def build_post_data(
@@ -1061,12 +1115,7 @@ class BlogHTMLRenderer:
             )
 
         if _finance_uses_non_ratio_display(data):
-            html = re.sub(
-                r'<div style="display: flex; height: 34px; border-radius: 999px; overflow: hidden; margin-bottom: 12px; background: #E8E1D7;">.*?<div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">.*?</div>\s*</div>',
-                "",
-                html,
-                flags=re.S,
-            )
+            html = remove_special_finance_ratio_bar_from_html(html)
             html = re.sub(
                 r"계약금\s*—\s*0%",
                 f"계약금 — {data.contract_amount}",
