@@ -33,6 +33,7 @@ from pipeline.index_renderer import build_front_index
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR.parent / "PDF", BASE_DIR / "output" / "pdfs")
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
+DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
 
 
 def _load_json(path: Path) -> Any:
@@ -51,6 +52,20 @@ def _load_processed() -> set[str]:
         print("[warning] processed_notices.json 파싱 실패 -> 빈 히스토리로 진행")
         return set()
     return {str(item) for item in data}
+
+
+def _load_deleted_notice_ids() -> set[str]:
+    if not DELETED_NOTICES_FILE.exists():
+        return set()
+    try:
+        data = json.loads(DELETED_NOTICES_FILE.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return set()
+    if isinstance(data, list):
+        return {str(item.get("notice_id") if isinstance(item, dict) else item) for item in data if item}
+    if isinstance(data, dict):
+        return {str(item) for item in data.get("notice_ids", [])}
+    return set()
 
 
 def _save_processed(processed_ids: set[str]) -> None:
@@ -176,9 +191,13 @@ def _has_local_pdf(payload: dict[str, Any]) -> bool:
 def _iter_payloads(*, include_manual: bool) -> list[tuple[Path, dict[str, Any]]]:
     if not NOTICE_CACHE_DIR.exists():
         return []
+    deleted_notice_ids = _load_deleted_notice_ids()
     payloads: list[tuple[Path, dict[str, Any]]] = []
     for path in sorted(NOTICE_CACHE_DIR.glob("*.json")):
         payload = _load_json(path)
+        notice_id = str(payload.get("notice_id") or (payload.get("document") or {}).get("notice_id") or path.stem)
+        if notice_id in deleted_notice_ids:
+            continue
         if payload.get("requires_manual_input") and not include_manual:
             continue
         payloads.append((path, payload))

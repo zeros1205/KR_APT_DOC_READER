@@ -20,6 +20,7 @@ NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR / "output" / "pdfs")
+DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
 
 
 def _kst_today() -> str:
@@ -38,6 +39,20 @@ def _load_processed() -> set[str]:
     except Exception:
         return set()
     return {str(item) for item in data}
+
+
+def _load_deleted_notice_ids() -> set[str]:
+    if not DELETED_NOTICES_FILE.exists():
+        return set()
+    try:
+        data = json.loads(DELETED_NOTICES_FILE.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return set()
+    if isinstance(data, list):
+        return {str(item.get("notice_id") if isinstance(item, dict) else item) for item in data if item}
+    if isinstance(data, dict):
+        return {str(item) for item in data.get("notice_ids", [])}
+    return set()
 
 
 def _safe_cell(value: object) -> str:
@@ -69,6 +84,7 @@ def _has_pdf(notice_id: str) -> bool:
 
 def _iter_rows(*, include_processed: bool, include_with_pdf: bool) -> list[dict[str, str]]:
     processed = _load_processed()
+    deleted_notice_ids = _load_deleted_notice_ids()
     rows: list[dict[str, str]] = []
     if not NOTICE_CACHE_DIR.exists():
         return rows
@@ -81,6 +97,8 @@ def _iter_rows(*, include_processed: bool, include_with_pdf: bool) -> list[dict[
         notice_url = _notice_url(payload)
         has_pdf = _has_pdf(notice_id)
 
+        if notice_id in deleted_notice_ids:
+            continue
         if not include_processed and notice_id in processed:
             continue
         if not include_with_pdf and has_pdf:

@@ -33,6 +33,7 @@ NOTICE_CACHE_DIR = DATA_CACHE_DIR / "notices"
 MANUAL_REVIEW_DIR = DATA_CACHE_DIR / "manual_review"
 INDEX_FILE = DATA_CACHE_DIR / "index.json"
 MISSING_FIELDS_CSV = MANUAL_REVIEW_DIR / "missing_fields.csv"
+DELETED_NOTICES_FILE = DATA_CACHE_DIR / "deleted_notices.json"
 
 REQUIRED_FIELDS = (
     "notice_id",
@@ -111,8 +112,23 @@ def _existing_notice_ids() -> set[str]:
     return notice_ids
 
 
+def _deleted_notice_ids() -> set[str]:
+    if not DELETED_NOTICES_FILE.exists():
+        return set()
+    try:
+        data = json.loads(DELETED_NOTICES_FILE.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return set()
+    if isinstance(data, list):
+        return {str(item.get("notice_id") if isinstance(item, dict) else item) for item in data if item}
+    if isinstance(data, dict):
+        return {str(item) for item in data.get("notice_ids", [])}
+    return set()
+
+
 def _load_existing_payloads() -> list[dict[str, Any]]:
     payloads: list[dict[str, Any]] = []
+    deleted_notice_ids = _deleted_notice_ids()
     if not NOTICE_CACHE_DIR.exists():
         return payloads
 
@@ -122,6 +138,9 @@ def _load_existing_payloads() -> list[dict[str, Any]]:
         except Exception:
             continue
         if isinstance(payload, dict):
+            notice_id = str(payload.get("notice_id") or (payload.get("document") or {}).get("notice_id") or path.stem)
+            if notice_id in deleted_notice_ids:
+                continue
             payloads.append(payload)
     return payloads
 
@@ -295,10 +314,15 @@ async def main() -> None:
 
     api = CheongYakAPI()
     existing_notice_ids = _existing_notice_ids()
+    deleted_notice_ids = _deleted_notice_ids()
     if args.notice_id:
         raw_list = []
         for notice_id in args.notice_id:
-            if str(notice_id) in existing_notice_ids:
+            notice_id = str(notice_id)
+            if notice_id in deleted_notice_ids:
+                print(f"[collect] 삭제 관리 공고번호 건너뜀: {notice_id}")
+                continue
+            if notice_id in existing_notice_ids:
                 print(f"[collect] 중복 공고번호 건너뜀: {notice_id}")
                 continue
             print(f"[collect] 공고번호 직접 조회: {notice_id}")
@@ -322,7 +346,7 @@ async def main() -> None:
             for item in page_items:
                 normalized = _from_openapi(item)
                 notice_id = str(normalized.get("notice_id") or "").strip()
-                if not notice_id or notice_id in existing_notice_ids or notice_id in seen_ids:
+                if not notice_id or notice_id in existing_notice_ids or notice_id in deleted_notice_ids or notice_id in seen_ids:
                     continue
                 seen_ids.add(notice_id)
                 raw_list.append(item)

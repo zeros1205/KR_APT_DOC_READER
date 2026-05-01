@@ -453,6 +453,8 @@ def build_post_data(
     midterm_count = _stringify(facts.get("midterm_count") or "")
     balance_ratio = _stringify(facts.get("balance_ratio") or "0")
     midterm_fixed_amount = _stringify(facts.get("midterm_fixed_amount") or "")
+    if midterm_ratio == "0":
+        midterm_count = ""
     loan_info = MIDTERM_DESC_TEXT
     if midterm_fixed_amount:
         loan_info = MIDTERM_DESC_TEXT
@@ -1053,6 +1055,10 @@ class BlogHTMLRenderer:
                 html,
             )
             html = html.replace("■ 중도금 0%", "■ 중도금 없음")
+            html = html.replace(
+                "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
+                "이 공고는 중도금 납부 단계가 별도로 표시되지 않은 구조입니다. 계약금 납부 후에는 공고문에 정해진 잔금 납부 시점과 금액을 중심으로 자금 일정을 확인해야 합니다. 실제 납부 조건은 입주자모집공고문과 계약 안내문을 함께 확인해 주세요.",
+            )
 
         if _finance_uses_non_ratio_display(data):
             html = re.sub(
@@ -1068,9 +1074,19 @@ class BlogHTMLRenderer:
             )
             html = html.replace("■ 계약금 0%", f"■ 계약금 {data.contract_amount}")
             if _is_zero_ratio(data.midterm_ratio):
+                html = html.replace("■ 잔금 0%", "■ 잔금 잔여금")
                 html = re.sub(
                     r"잔금\s*—\s*0%\s*\(입주 시\)",
                     "잔금 — 잔여금 (입주 시)",
+                    html,
+                )
+                html = html.replace(
+                    "최종 입주 시점에 납부하는 잔금은 '기존 중도금 대출의 상환'과 '잔금 대출(담보대출)로의 전환'이 동시에 일어나는 핵심 구간입니다. 입주 시점의 KB시세나 감정평가액에 따라 대출 한도가 재산정되므로, 금리 변동성 및 개인의 신용도를 고려한 입체적인 자금 조달 시나리오를 미리 수립해 두는 것이 안전합니다.",
+                    "잔금은 계약금을 제외한 나머지 금액을 공고문에 정해진 시점에 납부하는 구간입니다. 중도금 단계가 없는 구조에서는 잔금 납부 시점의 자금 공백이 생기지 않도록 현금과 금융상품 활용 가능성을 미리 점검해야 합니다. 정확한 금액과 납부일은 입주자모집공고문 및 계약 안내문을 기준으로 확인해 주세요.",
+                )
+                html = re.sub(
+                    r"기본 구조만 보면 계약금[^<]*?순서입니다\.",
+                    f"이 공고는 계약금 {data.contract_amount}을 먼저 납부하고, 중도금 없이 잔금은 나머지 금액으로 확인하시면 됩니다.",
                     html,
                 )
 
