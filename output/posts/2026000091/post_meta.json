@@ -1,20 +1,20 @@
 {
   "notice_id": "2026000091",
   "apt_name": "소제지구 A4BL 중흥S-클래스 우미린",
-  "title": "소제지구 A4BL 중흥S-클래스 우미린 여수 분양가 정리",
+  "title": "여수 소호동 중흥S-클래스 우미린 분양가·일정 정리",
   "subtitle": "전라남도 여수시 소호동 828번지 일원 여수소제지구 A4블록",
   "theme": "claude",
   "tags": [
     "소제지구A4BL중흥S클래스우미린",
-    "여수분양",
+    "여수소호동분양",
     "여수청약",
-    "소호동아파트",
-    "전남청약",
+    "전남아파트분양",
+    "소제지구청약",
+    "분양가상한제",
     "특별공급",
     "1순위청약",
-    "분양가상한제",
     "비규제지역",
-    "청약일정"
+    "여수신축아파트"
   ],
   "location": "전라남도 여수시 소호동",
   "region_category": "전라남도",
@@ -88,10 +88,10 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "6",
+  "midterm_count": "8",
   "midterm_fixed_amount": "",
   "balance_ratio": "35",
   "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000091&pblancNo=2026000091",
-  "generated_at": "2026-05-01T00:53:45.518376"
+  "generated_at": "2026-05-01T09:33:35.637778"
 }

@@ -302,7 +302,7 @@ body {
     max-width: 100%;
   }
   #filter-dock {
-    top: var(--front-header-height, 56px);
+    top: calc(var(--front-header-height, 56px) - 1px);
     background: #fffaf3;
   }
   .site-footer {
@@ -621,7 +621,7 @@ body {
 }
 #filter-dock {
   position: sticky;
-  top: var(--front-header-height, 68px);
+  top: calc(var(--front-header-height, 68px) - 1px);
   z-index: 35;
   background: #fffaf3;
   margin: 0 -24px 28px;

@@ -1,19 +1,20 @@
 {
+  "notice_id": "2026000075",
   "apt_name": "창원자이 더 스카이",
-  "title": "창원자이 더 스카이 청약, 중앙동 8억대부터",
+  "title": "창원자이 더 스카이 중앙동 8억대 분양가 정리",
   "subtitle": "경상남도 창원시 성산구 중앙동 99-4,5,6",
   "theme": "claude",
   "tags": [
     "창원자이더스카이",
-    "창원청약",
-    "성산구분양",
-    "중앙동아파트",
-    "창원분양",
-    "청약일정",
+    "창원시성산구",
+    "중앙동분양",
+    "창원아파트청약",
+    "창원분양가",
     "특별공급",
     "1순위청약",
-    "경남아파트",
-    "실수요자청약"
+    "비규제지역",
+    "경남청약",
+    "신혼부부특공"
   ],
   "location": "경상남도 창원시 성산구 중앙동",
   "region_category": "경상남도",
@@ -23,6 +24,7 @@
   "rank1_date": "2026-03-31",
   "rank2_date": "2026-04-01",
   "notice_date": "2026-03-20",
+  "winner_date": "2026-04-07",
   "move_in_date": "2030년 04월",
   "supply_location": "경상남도 창원시 성산구 중앙동 99-4,5,6",
   "total_households": "509",
@@ -86,35 +88,10 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "7",
-  "balance_ratio": "10",
-  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000075&pblancNo=2026000075",
-  "generated_at": "2026-04-27T01:49:02.086640",
-  "naver_blog_guide": {
-    "step1": "네이버 블로그 → 글쓰기",
-    "step2": "스마트에디터 ONE → [HTML] 버튼",
-    "step3": "post.html 전체 붙여넣기",
-    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-    "step5": "태그 입력: 창원자이더스카이, 창원청약, 성산구분양, 중앙동아파트, 창원분양, 청약일정, 특별공급, 1순위청약, 경남아파트, 실수요자청약",
-    "step6": "카테고리 설정 후 발행"
-  },
-  "pdf_extracted_finance": {
-    "contract_ratio": "10",
-    "midterm_ratio": "60",
-    "balance_ratio": "10",
-    "midterm_count": "7",
-    "midterm_fixed_amount": "",
-    "source_page": 7,
-    "source_pdf": "2026000075 창원자이 더 스카이 입주자모집공고문.pdf",
-    "evidence": [
-      "공급금액 계약금(10%) 중도금 (60%) 잔금 (30%)",
-      "공급금액 계약금(10%) 중도금 (60%) 잔금 (30%)",
-      "공급금액 계약금(10%) 중도금 (60%) 잔금 (30%)",
-      "약식표기 층 1차 (5%) 2차 (5%) 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%)"
-    ]
-  },
+  "midterm_count": "6",
   "midterm_fixed_amount": "",
-  "winner_date": "2026-04-07",
-  "notice_id": "2026000075"
+  "balance_ratio": "30",
+  "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000075&pblancNo=2026000075",
+  "generated_at": "2026-05-01T09:24:54.005076"
 }

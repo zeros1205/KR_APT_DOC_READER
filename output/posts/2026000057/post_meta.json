@@ -1,20 +1,20 @@
 {
   "notice_id": "2026000057",
   "apt_name": "에코델타시티 엘가 로제비앙",
-  "title": "에코델타시티 엘가 로제비앙 부산 강서구 분양가 총정리",
+  "title": "에코델타시티 엘가 로제비앙 부산 강서구 5억대부터",
   "subtitle": "부산광역시 강서구 강동동 에코델타시티 5BL",
   "theme": "claude",
   "tags": [
     "에코델타시티엘가로제비앙",
     "부산강서구분양",
     "강동동청약",
-    "에코델타시티",
-    "부산아파트청약",
-    "분양가상한제",
+    "에코델타시티청약",
+    "부산아파트분양",
     "특별공급",
     "1순위청약",
-    "청약일정",
-    "부산분양정보"
+    "분양가상한제",
+    "비규제지역",
+    "청약일정"
   ],
   "location": "부산광역시 강서구 강동동",
   "region_category": "부산",
@@ -88,10 +88,10 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "2",
+  "midterm_count": "6",
   "midterm_fixed_amount": "",
   "balance_ratio": "35",
   "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000057&pblancNo=2026000057",
-  "generated_at": "2026-05-01T00:58:00.505458"
+  "generated_at": "2026-05-01T09:21:56.153771"
 }

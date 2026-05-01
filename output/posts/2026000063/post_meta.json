@@ -1,7 +1,7 @@
 {
   "notice_id": "2026000063",
   "apt_name": "오션포레베네스트하우스(미단시티 공동8BL)",
-  "title": "오션포레베네스트하우스 인천 중구 4억대 청약 정리",
+  "title": "오션포레베네스트하우스 인천 중구 4억대 청약정리",
   "subtitle": "인천광역시 중구 자연대로 667(오션포레베네스트하우스)",
   "theme": "claude",
   "tags": [
@@ -9,12 +9,12 @@
     "미단시티공동8BL",
     "인천중구분양",
     "인천청약",
-    "청약일정",
+    "중구아파트청약",
     "특별공급",
     "1순위청약",
     "분양가상한제",
-    "전매제한",
-    "실수요자청약"
+    "비규제지역",
+    "청약일정"
   ],
   "location": "인천광역시 중구",
   "region_category": "인천",
@@ -88,10 +88,10 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "5",
-  "midterm_count": "1",
+  "midterm_count": "2",
   "midterm_fixed_amount": "",
   "balance_ratio": "90",
   "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
   "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000063&pblancNo=2026000063",
-  "generated_at": "2026-05-01T00:59:03.541826"
+  "generated_at": "2026-05-01T09:22:58.149195"
 }

@@ -137,6 +137,40 @@ def _infer_from_amount_row(lines: list[str], result: FinanceExtraction) -> None:
         return
 
 
+def _installment_labels(line: str) -> list[str]:
+    return re.findall(r"\d+\s*(?:차|회)", line)
+
+
+def _count_midterm_installments(line: str, result: FinanceExtraction) -> int:
+    labels = _installment_labels(line)
+    values = _percent_values(line)
+    try:
+        contract = int(result.contract_ratio) if result.contract_ratio else None
+        midterm = int(result.midterm_ratio) if result.midterm_ratio else None
+        balance = int(result.balance_ratio) if result.balance_ratio else None
+    except ValueError:
+        contract = midterm = balance = None
+
+    if labels and midterm:
+        # Some headers list contract installments first, then midterm installments:
+        # "1차(5%) 2차(5%) 1회(10%) ... 6회(10%)".
+        if values:
+            work = list(values)
+            if contract is not None:
+                removed_contract = 0
+                while work and sum(work) > midterm and removed_contract + work[0] <= contract:
+                    removed_contract += work[0]
+                    work = work[1:]
+            if balance is not None and work and sum(work) > midterm and work[-1] == balance:
+                work = work[:-1]
+            if work and sum(work) == midterm:
+                return len(work)
+        if not values:
+            # Header rows may show "1회 2회 ... 6회" without percent values.
+            return len(labels)
+    return 0
+
+
 def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
     compact = [line.strip() for line in lines if line.strip()]
     result = FinanceExtraction(evidence=[])
@@ -162,17 +196,41 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
                 result.balance_ratio = str(value)
                 result.evidence.append(line)
 
+    # Header rows often provide contract / midterm directly and omit balance.
+    _infer_missing_ratio(result, header_has_balance)
+
+    # Some tables split the contract percentage onto the next header line, e.g.
+    # "계약금 중도금(60%)" then "(5%) ...", with balance inferred from the header.
+    if result.midterm_ratio and not result.contract_ratio:
+        for line in compact[:8]:
+            no_space = line.replace(" ", "")
+            if CONTRACT in no_space or MIDTERM in no_space or BALANCE in no_space:
+                continue
+            values = _percent_values(no_space)
+            if len(values) != 1:
+                continue
+            try:
+                midterm = int(result.midterm_ratio)
+            except ValueError:
+                continue
+            value = values[0]
+            if 0 < value < midterm and value != 100 - midterm:
+                result.contract_ratio = str(value)
+                if result.evidence is not None:
+                    result.evidence.append(line)
+                _infer_missing_ratio(result, header_has_balance)
+                break
+
     for line in compact:
         no_space = line.replace(" ", "")
-        if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space) and len(_percent_values(no_space)) >= 3:
-            installment_labels = re.findall(r"\d+\ucc28", no_space)
-            count = len(installment_labels) or len(_percent_values(no_space))
+        if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space or "\ud68c" in no_space):
+            count = _count_midterm_installments(no_space, result)
             if count:
                 result.midterm_count = str(count)
                 break
 
-    # Header rows often provide contract / midterm directly and omit balance.
-    _infer_missing_ratio(result, header_has_balance)
+    if result.has_core_ratios:
+        return result
 
     joined_header = " ".join(compact[:8]).replace(" ", "")
     contract_labels = joined_header.count(CONTRACT)
@@ -180,17 +238,22 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
     balance_labels = joined_header.count(BALANCE)
     for line in compact[:8]:
         no_space = line.replace(" ", "")
-        if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space) and len(_percent_values(no_space)) >= 3:
+        if ("\ud68c\ucc28" in no_space or "\ucc28" in no_space or "\ud68c" in no_space) and len(_percent_values(no_space)) >= 3:
             values = _percent_values(no_space)
-            installment_labels = re.findall(r"\d+\ucc28", no_space)
+            installment_labels = _installment_labels(no_space)
             if installment_labels and len(values) > len(installment_labels):
                 values = values[-len(installment_labels) :]
             if values:
                 midterm_values = values
-                if header_has_balance and len(set(values)) > 1 and sum(values[:-1]) + values[-1] <= 100:
+                counted_midterms = _count_midterm_installments(no_space, result)
+                if counted_midterms and len(values) >= counted_midterms:
+                    midterm_values = values[-counted_midterms:]
+                    if result.balance_ratio and midterm_values and midterm_values[-1] == int(result.balance_ratio):
+                        midterm_values = midterm_values[:-1]
+                if not result.balance_ratio and header_has_balance and len(set(values)) > 1 and sum(values[:-1]) + values[-1] <= 100:
                     result.balance_ratio = str(values[-1])
                     midterm_values = values[:-1]
-                elif header_has_balance and result.contract_ratio:
+                elif not result.balance_ratio and header_has_balance and result.contract_ratio:
                     contract_value = int(result.contract_ratio)
                     if contract_value + sum(values[:-1]) + values[-1] == 100:
                         result.balance_ratio = str(values[-1])
@@ -199,7 +262,9 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
                     midterm_values = values[:-1]
                 if not result.midterm_ratio and midterm_values:
                     result.midterm_ratio = str(sum(midterm_values))
-                if midterm_values:
+                if counted_midterms:
+                    result.midterm_count = str(counted_midterms)
+                elif midterm_values:
                     result.midterm_count = str(len(midterm_values))
                 if result.evidence is not None:
                     result.evidence.append(line)
@@ -209,6 +274,14 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
             continue
         values = _percent_values(no_space)
         if not values:
+            count = _count_midterm_installments(no_space, result)
+            if count and not result.midterm_count:
+                result.midterm_count = str(count)
+            continue
+        if len(values) == 1 and MIDTERM not in no_space and BALANCE not in no_space:
+            count = _count_midterm_installments(no_space, result)
+            if count and not result.midterm_count:
+                result.midterm_count = str(count)
             continue
         cursor = 0
         if not result.contract_ratio and contract_labels and cursor < len(values):
@@ -229,6 +302,13 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
             result.evidence.append(line)
         _infer_missing_ratio(result, header_has_balance)
         if result.has_core_ratios:
+            for count_line in compact:
+                count_no_space = count_line.replace(" ", "")
+                if ("\ud68c\ucc28" in count_no_space or "\ucc28" in count_no_space or "\ud68c" in count_no_space):
+                    count = _count_midterm_installments(count_no_space, result)
+                    if count:
+                        result.midterm_count = str(count)
+                        break
             return result
 
     # Some PDFs split labels and percentages across multiple header rows:
@@ -252,6 +332,14 @@ def _parse_payment_window(lines: list[str]) -> FinanceExtraction:
         result.balance_ratio = str(100 - int(result.contract_ratio))
     _infer_from_amount_row(compact, result)
     _infer_missing_ratio(result, header_has_balance)
+    if result.has_core_ratios:
+        for count_line in compact:
+            count_no_space = count_line.replace(" ", "")
+            if ("\ud68c\ucc28" in count_no_space or "\ucc28" in count_no_space or "\ud68c" in count_no_space):
+                count = _count_midterm_installments(count_no_space, result)
+                if count:
+                    result.midterm_count = str(count)
+                    break
     return result
 
 

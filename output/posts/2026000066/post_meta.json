@@ -1,19 +1,20 @@
 {
+  "notice_id": "2026000066",
   "apt_name": "한화포레나 부산당리",
-  "title": "한화포레나 부산당리 분양가·일정 한눈정리",
+  "title": "한화포레나 부산당리 청약 정리, 5억6,700만원부터",
   "subtitle": "부산광역시 사하구 당리동 340-3번지 일원",
   "theme": "claude",
   "tags": [
     "한화포레나부산당리",
-    "부산당리청약",
-    "사하구분양",
+    "부산청약",
+    "사하구청약",
+    "당리동분양",
     "부산아파트분양",
-    "부산청약일정",
-    "당리동아파트",
+    "청약일정",
     "특별공급",
     "1순위청약",
-    "비규제지역",
-    "분양가정리"
+    "분양가정리",
+    "부산신규분양"
   ],
   "location": "부산광역시 사하구 당리동",
   "region_category": "부산",
@@ -23,6 +24,7 @@
   "rank1_date": "2026-03-31",
   "rank2_date": "2026-04-01",
   "notice_date": "2026-03-20",
+  "winner_date": "2026-04-07",
   "move_in_date": "2029년 04월",
   "supply_location": "부산광역시 사하구 당리동 340-3번지 일원",
   "total_households": "209",
@@ -86,33 +88,10 @@
   "contract_ratio": "5",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "",
-  "balance_ratio": "35",
-  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000066&pblancNo=2026000066",
-  "generated_at": "2026-04-27T02:41:24.412505",
-  "naver_blog_guide": {
-    "step1": "네이버 블로그 → 글쓰기",
-    "step2": "스마트에디터 ONE → [HTML] 버튼",
-    "step3": "post.html 전체 붙여넣기",
-    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-    "step5": "태그 입력: 한화포레나부산당리, 부산당리청약, 사하구분양, 부산아파트분양, 부산청약일정, 당리동아파트, 특별공급, 1순위청약, 비규제지역, 분양가정리",
-    "step6": "카테고리 설정 후 발행"
-  },
-  "pdf_extracted_finance": {
-    "contract_ratio": "5",
-    "midterm_ratio": "60",
-    "balance_ratio": "35",
-    "midterm_count": "",
-    "midterm_fixed_amount": "",
-    "source_page": 7,
-    "source_pdf": "2026000066 한화포레나 부산당리 입주자모집공고문.pdf",
-    "evidence": [
-      "계약금(5%) 중도금",
-      "표기 (라인) 세대수 (35%)"
-    ]
-  },
+  "midterm_count": "6",
   "midterm_fixed_amount": "",
-  "winner_date": "2026-04-07",
-  "notice_id": "2026000066"
+  "balance_ratio": "35",
+  "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000066&pblancNo=2026000066",
+  "generated_at": "2026-05-01T09:47:14.792216"
 }

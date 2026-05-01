@@ -1,19 +1,20 @@
 {
+  "notice_id": "2026000055",
   "apt_name": "의정부역 센트럴 아이파크",
-  "title": "의정부역 센트럴 아이파크 청약 총정리 7억대부터",
+  "title": "의정부역 센트럴 아이파크 분양가·일정 한눈정리",
   "subtitle": "경기도 의정부시 의정부동 253-19번지 일원",
   "theme": "claude",
   "tags": [
     "의정부역센트럴아이파크",
-    "의정부청약",
-    "의정부동분양",
+    "의정부시분양",
+    "의정부동청약",
     "의정부역아파트",
-    "경기도청약",
-    "신혼부부특공",
-    "생애최초특공",
-    "1순위청약",
     "청약일정",
-    "분양가정리"
+    "특별공급",
+    "1순위청약",
+    "분양가정리",
+    "비규제지역",
+    "의정부부동산"
   ],
   "location": "경기도 의정부시 의정부동",
   "region_category": "경기도",
@@ -23,6 +24,7 @@
   "rank1_date": "2026-04-08",
   "rank2_date": "2026-04-09",
   "notice_date": "2026-03-26",
+  "winner_date": "2026-04-15",
   "move_in_date": "2029년 12월",
   "supply_location": "경기도 의정부시 의정부동 253-19번지 일원",
   "total_households": "400",
@@ -86,35 +88,10 @@
   "contract_ratio": "10",
   "contract_amount": "",
   "midterm_ratio": "60",
-  "midterm_count": "",
-  "balance_ratio": "30",
-  "loan_info": "중도금 대출 조건은 공고문 및 금융기관에서 직접 확인하세요.",
-  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000055&pblancNo=2026000055",
-  "generated_at": "2026-04-27T02:34:57.079379",
-  "naver_blog_guide": {
-    "step1": "네이버 블로그 → 글쓰기",
-    "step2": "스마트에디터 ONE → [HTML] 버튼",
-    "step3": "post.html 전체 붙여넣기",
-    "step4": "플레이스홀더 이미지를 건설사 제공 이미지로 교체",
-    "step5": "태그 입력: 의정부역센트럴아이파크, 의정부청약, 의정부동분양, 의정부역아파트, 경기도청약, 신혼부부특공, 생애최초특공, 1순위청약, 청약일정, 분양가정리",
-    "step6": "카테고리 설정 후 발행"
-  },
-  "pdf_extracted_finance": {
-    "contract_ratio": "10",
-    "midterm_ratio": "60",
-    "balance_ratio": "30",
-    "midterm_count": "",
-    "midterm_fixed_amount": "",
-    "source_page": 7,
-    "source_pdf": "2026000055 의정부역 센트럴 아이파크 입주자모집공고문.pdf",
-    "evidence": [
-      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
-      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
-      "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
-      "약식표기 총 층 해당 1회 2회 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
-    ]
-  },
+  "midterm_count": "6",
   "midterm_fixed_amount": "",
-  "winner_date": "2026-04-15",
-  "notice_id": "2026000055"
+  "balance_ratio": "30",
+  "loan_info": "중도금은 전체 분양대금 중 가장 큰 비중을 차지하며 대개 6회에 걸쳐 분납됩니다. 대부분 집단대출을 통해 조달하지만, 개인의 대출 규제 지역 여부나 DSR(총부채원리금상환비율) 한도에 따라 대출 실행 가능 범위가 달라질 수 있습니다. 무이자와 이자후불제 등 금융 조건에 따른 실질 체감 비용을 사전에 반드시 계산해 보시기 바랍니다.",
+  "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000055&pblancNo=2026000055",
+  "generated_at": "2026-05-01T09:44:18.367488"
 }
