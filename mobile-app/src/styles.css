@@ -962,6 +962,33 @@ button {
   line-height: 1.35;
 }
 
+.settings-nav-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.settings-nav-row strong {
+  overflow: hidden;
+  color: var(--c-dark);
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-nav-row span {
+  overflow: hidden;
+  color: var(--c-mid);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .settings-section {
   display: grid;
   gap: 12px;
