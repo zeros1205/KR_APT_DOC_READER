@@ -902,6 +902,14 @@ button {
   padding: 16px 14px 0;
 }
 
+.settings-page-copy {
+  padding: 2px 2px 6px;
+  color: var(--c-mid);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .settings-list {
   display: grid;
   overflow: hidden;
@@ -909,6 +917,19 @@ button {
   border-radius: 14px;
   background: var(--c-surface);
   box-shadow: 0 12px 28px rgba(50, 42, 32, 0.06);
+}
+
+.settings-flat-list {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.settings-open-panel {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-group-title {
@@ -996,6 +1017,11 @@ button {
   border-bottom: 1px solid rgba(44, 41, 37, 0.08);
 }
 
+.settings-open-panel .settings-section {
+  padding: 0;
+  border-bottom: 0;
+}
+
 .settings-list > :last-child {
   border-bottom: 0;
 }
@@ -1078,6 +1104,13 @@ button {
   border-color: var(--c-primary);
   background: var(--c-primary);
   color: #fff;
+}
+
+.settings-check-all {
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 12px;
+  background: var(--c-surface);
 }
 
 .sort-control {

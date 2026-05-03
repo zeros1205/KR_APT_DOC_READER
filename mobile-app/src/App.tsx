@@ -56,7 +56,7 @@ const LATEST_VERSION = "0.1.0";
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
-type SettingsPage = "main" | "regions" | "favorites";
+type SettingsPage = "main" | "notifications" | "regions" | "favorites";
 type DetailPage = {
   url: string;
   title: string;
@@ -238,6 +238,13 @@ function App() {
     });
   }
 
+  async function toggleAllRegions() {
+    await updateSettings({
+      ...settings,
+      regions: settings.regions.length === REGIONS.length ? [] : [...REGIONS]
+    });
+  }
+
   async function enablePush() {
     if (!Capacitor.isNativePlatform()) {
       await updateSettings({ ...settings, pushEnabled: !settings.pushEnabled });
@@ -317,8 +324,9 @@ function App() {
   }
 
   function getSettingsTitle() {
+    if (settingsPage === "notifications") return "알림 설정";
     if (settingsPage === "regions") return "관심지역 설정";
-    if (settingsPage === "favorites") return "즐겨찾기";
+    if (settingsPage === "favorites") return "즐겨찾기 관리";
     return "설정";
   }
 
@@ -406,6 +414,7 @@ function App() {
           onOpen={openUrl}
           onPage={setSettingsPage}
           onPush={enablePush}
+          onRegionAll={toggleAllRegions}
           onQuietHours={(enabled) => void updateSettings({ ...settings, quietHoursEnabled: enabled })}
           onRegion={toggleRegion}
           onRemoveFavorite={(noticeId) =>
@@ -856,6 +865,7 @@ function SettingsView({
   onOpen,
   onPage,
   onPush,
+  onRegionAll,
   onQuietHours,
   onRegion,
   onRemoveFavorite,
@@ -868,6 +878,7 @@ function SettingsView({
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
   onPage: (page: SettingsPage) => void;
   onPush: () => Promise<void>;
+  onRegionAll: () => Promise<void>;
   onQuietHours: (enabled: boolean) => void;
   onRegion: (region: string) => Promise<void>;
   onRemoveFavorite: (noticeId: string) => void;
@@ -888,21 +899,59 @@ function SettingsView({
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
   const hasUpdate = APP_VERSION !== LATEST_VERSION;
+  const allRegionsSelected = settings.regions.length === REGIONS.length;
+
+  if (page === "notifications") {
+    return (
+      <section className="screen settings-screen">
+        <section className="settings-list settings-flat-list">
+          <div className="settings-row">
+            <div>
+              <strong>신규 공고 알림 받기</strong>
+              <span>{settings.pushEnabled ? "알림 켜짐" : "알림 꺼짐"}</span>
+            </div>
+            <button className={settings.pushEnabled ? "switch on" : "switch"} onClick={() => void onPush()}>
+              <span />
+            </button>
+          </div>
+
+          <div className="settings-row">
+            <div>
+              <strong>심야 시간에도 알림 받기</strong>
+              <span>{settings.quietHoursEnabled ? "심야시간 알림 차단 중" : "심야시간 알림 허용 중"}</span>
+              <span>22:00 ~ 07:00</span>
+            </div>
+            <button
+              className={!settings.quietHoursEnabled ? "switch on" : "switch"}
+              onClick={() => onQuietHours(!settings.quietHoursEnabled)}
+            >
+              <span />
+            </button>
+          </div>
+
+          <button className="settings-link-row settings-nav-row" onClick={() => onPage("regions")}>
+            <div>
+              <strong>관심지역 설정</strong>
+              <span>{settings.regions.length > 0 ? `${settings.regions.length}개 지역 선택됨` : "전체 지역 알림"}</span>
+            </div>
+            <ChevronRight size={18} />
+          </button>
+        </section>
+      </section>
+    );
+  }
 
   if (page === "regions") {
     return (
       <section className="screen settings-screen">
-        <section className="settings-list">
-          <div className="settings-group-title">
-            <Bell size={18} />
-            <span>관심지역 설정</span>
-          </div>
+        <p className="settings-page-copy">신규 공고 알림 받을 지역을 선택해주세요.</p>
+        <section className="settings-list settings-open-panel">
           <div className="settings-section">
             <div className="settings-section-head">
-              <div>
-                <strong>신규 공고 알림 받을 지역 선택</strong>
-                <span>{settings.regions.length > 0 ? `${settings.regions.length}개 지역 선택됨` : "전체 지역 알림"}</span>
-              </div>
+              <button className="settings-check settings-check-all" onClick={() => void onRegionAll()}>
+                <span>{allRegionsSelected && <Check size={14} />}</span>
+                전체선택/해제
+              </button>
             </div>
             <div className="settings-check-grid">
               {REGIONS.map((region) => {
@@ -928,12 +977,9 @@ function SettingsView({
   if (page === "favorites") {
     return (
       <section className="screen settings-screen">
-        <section className="settings-list">
-          <div className="settings-group-title">
-            <Bookmark size={18} />
-            <span>즐겨찾기</span>
-          </div>
+        <p className="settings-page-copy">자주 보는 공고를 관리할 수 있어요.</p>
 
+        <section className="settings-list settings-open-panel">
           <div className="settings-section">
             <div className="settings-section-head">
               <div>
@@ -993,55 +1039,31 @@ function SettingsView({
 
   return (
     <section className="screen settings-screen">
-      <section className="settings-list">
-        <div className="settings-group-title">
-          <Bell size={18} />
-          <span>알림 설정</span>
-        </div>
-
-        <div className="settings-row">
+      <section className="settings-list settings-flat-list">
+        <button className="settings-link-row settings-nav-row" onClick={() => onPage("notifications")}>
           <div>
-            <strong>신규 공고 알림 받기</strong>
-            <span>{settings.pushEnabled ? "알림 수신 중" : "알림 꺼짐"}</span>
+            <strong>알림 설정</strong>
+            <span>{settings.pushEnabled ? "신규 공고 알림 켜짐" : "신규 공고 알림 꺼짐"}</span>
           </div>
-          <button className={settings.pushEnabled ? "switch on" : "switch"} onClick={() => void onPush()}>
-            <span />
-          </button>
-        </div>
-
-        <div className="settings-row">
-          <div>
-            <strong>심야 시간에도 알림 받기</strong>
-            <span>{settings.quietHoursEnabled ? "심야 알림 차단 중" : "심야 알림 허용"}</span>
-          </div>
-          <button
-            className={!settings.quietHoursEnabled ? "switch on" : "switch"}
-            onClick={() => onQuietHours(!settings.quietHoursEnabled)}
-          >
-            <span />
-          </button>
-        </div>
+          <ChevronRight size={18} />
+        </button>
 
         <button className="settings-link-row settings-nav-row" onClick={() => onPage("regions")}>
           <div>
             <strong>관심지역 설정</strong>
-            <span>신규 공고 알림 받을 지역 선택</span>
+            <span>{settings.regions.length > 0 ? `${settings.regions.length}개 지역 선택됨` : "전체 지역 알림"}</span>
           </div>
           <ChevronRight size={18} />
         </button>
-      </section>
 
-      <section className="settings-list">
         <button className="settings-link-row settings-nav-row" onClick={() => onPage("favorites")}>
           <div>
-            <strong>즐겨찾기</strong>
+            <strong>즐겨찾기 관리</strong>
             <span>{favorites.length}개 저장됨</span>
           </div>
           <ChevronRight size={18} />
         </button>
-      </section>
 
-      <section className="settings-list">
         <button className="settings-link-row" onClick={() => void onOpen(`${SITE_ORIGIN}/terms.html`, "이용약관")}>
           <span>이용약관</span>
           <ChevronRight size={18} />
@@ -1052,7 +1074,7 @@ function SettingsView({
         </button>
         <div className="settings-row version-row">
           <div>
-            <strong>앱 버전</strong>
+            <strong>앱 정보</strong>
             <span>현재 {APP_VERSION} · 최신 {LATEST_VERSION}</span>
           </div>
           <button className="update-button" disabled={!hasUpdate}>
