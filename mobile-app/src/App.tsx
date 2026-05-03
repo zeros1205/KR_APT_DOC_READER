@@ -5,6 +5,7 @@ import {
   Bookmark,
   BookmarkCheck,
   Check,
+  ChevronRight,
   Home,
   Menu,
   RefreshCw,
@@ -50,8 +51,11 @@ const REGIONS = [
   "경상남도",
   "제주"
 ];
+const APP_VERSION = "0.1.0";
+const LATEST_VERSION = "0.1.0";
 
 type View = "home" | "favorites" | "settings" | "detail";
+type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
 type DetailPage = {
   url: string;
   title: string;
@@ -329,37 +333,46 @@ function App() {
 
       {view === "settings" && (
         <SettingsView
+          favorites={favorites}
           settings={settings}
           onClear={clearLocalData}
           onOpen={openUrl}
           onPush={enablePush}
           onQuietHours={(enabled) => void updateSettings({ ...settings, quietHoursEnabled: enabled })}
           onRegion={toggleRegion}
+          onRemoveFavorite={(noticeId) =>
+            void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
+          }
+          onShare={shareCard}
         />
       )}
 
       {view === "detail" && detailPage && <DetailView page={detailPage} />}
 
-      {menuOpen && <button className="fab-backdrop" aria-label="메뉴 닫기" onClick={() => setMenuOpen(false)} />}
+      {view !== "settings" && (
+        <>
+          {menuOpen && <button className="fab-backdrop" aria-label="메뉴 닫기" onClick={() => setMenuOpen(false)} />}
 
-      <nav className={`fab-menu ${menuOpen ? "open" : ""}`} aria-label="플로팅 메뉴">
-        {menuOpen && (
-          <div className="fab-actions">
-            <button onClick={() => { setView("home"); setMenuOpen(false); }}>
-              <Home size={18} /> 홈
+          <nav className={`fab-menu ${menuOpen ? "open" : ""}`} aria-label="플로팅 메뉴">
+            {menuOpen && (
+              <div className="fab-actions">
+                <button onClick={() => { setView("home"); setMenuOpen(false); }}>
+                  <Home size={18} /> 홈
+                </button>
+                <button onClick={() => { setView("favorites"); setMenuOpen(false); }}>
+                  <Bookmark size={18} /> 즐겨찾기
+                </button>
+                <button onClick={() => { setView("settings"); setMenuOpen(false); }}>
+                  <Settings size={18} /> 설정
+                </button>
+              </div>
+            )}
+            <button className="fab-main" onClick={() => setMenuOpen((open) => !open)} aria-label="메뉴">
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <button onClick={() => { setView("favorites"); setMenuOpen(false); }}>
-              <Bookmark size={18} /> 즐겨찾기
-            </button>
-            <button onClick={() => { setView("settings"); setMenuOpen(false); }}>
-              <Settings size={18} /> 설정
-            </button>
-          </div>
-        )}
-        <button className="fab-main" onClick={() => setMenuOpen((open) => !open)} aria-label="메뉴">
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </nav>
+          </nav>
+        </>
+      )}
 
       {toastMessage && <div className="app-toast">{toastMessage}</div>}
       <div className="system-nav-scrim" aria-hidden="true" />
@@ -731,69 +744,181 @@ function FavoritesView({
 }
 
 function SettingsView({
+  favorites,
   settings,
   onClear,
   onOpen,
   onPush,
   onQuietHours,
-  onRegion
+  onRegion,
+  onRemoveFavorite,
+  onShare
 }: {
+  favorites: FavoriteNotice[];
   settings: UserSettings;
   onClear: () => Promise<void>;
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
   onPush: () => Promise<void>;
   onQuietHours: (enabled: boolean) => void;
   onRegion: (region: string) => Promise<void>;
+  onRemoveFavorite: (noticeId: string) => void;
+  onShare: (card: NoticeCard) => Promise<void>;
 }) {
+  const [favoriteSort, setFavoriteSort] = useState<FavoriteSort>("newest");
+  const sortedFavorites = useMemo(() => {
+    const next = [...favorites];
+    if (favoriteSort === "nameAsc") {
+      return next.sort((a, b) => a.apt_name.localeCompare(b.apt_name, "ko-KR"));
+    }
+    if (favoriteSort === "nameDesc") {
+      return next.sort((a, b) => b.apt_name.localeCompare(a.apt_name, "ko-KR"));
+    }
+    if (favoriteSort === "oldest") {
+      return next.sort((a, b) => new Date(a.saved_at).getTime() - new Date(b.saved_at).getTime());
+    }
+    return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
+  }, [favoriteSort, favorites]);
+  const hasUpdate = APP_VERSION !== LATEST_VERSION;
+
   return (
     <section className="screen settings-screen">
-      <section className="panel">
-        <div className="panel-title">
+      <section className="settings-list">
+        <div className="settings-group-title">
           <Bell size={18} />
-          <h2>알림</h2>
+          <span>알림 설정</span>
         </div>
-        <label className="switch-row">
-          <span>앱 푸시 알림</span>
+
+        <div className="settings-row">
+          <div>
+            <strong>신규 공고 알림 받기</strong>
+            <span>{settings.pushEnabled ? "알림 수신 중" : "알림 꺼짐"}</span>
+          </div>
           <button className={settings.pushEnabled ? "switch on" : "switch"} onClick={() => void onPush()}>
             <span />
           </button>
-        </label>
-        <label className="switch-row">
-          <span>오후 10시부터 오전 8시까지 조용한 시간</span>
+        </div>
+
+        <div className="settings-row">
+          <div>
+            <strong>심야 시간에도 알림 받기</strong>
+            <span>{settings.quietHoursEnabled ? "심야 알림 차단 중" : "심야 알림 허용"}</span>
+          </div>
           <button
-            className={settings.quietHoursEnabled ? "switch on" : "switch"}
+            className={!settings.quietHoursEnabled ? "switch on" : "switch"}
             onClick={() => onQuietHours(!settings.quietHoursEnabled)}
           >
             <span />
           </button>
-        </label>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-head">
+            <div>
+              <strong>관심지역 설정</strong>
+              <span>신규 공고 알림 받을 지역 선택</span>
+            </div>
+            <ChevronRight size={18} />
+          </div>
+          <div className="settings-check-grid">
+            {REGIONS.map((region) => {
+              const selected = settings.regions.includes(region);
+              return (
+                <button
+                  className={selected ? "settings-check selected" : "settings-check"}
+                  key={region}
+                  onClick={() => void onRegion(region)}
+                >
+                  <span>{selected && <Check size={14} />}</span>
+                  {region}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
-      <section className="panel">
-        <div className="panel-title">
-          <Settings size={18} />
-          <h2>관심지역</h2>
+      <section className="settings-list">
+        <div className="settings-group-title">
+          <Bookmark size={18} />
+          <span>즐겨찾기</span>
         </div>
-        <div className="region-grid">
-          {REGIONS.map((region) => {
-            const selected = settings.regions.includes(region);
-            return (
-              <button className={selected ? "selected" : ""} key={region} onClick={() => void onRegion(region)}>
-                {selected && <Check size={15} />}
-                {region}
+
+        <div className="settings-section">
+          <div className="settings-section-head">
+            <div>
+              <strong>즐겨찾기 설정한 공고 리스트</strong>
+              <span>{favorites.length}개 저장됨</span>
+            </div>
+          </div>
+
+          <div className="sort-control" role="tablist" aria-label="즐겨찾기 정렬">
+            {[
+              ["nameAsc", "이름순↑"],
+              ["nameDesc", "이름순↓"],
+              ["newest", "최신순"],
+              ["oldest", "오래된순"]
+            ].map(([value, label]) => (
+              <button
+                className={favoriteSort === value ? "active" : ""}
+                key={value}
+                onClick={() => setFavoriteSort(value as FavoriteSort)}
+              >
+                {label}
               </button>
-            );
-          })}
+            ))}
+          </div>
+
+          {sortedFavorites.length === 0 ? (
+            <p className="settings-empty">아직 저장한 공고가 없습니다.</p>
+          ) : (
+            <div className="settings-favorites">
+              {sortedFavorites.map((favorite) => (
+                <article className="settings-favorite-card" key={favorite.notice_id}>
+                  <button
+                    className="settings-favorite-main"
+                    onClick={() => void onOpen(favorite.post_url, favorite.apt_name, favorite)}
+                  >
+                    <span>{favorite.region}</span>
+                    <strong>{favorite.apt_name}</strong>
+                    <small>{new Date(favorite.saved_at).toLocaleDateString("ko-KR")} 저장</small>
+                  </button>
+                  <div className="settings-favorite-actions">
+                    <button onClick={() => void onShare(favorite)} aria-label="공유">
+                      <Share2 size={17} />
+                    </button>
+                    <button onClick={() => onRemoveFavorite(favorite.notice_id)} aria-label="삭제">
+                      <Trash2 size={17} />
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="panel link-panel">
-        <button onClick={() => void onOpen(`${SITE_ORIGIN}/privacy.html`, "개인정보 보호정책")}>개인정보 보호정책</button>
-        <button onClick={() => void onOpen(`${SITE_ORIGIN}/terms.html`, "이용약관")}>이용약관</button>
-        <button onClick={() => void onClear()}>저장 데이터 초기화</button>
+      <section className="settings-list">
+        <button className="settings-link-row" onClick={() => void onOpen(`${SITE_ORIGIN}/terms.html`, "이용약관")}>
+          <span>이용약관</span>
+          <ChevronRight size={18} />
+        </button>
+        <button className="settings-link-row" onClick={() => void onOpen(`${SITE_ORIGIN}/privacy.html`, "개인정보 처리방침")}>
+          <span>개인정보 처리방침</span>
+          <ChevronRight size={18} />
+        </button>
+        <div className="settings-row version-row">
+          <div>
+            <strong>앱 버전</strong>
+            <span>현재 {APP_VERSION} · 최신 {LATEST_VERSION}</span>
+          </div>
+          <button className="update-button" disabled={!hasUpdate}>
+            업데이트
+          </button>
+        </div>
+        <button className="settings-reset" onClick={() => void onClear()}>
+          저장 데이터 초기화
+        </button>
       </section>
-
-      <p className="version">앱 버전 0.1.0</p>
     </section>
   );
 }
