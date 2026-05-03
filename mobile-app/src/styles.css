@@ -65,6 +65,14 @@ button {
   background: var(--c-bg);
 }
 
+.admob-top-active .app-shell {
+  padding-top: 50px;
+}
+
+.admob-bottom-active .app-shell {
+  padding-bottom: max(162px, calc(142px + env(safe-area-inset-bottom)));
+}
+
 .system-nav-scrim {
   position: fixed;
   right: 0;

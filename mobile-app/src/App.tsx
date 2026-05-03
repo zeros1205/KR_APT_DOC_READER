@@ -20,6 +20,7 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
+import { ADMOB_AD_UNITS, hideAdBanners, showAdBanners } from "./ads";
 import { absolutePostUrl, extractPriceRange, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import introBackground from "./assets/intro_without_text.png";
 import {
@@ -150,6 +151,25 @@ function App() {
       void registration.then((handle) => handle.remove());
     };
   }, [detailPage, menuOpen, view]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("admob-top-active", "admob-bottom-active");
+
+    if (view === "home") {
+      root.classList.add("admob-top-active", "admob-bottom-active");
+      void showAdBanners(ADMOB_AD_UNITS.frontTopBanner, ADMOB_AD_UNITS.frontBottomBanner);
+      return;
+    }
+
+    if (view === "detail") {
+      root.classList.add("admob-top-active");
+      void showAdBanners(ADMOB_AD_UNITS.postTopBanner);
+      return;
+    }
+
+    void hideAdBanners();
+  }, [view]);
 
   async function refreshPosts() {
     setLoading(true);
