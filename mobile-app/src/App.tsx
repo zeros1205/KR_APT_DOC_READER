@@ -340,6 +340,8 @@ function App() {
 
       {view === "detail" && detailPage && <DetailView page={detailPage} />}
 
+      {menuOpen && <button className="fab-backdrop" aria-label="메뉴 닫기" onClick={() => setMenuOpen(false)} />}
+
       <nav className={`fab-menu ${menuOpen ? "open" : ""}`} aria-label="플로팅 메뉴">
         {menuOpen && (
           <div className="fab-actions">
@@ -360,6 +362,7 @@ function App() {
       </nav>
 
       {toastMessage && <div className="app-toast">{toastMessage}</div>}
+      <div className="system-nav-scrim" aria-hidden="true" />
     </main>
   );
 }
