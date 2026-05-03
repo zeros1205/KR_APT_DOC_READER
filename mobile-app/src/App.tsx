@@ -12,8 +12,7 @@ import {
   Search,
   Settings,
   Share2,
-  Trash2,
-  X
+  Trash2
 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
@@ -157,14 +156,8 @@ function App() {
     root.classList.remove("admob-top-active", "admob-bottom-active");
 
     if (view === "home") {
-      root.classList.add("admob-top-active", "admob-bottom-active");
-      void showAdBanners(ADMOB_AD_UNITS.frontTopBanner, ADMOB_AD_UNITS.frontBottomBanner);
-      return;
-    }
-
-    if (view === "detail") {
-      root.classList.add("admob-top-active");
-      void showAdBanners(ADMOB_AD_UNITS.postTopBanner);
+      root.classList.add("admob-bottom-active");
+      void showAdBanners(undefined, ADMOB_AD_UNITS.frontBottomBanner);
       return;
     }
 
@@ -303,6 +296,31 @@ function App() {
     setSettings(defaultSettings);
   }
 
+  function goHome() {
+    setDetailPage(null);
+    setView("home");
+    setMenuOpen(false);
+  }
+
+  function openMenuView(nextView: Exclude<View, "detail">) {
+    setDetailPage(null);
+    setView(nextView);
+    setMenuOpen(false);
+  }
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  function toggleMenu() {
+    setMenuOpen((open) => !open);
+  }
+
+  async function refreshFromMenu() {
+    setMenuOpen(false);
+    await refreshPosts();
+  }
+
   return (
     <main className="app-shell">
       {introVisible && <IntroScreen />}
@@ -318,8 +336,10 @@ function App() {
           }
           onToggleFavorite={() => detailPage.card && void toggleFavorite(detailPage.card)}
         />
+      ) : view === "favorites" || view === "settings" ? (
+        <SubpageNav title={view === "favorites" ? "즐겨찾기" : "설정"} onBack={goHome} onMenu={toggleMenu} />
       ) : (
-        <SiteNav view={view} onRefresh={refreshPosts} />
+        <SiteNav view={view} onMenu={toggleMenu} />
       )}
 
       {view === "home" && (
@@ -369,29 +389,14 @@ function App() {
 
       {view === "detail" && detailPage && <DetailView page={detailPage} />}
 
-      {view !== "settings" && (
-        <>
-          {menuOpen && <button className="fab-backdrop" aria-label="메뉴 닫기" onClick={() => setMenuOpen(false)} />}
-
-          <nav className={`fab-menu ${menuOpen ? "open" : ""}`} aria-label="플로팅 메뉴">
-            {menuOpen && (
-              <div className="fab-actions">
-                <button onClick={() => { setView("home"); setMenuOpen(false); }}>
-                  <Home size={18} /> 홈
-                </button>
-                <button onClick={() => { setView("favorites"); setMenuOpen(false); }}>
-                  <Bookmark size={18} /> 즐겨찾기
-                </button>
-                <button onClick={() => { setView("settings"); setMenuOpen(false); }}>
-                  <Settings size={18} /> 설정
-                </button>
-              </div>
-            )}
-            <button className="fab-main" onClick={() => setMenuOpen((open) => !open)} aria-label="메뉴">
-              {menuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </nav>
-        </>
+      {menuOpen && view !== "detail" && (
+        <AppMenu
+          onClose={closeMenu}
+          onFavorites={() => openMenuView("favorites")}
+          onHome={() => openMenuView("home")}
+          onRefresh={() => void refreshFromMenu()}
+          onSettings={() => openMenuView("settings")}
+        />
       )}
 
       {toastMessage && <div className="app-toast">{toastMessage}</div>}
@@ -422,7 +427,7 @@ function IntroScreen() {
   );
 }
 
-function SiteNav({ view, onRefresh }: { view: View; onRefresh: () => Promise<void> }) {
+function SiteNav({ view, onMenu }: { view: View; onMenu: () => void }) {
   return (
     <header className="site-header-v3">
       <div className="site-header-v3-inner">
@@ -436,12 +441,60 @@ function SiteNav({ view, onRefresh }: { view: View; onRefresh: () => Promise<voi
           </span>
         </button>
         <div className="nav-actions">
-          <button className="nav-refresh" onClick={() => void onRefresh()} aria-label="새로고침">
-            <RefreshCw size={17} />
+          <button className="nav-icon-button" onClick={onMenu} aria-label="메뉴">
+            <Menu size={19} />
           </button>
         </div>
       </div>
     </header>
+  );
+}
+
+function SubpageNav({ title, onBack, onMenu }: { title: string; onBack: () => void; onMenu: () => void }) {
+  return (
+    <header className="subpage-nav">
+      <button className="nav-icon-button" onClick={onBack} aria-label="뒤로">
+        <ArrowLeft size={21} />
+      </button>
+      <h1>{title}</h1>
+      <button className="nav-icon-button" onClick={onMenu} aria-label="메뉴">
+        <Menu size={19} />
+      </button>
+    </header>
+  );
+}
+
+function AppMenu({
+  onClose,
+  onFavorites,
+  onHome,
+  onRefresh,
+  onSettings
+}: {
+  onClose: () => void;
+  onFavorites: () => void;
+  onHome: () => void;
+  onRefresh: () => void;
+  onSettings: () => void;
+}) {
+  return (
+    <>
+      <button className="menu-backdrop" aria-label="메뉴 닫기" onClick={onClose} />
+      <nav className="header-menu-layer" aria-label="앱 메뉴">
+        <button onClick={onHome}>
+          <Home size={18} /> 홈
+        </button>
+        <button onClick={onFavorites}>
+          <Bookmark size={18} /> 즐겨찾기
+        </button>
+        <button onClick={onRefresh}>
+          <RefreshCw size={18} /> 새로고침
+        </button>
+        <button onClick={onSettings}>
+          <Settings size={18} /> 설정
+        </button>
+      </nav>
+    </>
   );
 }
 
@@ -698,7 +751,11 @@ function NoticeCardItem({ card, isFavorite, onOpen, onShare, onToggleFavorite }:
     <div className="app-card-shell">
       <div
         className="web-card-click"
-        onClick={() => void onOpen(absolutePostUrl(card.post_url), card.apt_name, card)}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void onOpen(absolutePostUrl(card.post_url), card.apt_name, card);
+        }}
         dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
       />
       <div className="app-card-tools" onClick={(event) => event.stopPropagation()}>
