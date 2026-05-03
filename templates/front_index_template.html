@@ -586,9 +586,16 @@ body {
   padding: 11px 14px 12px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   font-family: inherit;
+}
+.search-suggestion-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .search-suggestion + .search-suggestion {
   border-top: 1px solid var(--c-light-gray);
@@ -607,6 +614,17 @@ body {
   font-size: 11px;
   color: var(--c-mid);
   line-height: 1.35;
+}
+.search-suggestion-outlink {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--c-primary-dark);
+  background: var(--c-primary-light);
 }
 
 /* ── 빈 결과 ── */

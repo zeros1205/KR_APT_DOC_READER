@@ -11,11 +11,16 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 BASE_DIR = Path(__file__).parent
+sys.path.insert(0, str(BASE_DIR / "pipeline"))
+
+from public_notices import is_public_notice_data
+
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
@@ -102,6 +107,8 @@ def _iter_rows(*, include_processed: bool, include_with_pdf: bool) -> list[dict[
         if not include_processed and notice_id in processed:
             continue
         if not include_with_pdf and has_pdf:
+            continue
+        if is_public_notice_data(doc):
             continue
         if not notice_id or not apt_name or not notice_url:
             continue

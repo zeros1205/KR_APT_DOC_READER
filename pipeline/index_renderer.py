@@ -12,18 +12,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+from html import escape
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 from zoneinfo import ZoneInfo
 
 try:
     from shared_ui import PALETTE_INIT_JS, index_nav
+    from public_notices import is_public_notice_data
 except ImportError:
     from pipeline.shared_ui import PALETTE_INIT_JS, index_nav
+    from pipeline.public_notices import is_public_notice_data
 
 ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = ROOT / "output"
 POSTS_DIR = OUTPUT_DIR / "posts"
+CACHE_DIR = OUTPUT_DIR / "data_cache" / "notices"
 OUT_FILE = OUTPUT_DIR / "index.html"
 POSTS_INDEX_FILE = OUTPUT_DIR / "posts_index.json"
 POSTS_INDEX_JS_FILE = OUTPUT_DIR / "posts_index.js"
@@ -188,10 +194,29 @@ function _buildSuggestions(query) {
     return {
       name: card.dataset.name || '',
       url: card.dataset.url || '',
+      action: card.dataset.action || 'detail',
+      applyhomeUrl: card.dataset.applyhomeUrl || '',
       region: card.dataset.region || '',
       supply: card.dataset.supply || ''
     };
   });
+}
+
+function openPublicNotice(url) {
+  if (!url) return;
+  var message = '이 공공분양 공고는 청약Home에서 자세히 확인할 수 있어요.\\n청약Home 공고 페이지로 이동할까요?';
+  if (window.confirm(message)) {
+    window.open(url, '_blank', 'noopener');
+  }
+}
+
+function _openSuggestionItem(item) {
+  if (!item) return;
+  if (item.action === 'applyhome') {
+    openPublicNotice(item.applyhomeUrl || item.url);
+    return;
+  }
+  if (item.url) location.href = item.url;
 }
 
 function _closeSuggestions(input) {
@@ -214,9 +239,18 @@ function _renderSuggestions(input) {
     return;
   }
   box.innerHTML = items.map(function(item, idx) {
+    var outlink = item.action === 'applyhome'
+      ? '<span class="search-suggestion-outlink" aria-hidden="true" title="청약Home에서 보기">'
+        + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>'
+        + '</svg></span>'
+      : '';
     return '<button type="button" class="search-suggestion" data-index="' + idx + '" data-url="' + item.url + '">'
+      + '<span class="search-suggestion-copy">'
       + '<span class="search-suggestion-title">' + item.name + '</span>'
       + '<span class="search-suggestion-meta">' + item.region + ' · ' + item.supply + '</span>'
+      + '</span>'
+      + outlink
       + '</button>';
   }).join('');
   box.classList.add('show');
@@ -231,7 +265,10 @@ function _renderSuggestions(input) {
     box.dataset.wheelBound = 'true';
   }
   box.querySelectorAll('.search-suggestion').forEach(function(btn) {
-    btn.addEventListener('click', function() { location.href = btn.dataset.url; });
+    btn.addEventListener('click', function() {
+      var state = _searchState.get(input) || { items: [] };
+      _openSuggestionItem(state.items[Number(btn.dataset.index)]);
+    });
   });
 }
 
@@ -281,7 +318,7 @@ function _bindSearchInputs() {
         if (state.items.length) {
           e.preventDefault();
           var item = state.items[state.activeIndex >= 0 ? state.activeIndex : 0];
-          if (item && item.url) location.href = item.url;
+          _openSuggestionItem(item);
         }
       } else if (e.key === 'Escape') {
         _closeSuggestions(input);
@@ -362,6 +399,103 @@ _loadPostsIndex();
 </script>"""
 
 
+def _notice_id_from_url(url: str) -> str:
+    if not url:
+        return ""
+    try:
+        query = parse_qs(urlparse(url).query)
+        return (query.get("pblancNo") or query.get("houseManageNo") or [""])[0]
+    except Exception:
+        return ""
+
+
+def _post_notice_id(post: dict, fallback: str = "") -> str:
+    return str(
+        post.get("notice_id")
+        or _notice_id_from_url(str(post.get("notice_url") or ""))
+        or fallback
+    ).strip()
+
+
+def _fmt_move_in_month(value: object) -> str:
+    text = str(value or "").strip()
+    if re.fullmatch(r"\d{6}", text):
+        return f"{text[:4]}년 {int(text[4:])}월"
+    return text
+
+
+def _fmt_price_range_from_units(units: list[dict]) -> str:
+    prices: list[int] = []
+    for unit in units or []:
+        raw = unit.get("LTTOT_TOP_AMOUNT") or unit.get("price_max") or unit.get("price_min")
+        try:
+            value = int(str(raw).replace(",", "").strip())
+        except Exception:
+            continue
+        if value > 0:
+            prices.append(value)
+    if not prices:
+        return ""
+
+    def _fmt(manwon: int) -> str:
+        uk, man = divmod(manwon, 10000)
+        if uk and man:
+            return f"{uk}억 {man:,}만원"
+        if uk:
+            return f"{uk}억원"
+        return f"{man:,}만원"
+
+    lo, hi = min(prices), max(prices)
+    return _fmt(lo) if lo == hi else f"{_fmt(lo)} ~ {_fmt(hi)}"
+
+
+def _public_post_from_payload(path: Path) -> dict | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except Exception as exc:
+        print(f"  [경고] {path} 파싱 실패: {exc}")
+        return None
+
+    doc = payload.get("document") or {}
+    if not is_public_notice_data(doc):
+        return None
+
+    apt_name = str(doc.get("apt_name") or payload.get("apt_name") or "(단지명 없음)")
+    notice_url = str(doc.get("notice_url") or "")
+    supply_address = str(doc.get("supply_address") or "")
+    location = supply_address or str(doc.get("region_name") or "")
+
+    try:
+        from regions import region_name_to_category
+    except ImportError:
+        from pipeline.regions import region_name_to_category
+
+    notice_id = str(payload.get("notice_id") or doc.get("notice_id") or path.stem)
+    return {
+        "notice_id": notice_id,
+        "apt_name": apt_name,
+        "title": apt_name,
+        "subtitle": supply_address,
+        "theme": "claude",
+        "tags": ["공공분양", "청약Home", "입주자모집공고"],
+        "location": location,
+        "region_category": region_name_to_category(location),
+        "supply_type": doc.get("supply_type") or "공공분양",
+        "price_range": _fmt_price_range_from_units(payload.get("unit_types") or []),
+        "special_supply_date": doc.get("special_supply_start") or doc.get("special_supply_date") or "",
+        "rank1_date": doc.get("rank1_local_start") or doc.get("rank1_etc_start") or "",
+        "rank2_date": doc.get("rank2_local_start") or doc.get("rank2_etc_start") or "",
+        "winner_date": doc.get("winner_date") or "",
+        "notice_date": doc.get("notice_date") or "",
+        "move_in_date": _fmt_move_in_month(doc.get("move_in_month")),
+        "supply_address": supply_address,
+        "notice_url": notice_url,
+        "post_url": notice_url,
+        "index_action": "applyhome",
+        "generated_at": payload.get("collected_at") or "",
+    }
+
+
 def load_posts() -> list[dict]:
     posts: list[dict] = []
     for meta_path in POSTS_DIR.glob("*/post_meta.json"):
@@ -369,6 +503,7 @@ def load_posts() -> list[dict]:
             meta = json.loads(meta_path.read_text(encoding="utf-8"))
             post_dir = meta_path.parent.name
             meta["post_url"] = f"posts/{post_dir}/post.html"
+            meta["notice_id"] = _post_notice_id(meta, post_dir)
             if not meta.get("region_category"):
                 from regions import region_name_to_category
                 meta["region_category"] = region_name_to_category(meta.get("location", ""))
@@ -377,6 +512,20 @@ def load_posts() -> list[dict]:
             posts.append(meta)
         except Exception as exc:
             print(f"  [경고] {meta_path} 파싱 실패: {exc}")
+
+    public_posts: dict[str, dict] = {}
+    if CACHE_DIR.exists():
+        for cache_path in CACHE_DIR.glob("*.json"):
+            public_post = _public_post_from_payload(cache_path)
+            if public_post:
+                public_posts[_post_notice_id(public_post, cache_path.stem)] = public_post
+
+    if public_posts:
+        posts = [
+            post for post in posts
+            if _post_notice_id(post) not in public_posts
+        ]
+        posts.extend(public_posts.values())
 
     def _sort_key(post: dict) -> tuple[str, str]:
         notice_date = str(post.get("notice_date") or "").strip()
@@ -485,10 +634,17 @@ def _render_featured_items(posts: list[dict]) -> str:
         return ""
     items: list[str] = []
     for post in featured:
-        apt_name = post.get("apt_name", "(단지명 없음)")
-        location = (post.get("location") or "").strip() or "주소 정보 없음"
+        apt_name = escape(str(post.get("apt_name", "(단지명 없음)")))
+        location = escape((post.get("location") or "").strip() or "주소 정보 없음")
+        url = escape(str(post.get("post_url") or "#"), quote=True)
+        if post.get("index_action") == "applyhome":
+            href = "#"
+            action_attr = f'onclick="event.preventDefault();openPublicNotice(\'{url}\')"'
+        else:
+            href = url
+            action_attr = ""
         items.append(
-            f'''<a href="{post["post_url"]}" class="featured-item" data-name="{apt_name.lower()}" style="display:block;text-decoration:none;">
+            f'''<a href="{href}" class="featured-item" data-name="{apt_name.lower()}" {action_attr} style="display:block;text-decoration:none;">
               <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;">
                 {apt_name}
               </p>
@@ -501,37 +657,60 @@ def _render_featured_items(posts: list[dict]) -> str:
 
 
 def _render_card(post: dict) -> str:
-    apt_name = post.get("apt_name", "(단지명 없음)")
-    title = post.get("title", apt_name)
-    location = post.get("location", "")
-    region = post.get("region_category", "기타")
-    url = post["post_url"]
+    apt_name = str(post.get("apt_name", "(단지명 없음)"))
+    title = str(post.get("title", apt_name))
+    location = str(post.get("location", ""))
+    region = str(post.get("region_category", "기타"))
+    url = str(post["post_url"])
+    action = str(post.get("index_action") or "detail")
+    applyhome_url = str(post.get("notice_url") or url)
     tags = (post.get("tags") or [])[:4]
     supply_label, header_grad, tag_type = _supply_info(title, apt_name)
     if _is_expired(post):
         header_grad = EXPIRED_GRAD
     supply_key = _supply_filter_key(title, apt_name)
-    price_range = (post.get("price_range") or "분양가 확인 필요").replace("약", "").strip()
-    move_in = post.get("move_in_date") or "입주 시기 확인 필요"
+    if action == "applyhome":
+        supply_label = "공공분양"
+        supply_key = "공공분양"
+    price_range = str(post.get("price_range") or "분양가 확인 필요").replace("약", "").strip()
     sp_month, sp_day = _fmt_date(post.get("special_supply_date", ""))
     r1_month, r1_day = _fmt_date(post.get("rank1_date", ""))
+    safe_apt_name = escape(apt_name)
+    safe_location = escape(location)
+    safe_region = escape(region, quote=True)
+    safe_supply_key = escape(supply_key, quote=True)
+    safe_url = escape(url, quote=True)
+    safe_applyhome_url = escape(applyhome_url, quote=True)
+    safe_action = escape(action, quote=True)
+    safe_supply_label = escape(supply_label)
+    safe_price_range = escape(price_range)
+    if action == "applyhome":
+        card_click = f"openPublicNotice('{safe_applyhome_url}')"
+        cta_href = "#"
+        cta_click = f"event.preventDefault();event.stopPropagation();openPublicNotice('{safe_applyhome_url}')"
+        cta_text = "청약Home에서 보기 →"
+    else:
+        card_click = f"location.href='{safe_url}'"
+        cta_href = safe_url
+        cta_click = "event.stopPropagation()"
+        cta_text = "분석결과 보기"
     tag_items = "".join(
         f'<span style="display:inline-block;background:var(--c-tag-{tag_type}-bg);color:var(--c-tag-{tag_type}-text);'
-        f'font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#{tag}</span>'
+        f'font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#{escape(str(tag))}</span>'
         for tag in tags
     ) or '<span style="font-size:11px;color:var(--c-mid);">-</span>'
-    return f"""<article class="post-card" data-region="{region}" data-supply="{supply_key}" data-name="{apt_name}" data-url="{url}" onclick="location.href='{url}'">
+    return f"""<article class="post-card" data-region="{safe_region}" data-supply="{safe_supply_key}" data-name="{safe_apt_name}" data-url="{safe_url}" data-action="{safe_action}" data-applyhome-url="{safe_applyhome_url}" onclick="{card_click}">
   <div class="card-header" style="background:{header_grad};">
     <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
     <div style="position:relative;margin-bottom:10px;">
-      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">{supply_label}</span>
+      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">{safe_supply_label}</span>
     </div>
     <p class="card-title">
-      <span class="card-title-track">{apt_name}</span>
+      <span class="card-title-track">{safe_apt_name}</span>
     </p>
     <div style="position:relative;margin-top:auto;padding-top:12px;">
       <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-        {price_range}
+        {safe_price_range}
       </span>
     </div>
   </div>
@@ -541,10 +720,10 @@ def _render_card(post: dict) -> str:
     {_date_cell("1순위", r1_month, r1_day)}
   </div>
   <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
-    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 {location if location else "위치 정보 없음"}</p>
+    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 {safe_location if safe_location else "위치 정보 없음"}</p>
   </div>
   <div style="padding:12px 16px 9px;flex:1;">{tag_items}</div>
-  <a href="{url}" class="card-cta" onclick="event.stopPropagation()">분석결과 보기</a>
+  <a href="{cta_href}" class="card-cta" onclick="{cta_click}">{cta_text}</a>
 </article>"""
 
 
@@ -557,6 +736,8 @@ def _build_posts_index(posts: list[dict]) -> None:
                 "apt_name": post.get("apt_name", ""),
                 "notice_id": post.get("notice_id", ""),
                 "post_url": post.get("post_url", ""),
+                "index_action": post.get("index_action", "detail"),
+                "notice_url": post.get("notice_url", ""),
                 "region": post.get("region_category", "기타"),
                 "notice_date": post.get("notice_date", ""),
                 "winner_date": post.get("winner_date", ""),
@@ -602,6 +783,8 @@ def _build_sitemap(posts: list[dict]) -> None:
             f"<changefreq>monthly</changefreq><priority>0.4</priority></url>"
         )
     for post in posts:
+        if post.get("index_action") == "applyhome":
+            continue
         urls.append(
             f"<url><loc>{SITE_URL}/{post['post_url']}</loc><lastmod>{now}</lastmod>"
             f"<changefreq>weekly</changefreq><priority>0.8</priority></url>"

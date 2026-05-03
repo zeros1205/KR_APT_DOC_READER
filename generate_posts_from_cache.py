@@ -28,6 +28,7 @@ from agents.pdf_policy import extract_policy_from_pdf
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
+from public_notices import is_public_notice_doc
 
 
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
@@ -265,6 +266,10 @@ async def main() -> None:
     for _, payload in selected:
         doc = _doc_from_payload(payload)
         print(f"\n[generate] {doc.notice_id} {doc.apt_name}")
+        if is_public_notice_doc(doc):
+            processed_ids.add(doc.notice_id)
+            print("  - public notice: post generation skipped; front card will link to ApplyHome")
+            continue
         try:
             saved = await run_pipeline_from_doc(doc)
             if saved:
@@ -277,7 +282,7 @@ async def main() -> None:
             failed.append(doc.apt_name or doc.notice_id)
             print(f"  - failed: {e}")
 
-    if results:
+    if results or selected:
         _save_processed(processed_ids)
         print(f"[processed] updated: {PROCESSED_FILE.relative_to(BASE_DIR)}")
 
