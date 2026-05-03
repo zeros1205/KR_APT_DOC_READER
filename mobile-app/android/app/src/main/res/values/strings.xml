@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">청약노트</string>
+    <string name="title_activity_main">정과장의 청약노트</string>
+    <string name="package_name">com.aptnote.mobile</string>
+    <string name="custom_url_scheme">com.aptnote.mobile</string>
+</resources>
