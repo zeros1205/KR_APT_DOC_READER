@@ -670,7 +670,7 @@ def _render_card(post: dict) -> str:
     if action == "applyhome":
         supply_label = "공공분양"
         supply_key = "공공분양"
-        header_grad = "var(--c-card-grad-resupply)"
+        header_grad = "linear-gradient(145deg,#9fbfe4 0%,#76a4d5 100%)"
         tag_type = "resupply"
     if _is_expired(post):
         header_grad = EXPIRED_GRAD
