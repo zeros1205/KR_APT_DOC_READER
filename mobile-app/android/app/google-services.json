@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "997325844",
+    "project_id": "apt-doc-reader",
+    "storage_bucket": "apt-doc-reader.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997325844:android:927b02e3a2e8c6b949fb01",
+        "android_client_info": {
+          "package_name": "com.aptnote.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2t2juWfvVcbpkrbqrjjFs5CFMSpJ5QAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

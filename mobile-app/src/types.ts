@@ -19,6 +19,8 @@ export type FavoriteNotice = NoticeCard & {
 export type UserSettings = {
   regions: string[];
   pushEnabled: boolean;
+  pushToken?: string;
+  pushTokenUpdatedAt?: string;
   quietHoursEnabled: boolean;
   updatedAt?: string;
 };

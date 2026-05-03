@@ -135,6 +135,19 @@ function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
+    const registrationListener = PushNotifications.addListener("registration", (token) => {
+      void savePushToken(token.value);
+    });
+    const registrationErrorListener = PushNotifications.addListener("registrationError", () => {
+      showToast("알림 등록을 완료하지 못했습니다.");
+    });
+    const pushListener = PushNotifications.addListener("pushNotificationReceived", (notification) => {
+      showToast(notification.title || "새 알림이 도착했습니다.");
+    });
+    const actionListener = PushNotifications.addListener("pushNotificationActionPerformed", () => {
+      setView("home");
+    });
+
     const registration = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
       if (menuOpen) {
         setMenuOpen(false);
@@ -161,6 +174,10 @@ function App() {
 
     return () => {
       void registration.then((handle) => handle.remove());
+      void registrationListener.then((handle) => handle.remove());
+      void registrationErrorListener.then((handle) => handle.remove());
+      void pushListener.then((handle) => handle.remove());
+      void actionListener.then((handle) => handle.remove());
     };
   }, [detailPage, menuOpen, settingsPage, view]);
 
@@ -237,6 +254,27 @@ function App() {
     await saveSettings(next);
   }
 
+  async function savePushToken(token: string) {
+    setSettings((current) => {
+      const next = {
+        ...current,
+        pushEnabled: true,
+        pushToken: token,
+        pushTokenUpdatedAt: new Date().toISOString()
+      };
+      void saveSettings(next);
+      return next;
+    });
+  }
+
+  async function setPushEnabled(enabled: boolean) {
+    setSettings((current) => {
+      const next = { ...current, pushEnabled: enabled };
+      void saveSettings(next);
+      return next;
+    });
+  }
+
   async function toggleRegion(region: string) {
     const exists = settings.regions.includes(region);
     await updateSettings({
@@ -254,19 +292,21 @@ function App() {
 
   async function enablePush() {
     if (settings.pushEnabled) {
-      await updateSettings({ ...settings, pushEnabled: false });
+      await setPushEnabled(false);
       return;
     }
     if (!Capacitor.isNativePlatform()) {
-      await updateSettings({ ...settings, pushEnabled: true });
+      await setPushEnabled(true);
       return;
     }
     try {
       const permission = await PushNotifications.requestPermissions();
       if (permission.receive === "granted") {
-        await updateSettings({ ...settings, pushEnabled: true });
+        await setPushEnabled(true);
+        await PushNotifications.register();
       }
     } catch {
+      await setPushEnabled(false);
       showToast("알림 권한 설정을 완료하지 못했습니다.");
     }
   }
