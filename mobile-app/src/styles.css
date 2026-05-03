@@ -73,25 +73,6 @@ button {
   padding-bottom: max(162px, calc(142px + env(safe-area-inset-bottom)));
 }
 
-.system-nav-scrim {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 60;
-  height: max(34px, calc(22px + env(safe-area-inset-bottom)));
-  pointer-events: none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 250, 243, 0) 0%,
-      rgba(255, 250, 243, 0.52) 58%,
-      rgba(255, 250, 243, 0.9) 100%
-    );
-  border-top: 1px solid rgba(44, 41, 37, 0.06);
-  box-shadow: 0 -8px 18px rgba(44, 41, 37, 0.05);
-}
-
 .intro-screen {
   position: fixed;
   inset: 0;
@@ -358,6 +339,69 @@ button {
 .header-menu-layer button:active {
   transform: translateY(1px);
   background: var(--c-primary-light);
+}
+
+.app-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(44, 41, 37, 0.28);
+}
+
+.app-dialog {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 336px);
+  padding: 22px 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 250, 243, 0.98);
+  color: var(--c-dark);
+  box-shadow: 0 24px 58px rgba(44, 41, 37, 0.24);
+}
+
+.app-dialog h2 {
+  color: var(--c-dark);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.app-dialog p {
+  color: var(--c-mid);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.app-dialog-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.app-dialog-actions button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.app-dialog-cancel {
+  background: #ece6dd;
+  color: var(--c-dark);
+}
+
+.app-dialog-confirm {
+  background: var(--c-primary);
+  color: #fff;
 }
 
 .detail-nav {
@@ -1107,10 +1151,7 @@ button {
 }
 
 .settings-check-all {
-  width: fit-content;
-  min-height: 38px;
-  padding: 0 12px;
-  background: var(--c-surface);
+  width: 100%;
 }
 
 .sort-control {

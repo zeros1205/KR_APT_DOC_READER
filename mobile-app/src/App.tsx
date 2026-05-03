@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Home,
   Menu,
-  RefreshCw,
   Search,
   Settings,
   Share2,
@@ -57,6 +56,13 @@ const LATEST_VERSION = "0.1.0";
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
 type SettingsPage = "main" | "notifications" | "regions" | "favorites";
+type ConfirmDialogState = {
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  resolve: (confirmed: boolean) => void;
+};
 type DetailPage = {
   url: string;
   title: string;
@@ -109,6 +115,7 @@ function App() {
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState("");
   const [toastMessage, setToastMessage] = useState("");
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const lastHomeBackAtRef = useRef(0);
   const toastTimerRef = useRef<number | null>(null);
 
@@ -246,23 +253,58 @@ function App() {
   }
 
   async function enablePush() {
-    if (!Capacitor.isNativePlatform()) {
-      await updateSettings({ ...settings, pushEnabled: !settings.pushEnabled });
+    if (settings.pushEnabled) {
+      await updateSettings({ ...settings, pushEnabled: false });
       return;
     }
-    const permission = await PushNotifications.requestPermissions();
-    if (permission.receive === "granted") {
-      await PushNotifications.register();
+    if (!Capacitor.isNativePlatform()) {
       await updateSettings({ ...settings, pushEnabled: true });
+      return;
     }
+    try {
+      const permission = await PushNotifications.requestPermissions();
+      if (permission.receive === "granted") {
+        await updateSettings({ ...settings, pushEnabled: true });
+      }
+    } catch {
+      showToast("알림 권한 설정을 완료하지 못했습니다.");
+    }
+  }
+
+  function askConfirm(options: Omit<ConfirmDialogState, "resolve">): Promise<boolean> {
+    return new Promise((resolve) => {
+      setConfirmDialog({ ...options, resolve });
+    });
+  }
+
+  function closeConfirmDialog(confirmed: boolean) {
+    setConfirmDialog((dialog) => {
+      dialog?.resolve(confirmed);
+      return null;
+    });
+  }
+
+  async function confirmResetLocalData() {
+    const ok = await askConfirm({
+      title: "저장 데이터 초기화",
+      message: "즐겨찾기와 앱 설정을 모두 삭제할까요?",
+      confirmLabel: "초기화",
+      cancelLabel: "취소"
+    });
+    if (!ok) return;
+    await clearLocalData();
+    showToast("저장 데이터가 초기화되었습니다.");
   }
 
   async function openUrl(url: string, title = "정과장의 청약노트", card?: NoticeCard) {
     if (isApplyHomeCard(card)) {
       const targetUrl = card?.notice_url || url;
-      const ok = window.confirm(
-        "이 공공분양 공고는 청약Home에서 자세히 확인할 수 있어요.\n청약Home 공고 페이지로 이동할까요?"
-      );
+      const ok = await askConfirm({
+        title: "청약Home 이동",
+        message: "이 공고는 청약Home에서 자세히 확인할 수 있어요. 이동할까요?",
+        confirmLabel: "확인",
+        cancelLabel: "취소"
+      });
       if (!ok) return;
       await Browser.open({ url: absolutePostUrl(targetUrl) });
       return;
@@ -346,11 +388,6 @@ function App() {
     setMenuOpen((open) => !open);
   }
 
-  async function refreshFromMenu() {
-    setMenuOpen(false);
-    await refreshPosts();
-  }
-
   return (
     <main className="app-shell">
       {introVisible && <IntroScreen />}
@@ -410,7 +447,7 @@ function App() {
           favorites={favorites}
           page={settingsPage}
           settings={settings}
-          onClear={clearLocalData}
+          onClear={confirmResetLocalData}
           onOpen={openUrl}
           onPage={setSettingsPage}
           onPush={enablePush}
@@ -428,16 +465,26 @@ function App() {
 
       {menuOpen && view !== "detail" && (
         <AppMenu
+          currentView={view}
           onClose={closeMenu}
           onFavorites={() => openMenuView("favorites")}
           onHome={() => openMenuView("home")}
-          onRefresh={() => void refreshFromMenu()}
           onSettings={() => openMenuView("settings")}
         />
       )}
 
+      {confirmDialog && (
+        <ConfirmDialog
+          cancelLabel={confirmDialog.cancelLabel}
+          confirmLabel={confirmDialog.confirmLabel}
+          message={confirmDialog.message}
+          title={confirmDialog.title}
+          onCancel={() => closeConfirmDialog(false)}
+          onConfirm={() => closeConfirmDialog(true)}
+        />
+      )}
+
       {toastMessage && <div className="app-toast">{toastMessage}</div>}
-      <div className="system-nav-scrim" aria-hidden="true" />
     </main>
   );
 }
@@ -502,36 +549,72 @@ function SubpageNav({ title, onBack, onMenu }: { title: string; onBack: () => vo
 }
 
 function AppMenu({
+  currentView,
   onClose,
   onFavorites,
   onHome,
-  onRefresh,
   onSettings
 }: {
+  currentView: Exclude<View, "detail">;
   onClose: () => void;
   onFavorites: () => void;
   onHome: () => void;
-  onRefresh: () => void;
   onSettings: () => void;
 }) {
   return (
     <>
       <button className="menu-backdrop" aria-label="메뉴 닫기" onClick={onClose} />
       <nav className="header-menu-layer" aria-label="앱 메뉴">
-        <button onClick={onHome}>
-          <Home size={18} /> 홈
-        </button>
-        <button onClick={onFavorites}>
-          <Bookmark size={18} /> 즐겨찾기
-        </button>
-        <button onClick={onRefresh}>
-          <RefreshCw size={18} /> 새로고침
-        </button>
-        <button onClick={onSettings}>
-          <Settings size={18} /> 설정
-        </button>
+        {currentView !== "home" && (
+          <button onClick={onHome}>
+            <Home size={18} /> 홈
+          </button>
+        )}
+        {currentView !== "favorites" && (
+          <button onClick={onFavorites}>
+            <Bookmark size={18} /> 즐겨찾기
+          </button>
+        )}
+        {currentView !== "settings" && (
+          <button onClick={onSettings}>
+            <Settings size={18} /> 설정
+          </button>
+        )}
       </nav>
     </>
+  );
+}
+
+function ConfirmDialog({
+  cancelLabel = "취소",
+  confirmLabel = "확인",
+  message,
+  title,
+  onCancel,
+  onConfirm
+}: {
+  cancelLabel?: string;
+  confirmLabel?: string;
+  message: string;
+  title: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="app-dialog-backdrop" role="presentation">
+      <section className="app-dialog" role="dialog" aria-modal="true" aria-labelledby="app-dialog-title">
+        <h2 id="app-dialog-title">{title}</h2>
+        <p>{message}</p>
+        <div className="app-dialog-actions">
+          <button className="app-dialog-cancel" onClick={onCancel}>
+            {cancelLabel}
+          </button>
+          <button className="app-dialog-confirm" onClick={onConfirm}>
+            {confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -947,13 +1030,11 @@ function SettingsView({
         <p className="settings-page-copy">신규 공고 알림 받을 지역을 선택해주세요.</p>
         <section className="settings-list settings-open-panel">
           <div className="settings-section">
-            <div className="settings-section-head">
+            <div className="settings-check-grid">
               <button className="settings-check settings-check-all" onClick={() => void onRegionAll()}>
                 <span>{allRegionsSelected && <Check size={14} />}</span>
                 전체선택/해제
               </button>
-            </div>
-            <div className="settings-check-grid">
               {REGIONS.map((region) => {
                 const selected = settings.regions.includes(region);
                 return (
