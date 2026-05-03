@@ -666,12 +666,14 @@ def _render_card(post: dict) -> str:
     applyhome_url = str(post.get("notice_url") or url)
     tags = (post.get("tags") or [])[:4]
     supply_label, header_grad, tag_type = _supply_info(title, apt_name)
-    if _is_expired(post):
-        header_grad = EXPIRED_GRAD
     supply_key = _supply_filter_key(title, apt_name)
     if action == "applyhome":
         supply_label = "공공분양"
         supply_key = "공공분양"
+        header_grad = "var(--c-card-grad-resupply)"
+        tag_type = "resupply"
+    if _is_expired(post):
+        header_grad = EXPIRED_GRAD
     price_range = str(post.get("price_range") or "분양가 확인 필요").replace("약", "").strip()
     sp_month, sp_day = _fmt_date(post.get("special_supply_date", ""))
     r1_month, r1_day = _fmt_date(post.get("rank1_date", ""))
