@@ -1,4 +1,4 @@
-name: codex-모바일앱 빌드 검증
+name: Build Mobile App (Android)
 
 on:
   workflow_dispatch:
