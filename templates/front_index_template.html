@@ -405,25 +405,20 @@ body {
 }
 .card-title {
   position: relative;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: #fff;
   line-height: 1.3;
-  white-space: nowrap;
+  word-break: keep-all;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   margin: 0;
+  font-stretch: condensed;
 }
 .card-title-track {
-  display: inline-block;
-  min-width: 100%;
-  will-change: transform;
-}
-.card-title.is-marquee .card-title-track {
-  animation: card-title-pingpong var(--marquee-duration, 6s) ease-in-out infinite alternate;
-}
-@keyframes card-title-pingpong {
-  from { transform: translateX(0); }
-  to { transform: translateX(var(--marquee-shift, -40px)); }
+  display: contents;
 }
 
 /* ── CTA ── */

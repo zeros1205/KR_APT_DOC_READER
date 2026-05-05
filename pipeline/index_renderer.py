@@ -66,7 +66,6 @@ function _renderPage(matched, page) {
   var visibleCards = matched.slice(start, end);
   document.querySelectorAll('.post-card').forEach(function(card) { card.style.display = 'none'; });
   visibleCards.forEach(function(card) { card.style.display = ''; });
-  requestAnimationFrame(function() { _bindCardTitleMarquee(visibleCards); });
 }
 
 function _showCardLoadError() {
@@ -331,32 +330,6 @@ function _bindSearchInputs() {
       var wrap = input.closest('.search-wrap');
       if (wrap && !wrap.contains(e.target)) _closeSuggestions(input);
     });
-  });
-}
-
-function _bindCardTitleMarquee(cards) {
-  var titles = [];
-  if (Array.isArray(cards) && cards.length) {
-    cards.forEach(function(card) {
-      var title = card.querySelector('.card-title');
-      if (title) titles.push(title);
-    });
-  } else {
-    titles = Array.from(document.querySelectorAll('.post-card:not([style*="display: none"]) .card-title'));
-  }
-  titles.forEach(function(title) {
-    var track = title.querySelector('.card-title-track');
-    if (!track) return;
-    title.classList.remove('is-marquee');
-    title.style.removeProperty('--marquee-shift');
-    title.style.removeProperty('--marquee-duration');
-    var overflow = Math.ceil(track.scrollWidth - title.clientWidth);
-    if (overflow > 4) {
-      title.classList.add('is-marquee');
-      title.style.setProperty('--marquee-shift', '-' + overflow + 'px');
-      var duration = Math.min(12, Math.max(4, overflow / 24));
-      title.style.setProperty('--marquee-duration', duration + 's');
-    }
   });
 }
 
