@@ -402,20 +402,17 @@ body {
 }
 .card-title {
   position: relative;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: #fff;
   line-height: 1.3;
-  word-break: keep-all;
+  white-space: nowrap;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
   margin: 0;
-  font-stretch: condensed;
 }
 .card-title-track {
-  display: contents;
+  display: inline;
 }
 
 /* ── CTA ── */
