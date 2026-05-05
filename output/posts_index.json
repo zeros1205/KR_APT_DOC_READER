@@ -1,7 +1,18 @@
 {
-  "generated_at": "2026-05-03T23:53:36.630060+00:00",
-  "total": 200,
+  "generated_at": "2026-05-05T01:44:23.867646+00:00",
+  "total": 201,
   "cards": [
+    {
+      "apt_name": "더샵 중앙로역센터폴",
+      "notice_id": "2026000174",
+      "post_url": "posts/2026000174/post.html",
+      "index_action": "detail",
+      "notice_url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000174&pblancNo=2026000174",
+      "region": "대구",
+      "notice_date": "2026-05-04",
+      "winner_date": "2026-05-22",
+      "html": "<article class=\"post-card\" data-region=\"대구\" data-supply=\"민간분양\" data-name=\"더샵 중앙로역센터폴\" data-url=\"posts/2026000174/post.html\" data-action=\"detail\" data-applyhome-url=\"https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000174&amp;pblancNo=2026000174\" onclick=\"location.href='posts/2026000174/post.html'\">\n  <div class=\"card-header\" style=\"background:var(--c-card-grad-new);\">\n    <div style=\"position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;\"></div>\n    <div style=\"position:relative;margin-bottom:10px;\">\n      <span style=\"font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;\">민간분양</span>\n    </div>\n    <p class=\"card-title\">\n      <span class=\"card-title-track\">더샵 중앙로역센터폴</span>\n    </p>\n    <div style=\"position:relative;margin-top:auto;padding-top:12px;\">\n      <span style=\"display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\">\n        7억 8,493만원 ~ 17억 3,716만원\n      </span>\n    </div>\n  </div>\n  <div style=\"display:flex;border-bottom:1px solid var(--c-light-gray);\">\n    <div style=\"flex:1;padding:12px 14px;text-align:center;\"><p style=\"font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;\">특별공급</p><p style=\"font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;\">5월 14일</p></div>\n    <div style=\"width:1px;background:var(--c-light-gray);flex-shrink:0;margin:10px 0;\"></div>\n    <div style=\"flex:1;padding:12px 14px;text-align:center;\"><p style=\"font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;\">1순위</p><p style=\"font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;\">5월 15일</p></div>\n  </div>\n  <div style=\"padding:11px 16px;border-bottom:1px solid var(--c-light-gray);\">\n    <p style=\"font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;\">📌 대구광역시 중구 사일동</p>\n  </div>\n  <div style=\"padding:12px 16px 9px;flex:1;\"><span style=\"display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;\">#더샵중앙로역센터폴</span><span style=\"display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;\">#대구중구분양</span><span style=\"display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;\">#사일동청약</span><span style=\"display:inline-block;background:var(--c-tag-new-bg);color:var(--c-tag-new-text);font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;\">#대구아파트분양</span></div>\n  <a href=\"posts/2026000174/post.html\" class=\"card-cta\" onclick=\"event.stopPropagation()\">분석결과 보기</a>\n</article>"
+    },
     {
       "apt_name": "상주북천 하늘채 파크원",
       "notice_id": "2026000170",
