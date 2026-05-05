@@ -66,7 +66,7 @@ jobs:
       - name: Build Android release AAB
         if: ${{ env.KEYSTORE_BASE64 }}
         working-directory: mobile-app/android
-        run: ./gradlew bundleRelease --no-daemon
+        run: ./gradlew bundleRelease assembleRelease --no-daemon
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PATH: ${{ github.workspace }}/mobile-app/android/aptnote-release.jks
@@ -89,4 +89,14 @@ jobs:
         with:
           name: aptnote-release-${{ github.run_number }}.aab
           path: mobile-app/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload release APK artifact
+        if: ${{ env.KEYSTORE_BASE64 }}
+        uses: actions/upload-artifact@v4
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        with:
+          name: aptnote-release-${{ github.run_number }}.apk
+          path: mobile-app/android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
