@@ -63,6 +63,15 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > mobile-app/android/aptnote-release.jks
 
+      - name: Check keystore and env
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          set -e
+          echo "KEYSTORE_PATH: $KEYSTORE_PATH"
+          ls -la mobile-app/android/aptnote-release.jks || true
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/mobile-app/android/aptnote-release.jks
+
       - name: Build Android release AAB
         if: ${{ env.KEYSTORE_BASE64 != '' }}
         working-directory: mobile-app/android
@@ -80,6 +89,44 @@ jobs:
           ls -la mobile-app/android/app/build/outputs/apk/release || true
           echo "AAB outputs (bundle):"
           ls -la mobile-app/android/app/build/outputs/bundle/release || true
+
+      - name: Sign APK if needed (zipalign + apksigner)
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          set -e
+          APK_SIGNED_PATH="mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+          APK_UNSIGNED_PATH="mobile-app/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          OUT_ALIGNED="artifact-app-release-aligned.apk"
+          OUT_SIGNED="artifact-app-release.apk"
+
+          # Find latest build-tools for zipalign & apksigner
+          SDK_BT_DIR=$(ls -d "$ANDROID_SDK_ROOT"/build-tools/* | sort -V | tail -n 1)
+          echo "Using build-tools: $SDK_BT_DIR"
+
+          if [ -f "$APK_SIGNED_PATH" ]; then
+            echo "Found signed APK → copying to $OUT_SIGNED"
+            cp "$APK_SIGNED_PATH" "$OUT_SIGNED"
+          elif [ -f "$APK_UNSIGNED_PATH" ]; then
+            echo "Found unsigned APK → zipalign and sign"
+            "$SDK_BT_DIR/zipalign" -p -f 4 "$APK_UNSIGNED_PATH" "$OUT_ALIGNED"
+            "$SDK_BT_DIR/apksigner" sign \
+              --ks "$KEYSTORE_PATH" \
+              --ks-key-alias "$KEYSTORE_KEY_ALIAS" \
+              --ks-pass pass:"$KEYSTORE_STORE_PASSWORD" \
+              --key-pass pass:"$KEYSTORE_KEY_PASSWORD" \
+              --out "$OUT_SIGNED" \
+              "$OUT_ALIGNED"
+            echo "Verifying signed APK"
+            "$SDK_BT_DIR/apksigner" verify --verbose --print-certs "$OUT_SIGNED"
+          else
+            echo "No APK found to sign" >&2
+            exit 1
+          fi
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/mobile-app/android/aptnote-release.jks
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
 
       - name: Prepare APK artifact
         if: ${{ env.KEYSTORE_BASE64 != '' }}
