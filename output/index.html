@@ -241,6 +241,9 @@ body {
 }
 @media (max-width: 960px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 580px) { .cards-grid { grid-template-columns: 1fr; } }
+:root { --cards-min-h: 3200px; }
+@media (max-width: 960px) { :root { --cards-min-h: 5000px; } }
+@media (max-width: 580px) { :root { --cards-min-h: 8400px; } }
 
 @media (max-width: 900px) {
   .featured-shell {
@@ -839,7 +842,7 @@ body {
     <div id="filter-dock-progress"></div>
   </div>
 
-  <div class="cards-grid" id="cards-grid" style="min-height:3200px">
+  <div class="cards-grid" id="cards-grid" style="min-height:var(--cards-min-h,8400px)">
     <div class="cards-loading">분양 공고 목록을 불러오는 중입니다.</div>
   </div>
   <p id="no-result">선택된 지역에 해당되는 분양 공고가 아직 없습니다.</p>
