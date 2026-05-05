@@ -140,3 +140,92 @@
 
 - **#6**: GitHub Actions에서 "기존 포스트 입지 분석 재작성" workflow 수동 실행 필요
 - **build_index.py 정렬**: `rank1_date` 기준 정렬 확인 필요 (meta.json 없는 포스트의 날짜 파싱)
+
+---
+
+## 2026-05-05 작업 세션 (GitHub Copilot)
+
+### 브랜치 상태 정리
+- `codex/mobile-app-public-notices` → `origin/main` 기준 **rebase** 완료
+  - 중복 커밋 자동 제거, 모바일앱 고유 커밋 7개만 정리
+  - `git push --force-with-lease` 로 원격 반영
+
+---
+
+### SEO 개선
+
+#### ads.txt 추가
+- **파일**: `output/ads.txt`
+- **내용**: `google.com, pub-8234120897033274, DIRECT, f08c47fec0942fa0`
+- Google AdSense 인벤토리 인증용, 루트 디렉토리 배치 필수
+
+#### Cloudflare www → apex 301 리다이렉트
+- **설정 위치**: Cloudflare Dashboard → Rules → Redirect Rules
+- **템플릿**: "Redirect from WWW to root" 사용
+- **규칙**: `https://www.*` → `https://${1}` (301 Permanent)
+- **효과**: PSI SEO 점수 36 → **100** (www 도메인 HTTP 522 오류 해결)
+
+#### 포스트 JSON-LD 구조화 데이터 일괄 삽입
+- **스크립트**: `tools/patch_seo_structured_data.py`
+- **대상**: `output/posts/*/post.html` 183개 전체
+- **추가 내용**:
+  - `Article` 타입 JSON-LD (headline, datePublished, image, publisher, isPartOf)
+  - `BreadcrumbList` JSON-LD (홈 → 단지명 2단계)
+- **효과**: Google 리치 결과(Rich Result) 및 Google Discover 노출 조건 충족
+
+#### OG 이미지 크기 메타 추가
+- **파일**: `pipeline/html_renderer.py`, `templates/front_index_template.html`
+- **추가 태그**: `og:image:width=1200`, `og:image:height=630`, `og:image:type=image/jpeg`
+- **효과**: 카카오톡·SNS 공유 시 이미지 즉시 렌더링
+
+---
+
+### 성능 개선 (PageSpeed Insights)
+
+#### 폰트 렌더링 차단 제거 (−3,160ms)
+- **파일**: `pipeline/shared_ui.py`, `templates/front_index_template.html`, `tools/patch_font_preload.py`
+- **변경**: `<link rel="stylesheet">` → `<link rel="preload" onload>` + `<noscript>` 폴백
+- **대상**: 모든 포스트 HTML 184개 + `output/index.html` 일괄 적용
+- **효과**: FCP/LCP 대폭 개선
+
+#### CLS 0.378 → 0.012 수정
+- **원인**: 카드 그리드 JS 동적 삽입 시 레이아웃 급변
+- **수정 1**: `output/index.html` 카드 그리드 `min-height` 반응형 예약
+  - 데스크톱(3열): `--cards-min-h: 3200px`
+  - 태블릿(2열): `--cards-min-h: 5000px`
+  - 모바일(1열): `--cards-min-h: 0px` (LCP 영향 방지)
+  - 카드 로드 완료 후 `grid.style.minHeight = ''` 해제
+- **수정 2**: 로고 `<img>` 태그에 `width="38" height="38"` 속성 추가 (`pipeline/shared_ui.py`)
+
+#### JS 강제 리플로우 제거 (TBT 개선)
+- **원인**: `_bindCardTitleMarquee()` — 카드마다 `scrollWidth`/`clientWidth` 읽기→쓰기 반복
+- **제거**: 마퀴 애니메이션 JS 완전 제거 (CSS `is-marquee`, `card-title-pingpong` 삭제)
+- **대체**: `text-overflow: ellipsis` (말줄임) + 배치 읽기/쓰기 방식 적응형 폰트 조정
+  - 기본: 20px
+  - 오버플로우 감지 시: 18px (단일 리플로우로 처리)
+- **파일**: `output/index.html`, `pipeline/index_renderer.py`, `templates/front_index_template.html`
+
+---
+
+### 버그 수정
+
+#### `remove_special_finance_ratio_bar_from_html` return 누락
+- **파일**: `pipeline/html_renderer.py`
+- **증상**: `test_pipeline.py --step 3` 실행 시 `TypeError: expected string, got NoneType`
+- **원인**: 함수 마지막 `return html` 누락으로 `None` 반환
+- **수정**: `return html` 추가
+
+#### `test_pipeline.py` 필드명 불일치
+- **변경**: `life_score` / `life_detail` → `feature_score` / `feature_detail`
+
+---
+
+### PSI 최종 결과 (2026-05-05 기준)
+
+| 항목 | 이전 | 현재 |
+|---|---|---|
+| 성능 (데스크톱) | — | **97** |
+| 성능 (모바일) | — | **74+** (개선 진행 중) |
+| 접근성 | 68 | **95** |
+| 권장사항 | 96 | **100** |
+| SEO | 36 | **100** |
