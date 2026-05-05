@@ -28,13 +28,16 @@ from agents.pdf_policy import extract_policy_from_pdf
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
-from public_notices import is_public_notice_doc
+from public_notices import is_public_notice_data, is_public_notice_doc
 
 
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR.parent / "PDF", BASE_DIR / "output" / "pdfs")
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
+PDF_POLICY_MUST_CONFIRM_KEYS = (
+    "resale_restriction",
+)
 
 
 def _load_json(path: Path) -> Any:
@@ -83,7 +86,7 @@ def _stringify_none(value: Any) -> Any:
     return value
 
 
-def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
+def _doc_from_payload(payload: dict[str, Any], *, require_pdf_policy: bool = False) -> NoticeDocument:
     data = dict(payload.get("document") or {})
     manual_regulation = payload.get("manual_regulation") or {}
     manual_finance = dict(payload.get("manual_finance") or {})
@@ -106,6 +109,28 @@ def _doc_from_payload(payload: dict[str, Any]) -> NoticeDocument:
         }
         if extracted_policy.get("price_cap"):
             pdf_regulation["is_price_cap"] = "Y" if extracted_policy["price_cap"] == "적용" else "N"
+        missing_must_confirm_keys = [
+            key
+            for key in PDF_POLICY_MUST_CONFIRM_KEYS
+            if not (manual_regulation.get(key) or pdf_regulation.get(key))
+        ]
+        has_policy_override = any(
+            manual_regulation.get(key) or pdf_regulation.get(key)
+            for key in (
+                "regulated_zone",
+                "readmission_limit",
+                "resale_restriction",
+                "live_requirement",
+                "price_cap",
+            )
+        )
+        if require_pdf_policy and not is_public_notice_data(data) and (missing_must_confirm_keys or not has_policy_override):
+            raise ValueError(
+                "PDF 정책 추출 실패: "
+                f"{notice_id} {payload.get('apt_name') or data.get('apt_name') or ''} "
+                f"({local_pdf.name}). 공고문 전매제한/재당첨제한/거주의무/분양가상한제 항목을 "
+                "읽지 못했으므로 manual_regulation을 입력하거나 PDF 추출 로직을 보강하세요."
+            )
         if pdf_regulation:
             manual_regulation = {**manual_regulation, **pdf_regulation}
         extracted_finance = extract_finance_from_pdf(local_pdf)
@@ -264,13 +289,13 @@ async def main() -> None:
     results: list[Path] = []
     failed: list[str] = []
     for _, payload in selected:
-        doc = _doc_from_payload(payload)
-        print(f"\n[generate] {doc.notice_id} {doc.apt_name}")
-        if is_public_notice_doc(doc):
-            processed_ids.add(doc.notice_id)
-            print("  - public notice: post generation skipped; front card will link to ApplyHome")
-            continue
         try:
+            doc = _doc_from_payload(payload, require_pdf_policy=args.require_pdf)
+            print(f"\n[generate] {doc.notice_id} {doc.apt_name}")
+            if is_public_notice_doc(doc):
+                processed_ids.add(doc.notice_id)
+                print("  - public notice: post generation skipped; front card will link to ApplyHome")
+                continue
             saved = await run_pipeline_from_doc(doc)
             if saved:
                 results.append(saved)
