@@ -2,11 +2,15 @@
 Pretendard 폰트 + 3-팔레트 CSS 변수 + 공유 네비게이션
 """
 
+_FONT_HREF = (
+    'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9'
+    '/dist/web/variable/pretendardvariable-dynamic-subset.min.css'
+)
+
 FONT_LINK = (
     '<link rel="preconnect" href="https://cdn.jsdelivr.net">\n'
-    '<link rel="stylesheet" href="https://cdn.jsdelivr.net/'
-    'gh/orioncactus/pretendard@v1.3.9/dist/web/variable/'
-    'pretendardvariable-dynamic-subset.min.css">'
+    f'<link rel="preload" href="{_FONT_HREF}" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">\n'
+    f'<noscript><link rel="stylesheet" href="{_FONT_HREF}"></noscript>'
 )
 
 FONT_FAMILY = (

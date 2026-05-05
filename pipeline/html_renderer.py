@@ -480,6 +480,7 @@ def remove_special_finance_ratio_bar_from_html(html: str) -> str:
         html,
         flags=re.S,
     )
+    return html
 
 
 def adapt_no_midterm_finance_html(html: str) -> str:
