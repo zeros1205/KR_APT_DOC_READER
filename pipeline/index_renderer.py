@@ -66,6 +66,7 @@ function _renderPage(matched, page) {
   var visibleCards = matched.slice(start, end);
   document.querySelectorAll('.post-card').forEach(function(card) { card.style.display = 'none'; });
   visibleCards.forEach(function(card) { card.style.display = ''; });
+  requestAnimationFrame(function() { _adjustCardTitleFont(visibleCards); });
 }
 
 function _showCardLoadError() {
@@ -331,6 +332,19 @@ function _bindSearchInputs() {
       if (wrap && !wrap.contains(e.target)) _closeSuggestions(input);
     });
   });
+}
+
+function _adjustCardTitleFont(cards) {
+  if (!cards || !cards.length) return;
+  var items = [];
+  cards.forEach(function(card) {
+    var title = card.querySelector('.card-title');
+    if (!title) return;
+    title.style.fontSize = '';
+    items.push(title);
+  });
+  var overflows = items.map(function(t) { return t.scrollWidth > t.clientWidth; });
+  items.forEach(function(t, i) { if (overflows[i]) t.style.fontSize = '18px'; });
 }
 
 function _bindFilterDockProgress() {
