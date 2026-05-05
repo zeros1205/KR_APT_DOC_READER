@@ -312,7 +312,7 @@ def index_nav(home_href: str = "/") -> str:
         f'<header class="site-header-v3">'
         f'<div class="site-header-v3-inner">'
         f'<a href="{home_href}" class="site-header-v3-brand">'
-        f'<img src="{logo_src}" alt="정과장의 청약노트 로고" class="site-header-v3-logo">'
+        f'<img src="{logo_src}" alt="정과장의 청약노트 로고" class="site-header-v3-logo" width="38" height="38">'
         f'<span>'
         f'<span class="site-header-v3-title">정과장의 청약노트</span>'
         f'<span class="site-header-v3-sub">APT-NOTE.COM</span>'

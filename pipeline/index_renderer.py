@@ -89,6 +89,7 @@ function _loadPostsIndex() {
     if (!grid) return;
     var cards = Array.isArray(payload.cards) ? payload.cards : [];
     grid.innerHTML = cards.map(function(card) { return card.html || ''; }).join('');
+    grid.style.minHeight = '';
     _currentPage = 1;
     _applyFilters();
   }

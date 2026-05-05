@@ -751,7 +751,7 @@ body {
 </head>
 <body>
 
-<header class="site-header-v3"><div class="site-header-v3-inner"><a href="/" class="site-header-v3-brand"><img src="app_logo_80x80_rounded.png" alt="정과장의 청약노트 로고" class="site-header-v3-logo"><span><span class="site-header-v3-title">정과장의 청약노트</span><span class="site-header-v3-sub">APT-NOTE.COM</span></span></a></div></header>
+<header class="site-header-v3"><div class="site-header-v3-inner"><a href="/" class="site-header-v3-brand"><img src="app_logo_80x80_rounded.png" alt="정과장의 청약노트 로고" class="site-header-v3-logo" width="38" height="38"><span><span class="site-header-v3-title">정과장의 청약노트</span><span class="site-header-v3-sub">APT-NOTE.COM</span></span></a></div></header>
 
 
 <!-- ══ 히어로 ══ -->
@@ -839,7 +839,7 @@ body {
     <div id="filter-dock-progress"></div>
   </div>
 
-  <div class="cards-grid" id="cards-grid">
+  <div class="cards-grid" id="cards-grid" style="min-height:3200px">
     <div class="cards-loading">분양 공고 목록을 불러오는 중입니다.</div>
   </div>
   <p id="no-result">선택된 지역에 해당되는 분양 공고가 아직 없습니다.</p>
@@ -920,6 +920,7 @@ function _loadPostsIndex() {
     if (!grid) return;
     var cards = Array.isArray(payload.cards) ? payload.cards : [];
     grid.innerHTML = cards.map(function(card) { return card.html || ''; }).join('');
+    grid.style.minHeight = '';
     _currentPage = 1;
     _applyFilters();
   }
