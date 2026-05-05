@@ -20,6 +20,8 @@ jobs:
   mobile-app-build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
       - name: Checkout
@@ -57,45 +59,36 @@ jobs:
         run: chmod +x mobile-app/android/gradlew
 
       - name: Decode keystore
-        if: ${{ env.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         run: |
-          echo "${{ env.KEYSTORE_BASE64 }}" | base64 --decode > mobile-app/android/aptnote-release.jks
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          echo "$KEYSTORE_BASE64" | base64 --decode > mobile-app/android/aptnote-release.jks
 
       - name: Build Android release AAB
-        if: ${{ env.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         working-directory: mobile-app/android
         run: ./gradlew bundleRelease assembleRelease --no-daemon
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PATH: ${{ github.workspace }}/mobile-app/android/aptnote-release.jks
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
 
       - name: Build Android debug APK (서명 시크릿 없을 때 검증용)
-        if: ${{ !env.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 == '' }}
         working-directory: mobile-app/android
         run: ./gradlew assembleDebug --no-daemon
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
       - name: Upload release AAB artifact
-        if: ${{ env.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         with:
           name: aptnote-release-${{ github.run_number }}.aab
           path: mobile-app/android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
 
       - name: Upload release APK artifact
-        if: ${{ env.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         with:
           name: aptnote-release-${{ github.run_number }}.apk
           path: mobile-app/android/app/build/outputs/apk/release/app-release.apk
