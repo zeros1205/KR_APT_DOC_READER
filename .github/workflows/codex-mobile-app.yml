@@ -81,6 +81,22 @@ jobs:
           echo "AAB outputs (bundle):"
           ls -la mobile-app/android/app/build/outputs/bundle/release || true
 
+      - name: Prepare APK artifact
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          APK_SIGNED="mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+          APK_UNSIGNED="mobile-app/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ -f "$APK_SIGNED" ]; then
+            cp "$APK_SIGNED" artifact-app-release.apk
+            echo "Copied signed APK to artifact-app-release.apk"
+          elif [ -f "$APK_UNSIGNED" ]; then
+            cp "$APK_UNSIGNED" artifact-app-release.apk
+            echo "Copied unsigned APK to artifact-app-release.apk"
+          else
+            echo "No APK found to artifact" >&2
+            exit 1
+          fi
+
       - name: Build Android debug APK (서명 시크릿 없을 때 검증용)
         if: ${{ env.KEYSTORE_BASE64 == '' }}
         working-directory: mobile-app/android
@@ -99,5 +115,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: aptnote-release-${{ github.run_number }}.apk
-          path: mobile-app/android/app/build/outputs/apk/release/app-release.apk
+          path: artifact-app-release.apk
           retention-days: 30
