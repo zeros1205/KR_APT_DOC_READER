@@ -33,7 +33,7 @@
   "readmission_limit": "없음",
   "live_requirement": "없음",
   "price_cap": "미적용",
-  "resale_restriction": "없음",
+  "resale_restriction": "6개월",
   "eligibility_special": [
     {
       "type_name": "기관추천",
