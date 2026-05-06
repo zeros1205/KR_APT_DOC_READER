@@ -43,8 +43,8 @@ jobs:
       KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD || secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
       KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS || secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
-      GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.GOOGLE_SERVICES_JSON_B64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON || secrets.ANDROID_GOOGLE_SERVICES_JSON || secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
 
     steps:
       - name: Checkout source
@@ -105,8 +105,7 @@ jobs:
           test -n "${KEYSTORE_KEY_ALIAS:-}" || { echo "::error::Missing KEYSTORE_KEY_ALIAS or ANDROID_KEYSTORE_KEY_ALIAS secret"; exit 1; }
           test -n "${KEYSTORE_KEY_PASSWORD:-}" || { echo "::error::Missing KEYSTORE_KEY_PASSWORD or ANDROID_KEYSTORE_KEY_PASSWORD secret"; exit 1; }
           if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ] && [ -z "${GOOGLE_SERVICES_JSON:-}" ]; then
-            echo "::error::Missing GOOGLE_SERVICES_JSON_BASE64 or GOOGLE_SERVICES_JSON secret"
-            exit 1
+            echo "::notice::Google Services secret not configured. Continuing without Firebase google-services.json."
           fi
 
       - name: Set up Node.js
@@ -139,8 +138,11 @@ jobs:
           set -euo pipefail
           if [ -n "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > google-services.json
-          else
+          elif [ -n "${GOOGLE_SERVICES_JSON:-}" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON" > google-services.json
+          else
+            echo "Google Services config not provided; skipping Firebase config."
+            exit 0
           fi
           test -s google-services.json
 
