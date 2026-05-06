@@ -8,7 +8,7 @@ on:
         required: true
         default: "main"
       enforce_baseline:
-        description: "Fail when the checked-out mobile app does not match the 2026-05-03 baseline markers."
+        description: "Fail when the checked-out mobile app does not match the current mobile release baseline markers."
         required: true
         type: boolean
         default: true
@@ -81,14 +81,25 @@ jobs:
           grep -q "settings-open-panel" "$app" "$css"
           grep -q "settings-flat-list" "$app" "$css"
           grep -q "settings-page-copy" "$app" "$css"
-          grep -q "admob-bottom-active" "$app" "$css"
           grep -q "청약Home 이동" "$app"
-          grep -q "frontBottomBanner" "$app"
           grep -q "intro_without_text" "$app"
           grep -q "로딩 중" "$app"
+          grep -q "TABLET_POSTS_PER_PAGE" "$app"
+          grep -q "Pagination" "$app"
+          grep -q "app.aptnote.mobile" "$gradle" "$MOBILE_APP_DIR/capacitor.config.ts"
+          grep -q "sync-post-assets" "$MOBILE_APP_DIR/package.json"
 
           if grep -q "system-nav-scrim" "$app" "$css"; then
-            echo "::error::system-nav-scrim marker found. This is not the 2026-05-03 known-good mobile baseline."
+            echo "::error::system-nav-scrim marker found. This is not the current mobile release baseline."
+            exit 1
+          fi
+          if grep -R "admob-bottom-active\|frontBottomBanner\|play-services-ads\|AptNoteAdsPlugin" \
+            "$MOBILE_APP_DIR/src" \
+            "$MOBILE_APP_DIR/android/app/build.gradle" \
+            "$MOBILE_APP_DIR/android/app/src/main/AndroidManifest.xml" \
+            "$MOBILE_APP_DIR/android/app/src/main/java" \
+            "$MOBILE_APP_DIR/android/app/src/main/res/values" >/dev/null; then
+            echo "::error::AdMob marker found. Ads must stay removed until the Play Store release is ready for AdMob."
             exit 1
           fi
 
