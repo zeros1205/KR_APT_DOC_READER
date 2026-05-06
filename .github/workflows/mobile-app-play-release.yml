@@ -1,0 +1,211 @@
+name: Build Signed Mobile App for Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Git ref to build. Keep this on the known-good mobile app baseline unless intentionally changing it."
+        required: true
+        default: "main"
+      enforce_baseline:
+        description: "Fail when the checked-out mobile app does not match the 2026-05-03 baseline markers."
+        required: true
+        type: boolean
+        default: true
+  pull_request:
+    paths:
+      - "mobile-app/**"
+      - ".github/workflows/mobile-app-play-release.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "mobile-app/**"
+      - ".github/workflows/mobile-app-play-release.yml"
+
+concurrency:
+  group: mobile-app-play-release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  MOBILE_APP_DIR: mobile-app
+
+jobs:
+  signed-android-release:
+    name: Build signed Android release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 || secrets.ANDROID_KEYSTORE_BASE64 }}
+      KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD || secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
+      KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS || secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
+      KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
+      GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.source_ref || github.ref }}
+
+      - name: Show build source
+        run: |
+          set -euo pipefail
+          echo "event=${{ github.event_name }}"
+          echo "ref=${GITHUB_REF}"
+          echo "sha=$(git rev-parse HEAD)"
+          git log -1 --date=iso --pretty='commit=%H%ncommit_date=%cd%nsubject=%s'
+
+      - name: Validate mobile app baseline markers
+        env:
+          ENFORCE_BASELINE: ${{ github.event_name == 'workflow_dispatch' && inputs.enforce_baseline || 'true' }}
+        run: |
+          set -euo pipefail
+          if [ "$ENFORCE_BASELINE" != "true" ]; then
+            echo "Baseline marker enforcement disabled."
+            exit 0
+          fi
+
+          app="$MOBILE_APP_DIR/src/App.tsx"
+          css="$MOBILE_APP_DIR/src/styles.css"
+          gradle="$MOBILE_APP_DIR/android/app/build.gradle"
+
+          test -f "$app"
+          test -f "$css"
+          test -f "$gradle"
+
+          grep -q "settings-open-panel" "$app" "$css"
+          grep -q "settings-flat-list" "$app" "$css"
+          grep -q "settings-page-copy" "$app" "$css"
+          grep -q "admob-bottom-active" "$app" "$css"
+          grep -q "청약Home 이동" "$app"
+          grep -q "frontBottomBanner" "$app"
+          grep -q "intro_without_text" "$app"
+          grep -q "로딩 중" "$app"
+
+          if grep -q "system-nav-scrim" "$app" "$css"; then
+            echo "::error::system-nav-scrim marker found. This is not the 2026-05-03 known-good mobile baseline."
+            exit 1
+          fi
+
+          grep -q "keystore.properties" "$gradle"
+          grep -q "signingConfigs" "$gradle"
+          grep -q "signingConfig signingConfigs.release" "$gradle"
+          echo "Baseline marker validation passed."
+
+      - name: Validate signing secrets
+        run: |
+          set -euo pipefail
+          test -n "${KEYSTORE_BASE64:-}" || { echo "::error::Missing KEYSTORE_BASE64 or ANDROID_KEYSTORE_BASE64 secret"; exit 1; }
+          test -n "${KEYSTORE_STORE_PASSWORD:-}" || { echo "::error::Missing KEYSTORE_STORE_PASSWORD or ANDROID_KEYSTORE_STORE_PASSWORD secret"; exit 1; }
+          test -n "${KEYSTORE_KEY_ALIAS:-}" || { echo "::error::Missing KEYSTORE_KEY_ALIAS or ANDROID_KEYSTORE_KEY_ALIAS secret"; exit 1; }
+          test -n "${KEYSTORE_KEY_PASSWORD:-}" || { echo "::error::Missing KEYSTORE_KEY_PASSWORD or ANDROID_KEYSTORE_KEY_PASSWORD secret"; exit 1; }
+          if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ] && [ -z "${GOOGLE_SERVICES_JSON:-}" ]; then
+            echo "::error::Missing GOOGLE_SERVICES_JSON_BASE64 or GOOGLE_SERVICES_JSON secret"
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        working-directory: mobile-app
+        run: npm ci
+
+      - name: Build web shell
+        working-directory: mobile-app
+        run: npm run build
+
+      - name: Write Google Services config
+        working-directory: mobile-app/android/app
+        run: |
+          set -euo pipefail
+          if [ -n "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > google-services.json
+          else
+            printf '%s' "$GOOGLE_SERVICES_JSON" > google-services.json
+          fi
+          test -s google-services.json
+
+      - name: Write release keystore
+        working-directory: mobile-app/android
+        run: |
+          set -euo pipefail
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > aptnote-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=aptnote-release.jks
+          storePassword=${KEYSTORE_STORE_PASSWORD}
+          keyAlias=${KEYSTORE_KEY_ALIAS}
+          keyPassword=${KEYSTORE_KEY_PASSWORD}
+          EOF
+          test -s aptnote-release.jks
+          test -s keystore.properties
+
+      - name: Sync Capacitor Android project
+        working-directory: mobile-app
+        run: npx cap sync android
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x mobile-app/android/gradlew
+
+      - name: Build signed release AAB and APK
+        working-directory: mobile-app/android
+        run: ./gradlew clean bundleRelease assembleRelease --no-daemon --stacktrace
+
+      - name: Verify signed outputs
+        run: |
+          set -euo pipefail
+          AAB="mobile-app/android/app/build/outputs/bundle/release/app-release.aab"
+          APK="mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$AAB"
+          test -s "$APK"
+
+          jarsigner -verify -strict -verbose "$AAB" > aab-signature-verify.txt
+
+          SDK_BT_DIR=$(ls -d "$ANDROID_SDK_ROOT"/build-tools/* | sort -V | tail -n 1)
+          "$SDK_BT_DIR/apksigner" verify --verbose --print-certs "$APK" > apk-signature-verify.txt
+
+          sha256sum "$AAB" "$APK" > release-checksums.txt
+          find mobile-app/dist -maxdepth 3 -type f -print0 | sort -z | xargs -0 sha256sum > web-dist-checksums.txt
+
+      - name: Upload Play release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: aptnote-play-release-${{ github.run_number }}.aab
+          path: mobile-app/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload signed release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: aptnote-play-release-${{ github.run_number }}.apk
+          path: mobile-app/android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+      - name: Upload release verification logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: aptnote-play-release-${{ github.run_number }}-verification
+          path: |
+            aab-signature-verify.txt
+            apk-signature-verify.txt
+            release-checksums.txt
+            web-dist-checksums.txt
+          retention-days: 30

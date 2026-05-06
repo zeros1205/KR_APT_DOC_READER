@@ -65,23 +65,12 @@ button {
   background: var(--c-bg);
 }
 
-.system-nav-scrim {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 60;
-  height: max(48px, calc(34px + env(safe-area-inset-bottom)));
-  pointer-events: none;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 250, 243, 0) 0%,
-      rgba(255, 250, 243, 0.82) 48%,
-      rgba(255, 250, 243, 0.98) 100%
-    );
-  box-shadow: 0 -18px 30px rgba(44, 41, 37, 0.08);
-  backdrop-filter: blur(8px);
+.admob-top-active .app-shell {
+  padding-top: 0;
+}
+
+.admob-bottom-active .app-shell {
+  padding-bottom: max(162px, calc(142px + env(safe-area-inset-bottom)));
 }
 
 .intro-screen {
@@ -269,7 +258,7 @@ button {
   gap: 8px;
 }
 
-.nav-refresh {
+.nav-icon-button {
   display: inline-flex;
   width: 38px;
   height: 38px;
@@ -279,6 +268,140 @@ button {
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.68);
   color: #2c2925;
+}
+
+.subpage-nav {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  border-bottom: 1px solid rgba(44, 41, 37, 0.08);
+  background: #fffaf3;
+  color: #2c2925;
+}
+
+.subpage-nav h1 {
+  overflow: hidden;
+  color: #2c2925;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 125;
+  border: 0;
+  background: rgba(44, 41, 37, 0.14);
+  backdrop-filter: blur(1px);
+  cursor: default;
+}
+
+.header-menu-layer {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 58px);
+  right: 14px;
+  z-index: 130;
+  display: grid;
+  gap: 9px;
+  min-width: 168px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 18px;
+  background: rgba(255, 250, 243, 0.92);
+  box-shadow: 0 22px 48px rgba(44, 41, 37, 0.18);
+  backdrop-filter: blur(7px);
+}
+
+.header-menu-layer button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid rgba(44, 41, 37, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--c-dark);
+  font-weight: 850;
+  box-shadow: 0 10px 22px rgba(42, 36, 28, 0.08);
+}
+
+.header-menu-layer button:active {
+  transform: translateY(1px);
+  background: var(--c-primary-light);
+}
+
+.app-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(44, 41, 37, 0.28);
+}
+
+.app-dialog {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 336px);
+  padding: 22px 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 250, 243, 0.98);
+  color: var(--c-dark);
+  box-shadow: 0 24px 58px rgba(44, 41, 37, 0.24);
+}
+
+.app-dialog h2 {
+  color: var(--c-dark);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.app-dialog p {
+  color: var(--c-mid);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.app-dialog-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.app-dialog-actions button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.app-dialog-cancel {
+  background: #ece6dd;
+  color: var(--c-dark);
+}
+
+.app-dialog-confirm {
+  background: var(--c-primary);
+  color: #fff;
 }
 
 .detail-nav {
@@ -823,6 +946,14 @@ button {
   padding: 16px 14px 0;
 }
 
+.settings-page-copy {
+  padding: 2px 2px 6px;
+  color: var(--c-mid);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .settings-list {
   display: grid;
   overflow: hidden;
@@ -830,6 +961,19 @@ button {
   border-radius: 14px;
   background: var(--c-surface);
   box-shadow: 0 12px 28px rgba(50, 42, 32, 0.06);
+}
+
+.settings-flat-list {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.settings-open-panel {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-group-title {
@@ -883,11 +1027,43 @@ button {
   line-height: 1.35;
 }
 
+.settings-nav-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.settings-nav-row strong {
+  overflow: hidden;
+  color: var(--c-dark);
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-nav-row span {
+  overflow: hidden;
+  color: var(--c-mid);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .settings-section {
   display: grid;
   gap: 12px;
   padding: 14px 16px 16px;
   border-bottom: 1px solid rgba(44, 41, 37, 0.08);
+}
+
+.settings-open-panel .settings-section {
+  padding: 0;
+  border-bottom: 0;
 }
 
 .settings-list > :last-child {
@@ -972,6 +1148,10 @@ button {
   border-color: var(--c-primary);
   background: var(--c-primary);
   color: #fff;
+}
+
+.settings-check-all {
+  width: 100%;
 }
 
 .sort-control {
@@ -1208,7 +1388,7 @@ button {
     font-size: 15px;
   }
 
-  .nav-refresh {
+  .nav-icon-button {
     width: 34px;
     height: 34px;
   }
