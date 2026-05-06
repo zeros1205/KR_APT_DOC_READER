@@ -23,6 +23,10 @@
         seo_audit/gsc_2026-05-06/alternate_canonical_276.txt \
         seo_audit/gsc_2026-05-06/discovered_not_indexed_129.txt \
         seo_audit/gsc_2026-05-06/crawled_not_indexed_8.txt
+
+    # 4) 디스크의 post.html 내부에 박혀있는 폴백 슬러그 self-URL을 정본 notice_id로 치환
+    #    (canonical, og:url, JSON-LD url/@id, BreadcrumbList item 등)
+    python scripts/cleanup_legacy_slugs.py --rewrite-self-urls
 """
 
 from __future__ import annotations
@@ -187,12 +191,56 @@ def cmd_build_redirects(input_files: list[Path]) -> int:
     return 0
 
 
+FALLBACK_SELF_URL = re.compile(
+    r'https://apt-note\.com/posts/(\d{4}-\d{2}-\d{2}_[^/"#\s]+)/post\.html'
+)
+
+
+def cmd_rewrite_self_urls() -> int:
+    """각 숫자 슬러그 디렉터리의 post.html에 박혀있는 폴백 self-URL을 정본 URL로 치환.
+
+    canonical / og:url / JSON-LD url, @id / BreadcrumbList item 등 5곳이 모두
+    `https://apt-note.com/posts/{fallback_slug}/post.html` 형태로 박혀있는 케이스를 처리.
+    같은 파일 안의 폴백 URL은 모두 그 포스트의 본인 URL이라 가정하고 일괄 치환.
+    """
+    rewritten = 0
+    untouched = 0
+    skipped: list[str] = []
+    for d in sorted(POSTS_DIR.iterdir()):
+        if not d.is_dir() or not NUMERIC_SLUG.match(d.name):
+            continue
+        post_html = d / "post.html"
+        if not post_html.exists():
+            continue
+        text = post_html.read_text(encoding="utf-8")
+        slugs = set(FALLBACK_SELF_URL.findall(text))
+        if not slugs:
+            untouched += 1
+            continue
+        if len(slugs) > 1:
+            # 한 페이지에 자기 외 다른 단지 폴백 URL이 섞여 있으면 자동 치환 위험 → 스킵
+            skipped.append(f"{d.name}: 복수 폴백 슬러그 {sorted(slugs)}")
+            continue
+        target = f"https://apt-note.com/posts/{d.name}/post.html"
+        new_text = FALLBACK_SELF_URL.sub(target, text)
+        post_html.write_text(new_text, encoding="utf-8")
+        rewritten += 1
+    print(f"✅ self-URL 치환 완료: {rewritten}개 파일")
+    print(f"   변경 없음: {untouched}개 파일")
+    if skipped:
+        print(f"⚠️ 스킵: {len(skipped)}개 (수동 점검 필요)")
+        for s in skipped[:10]:
+            print(f"   {s}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--dry-run", action="store_true", help="삭제 후보만 출력")
     group.add_argument("--apply", action="store_true", help="폴백 슬러그 디렉터리 실삭제")
     group.add_argument("--build-redirects", nargs="+", metavar="GSC_TXT", help="GSC URL 목록 → _redirects 매핑 생성")
+    group.add_argument("--rewrite-self-urls", action="store_true", help="post.html의 폴백 self-URL을 정본 notice_id로 치환")
     args = parser.parse_args()
 
     if not POSTS_DIR.exists():
@@ -210,6 +258,8 @@ def main() -> int:
                 print(f"❌ 입력 파일 없음: {f}")
                 return 1
         return cmd_build_redirects(files)
+    if args.rewrite_self_urls:
+        return cmd_rewrite_self_urls()
     return 0
 
 
