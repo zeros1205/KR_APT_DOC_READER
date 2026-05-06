@@ -770,21 +770,36 @@ def _render_list_search_bar() -> str:
     </div>"""
 
 
+def _post_lastmod(post: dict) -> str:
+    """포스트 HTML 파일의 mtime을 lastmod(YYYY-MM-DD)로 반환. 없으면 오늘."""
+    post_url = post.get("post_url") or ""
+    candidate = OUTPUT_DIR / post_url if post_url else None
+    if candidate and candidate.exists():
+        return datetime.fromtimestamp(candidate.stat().st_mtime, tz=timezone.utc).strftime("%Y-%m-%d")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
 def _build_sitemap(posts: list[dict]) -> None:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = [
         f"<url><loc>{SITE_URL}/</loc><lastmod>{now}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>"
     ]
     for static_path in ("privacy.html", "terms.html"):
+        static_file = OUTPUT_DIR / static_path
+        static_lastmod = (
+            datetime.fromtimestamp(static_file.stat().st_mtime, tz=timezone.utc).strftime("%Y-%m-%d")
+            if static_file.exists() else now
+        )
         urls.append(
-            f"<url><loc>{SITE_URL}/{static_path}</loc><lastmod>{now}</lastmod>"
+            f"<url><loc>{SITE_URL}/{static_path}</loc><lastmod>{static_lastmod}</lastmod>"
             f"<changefreq>monthly</changefreq><priority>0.4</priority></url>"
         )
     for post in posts:
         if post.get("index_action") == "applyhome":
             continue
+        lastmod = _post_lastmod(post)
         urls.append(
-            f"<url><loc>{SITE_URL}/{post['post_url']}</loc><lastmod>{now}</lastmod>"
+            f"<url><loc>{SITE_URL}/{post['post_url']}</loc><lastmod>{lastmod}</lastmod>"
             f"<changefreq>weekly</changefreq><priority>0.8</priority></url>"
         )
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>"
