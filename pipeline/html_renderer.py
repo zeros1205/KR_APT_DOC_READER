@@ -1202,14 +1202,16 @@ class BlogHTMLRenderer:
 # ──────────────────────────────────────────────────
 
 def save_post(data: PostData, html: str, output_root: Path) -> Path:
+    # SEO 정책: 슬러그는 청약홈 notice_id(숫자)만 허용.
+    # notice_url에서 pblancNo/houseManageNo를 추출하지 못하면 빌드를 중단한다.
+    # (날짜+단지명 폴백 슬러그는 canonical 중복을 유발해 폐기됨 — GSC 색인 보고서 2026-05-06 참조)
     notice_id_match = re.search(r"(?:pblancNo|houseManageNo)=([0-9]+)", data.notice_url or "")
-    notice_id_for_slug = notice_id_match.group(1) if notice_id_match else ""
-    if notice_id_for_slug:
-        post_slug = notice_id_for_slug
-    else:
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        safe = re.sub(r"[^\w가-힣]", "_", data.apt_name)
-        post_slug = f"{date_str}_{safe}"
+    if not notice_id_match:
+        raise ValueError(
+            f"포스트 슬러그 생성 실패: notice_url에서 pblancNo/houseManageNo를 추출할 수 없습니다. "
+            f"apt_name={data.apt_name!r}, notice_url={data.notice_url!r}"
+        )
+    post_slug = notice_id_match.group(1)
     post_dir = output_root / "posts" / post_slug
     post_dir.mkdir(parents=True, exist_ok=True)
 
