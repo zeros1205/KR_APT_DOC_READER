@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.aptnote.mobile",
+  appId: "app.aptnote.mobile",
   appName: "정과장의 청약노트",
   webDir: "dist",
   bundledWebRuntime: false,
