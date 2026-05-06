@@ -12,6 +12,10 @@ on:
         required: true
         type: boolean
         default: true
+      version_code:
+        description: "Android versionCode integer to apply to the signed release build."
+        required: true
+        default: "1"
   pull_request:
     paths:
       - "mobile-app/**"
@@ -45,6 +49,7 @@ jobs:
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
       GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.GOOGLE_SERVICES_JSON_B64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON || secrets.ANDROID_GOOGLE_SERVICES_JSON || secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
+      RELEASE_VERSION_CODE: ${{ github.event_name == 'workflow_dispatch' && inputs.version_code || github.run_number }}
 
     steps:
       - name: Checkout source
@@ -119,6 +124,15 @@ jobs:
             echo "::notice::Google Services secret not configured. Continuing without Firebase google-services.json."
           fi
 
+      - name: Validate Android versionCode
+        run: |
+          set -euo pipefail
+          if ! [[ "$RELEASE_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::version_code must be a positive integer. Received: $RELEASE_VERSION_CODE"
+            exit 1
+          fi
+          echo "release_version_code=$RELEASE_VERSION_CODE"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -180,7 +194,7 @@ jobs:
 
       - name: Build signed release AAB and APK
         working-directory: mobile-app/android
-        run: ./gradlew clean bundleRelease assembleRelease --no-daemon --stacktrace
+        run: ./gradlew clean bundleRelease assembleRelease -PandroidVersionCode="$RELEASE_VERSION_CODE" --no-daemon --stacktrace
 
       - name: Verify signed outputs
         run: |

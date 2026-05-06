@@ -12,6 +12,7 @@ def mobileAppDir = rootProject.projectDir.parentFile
 def npmCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? "npm.cmd" : "npm"
 def npxCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
 def skipWebBuild = providers.gradleProperty("skipWebBuild").map { it == "true" }.orElse(false)
+def androidVersionCode = providers.gradleProperty("androidVersionCode").map { it.toInteger() }.orElse(1)
 
 tasks.register("buildWebAssets", Exec) {
     workingDir mobileAppDir
@@ -37,7 +38,7 @@ android {
         applicationId "app.aptnote.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode androidVersionCode.get()
         versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
