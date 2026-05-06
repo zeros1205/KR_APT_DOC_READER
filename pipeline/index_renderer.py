@@ -452,6 +452,12 @@ def _public_post_from_payload(path: Path) -> dict | None:
     notice_url = str(doc.get("notice_url") or "")
     supply_address = str(doc.get("supply_address") or "")
     location = supply_address or str(doc.get("region_name") or "")
+    detail_raw = payload.get("detail_raw") or {}
+    region_hint = str(
+        doc.get("region_name")
+        or detail_raw.get("SUBSCRPT_AREA_CODE_NM")
+        or ""
+    ).strip()
 
     try:
         from regions import region_name_to_category
@@ -467,7 +473,7 @@ def _public_post_from_payload(path: Path) -> dict | None:
         "theme": "claude",
         "tags": ["공공분양", "청약Home", "입주자모집공고"],
         "location": location,
-        "region_category": region_name_to_category(location),
+        "region_category": region_name_to_category(region_hint or location),
         "supply_type": doc.get("supply_type") or "공공분양",
         "price_range": _fmt_price_range_from_units(payload.get("unit_types") or []),
         "special_supply_date": doc.get("special_supply_start") or doc.get("special_supply_date") or "",
