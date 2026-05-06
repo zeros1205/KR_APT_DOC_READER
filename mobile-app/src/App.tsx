@@ -18,7 +18,6 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
-import { ADMOB_AD_UNITS, hideAdBanners, showAdBanners } from "./ads";
 import { absolutePostUrl, extractPriceRange, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import introBackground from "./assets/intro_without_text.png";
 import {
@@ -52,6 +51,7 @@ const REGIONS = [
 ];
 const APP_VERSION = "0.1.0";
 const LATEST_VERSION = "0.1.0";
+const TABLET_POSTS_PER_PAGE = 12;
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -91,9 +91,11 @@ function displayRegion(region: string): string {
 
 function sanitizeCardHtml(card: NoticeCard): string {
   const html = card.html || "";
+  const titleClass = card.apt_name.replace(/\s+/g, "").length >= 13 ? "card-title is-long-title" : "card-title";
   return html
     .replace(/\sonclick="[^"]*"/g, "")
-    .replace(/\shref="([^"]+)"/g, (_, href: string) => ` href="${absolutePostUrl(href)}"`);
+    .replace(/\shref="([^"]+)"/g, (_, href: string) => ` href="${absolutePostUrl(href)}"`)
+    .replace(/class="card-title"/, `class="${titleClass}"`);
 }
 
 function isApplyHomeCard(card?: NoticeCard): boolean {
@@ -180,19 +182,6 @@ function App() {
       void actionListener.then((handle) => handle.remove());
     };
   }, [detailPage, menuOpen, settingsPage, view]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.remove("admob-top-active", "admob-bottom-active");
-
-    if (view === "home") {
-      root.classList.add("admob-bottom-active");
-      void showAdBanners(undefined, ADMOB_AD_UNITS.frontBottomBanner);
-      return;
-    }
-
-    void hideAdBanners();
-  }, [view]);
 
   async function refreshPosts() {
     setLoading(true);
@@ -429,7 +418,7 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${view === "detail" ? "detail-mode" : ""}`}>
       {introVisible && <IntroScreen />}
       {view === "detail" && detailPage ? (
         <DetailNav
@@ -556,7 +545,7 @@ function SiteNav({ view, onMenu }: { view: View; onMenu: () => void }) {
     <header className="site-header-v3">
       <div className="site-header-v3-inner">
         <button className="site-header-v3-brand" type="button" aria-label="정과장의 청약노트">
-          <img src={`${SITE_ORIGIN}/app_logo_80x80_rounded.png`} alt="" className="site-header-v3-logo" />
+          <img src="/app_logo_80x80_rounded.png" alt="" className="site-header-v3-logo" />
           <span>
             <span className="site-header-v3-title">
               {view === "home" ? "정과장의 청약노트" : view === "favorites" ? "즐겨찾기" : "설정"}
@@ -696,14 +685,23 @@ function DetailNav({
 function DetailView({ page }: { page: DetailPage }) {
   const [html, setHtml] = useState("");
   const [error, setError] = useState("");
+  const screenRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setHtml("");
     setError("");
+    window.scrollTo({ top: 0, left: 0 });
+    screenRef.current?.scrollTo({ top: 0, left: 0 });
     void fetchPostHtml(page.url)
       .then((postHtml) => {
-        if (!cancelled) setHtml(toAppPostDocument(postHtml, page.url));
+        if (!cancelled) {
+          setHtml(toAppPostContent(postHtml));
+          window.requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, left: 0 });
+            screenRef.current?.scrollTo({ top: 0, left: 0 });
+          });
+        }
       })
       .catch(() => {
         if (!cancelled) setError("포스트 페이지를 불러오지 못했습니다.");
@@ -731,27 +729,49 @@ function DetailView({ page }: { page: DetailPage }) {
   }
 
   return (
-    <section className="detail-screen">
-      <iframe title={page.title} srcDoc={html} />
+    <section ref={screenRef} className="detail-screen detail-document" aria-label={page.title}>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
     </section>
   );
 }
 
-function toAppPostDocument(html: string, url: string): string {
-  const baseHref = url.endsWith("/") ? url : url.replace(/[^/]*$/, "");
-  const appStyle = `
-    <base href="${baseHref}">
+function toAppPostContent(html: string): string {
+  const parser = new DOMParser();
+  const document = parser.parseFromString(html, "text/html");
+  document
+    .querySelectorAll(
+      [
+        "script",
+        "noscript",
+        "ins",
+        "iframe",
+        ".site-header-v3",
+        "#post-compact-bar",
+        "[class*='ad']",
+        "[class*='ads']",
+        "[id*='ad']",
+        "[id*='ads']",
+        "[data-ad-client]"
+      ].join(", ")
+    )
+    .forEach((node) => node.remove());
+  const styles = Array.from(document.querySelectorAll("style"))
+    .map((style) => style.outerHTML)
+    .join("\n");
+  const body = document.querySelector("#post-body")?.outerHTML || document.body.innerHTML;
+  return `
+    ${styles}
     <style>
-      .site-header-v3,
-      #post-compact-bar { display: none !important; }
-      body { padding-top: 0 !important; }
-      html { scroll-padding-top: 0 !important; }
+      #post-body {
+        padding-top: 18px !important;
+        padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+      }
+      #post-body * {
+        max-width: 100%;
+      }
     </style>
+    ${body}
   `;
-  if (html.includes("</head>")) {
-    return html.replace("</head>", `${appStyle}</head>`);
-  }
-  return `<!doctype html><html><head>${appStyle}</head><body>${html}</body></html>`;
 }
 
 type HomeProps = {
@@ -771,6 +791,30 @@ type HomeProps = {
 };
 
 function HomeView(props: HomeProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const filterDockRef = useRef<HTMLDivElement | null>(null);
+  const isTabletLayout = useMediaQuery("(min-width: 560px)");
+  const totalPages = isTabletLayout ? Math.max(1, Math.ceil(props.cards.length / TABLET_POSTS_PER_PAGE)) : 1;
+  const visibleCards = isTabletLayout
+    ? props.cards.slice((currentPage - 1) * TABLET_POSTS_PER_PAGE, currentPage * TABLET_POSTS_PER_PAGE)
+    : props.cards;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [props.activeRegion, props.query, props.cards.length, isTabletLayout]);
+
+  function goPage(page: number) {
+    const nextPage = Math.min(Math.max(page, 1), totalPages);
+    setCurrentPage(nextPage);
+    window.requestAnimationFrame(() => {
+      const filterDock = filterDockRef.current;
+      if (!filterDock) return;
+      const headerHeight = document.querySelector(".site-header-v3")?.getBoundingClientRect().height || 0;
+      const targetTop = window.scrollY + filterDock.getBoundingClientRect().top - headerHeight + 1;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+    });
+  }
+
   return (
     <>
       <section className="web-hero">
@@ -844,7 +888,7 @@ function HomeView(props: HomeProps) {
           </div>
         </div>
 
-        <div id="filter-dock">
+        <div id="filter-dock" ref={filterDockRef}>
           <div className="mobile-tab-scroll" role="tablist">
             {props.regions.map((region) => (
               <button
@@ -879,22 +923,84 @@ function HomeView(props: HomeProps) {
         )}
 
         {!props.error && !props.loading && props.cards.length > 0 && (
-          <div className="cards-grid">
-            {props.cards.map((card) => (
-              <NoticeCardItem
-                card={card}
-                isFavorite={props.favoriteIds.has(card.notice_id)}
-                key={card.notice_id}
-                onOpen={props.onOpen}
-                onShare={props.onShare}
-                onToggleFavorite={props.onToggleFavorite}
-              />
-            ))}
-          </div>
+          <>
+            <div className="cards-grid">
+              {visibleCards.map((card) => (
+                <NoticeCardItem
+                  card={card}
+                  isFavorite={props.favoriteIds.has(card.notice_id)}
+                  key={card.notice_id}
+                  onOpen={props.onOpen}
+                  onShare={props.onShare}
+                  onToggleFavorite={props.onToggleFavorite}
+                />
+              ))}
+            </div>
+            {isTabletLayout && totalPages > 1 && (
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPage={goPage} />
+            )}
+          </>
         )}
       </section>
     </>
   );
+}
+
+function Pagination({
+  currentPage,
+  onPage,
+  totalPages
+}: {
+  currentPage: number;
+  onPage: (page: number) => void;
+  totalPages: number;
+}) {
+  const blockSize = 5;
+  const startPage = Math.floor((currentPage - 1) / blockSize) * blockSize + 1;
+  const endPage = Math.min(totalPages, startPage + blockSize - 1);
+  const pages = Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
+
+  return (
+    <nav className="pagination" aria-label="공고 목록 페이지">
+      {startPage > 1 && (
+        <button onClick={() => onPage(startPage - 1)} aria-label="이전 5페이지">
+          ‹
+        </button>
+      )}
+      {pages.map((page) => (
+        <button
+          className={page === currentPage ? "active" : ""}
+          key={page}
+          onClick={() => onPage(page)}
+          aria-current={page === currentPage ? "page" : undefined}
+        >
+          {page}
+        </button>
+      ))}
+      {endPage < totalPages && (
+        <button onClick={() => onPage(endPage + 1)} aria-label="다음 5페이지">
+          ›
+        </button>
+      )}
+    </nav>
+  );
+}
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(query).matches;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const updateMatches = () => setMatches(mediaQuery.matches);
+    updateMatches();
+    mediaQuery.addEventListener("change", updateMatches);
+    return () => mediaQuery.removeEventListener("change", updateMatches);
+  }, [query]);
+
+  return matches;
 }
 
 type CardItemProps = {

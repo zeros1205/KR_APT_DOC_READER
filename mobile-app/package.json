@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc && vite build",
+    "build": "node scripts/sync-post-assets.mjs && tsc && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "sync": "npm run build && npx cap sync",
     "ios": "npm run sync && npx cap open ios",

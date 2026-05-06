@@ -1,4 +1,4 @@
-package com.aptnote.mobile;
+package app.aptnote.mobile;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -9,7 +9,6 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        registerPlugin(AptNoteAdsPlugin.class);
         super.onCreate(savedInstanceState);
         configureSystemBars();
     }

@@ -14,6 +14,14 @@ export function extractPriceRange(card: NoticeCard): string | undefined {
 }
 
 export async function fetchPostsIndex(): Promise<PostsIndex> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      return normalizePostsIndex(await fetchBundledPostsIndex());
+    } catch {
+      // Fall through to the live index so older APKs can still recover when online.
+    }
+  }
+
   const response = await fetch(`${SITE_ORIGIN}/posts_index.json`, {
     headers: { Accept: "application/json" },
     cache: "no-store"
@@ -21,7 +29,21 @@ export async function fetchPostsIndex(): Promise<PostsIndex> {
   if (!response.ok) {
     throw new Error(`posts_index.json ${response.status}`);
   }
-  const data = (await response.json()) as PostsIndex;
+  return normalizePostsIndex((await response.json()) as PostsIndex);
+}
+
+async function fetchBundledPostsIndex(): Promise<PostsIndex> {
+  const response = await fetch("/posts_index.json", {
+    headers: { Accept: "application/json" },
+    cache: "no-store"
+  });
+  if (!response.ok) {
+    throw new Error(`bundled posts_index.json ${response.status}`);
+  }
+  return (await response.json()) as PostsIndex;
+}
+
+function normalizePostsIndex(data: PostsIndex): PostsIndex {
   return {
     ...data,
     cards: data.cards.map((card) => ({
@@ -32,15 +54,45 @@ export async function fetchPostsIndex(): Promise<PostsIndex> {
 }
 
 export async function fetchPostHtml(url: string): Promise<string> {
+  const noticeId = getNoticeIdFromPostUrl(url);
+
   if (Capacitor.isNativePlatform()) {
-    const response = await CapacitorHttp.get({
-      url,
-      headers: { Accept: "text/html" }
-    });
-    if (response.status < 200 || response.status >= 300) {
-      throw new Error(`post html ${response.status}`);
+    if (noticeId) {
+      try {
+        const response = await fetch(`/posts/${noticeId}/post.html`, {
+          headers: { Accept: "text/html" },
+          cache: "no-store"
+        });
+        if (response.ok) {
+          return response.text();
+        }
+      } catch {
+        // Fall through to the live request for older APKs or missing bundled posts.
+      }
     }
-    return typeof response.data === "string" ? response.data : String(response.data);
+
+    try {
+      const response = await CapacitorHttp.get({
+        url,
+        headers: { Accept: "text/html" }
+      });
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`post html ${response.status}`);
+      }
+      return typeof response.data === "string" ? response.data : String(response.data);
+    } catch (error) {
+      const fallbackUrl = url.replace(/\/post(?:\.html)?([?#].*)?$/, "/$1");
+      if (fallbackUrl !== url) {
+        const response = await CapacitorHttp.get({
+          url: fallbackUrl,
+          headers: { Accept: "text/html" }
+        });
+        if (response.status >= 200 && response.status < 300) {
+          return typeof response.data === "string" ? response.data : String(response.data);
+        }
+      }
+      throw error;
+    }
   }
 
   const response = await fetch(url, {
@@ -51,4 +103,9 @@ export async function fetchPostHtml(url: string): Promise<string> {
     throw new Error(`post html ${response.status}`);
   }
   return response.text();
+}
+
+function getNoticeIdFromPostUrl(url: string): string | undefined {
+  const pathname = new URL(url).pathname;
+  return pathname.match(/^\/posts\/([^/]+)\//)?.[1];
 }
