@@ -1,0 +1,6 @@
+name = "apt-note-telegram-bot"
+main = "src/index.ts"
+compatibility_date = "2026-04-21"
+
+[vars]
+GITHUB_REPO = "zeros1205/KR_APT_DOC_READER"

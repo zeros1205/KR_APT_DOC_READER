@@ -41,6 +41,8 @@ env:
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
 jobs:
   generate-pages:
@@ -99,7 +101,7 @@ jobs:
           fi
 
           echo "$CMD"
-          eval "$CMD"
+          eval "$CMD" 2>&1 | tee /tmp/generate_log.txt
 
       - name: Verify frozen UI files after generation
         run: |
@@ -138,3 +140,76 @@ jobs:
           else
             echo "No generated page changes."
           fi
+
+      - name: Notify Telegram when page generation is complete
+        if: always()
+        run: |
+          if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets are not configured. Skipping notification."
+            exit 0
+          fi
+
+          KST_TIME="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          JOB_STATUS="${{ job.status }}"
+
+          if [ "$JOB_STATUS" = "success" ]; then
+            ICON="✅"
+          else
+            ICON="❌"
+          fi
+
+          SUMMARY="$(python - <<'PY'
+          from pathlib import Path
+
+          log = Path("/tmp/generate_log.txt")
+          if not log.exists():
+              print("로그 없음")
+              raise SystemExit(0)
+
+          text = log.read_text(encoding="utf-8", errors="replace")
+          # generate_posts_from_cache.py: "[generate] success=N failed=M"
+          success = failed = 0
+          apt_names: list[str] = []
+          failed_names: list[str] = []
+          for line in text.splitlines():
+              if "[generate] success=" in line:
+                  for token in line.split():
+                      if token.startswith("success="):
+                          try: success = int(token.split("=", 1)[1])
+                          except: pass
+                      if token.startswith("failed="):
+                          try: failed = int(token.split("=", 1)[1])
+                          except: pass
+              elif "[generate] failed notices:" in line:
+                  failed_names = [n.strip() for n in line.split(":", 1)[1].split(",") if n.strip()]
+              elif line.startswith("[generate] ") and " " in line[11:]:
+                  # "[generate] {notice_id} {apt_name}"
+                  rest = line[11:].split(" ", 1)
+                  if len(rest) == 2:
+                      apt_names.append(rest[1])
+
+          parts = [f"성공 {success}건 / 실패 {failed}건"]
+          if apt_names:
+              parts.append("")
+              parts.append("생성:")
+              parts.extend(f"- {n}" for n in apt_names[:10])
+              if len(apt_names) > 10:
+                  parts.append(f"외 {len(apt_names) - 10}건")
+          if failed_names:
+              parts.append("")
+              parts.append("실패:")
+              parts.extend(f"- {n}" for n in failed_names[:5])
+          print("\n".join(parts))
+          PY
+          )"
+
+          MESSAGE="${ICON} 페이지 생성 완료 (${KST_TIME})
+
+          ${SUMMARY}
+
+          실행 로그: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}")"
+          echo "Telegram API response: ${RESPONSE}"
