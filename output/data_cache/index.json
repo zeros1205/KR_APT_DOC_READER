@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-07T01:16:57+09:00",
-  "count": 199,
-  "ready_count": 199,
+  "generated_at": "2026-05-08T08:13:05+09:00",
+  "count": 205,
+  "ready_count": 205,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1354,6 +1354,48 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000163.json"
+    },
+    {
+      "notice_id": "2026000164",
+      "apt_name": "더샵 송도그란테르 G5-1블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000164.json"
+    },
+    {
+      "notice_id": "2026000165",
+      "apt_name": "더샵 송도그란테르 G5-3블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000165.json"
+    },
+    {
+      "notice_id": "2026000166",
+      "apt_name": "더샵 송도그란테르 G5-4블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000166.json"
+    },
+    {
+      "notice_id": "2026000167",
+      "apt_name": "더샵 송도그란테르 G5-5블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000167.json"
+    },
+    {
+      "notice_id": "2026000168",
+      "apt_name": "더샵 송도그란테르 G5-6블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000168.json"
+    },
+    {
+      "notice_id": "2026000169",
+      "apt_name": "더샵 송도그란테르 G5-11블록",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000169.json"
     },
     {
       "notice_id": "2026000170",
