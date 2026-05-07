@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.8600H타입 | 전용 109.3535㎡ | 일반 14세대 | 특별 20세대 | 분양가 123300만원\n084.7800I타입 | 전용 110.0848㎡ | 일반 15세대 | 특별 21세대 | 분양가 124100만원\n084.5600J타입 | 전용 109.9432㎡ | 일반 15세대 | 특별 21세대 | 분양가 124000만원\n100.9800A타입 | 전용 130.6944㎡ | 일반 27세대 | 특별 7세대 | 분양가 150000만원\n100.5800B타입 | 전용 129.7106㎡ | 일반 27세대 | 특별 7세대 | 분양가 146100만원\n100.9500C타입 | 전용 130.7974㎡ | 일반 29세대 | 특별 7세대 | 분양가 147300만원\n124.7300H타입 | 전용 160.8749㎡ | 일반 27세대 | 특별 7세대 | 분양가 181900만원\n124.8300I타입 | 전용 160.8783㎡ | 일반 29세대 | 특별 7세대 | 분양가 181900만원\n128.1100H타입 | 전용 165.1576㎡ | 일반 29세대 | 특별 7세대 | 분양가 184100만원\n198.8600C타입 | 전용 257.9288㎡ | 일반 2세대 | 특별 0세대 | 분양가 334500만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-07T23:12:56.608320"
+    "collected_at": "2026-05-07T23:12:56.608320",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "케이비부동산신탁(주)",
@@ -300,5 +305,20 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "user_provided",
+    "query": "",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-08T08:42:46+09:00"
+  }
 }

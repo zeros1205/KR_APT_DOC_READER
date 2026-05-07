@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9907A타입 | 전용 120.5018㎡ | 일반 112세대 | 특별 136세대 | 분양가 88800만원\n084.9971B타입 | 전용 120.7436㎡ | 일반 57세대 | 특별 67세대 | 분양가 91300만원\n101.9965 타입 | 전용 143.6164㎡ | 일반 110세대 | 특별 14세대 | 분양가 112900만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-06T16:16:56.280190"
+    "collected_at": "2026-05-06T16:16:56.280190",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 하나자산신탁",
@@ -167,5 +172,20 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "user_provided",
+    "query": "",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-08T08:42:46+09:00"
+  }
 }

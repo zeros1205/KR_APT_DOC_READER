@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.2300K타입 | 전용 116.5410㎡ | 일반 13세대 | 특별 18세대 | 분양가 128100만원\n118.2300K타입 | 전용 163.4003㎡ | 일반 49세대 | 특별 13세대 | 분양가 183500만원\n129.4600K타입 | 전용 182.4269㎡ | 일반 1세대 | 특별 0세대 | 분양가 212200만원\n188.7900K타입 | 전용 264.0253㎡ | 일반 2세대 | 특별 0세대 | 분양가 316600만원\n198.2300K타입 | 전용 275.7629㎡ | 일반 1세대 | 특별 0세대 | 분양가 331500만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-07T23:12:59.483976"
+    "collected_at": "2026-05-07T23:12:59.483976",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "케이비부동산신탁(주)",
@@ -205,5 +210,20 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "user_provided",
+    "query": "",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-08T08:42:46+09:00"
+  }
 }
