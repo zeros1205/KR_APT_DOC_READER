@@ -181,6 +181,3 @@
 # 누적 URL(과거 폴백 슬러그 페이지의 상대경로 링크로 Google이 만든 nested path) → 정본으로 301
 # GSC 2026-05-06 crawled_not_indexed_8 분석 결과 첫 슬러그가 모두 동일.
 /posts/2026-04-27_e편한세상_부천_어반스퀘어/posts/* /posts/2026000152/post.html 301
-
-# 확장자 없는 /post URL (GSC crawled_not_indexed_8에 2025000457/post, 2025000472/post 존재)
-/posts/:id/post /posts/:id/post.html 301
