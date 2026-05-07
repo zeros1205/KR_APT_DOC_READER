@@ -1445,7 +1445,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
     region_category = region_name_to_category(data.location)
 
     meta = {
-        "notice_id":       notice_id_for_slug,
+        "notice_id":       post_slug,
         "apt_name":        data.apt_name,
         "title":           data.post_title,
         "subtitle":        data.post_subtitle,
