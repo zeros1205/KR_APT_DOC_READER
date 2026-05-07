@@ -48,6 +48,14 @@ export default {
 
     return new Response("OK");
   },
+
+  async scheduled(event: ScheduledEvent, env: Env): Promise<void> {
+    const ok = await dispatchWorkflow(env, "codex-collect-notices.yml");
+    const message = ok
+      ? "🔔 [자동 스케줄] 분양공고 수집 워크플로우 시작"
+      : "🔔 [자동 스케줄] 워크플로우 실행 실패";
+    await sendMessage(env, parseInt(env.TELEGRAM_CHAT_ID), message);
+  },
 };
 
 async function handleCallback(
