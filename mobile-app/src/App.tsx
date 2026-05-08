@@ -389,17 +389,14 @@ function App() {
   async function shareCard(card: NoticeCard) {
     const url = absolutePostUrl(card.post_url);
     const text = [
+      card.apt_name,
+      url,
+      "",
       "🏠 분양가·일정·입지·자격 한눈에 정리",
       "📋 청약 전 꼭 확인해야 할 정보 모음",
-      "✨ 정과장의 청약노트",
-      "",
-      card.apt_name
+      "✨ 정과장의 청약노트"
     ].join("\n");
-    await Share.share({
-      title: card.apt_name,
-      text,
-      url
-    });
+    await Share.share({ text, url });
   }
 
   async function clearLocalData() {
