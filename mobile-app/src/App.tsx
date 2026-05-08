@@ -130,6 +130,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (view !== "home") return;
+    setActiveRegion(settings.regions[0] ?? "전체");
+  }, [view, settings.regions]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => setIntroVisible(false), 1500);
     return () => window.clearTimeout(timer);
   }, []);
@@ -1173,7 +1178,7 @@ function SettingsView({
   if (page === "regions") {
     return (
       <section className="screen settings-screen">
-        <p className="settings-page-copy">신규 공고 알림 받을 지역을 선택해주세요.</p>
+        <p className="settings-page-copy">홈에서 우선 표시할 관심지역을 선택해주세요.</p>
         <section className="settings-list settings-open-panel">
           <div className="settings-section">
             <div className="settings-check-grid">
@@ -1267,18 +1272,10 @@ function SettingsView({
   return (
     <section className="screen settings-screen">
       <section className="settings-list settings-flat-list">
-        <button className="settings-link-row settings-nav-row" onClick={() => onPage("notifications")}>
-          <div>
-            <strong>알림 설정</strong>
-            <span>{settings.pushEnabled ? "신규 공고 알림 켜짐" : "신규 공고 알림 꺼짐"}</span>
-          </div>
-          <ChevronRight size={18} />
-        </button>
-
         <button className="settings-link-row settings-nav-row" onClick={() => onPage("regions")}>
           <div>
             <strong>관심지역 설정</strong>
-            <span>{settings.regions.length > 0 ? `${settings.regions.length}개 지역 선택됨` : "전체 지역 알림"}</span>
+            <span>{settings.regions.length > 0 ? `${settings.regions.length}개 지역 선택됨` : "전체 지역 표시"}</span>
           </div>
           <ChevronRight size={18} />
         </button>
