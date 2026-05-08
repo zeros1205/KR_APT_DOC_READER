@@ -390,7 +390,7 @@ function App() {
     const url = absolutePostUrl(card.post_url);
     await Share.share({
       title: card.apt_name,
-      text: `${card.apt_name} 분양 공고`,
+      text: "정과장의 청약노트",
       url
     });
   }
