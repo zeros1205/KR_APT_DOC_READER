@@ -136,9 +136,10 @@ function App() {
   }, [view, settings.regions]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setIntroVisible(false), 1500);
+    if (loading) return;
+    const timer = window.setTimeout(() => setIntroVisible(false), 300);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
