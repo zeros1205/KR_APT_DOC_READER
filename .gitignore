@@ -12,6 +12,9 @@ output/pdfs/
 # 모바일앱 로컬/빌드 산출물
 mobile-app/node_modules/
 mobile-app/dist/
+mobile-app/public/posts/
+mobile-app/public/posts_index.json
+mobile-app/public/app_logo_80x80_rounded.png
 mobile-app/.android-sdk/
 mobile-app/.idea/
 mobile-app/android/.gradle/
