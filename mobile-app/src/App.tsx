@@ -142,6 +142,16 @@ function App() {
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
+    const handle = CapacitorApp.addListener("appStateChange", ({ isActive }) => {
+      if (isActive) void refreshPosts();
+    });
+    return () => {
+      void handle.then((h) => h.remove());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
 
     const registrationListener = PushNotifications.addListener("registration", (token) => {
       void savePushToken(token.value);
