@@ -52,6 +52,7 @@ const REGIONS = [
 const APP_VERSION = "0.1.0";
 const LATEST_VERSION = "0.1.0";
 const TABLET_POSTS_PER_PAGE = 12;
+const PREFERRED_REGION_KEY = "__preferred__";
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -131,7 +132,7 @@ function App() {
 
   useEffect(() => {
     if (view !== "home") return;
-    setActiveRegion(settings.regions[0] ?? "전체");
+    setActiveRegion(settings.regions.length > 0 ? PREFERRED_REGION_KEY : "전체");
   }, [view, settings.regions]);
 
   useEffect(() => {
@@ -205,14 +206,21 @@ function App() {
   const regionTabs = useMemo(() => {
     const cardRegions = new Set(cards.map((card) => normalizeRegion(card.region)).filter(Boolean));
     const ordered = REGIONS.filter((region) => cardRegions.has(normalizeRegion(region)));
-    return ["전체", ...ordered];
-  }, [cards]);
+    const tabs = ["전체"];
+    if (settings.regions.length > 0) tabs.push(PREFERRED_REGION_KEY);
+    return [...tabs, ...ordered];
+  }, [cards, settings.regions]);
 
   const filteredCards = useMemo(() => {
     const keyword = query.trim().toLowerCase();
     return cards.filter((card) => {
+      const cardRegion = normalizeRegion(card.region);
       const matchesRegion =
-        activeRegion === "전체" || normalizeRegion(card.region).includes(normalizeRegion(activeRegion));
+        activeRegion === "전체"
+          ? true
+          : activeRegion === PREFERRED_REGION_KEY
+            ? settings.regions.some((r) => cardRegion.includes(normalizeRegion(r)))
+            : cardRegion.includes(normalizeRegion(activeRegion));
       const matchesQuery =
         !keyword ||
         card.apt_name.toLowerCase().includes(keyword) ||
@@ -220,7 +228,7 @@ function App() {
         card.notice_id.includes(keyword);
       return matchesRegion && matchesQuery;
     });
-  }, [activeRegion, cards, query]);
+  }, [activeRegion, cards, query, settings.regions]);
 
   const favoriteIds = useMemo(() => new Set(favorites.map((favorite) => favorite.notice_id)), [favorites]);
 
@@ -274,13 +282,6 @@ function App() {
     await updateSettings({
       ...settings,
       regions: exists ? settings.regions.filter((item) => item !== region) : [...settings.regions, region]
-    });
-  }
-
-  async function toggleAllRegions() {
-    await updateSettings({
-      ...settings,
-      regions: settings.regions.length === REGIONS.length ? [] : [...REGIONS]
     });
   }
 
@@ -454,6 +455,7 @@ function App() {
           error={error}
           favoriteIds={favoriteIds}
           loading={loading}
+          preferredCount={settings.regions.length}
           query={query}
           regions={regionTabs}
           onOpen={openUrl}
@@ -485,7 +487,6 @@ function App() {
           onOpen={openUrl}
           onPage={setSettingsPage}
           onPush={enablePush}
-          onRegionAll={toggleAllRegions}
           onQuietHours={(enabled) => void updateSettings({ ...settings, quietHoursEnabled: enabled })}
           onRegion={toggleRegion}
           onRemoveFavorite={(noticeId) =>
@@ -785,6 +786,7 @@ type HomeProps = {
   error: string;
   favoriteIds: Set<string>;
   loading: boolean;
+  preferredCount: number;
   query: string;
   regions: string[];
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
@@ -901,7 +903,7 @@ function HomeView(props: HomeProps) {
                 key={region}
                 onClick={() => props.onRegion(region)}
               >
-                {displayRegion(region)}
+                {region === PREFERRED_REGION_KEY ? `관심지역(${props.preferredCount})` : displayRegion(region)}
               </button>
             ))}
           </div>
@@ -1099,7 +1101,6 @@ function SettingsView({
   onOpen,
   onPage,
   onPush,
-  onRegionAll,
   onQuietHours,
   onRegion,
   onRemoveFavorite,
@@ -1112,7 +1113,6 @@ function SettingsView({
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
   onPage: (page: SettingsPage) => void;
   onPush: () => Promise<void>;
-  onRegionAll: () => Promise<void>;
   onQuietHours: (enabled: boolean) => void;
   onRegion: (region: string) => Promise<void>;
   onRemoveFavorite: (noticeId: string) => void;
@@ -1133,7 +1133,6 @@ function SettingsView({
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
   const hasUpdate = APP_VERSION !== LATEST_VERSION;
-  const allRegionsSelected = settings.regions.length === REGIONS.length;
 
   if (page === "notifications") {
     return (
@@ -1182,10 +1181,6 @@ function SettingsView({
         <section className="settings-list settings-open-panel">
           <div className="settings-section">
             <div className="settings-check-grid">
-              <button className="settings-check settings-check-all" onClick={() => void onRegionAll()}>
-                <span>{allRegionsSelected && <Check size={14} />}</span>
-                전체선택/해제
-              </button>
               {REGIONS.map((region) => {
                 const selected = settings.regions.includes(region);
                 return (
