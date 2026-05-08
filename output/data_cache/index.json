@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-08T08:13:05+09:00",
-  "count": 205,
-  "ready_count": 205,
+  "generated_at": "2026-05-09T08:56:24+09:00",
+  "count": 208,
+  "ready_count": 208,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1272,6 +1272,13 @@
       "cache_path": "output/data_cache/notices/2026000130.json"
     },
     {
+      "notice_id": "2026000132",
+      "apt_name": "청주 한양립스 더 벨루체",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000132.json"
+    },
+    {
       "notice_id": "2026000133",
       "apt_name": "더샵 시에르네(조합원 취소분)",
       "requires_manual_input": false,
@@ -1405,11 +1412,25 @@
       "cache_path": "output/data_cache/notices/2026000170.json"
     },
     {
+      "notice_id": "2026000172",
+      "apt_name": "두산위브 트리니뷰 구명역",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000172.json"
+    },
+    {
       "notice_id": "2026000174",
       "apt_name": "더샵 중앙로역센터폴",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000174.json"
+    },
+    {
+      "notice_id": "2026000178",
+      "apt_name": "중앙하이츠 원종역",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000178.json"
     },
     {
       "notice_id": "2026000185",
