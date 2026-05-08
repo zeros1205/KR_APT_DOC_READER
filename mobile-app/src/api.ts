@@ -16,10 +16,17 @@ export function extractPriceRange(card: NoticeCard): string | undefined {
 export async function fetchPostsIndex(): Promise<PostsIndex> {
   if (Capacitor.isNativePlatform()) {
     try {
-      return normalizePostsIndex(await fetchBundledPostsIndex());
+      const response = await fetch(`${SITE_ORIGIN}/posts_index.json`, {
+        headers: { Accept: "application/json" },
+        cache: "no-store"
+      });
+      if (response.ok) {
+        return normalizePostsIndex((await response.json()) as PostsIndex);
+      }
     } catch {
-      // Fall through to the live index so older APKs can still recover when online.
+      // Network failed — fall back to bundled snapshot for offline support.
     }
+    return normalizePostsIndex(await fetchBundledPostsIndex());
   }
 
   const response = await fetch(`${SITE_ORIGIN}/posts_index.json`, {
