@@ -18,7 +18,7 @@ import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
-import { absolutePostUrl, extractPriceRange, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
+import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import introBackground from "./assets/intro_without_text.png";
 import {
   defaultSettings,
@@ -49,8 +49,8 @@ const REGIONS = [
   "경상남도",
   "제주"
 ];
-const APP_VERSION = "0.1.0";
-const LATEST_VERSION = "0.1.0";
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.1.0";
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.aptnote.mobile";
 const TABLET_POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
@@ -117,6 +117,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState("");
+  const [latestVersion, setLatestVersion] = useState(APP_VERSION);
   const [toastMessage, setToastMessage] = useState("");
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const lastHomeBackAtRef = useRef(0);
@@ -128,6 +129,9 @@ function App() {
       setSettings(savedSettings);
     });
     void refreshPosts();
+    void fetchLatestVersion().then((version) => {
+      if (version) setLatestVersion(version);
+    });
   }, []);
 
   useEffect(() => {
@@ -492,6 +496,7 @@ function App() {
       {view === "settings" && (
         <SettingsView
           favorites={favorites}
+          latestVersion={latestVersion}
           page={settingsPage}
           settings={settings}
           onClear={confirmResetLocalData}
@@ -504,6 +509,7 @@ function App() {
             void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
           }
           onShare={shareCard}
+          onUpdate={() => void Browser.open({ url: PLAY_STORE_URL })}
         />
       )}
 
@@ -1106,6 +1112,7 @@ function FavoritesView({
 
 function SettingsView({
   favorites,
+  latestVersion,
   page,
   settings,
   onClear,
@@ -1115,9 +1122,11 @@ function SettingsView({
   onQuietHours,
   onRegion,
   onRemoveFavorite,
-  onShare
+  onShare,
+  onUpdate
 }: {
   favorites: FavoriteNotice[];
+  latestVersion: string;
   page: SettingsPage;
   settings: UserSettings;
   onClear: () => Promise<void>;
@@ -1128,6 +1137,7 @@ function SettingsView({
   onRegion: (region: string) => Promise<void>;
   onRemoveFavorite: (noticeId: string) => void;
   onShare: (card: NoticeCard) => Promise<void>;
+  onUpdate: () => void;
 }) {
   const [favoriteSort, setFavoriteSort] = useState<FavoriteSort>("newest");
   const sortedFavorites = useMemo(() => {
@@ -1143,7 +1153,7 @@ function SettingsView({
     }
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
-  const hasUpdate = APP_VERSION !== LATEST_VERSION;
+  const hasUpdate = APP_VERSION !== latestVersion;
 
   if (page === "notifications") {
     return (
@@ -1305,9 +1315,9 @@ function SettingsView({
         <div className="settings-row version-row">
           <div>
             <strong>앱 정보</strong>
-            <span>현재 {APP_VERSION} · 최신 {LATEST_VERSION}</span>
+            <span>현재 {APP_VERSION} · 최신 {latestVersion}</span>
           </div>
-          <button className="update-button" disabled={!hasUpdate}>
+          <button className="update-button" disabled={!hasUpdate} onClick={onUpdate}>
             업데이트
           </button>
         </div>

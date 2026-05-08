@@ -13,6 +13,20 @@ export function extractPriceRange(card: NoticeCard): string | undefined {
   return match?.[1]?.replace(/\s+/g, " ").trim();
 }
 
+export async function fetchLatestVersion(): Promise<string | undefined> {
+  try {
+    const response = await fetch(`${SITE_ORIGIN}/app-version.json`, {
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
+    if (!response.ok) return undefined;
+    const data = (await response.json()) as { latest?: string };
+    return data.latest;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function fetchPostsIndex(): Promise<PostsIndex> {
   if (Capacitor.isNativePlatform()) {
     try {

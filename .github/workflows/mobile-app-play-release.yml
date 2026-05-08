@@ -16,6 +16,10 @@ on:
         description: "Android versionCode integer to apply to the signed release build."
         required: true
         default: "1"
+      version_name:
+        description: "App versionName (e.g. 0.1.0). Shown to users; appears on Play Store and in app settings."
+        required: true
+        default: "0.1.0"
   pull_request:
     paths:
       - "mobile-app/**"
@@ -41,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: read
+      contents: write
     env:
       KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 || secrets.ANDROID_KEYSTORE_BASE64 }}
       KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD || secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
@@ -50,6 +54,7 @@ jobs:
       GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.GOOGLE_SERVICES_JSON_B64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON || secrets.ANDROID_GOOGLE_SERVICES_JSON || secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
       RELEASE_VERSION_CODE: ${{ github.event_name == 'workflow_dispatch' && inputs.version_code || github.run_number }}
+      RELEASE_VERSION_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.version_name || '0.1.0' }}
 
     steps:
       - name: Checkout source
@@ -124,14 +129,19 @@ jobs:
             echo "::notice::Google Services secret not configured. Continuing without Firebase google-services.json."
           fi
 
-      - name: Validate Android versionCode
+      - name: Validate Android version inputs
         run: |
           set -euo pipefail
           if ! [[ "$RELEASE_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
             echo "::error::version_code must be a positive integer. Received: $RELEASE_VERSION_CODE"
             exit 1
           fi
+          if ! [[ "$RELEASE_VERSION_NAME" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?([+-][A-Za-z0-9.]+)?$ ]]; then
+            echo "::error::version_name must look like 1.2 or 1.2.3 (optional +meta or -pre). Received: $RELEASE_VERSION_NAME"
+            exit 1
+          fi
           echo "release_version_code=$RELEASE_VERSION_CODE"
+          echo "release_version_name=$RELEASE_VERSION_NAME"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -155,6 +165,8 @@ jobs:
 
       - name: Build web shell
         working-directory: mobile-app
+        env:
+          VITE_APP_VERSION: ${{ env.RELEASE_VERSION_NAME }}
         run: npm run build
 
       - name: Write Google Services config
@@ -194,7 +206,7 @@ jobs:
 
       - name: Build signed release AAB and APK
         working-directory: mobile-app/android
-        run: ./gradlew clean bundleRelease assembleRelease -PandroidVersionCode="$RELEASE_VERSION_CODE" --no-daemon --stacktrace
+        run: ./gradlew clean bundleRelease assembleRelease -PandroidVersionCode="$RELEASE_VERSION_CODE" -PandroidVersionName="$RELEASE_VERSION_NAME" --no-daemon --stacktrace
 
       - name: Verify signed outputs
         run: |
@@ -226,6 +238,24 @@ jobs:
           name: aptnote-play-release-${{ github.run_number }}.apk
           path: mobile-app/android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
+
+      - name: Publish app-version.json to site (workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          printf '{"latest": "%s"}\n' "$RELEASE_VERSION_NAME" > output/app-version.json
+
+          if git diff --quiet -- output/app-version.json; then
+            echo "app-version.json unchanged; skipping commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/app-version.json
+          git commit -m "chore(mobile): publish app-version.json $RELEASE_VERSION_NAME"
+          git push origin HEAD:main
 
       - name: Upload release verification logs
         uses: actions/upload-artifact@v4

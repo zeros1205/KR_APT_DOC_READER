@@ -13,6 +13,7 @@ def npmCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? "npm.cmd" : "npm"
 def npxCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
 def skipWebBuild = providers.gradleProperty("skipWebBuild").map { it == "true" }.orElse(false)
 def androidVersionCode = providers.gradleProperty("androidVersionCode").map { it.toInteger() }.orElse(1)
+def androidVersionName = providers.gradleProperty("androidVersionName").orElse("0.1.0")
 
 tasks.register("buildWebAssets", Exec) {
     workingDir mobileAppDir
@@ -39,7 +40,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode androidVersionCode.get()
-        versionName "0.1.0"
+        versionName androidVersionName.get()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
