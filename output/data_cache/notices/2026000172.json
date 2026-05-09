@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.9671A타입 | 전용 101.8298㎡ | 일반 3세대 | 특별 21세대 | 분양가 68700만원\n074.9653B타입 | 전용 101.6949㎡ | 일반 2세대 | 특별 16세대 | 분양가 67200만원\n084.9841A타입 | 전용 114.1556㎡ | 일반 7세대 | 특별 173세대 | 분양가 75900만원\n084.9794B타입 | 전용 114.7040㎡ | 일반 1세대 | 특별 26세대 | 분양가 75900만원\n084.9830C타입 | 전용 113.8823㎡ | 일반 3세대 | 특별 36세대 | 분양가 75900만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-08T23:56:20.830237"
+    "collected_at": "2026-05-08T23:56:20.830237",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "구포7구역지역주택조합",
@@ -205,5 +210,20 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "manual_verified",
+    "query": "",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-09T10:02:11+09:00"
+  }
 }
