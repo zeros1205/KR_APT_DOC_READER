@@ -2,7 +2,7 @@
   "description": "Baseline hashes for files that must not change without explicit UI approval.",
   "files": {
     "templates/blog_template.html": {
-      "sha256": "BB60BF074FFD33F9E2DF264021E7E75A8C5840AF47C8F4A87727D7025B87AB31"
+      "sha256": "72DE624DAE7C23EB57FA8E5C82B4A67A6551B35C92D14F87F816DA5A37BBC646"
     },
     "templates/front_index_template.html": {
       "sha256": "B6E9B90A9006B62181AE50637B4DBEF426731CE2C1F3CFC6849A638D595B8837"
