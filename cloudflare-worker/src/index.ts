@@ -146,11 +146,21 @@ async function sendMessage(
   chatId: number,
   text: string,
 ): Promise<void> {
-  await fetch(`https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text }),
-  });
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text }),
+      },
+    );
+    if (!res.ok) {
+      console.error(`sendMessage failed: ${res.status} ${await res.text()}`);
+    }
+  } catch (e) {
+    console.error("sendMessage error:", e);
+  }
 }
 
 async function answerCallback(
@@ -158,12 +168,21 @@ async function answerCallback(
   callbackId: string,
   text: string,
 ): Promise<void> {
-  await fetch(
-    `https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/answerCallbackQuery`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ callback_query_id: callbackId, text }),
-    },
-  );
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/answerCallbackQuery`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: callbackId, text }),
+      },
+    );
+    if (!res.ok) {
+      console.error(
+        `answerCallback failed: ${res.status} ${await res.text()}`,
+      );
+    }
+  } catch (e) {
+    console.error("answerCallback error:", e);
+  }
 }
