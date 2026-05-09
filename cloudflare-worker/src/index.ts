@@ -18,7 +18,11 @@ interface TelegramUpdate {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<Response> {
     if (request.method !== "POST") {
       return new Response("apt-note telegram bot", { status: 200 });
     }
@@ -38,12 +42,12 @@ export default {
     }
 
     if (update.callback_query) {
-      await handleCallback(env, update.callback_query);
+      ctx.waitUntil(handleCallback(env, update.callback_query));
       return new Response("OK");
     }
 
     if (update.message?.text) {
-      await handleMessage(env, chatId!, update.message.text.trim());
+      ctx.waitUntil(handleMessage(env, chatId!, update.message.text.trim()));
     }
 
     return new Response("OK");
@@ -63,13 +67,18 @@ async function handleCallback(
   cb: NonNullable<TelegramUpdate["callback_query"]>,
 ): Promise<void> {
   const { id: callbackId, data } = cb;
+  const chatId = cb.message.chat.id;
 
   if (data === "export_notice_urls") {
+    await answerCallback(env, callbackId, "🔄 명령 받음");
+    await sendMessage(env, chatId, "🔄 청약홈 링크 목록 생성을 요청합니다...");
     const ok = await dispatchWorkflow(env, "codex-export-notice-urls.yml");
-    await answerCallback(
+    await sendMessage(
       env,
-      callbackId,
-      ok ? "✅ 청약홈 링크 목록 생성 시작" : "❌ 워크플로우 실행 실패",
+      chatId,
+      ok
+        ? "🚀 워크플로우 실행 시작! 완료되면 결과를 보내드릴게요."
+        : "❌ 워크플로우 실행 실패",
     );
   } else if (data === "ignore") {
     await answerCallback(env, callbackId, "❌ 무시했습니다");
@@ -84,11 +93,14 @@ async function handleMessage(
   text: string,
 ): Promise<void> {
   if (text === "/gen all") {
+    await sendMessage(env, chatId, "🔄 명령 받음. 페이지 생성을 요청합니다...");
     const ok = await dispatchWorkflow(env, "codex-generate-pages.yml");
     await sendMessage(
       env,
       chatId,
-      ok ? "🚀 페이지 생성 워크플로우 시작" : "❌ 워크플로우 실행 실패",
+      ok
+        ? "🚀 워크플로우 실행 시작! 완료되면 결과를 보내드릴게요."
+        : "❌ 워크플로우 실행 실패",
     );
   } else if (text === "/start" || text === "/help") {
     await sendMessage(
