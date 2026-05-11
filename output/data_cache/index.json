@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-09T08:56:24+09:00",
-  "count": 208,
-  "ready_count": 208,
+  "generated_at": "2026-05-12T08:58:25+09:00",
+  "count": 209,
+  "ready_count": 209,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1130,6 +1130,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000096.json"
+    },
+    {
+      "notice_id": "2026000098",
+      "apt_name": "식사 푸르지오 파크센트(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000098.json"
     },
     {
       "notice_id": "2026000101",
