@@ -38,6 +38,16 @@ TEMPLATE_PATH = ROOT / "templates" / "front_index_template.html"
 SITE_URL = "https://apt-note.com"
 EXPIRED_GRAD = "linear-gradient(135deg, #6F746F 0%, #555B56 60%, #3F4540 100%)"
 SEOUL_TZ = ZoneInfo("Asia/Seoul")
+
+
+def _to_abs_href(url: str) -> str:
+    # 데이터 스키마(posts_index.json·sitemap 빌더·OUTPUT_DIR 결합)는 상대경로 유지하고
+    # 사용자 클릭 표면(a href·location.href)만 절대경로로 변환해 nested path 누적을 차단.
+    if not url:
+        return url
+    if url.startswith(("http://", "https://", "//", "/", "#", "mailto:", "tel:")):
+        return url
+    return "/" + url
 _PUBLIC_KW = (
     "공공분양", "공공임대", "행복주택", "국민임대", "lh", "sh공사",
     "경기주택", "인천도시공사", "주공", "공공지원",
@@ -630,7 +640,7 @@ def _render_featured_items(posts: list[dict]) -> str:
     for post in featured:
         apt_name = escape(str(post.get("apt_name", "(단지명 없음)")))
         location = escape((post.get("location") or "").strip() or "주소 정보 없음")
-        url = escape(str(post.get("post_url") or "#"), quote=True)
+        url = escape(_to_abs_href(str(post.get("post_url") or "#")), quote=True)
         if post.get("index_action") == "applyhome":
             href = "#"
             action_attr = f'onclick="event.preventDefault();openPublicNotice(\'{url}\')"'
@@ -655,7 +665,7 @@ def _render_card(post: dict) -> str:
     title = str(post.get("title", apt_name))
     location = str(post.get("location", ""))
     region = str(post.get("region_category", "기타"))
-    url = str(post["post_url"])
+    url = _to_abs_href(str(post["post_url"]))
     action = str(post.get("index_action") or "detail")
     applyhome_url = str(post.get("notice_url") or url)
     tags = (post.get("tags") or [])[:4]
