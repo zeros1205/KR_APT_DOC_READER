@@ -1281,6 +1281,23 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
       "height": 512
     }}
   }},
+  "author": {{
+    "@type": "Person",
+    "@id": "{SITE_URL}/about.html#person",
+    "name": "정과장",
+    "url": "{SITE_URL}/about.html",
+    "jobTitle": "청약 분양공고 정보 정리·검수자"
+  }},
+  "isBasedOn": {{
+    "@type": "Dataset",
+    "name": "청약홈 분양공고 공공데이터",
+    "url": "{data.notice_url}",
+    "provider": {{
+      "@type": "Organization",
+      "name": "한국부동산원",
+      "url": "https://www.applyhome.co.kr/"
+    }}
+  }},
   "isPartOf": {{
     "@type": "WebSite",
     "@id": "{SITE_URL}/#website",

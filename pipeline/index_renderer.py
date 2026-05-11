@@ -800,7 +800,7 @@ def _build_sitemap(posts: list[dict]) -> None:
     urls = [
         f"<url><loc>{SITE_URL}/</loc><lastmod>{now}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>"
     ]
-    for static_path in ("privacy.html", "terms.html"):
+    for static_path in ("about.html", "editorial-policy.html", "privacy.html", "terms.html"):
         static_file = OUTPUT_DIR / static_path
         static_lastmod = (
             datetime.fromtimestamp(static_file.stat().st_mtime, tz=timezone.utc).strftime("%Y-%m-%d")
