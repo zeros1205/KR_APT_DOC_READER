@@ -266,6 +266,14 @@ def _parse_date(value: object) -> date | None:
         return None
 
 
+try:
+    from seo_policy import NOINDEX_AFTER_DAYS, is_noindex_eligible as _is_noindex_eligible
+except ImportError:
+    from pipeline.seo_policy import NOINDEX_AFTER_DAYS, is_noindex_eligible as _is_noindex_eligible
+
+_ = NOINDEX_AFTER_DAYS  # 모듈 사용자가 import 할 수 있도록 re-export 의도 보존
+
+
 def _is_expired_post(data: "PostData") -> bool:
     winner = _parse_date(data.winner_date)
     return bool(winner and winner < date.today())
@@ -1223,6 +1231,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 
     post_canonical = f"{SITE_URL}/posts/{post_slug}/post.html"
     desc = f"{data.apt_name} 청약 분양가·일정·입지·자격 한눈에 정리. {data.price_range}"[:120]
+    robots_directive = "noindex, follow" if _is_noindex_eligible(data.winner_date) else "index, follow"
     nav_html = detail_nav("../../")
     compact_title = escape(data.apt_name)
     compact_notice_date = _stringify(data.notice_date)
@@ -1252,7 +1261,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{SITE_URL}/og-image.jpg">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="{robots_directive}">
 <script type="application/ld+json">
 {{
   "@context": "https://schema.org",

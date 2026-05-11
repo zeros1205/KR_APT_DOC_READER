@@ -795,6 +795,14 @@ def _post_lastmod(post: dict) -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+def _is_post_noindex(post: dict) -> bool:
+    try:
+        from seo_policy import is_noindex_eligible
+    except ImportError:
+        from pipeline.seo_policy import is_noindex_eligible
+    return is_noindex_eligible(post.get("winner_date"))
+
+
 def _build_sitemap(posts: list[dict]) -> None:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     urls = [
@@ -810,8 +818,12 @@ def _build_sitemap(posts: list[dict]) -> None:
             f"<url><loc>{SITE_URL}/{static_path}</loc><lastmod>{static_lastmod}</lastmod>"
             f"<changefreq>monthly</changefreq><priority>0.4</priority></url>"
         )
+    excluded_expired = 0
     for post in posts:
         if post.get("index_action") == "applyhome":
+            continue
+        if _is_post_noindex(post):
+            excluded_expired += 1
             continue
         lastmod = _post_lastmod(post)
         urls.append(
@@ -821,7 +833,7 @@ def _build_sitemap(posts: list[dict]) -> None:
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>"
     out = OUTPUT_DIR / "sitemap.xml"
     out.write_text(sitemap, encoding="utf-8")
-    print(f"✅ sitemap.xml 생성 완료: {out}  ({len(urls)}개 URL)")
+    print(f"✅ sitemap.xml 생성 완료: {out}  ({len(urls)}개 URL, 만료 noindex 제외 {excluded_expired}건)")
 
 
 def _build_robots() -> None:
