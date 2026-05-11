@@ -182,7 +182,9 @@
 # GSC 2026-05-06 crawled_not_indexed_8 분석 결과 첫 슬러그가 모두 동일.
 /posts/2026-04-27_e편한세상_부천_어반스퀘어/posts/* /posts/2026000152/post.html 301
 
-# 확장자 누락 URL → 정본 .html 로 정규화 (GSC 2026-05-11 보고)
-# Cloudflare Pages 가 /post 요청에 post.html 을 자동 응답해 같은 콘텐츠가 두 URL 로 노출되던 문제 차단.
-# 폴백 슬러그(.../post)의 경우 .html 로 간 뒤 위쪽 폴백 매핑이 다시 notice_id 정본으로 redirect.
-/posts/:slug/post /posts/:slug/post.html 301
+# NOTE: 과거 `/posts/:slug/post /posts/:slug/post.html 301` 규칙을 시도했으나
+# Cloudflare Pages 가 `.html` 을 내부적으로 stripping 한 뒤 _redirects 를 매칭하기
+# 때문에 ERR_TOO_MANY_REDIRECTS 무한 루프가 발생함 (2026-05-11 production
+# 장애로 확인). 확장자 없는 `/post` URL 6건은 Pages 의 auto-html-ext 동작으로
+# 정적 응답이 200 으로 잘 나가고, canonical 태그로 정본이 통합되므로 색인
+# 손해는 없음. 명시적 redirect 는 도입하지 않음.
