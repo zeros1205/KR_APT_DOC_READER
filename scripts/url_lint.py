@@ -128,6 +128,39 @@ def check_redirects(output: Path) -> list[str]:
     return warnings
 
 
+def check_thin_content(output: Path) -> list[str]:
+    """본문 글자수·표 임계치 미달이면서 robots 가 index, follow 로 노출된 페이지 경고."""
+    warnings: list[str] = []
+    posts_dir = output / "posts"
+    if not posts_dir.exists():
+        return warnings
+    try:
+        sys.path.insert(0, str(ROOT / "pipeline"))
+        from seo_policy import is_thin_content
+    except Exception as exc:
+        warnings.append(f"[thin-content] seo_policy import 실패: {exc}")
+        return warnings
+    robots_re = re.compile(r'<meta name="robots" content="([^"]+)"')
+    for post_html in posts_dir.glob("*/post.html"):
+        try:
+            html = post_html.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        thin, reasons = is_thin_content(html)
+        if not thin:
+            continue
+        m = robots_re.search(html)
+        directive = (m.group(1) if m else "").strip().lower().replace(" ", "")
+        if "noindex" in directive:
+            continue
+        rel = post_html.relative_to(output)
+        warnings.append(
+            f"[thin-content] {rel}: index 인데 thin 임계치 미달 — {','.join(reasons)} "
+            f"(patch_posts_noindex.py 실행 권장)"
+        )
+    return warnings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default=str(DEFAULT_OUTPUT), help="output dir (default: ./output)")
@@ -144,6 +177,7 @@ def main() -> int:
     errors += check_index_pages(output)
     errors += check_sitemap(output)
     warnings = check_redirects(output)
+    warnings += check_thin_content(output)
 
     if warnings:
         print(f"⚠️  경고 {len(warnings)}건:")
