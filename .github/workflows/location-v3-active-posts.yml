@@ -1,0 +1,112 @@
+name: codex-입지 분석 v3 → 당첨자 발표 전 포스트 일괄 적용
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "all-active (당첨발표 미경과 전부) / targets (수동 지정)"
+        required: false
+        default: "all-active"
+        type: choice
+        options:
+          - "all-active"
+          - "targets"
+      targets:
+        description: "mode=targets 일 때 공고 ID 공백으로 구분"
+        required: false
+        default: ""
+      limit:
+        description: "최대 처리 건수 (0=제한 없음)"
+        required: false
+        default: "0"
+      dry_run:
+        description: "true 면 LLM 호출 후 HTML 패치 없이 시뮬레이션"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  patch-active-posts:
+    runs-on: ubuntu-latest
+    # Pro + thinking high + Grounding 단지당 2~5분. 32건 처리에 충분히 여유.
+    timeout-minutes: 240
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Patch active posts (v3 입지 분석 → SECTION 2 교체)
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          TARGETS="${{ github.event.inputs.targets }}"
+          LIMIT="${{ github.event.inputs.limit }}"
+          DRY="${{ github.event.inputs.dry_run }}"
+
+          CMD="python tools/patch_posts_location_v3.py"
+          if [ "$MODE" = "targets" ] && [ -n "$TARGETS" ]; then
+            CMD="$CMD --targets $TARGETS"
+          else
+            CMD="$CMD --all-active"
+          fi
+          if [ -n "$LIMIT" ] && [ "$LIMIT" != "0" ]; then
+            CMD="$CMD --limit $LIMIT"
+          fi
+          if [ "$DRY" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+
+          echo "$CMD"
+          eval "$CMD"
+
+      - name: Commit patched posts
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/posts
+          if ! git diff --cached --quiet; then
+            git commit -m "feat(location-v3): 당첨자 발표 전 포스트 입지 분석 일괄 교체 [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No post changes."
+          fi
+
+      - name: Notify Telegram
+        if: always()
+        run: |
+          if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets 미설정 — 알림 생략"
+            exit 0
+          fi
+          KST="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          ICON="✅"
+          if [ "${{ job.status }}" != "success" ]; then
+            ICON="❌"
+          fi
+          MESSAGE="${ICON} 입지 분석 v3 일괄 교체 (${KST})
+          모드: ${{ github.event.inputs.mode }} · dry_run=${{ github.event.inputs.dry_run }} · limit=${{ github.event.inputs.limit }}
+          실행 로그: ${REPO_URL}/actions/runs/${GITHUB_RUN_ID}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" > /dev/null
