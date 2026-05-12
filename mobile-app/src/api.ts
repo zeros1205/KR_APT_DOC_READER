@@ -78,6 +78,21 @@ export async function fetchPostHtml(url: string): Promise<string> {
   const noticeId = getNoticeIdFromPostUrl(url);
 
   if (Capacitor.isNativePlatform()) {
+    // 1순위: 원격(Cloudflare Pages). 빌드 시점 스냅샷인 번들은 stale 위험이
+    //         있어 항상 최신을 우선 시도. 실패하면 번들 fallback.
+    try {
+      const response = await CapacitorHttp.get({
+        url,
+        headers: { Accept: "text/html" }
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return typeof response.data === "string" ? response.data : String(response.data);
+      }
+    } catch {
+      // 네트워크 실패 등 → 번들 fallback 으로 진행
+    }
+
+    // 2순위: 앱 번들된 정적 파일 (오프라인·네트워크 차단 대비)
     if (noticeId) {
       try {
         const response = await fetch(`/posts/${noticeId}/post.html`, {
@@ -88,32 +103,22 @@ export async function fetchPostHtml(url: string): Promise<string> {
           return response.text();
         }
       } catch {
-        // Fall through to the live request for older APKs or missing bundled posts.
+        // Fall through
       }
     }
 
-    try {
+    // 3순위: URL 형식 변형 재시도 (예: /post 확장자 누락 케이스)
+    const fallbackUrl = url.replace(/\/post(?:\.html)?([?#].*)?$/, "/$1");
+    if (fallbackUrl !== url) {
       const response = await CapacitorHttp.get({
-        url,
+        url: fallbackUrl,
         headers: { Accept: "text/html" }
       });
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`post html ${response.status}`);
+      if (response.status >= 200 && response.status < 300) {
+        return typeof response.data === "string" ? response.data : String(response.data);
       }
-      return typeof response.data === "string" ? response.data : String(response.data);
-    } catch (error) {
-      const fallbackUrl = url.replace(/\/post(?:\.html)?([?#].*)?$/, "/$1");
-      if (fallbackUrl !== url) {
-        const response = await CapacitorHttp.get({
-          url: fallbackUrl,
-          headers: { Accept: "text/html" }
-        });
-        if (response.status >= 200 && response.status < 300) {
-          return typeof response.data === "string" ? response.data : String(response.data);
-        }
-      }
-      throw error;
     }
+    throw new Error(`post html unavailable: ${url}`);
   }
 
   const response = await fetch(url, {
