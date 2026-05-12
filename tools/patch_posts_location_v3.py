@@ -115,7 +115,17 @@ def _list_posts_by_winner_date(
         cache = _load_cache(nid)
         doc = cache.get("document") or {}
         apt_name = (doc.get("apt_name") or meta.get("apt_name") or "").strip()
-        address = (doc.get("supply_location") or doc.get("location") or meta.get("location") or "").strip()
+        # 주소 fallback 체인 — 실제 cache 의 정식 키는 `supply_address`.
+        # 과거 코드는 supply_location/location 만 봐서 post_meta.json:location 이
+        # 빈 단지(예: 2025000449 회천중앙역 파라곤) 에서만 누락 판정. supply_address
+        # 우선순위 끌어올려 모든 단지가 cache 만 있어도 처리되도록.
+        address = (
+            doc.get("supply_address")
+            or doc.get("supply_location")
+            or doc.get("location")
+            or meta.get("location")
+            or ""
+        ).strip()
         # 사전 검증 — 단지명·주소 누락 단지는 LLM 호출 전에 사전 skip.
         # 본격 비용 발생 전 단계라 실패 카운트에 포함시키지 않고 정보만 로그.
         if not apt_name or not address:
@@ -330,7 +340,14 @@ async def main_async(
         cache = _load_cache(nid)
         doc = cache.get("document") or {}
         apt_name = (doc.get("apt_name") or meta.get("apt_name") or "").strip()
-        address = (doc.get("supply_location") or doc.get("location") or meta.get("location") or "").strip()
+        # _list_posts_by_winner_date 와 동일한 fallback 체인 (supply_address 우선).
+        address = (
+            doc.get("supply_address")
+            or doc.get("supply_location")
+            or doc.get("location")
+            or meta.get("location")
+            or ""
+        ).strip()
         if not apt_name or not address:
             # 사전 필터에서 빠진 단지가 --targets 로 직접 들어왔을 때 안전망.
             failed.append((nid, "단지명·주소 누락"))
