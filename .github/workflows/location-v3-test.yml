@@ -1,0 +1,86 @@
+name: codex-입지 분석 v3 (Gemini 추천, 단지명·주소만)
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: "공고 ID 공백으로 구분 (비우면 베이스라인 4단지)"
+        required: false
+        default: ""
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  location-v3:
+    runs-on: ubuntu-latest
+    # Pro 모델 + thinking high + Grounding = 단지당 2~5분. 4단지 + 의존성 흡수.
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run v3 (단지명·주소만 LLM 입력)
+        run: |
+          TARGETS="${{ github.event.inputs.targets }}"
+          if [ -z "$TARGETS" ]; then
+            python tools/run_location_v3.py --baseline
+          else
+            python tools/run_location_v3.py --targets $TARGETS
+          fi
+
+      - name: Build v3 report
+        run: python tools/build_location_v3_report.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seo_audit/location_v3
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(location-v3): Gemini 추천 프롬프트 결과 [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No v3 output changes."
+          fi
+
+      - name: Notify Telegram
+        if: always()
+        run: |
+          if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets 미설정 — 알림 생략"
+            exit 0
+          fi
+          KST="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          LATEST="$(ls -1t seo_audit/location_v3/*/report.md 2>/dev/null | head -n 1 || true)"
+          if [ -n "$LATEST" ] && [ "${{ job.status }}" = "success" ]; then
+            BRANCH="${GITHUB_REF_NAME:-main}"
+            REL="${LATEST#./}"
+            MD_URL="${REPO_URL}/blob/${BRANCH}/${REL}"
+            MESSAGE="✅ v3 (Gemini 추천, 단지명·주소만) 결과 (${KST})
+
+          📊 리포트:
+          ${MD_URL}"
+          else
+            MESSAGE="❌ v3 실행 실패 (${KST})
+          실행 로그: ${REPO_URL}/actions/runs/${GITHUB_RUN_ID}"
+          fi
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" > /dev/null
