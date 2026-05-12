@@ -62,6 +62,27 @@
 - 자동 수집 이미지(Unsplash/Pexels): CC0 라이선스 + 출처 자동 표기
 - 입지 분석 섹션과 자금 계획 섹션: 이미지 없음 (섹션 자체 디자인으로 충분)
 
+## UI 보호 정책 — 무단 변경 금지
+
+다음 파일들은 사이트의 **UI 레이아웃·디자인·렌더링 동작**에 직접 영향을 주므로 freeze 대상이다.
+변경 시 운영자(사용자)에게 **사전에 명시적 승인을 받은 후**에만 진행한다.
+
+**보호 대상 파일** (`UI_FREEZE_MANIFEST.json` 에 해시로 고정):
+- `templates/blog_template.html`
+- `templates/front_index_template.html`
+- `pipeline/html_renderer.py`
+- `pipeline/index_renderer.py`
+- `pipeline/shared_ui.py`
+- `output/jung_reader_logo.png`
+
+**규칙**:
+1. 위 파일을 수정해야 한다고 판단되면, **수정 작업을 시작하기 전에** 사용자에게 변경 의도·범위·예상 영향을 보고하고 명시적 "진행" 신호를 받는다.
+2. 승인 후 변경하면 **같은 PR 안에서** `python tools/refresh_ui_freeze.py` 또는 동등 작업으로 `UI_FREEZE_MANIFEST.json` 해시를 함께 갱신한다. 별도 hotfix PR 을 만들지 않는다.
+3. PR 본문에 어떤 파일을 왜 바꿨는지(SEO/디자인/버그 등) 한 줄로 명시한다.
+4. `check_ui_freeze.py` 게이트는 폐기하지 않는다 — 의도치 않은 변경을 즉시 빌드 실패로 가시화하는 안전망.
+
+자동화 스크립트(LLM 본문 생성 등)는 본 정책과 무관하게 정상 동작하지만, 본문 생성이 위 파일을 건드리면 즉시 정책 위반이다.
+
 ## API 키 관리
 `.env` 파일에 보관. 코드에 직접 입력 금지.
 필요 키:
