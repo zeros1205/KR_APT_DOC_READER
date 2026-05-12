@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePullToRefresh } from "./usePullToRefresh";
 import {
   ArrowLeft,
   Bell,
@@ -827,6 +828,12 @@ function HomeView(props: HomeProps) {
     ? props.cards.slice((currentPage - 1) * TABLET_POSTS_PER_PAGE, currentPage * TABLET_POSTS_PER_PAGE)
     : props.cards;
 
+  // 풀투리프레시 — 카드 목록 화면에서만 활성. 이미 로딩 중이면 비활성.
+  const { distance: pullDistance, refreshing: pullRefreshing, armed: pullArmed } = usePullToRefresh({
+    onRefresh: props.onRefresh,
+    disabled: props.loading,
+  });
+
   useEffect(() => {
     setCurrentPage(1);
   }, [props.activeRegion, props.query, props.cards.length, isTabletLayout]);
@@ -845,6 +852,7 @@ function HomeView(props: HomeProps) {
 
   return (
     <>
+      <PullToRefreshIndicator distance={pullDistance} refreshing={pullRefreshing} armed={pullArmed} />
       <section className="web-hero">
         <div className="hero-inner">
           <div className="hero-copy">
@@ -1332,4 +1340,70 @@ function SettingsView({
     </section>
   );
 }
+
+type PullIndicatorProps = {
+  distance: number;
+  refreshing: boolean;
+  armed: boolean;
+};
+
+function PullToRefreshIndicator({ distance, refreshing, armed }: PullIndicatorProps) {
+  // distance 0 일 때 화면에서 숨김. 진행 중엔 인디케이터 고정.
+  if (distance <= 0 && !refreshing) return null;
+  const translateY = Math.max(0, distance);
+  const opacity = Math.min(1, distance / 64);
+  const label = refreshing ? "새로고침 중…" : armed ? "놓으면 새로고침" : "당겨서 새로고침";
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        pointerEvents: "none",
+        transform: `translateY(${translateY - 40}px)`,
+        transition: refreshing ? "transform 180ms ease" : "none",
+        zIndex: 60,
+      }}
+    >
+      <div
+        style={{
+          background: "rgba(44, 41, 37, 0.92)",
+          color: "#fff",
+          fontSize: 13,
+          fontWeight: 600,
+          padding: "8px 14px",
+          borderRadius: 999,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+          opacity,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <span
+          style={{
+            display: "inline-block",
+            width: 14,
+            height: 14,
+            border: "2px solid rgba(255,255,255,0.35)",
+            borderTopColor: "#fff",
+            borderRadius: "50%",
+            animation: refreshing ? "ptr-spin 700ms linear infinite" : "none",
+            transform: refreshing ? "none" : `rotate(${Math.min(360, distance * 5)}deg)`,
+            transition: refreshing ? "none" : "transform 80ms linear",
+          }}
+        />
+        {label}
+      </div>
+      <style>{`@keyframes ptr-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
 export default App;
