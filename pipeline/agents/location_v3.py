@@ -1,8 +1,12 @@
-"""location_v3.py — v3 (Gemini 추천 프롬프트, 최소 입력 실험).
+"""location_v3.py — v3 (Gemini 추천 프롬프트, 최소 입력 + 가독성 보강).
+
+v3 rev 2 — 운영자 피드백 반영:
+  · v3-minimal 결과 품질은 합격. 다만 문장이 길어 가독성 저하.
+  · 모바일 호흡·시각 위계·이모지 마커를 프롬프트 차원에서 보강.
 
 운영자 요청: 단지명·주소만 LLM 에 던지고 나머지는 Gemini Grounding(Google
 Search) 의 검색 능력에 맡겨 결과 확인. Gemini 가 직접 추천한 프롬프트 구조
-(Role / Analysis Strategy / Tone & Manner / Structure 5섹션) 를 본문 **원문 그대로**
+(Role / Analysis Strategy / Tone & Manner / Structure 5섹션) 를 본문 원문 그대로
 적용. 사이트 안전 정책(cliche·회피·대장 어휘 금지) 도 의도적으로 비활성 —
 Gemini 추천 결과의 baseline 을 그대로 본다.
 
@@ -18,7 +22,7 @@ import sys
 from pathlib import Path
 
 
-# Gemini 가 추천한 마스터 프롬프트(원문 골격 그대로). 사이트 안전 사전 미적용.
+# Gemini 가 추천한 마스터 프롬프트(원문 골격) + 가독성 가이드(rev 2).
 LOCATION_ANALYSIS_PROMPT_V3 = """# Role
 당신은 부동산 가치 평가 전문 애널리스트입니다. 주어진 단지에 대해 타 서비스와
 차별화되는 깊이 있는 '입지 분석' 리포트를 작성하는 것이 임무입니다.
@@ -39,18 +43,36 @@ LOCATION_ANALYSIS_PROMPT_V3 = """# Role
 - 모든 섹션은 핵심 결론을 먼저 제시하는 '두괄식' 으로 구성하십시오.
 - 감성적인 미사여구보다는 논리적인 근거(Fact-based Logic) 에 집중하십시오.
 
+# Readability — 가독성 (rev 2 신설)
+모바일에서 읽기 좋게 다음을 지키십시오. 분석가 톤은 유지.
+
+1. **한 문장 평균 40~60자, 최대 70자**. 길어지면 두 문장으로 분리.
+2. **섹션당 2~3 단락**으로 구성. 단락 사이 빈 줄 1개.
+   - 1단락: 두괄식 결론 (1~2문장).
+   - 2단락: 근거·데이터 (2~3문장).
+   - 3단락(선택): 매수자가 알아야 할 제약·맥락 (1~2문장).
+3. **핵심 키워드 강조** — 본문 안에서 단지의 핵심 강점·약점 키워드를
+   `**굵게**` 표시. 섹션당 1~3개, 본문 전체에서 8개 이내.
+4. **이모지** — 다음 규칙으로만 사용. 그 이상은 분석가 톤이 깨져 금지.
+   - **섹션 헤딩**에 의미 이모지 1개씩 (총 5개):
+       ### 📍 입지 총평
+       ### 🚇 교통: 시간적 가치
+       ### 🏫 교육: 정주 여건의 핵심
+       ### 🛒 인프라: 생활의 완결성
+       ### 📈 미래 가치: 자산의 확장성
+   - 본문 안에서는 핵심 키워드 옆에 **1~2회만** (단지 전체 기준).
+     의미·맥락 이모지만 허용 (예: 직주근접 💼 / 공세권 🌳 / 광역교통망 🚆 /
+     학원가 📚 / 한강·공원 🌊 / 신축·재건축 🏗️).
+   - 감탄용 이모지(✨🔥💖💎❤️) 절대 금지.
+
 # Structure (markdown body)
-다음 5섹션 순서로 본문을 구성하십시오. 각 섹션 헤딩은 `### 섹션명` 형식.
-  ### 입지 총평
-  ### 교통: 시간적 가치
-  ### 교육: 정주 여건의 핵심
-  ### 인프라: 생활의 완결성
-  ### 미래 가치: 자산의 확장성
+다음 5섹션 순서로 본문을 구성하십시오. 각 섹션 헤딩은 위 Readability 의 이모지
+포함 형식.
 
 # 출력 형식 — JSON 만
 {{
   "headline": "본문의 핵심 결론 한 줄 (제목 형식 X, 평문)",
-  "body_md": "...위 5섹션 markdown 본문...",
+  "body_md": "...위 5섹션 markdown 본문, 가독성 가이드 적용...",
   "_grounded_facts_used": ["본문에 인용한 검증된 외부 사실 1~3개"]
 }}
 
@@ -81,7 +103,7 @@ async def generate_v3(apt_name: str, address: str, *, model: str | None = None) 
     if not api_key:
         return {
             "_error": "GEMINI_API_KEY 미설정",
-            "_meta": {"model": None, "prompt_version": "v3-minimal", "grounding": False, "thinking": False},
+            "_meta": {"model": None, "prompt_version": "v3-readable", "grounding": False, "thinking": False},
         }
 
     from google import genai as google_genai
@@ -138,7 +160,7 @@ async def generate_v3(apt_name: str, address: str, *, model: str | None = None) 
     if not raw:
         return {
             "_error": f"Gemini 호출 실패: {last_exc}",
-            "_meta": {"model": used_model, "prompt_version": "v3-minimal", "grounding": False, "thinking": False},
+            "_meta": {"model": used_model, "prompt_version": "v3-readable", "grounding": False, "thinking": False},
         }
 
     try:
@@ -153,7 +175,7 @@ async def generate_v3(apt_name: str, address: str, *, model: str | None = None) 
         "grounded_facts_used": result.get("_grounded_facts_used") or [],
         "_meta": {
             "model": used_model,
-            "prompt_version": "v3-minimal",
+            "prompt_version": "v3-readable",
             "grounding": grounding_used,
             "thinking": thinking_used,
             "input": {"apt_name": apt_name, "address": address},
