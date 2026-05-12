@@ -1,7 +1,7 @@
-"""patch_posts_location_v3.py — 당첨자 발표 전 포스트의 입지 분석 섹션을 v3 결과로 교체.
+"""patch_posts_location_v3.py — 포스트의 입지 분석 섹션을 v3 결과로 교체.
 
 흐름
-  1) winner_date >= today 인 포스트 식별 (--targets / --all-active / --limit)
+  1) 대상 포스트 식별 (--targets / --all-active / --all-past / --limit)
   2) 각 단지에 v3(단지명·주소만) LLM 호출
   3) markdown body_md → HTML 변환 (5섹션, 디자인 토큰 그대로)
   4) 기존 post.html 의 SECTION 2 (입지 분석) 블록 정규식 패치로 교체
@@ -9,10 +9,17 @@
 `templates/blog_template.html` / `pipeline/html_renderer.py` 무수정 → UI 보호 정책
 미트리거. post.html 자체는 보호 대상 아님.
 
+선택 모드
+  --all-active   : winner_date >= today (당첨 발표 미경과)
+  --all-past     : winner_date <  today 이면서 location_v3.json 없는 포스트
+                   (이미 v3 패치된 포스트는 자동 skip — 재호출 방지)
+  --repatch-only : LLM 호출 없이 캐시된 location_v3.json 으로 HTML 만 재생성
+
 사용
-  python tools/patch_posts_location_v3.py --all-active            # 32건 일괄
+  python tools/patch_posts_location_v3.py --all-active
+  python tools/patch_posts_location_v3.py --all-past --limit 5    # 안전 테스트
   python tools/patch_posts_location_v3.py --targets 2026000058 ...
-  python tools/patch_posts_location_v3.py --all-active --limit 4  # 안전 테스트
+  python tools/patch_posts_location_v3.py --all-active --repatch-only  # 비용 0 형식 갱신
 """
 
 from __future__ import annotations
@@ -68,6 +75,23 @@ def _load_cache(notice_id: str) -> dict:
 
 def _list_active_posts(today: date) -> list[tuple[str, str, str]]:
     """winner_date >= today 인 (notice_id, apt_name, address) 리스트."""
+    return _list_posts_by_winner_date(today, past=False)
+
+
+def _list_past_posts(today: date) -> list[tuple[str, str, str]]:
+    """winner_date < today 이면서 아직 v3 패치되지 않은(location_v3.json 없는) 포스트.
+
+    이미 v3 로 교체된 포스트를 다시 LLM 호출로 덮어쓰지 않도록 skip — 비용·콘텐츠 안정성 보호.
+    """
+    return _list_posts_by_winner_date(today, past=True, skip_already_patched=True)
+
+
+def _list_posts_by_winner_date(
+    today: date,
+    *,
+    past: bool,
+    skip_already_patched: bool = False,
+) -> list[tuple[str, str, str]]:
     out: list[tuple[str, str, str]] = []
     for meta_path in sorted(POSTS_DIR.glob("*/post_meta.json")):
         meta = _load_meta(meta_path.parent.name)
@@ -78,9 +102,13 @@ def _list_active_posts(today: date) -> list[tuple[str, str, str]]:
             wd = date.fromisoformat(raw[:10])
         except ValueError:
             continue
-        if wd < today:
+        if past and wd >= today:
+            continue
+        if not past and wd < today:
             continue
         nid = meta_path.parent.name
+        if skip_already_patched and (POSTS_DIR / nid / "location_v3.json").exists():
+            continue
         cache = _load_cache(nid)
         doc = cache.get("document") or {}
         apt_name = doc.get("apt_name") or meta.get("apt_name") or ""
@@ -274,6 +302,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--targets", nargs="+", default=[])
     parser.add_argument("--all-active", action="store_true", help="winner_date >= today 인 모든 포스트")
+    parser.add_argument(
+        "--all-past",
+        action="store_true",
+        help="winner_date < today 이면서 아직 v3 패치되지 않은(location_v3.json 없는) 포스트",
+    )
     parser.add_argument("--limit", type=int, default=0, help="최대 처리 건수 (0=제한 없음)")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -288,8 +321,10 @@ def main() -> int:
         targets = args.targets
     elif args.all_active:
         targets = [nid for nid, _apt, _addr in _list_active_posts(today)]
+    elif args.all_past:
+        targets = [nid for nid, _apt, _addr in _list_past_posts(today)]
     else:
-        parser.error("--targets 또는 --all-active 필요")
+        parser.error("--targets 또는 --all-active 또는 --all-past 필요")
 
     if args.limit:
         targets = targets[: args.limit]
