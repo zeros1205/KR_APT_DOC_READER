@@ -21,19 +21,24 @@ on:
         required: false
         default: "0"
       dry_run:
-        description: "true 면 LLM 호출 후 HTML 패치 없이 시뮬레이션"
+        description: "true 면 LLM 호출은 실행되지만(비용 발생) post.html 덮어쓰기·캐시 저장·커밋을 모두 skip"
         required: false
         default: "false"
         type: choice
         options:
           - "false"
           - "true"
+      checkpoint_every:
+        description: "N>0 이면 단지 N건 패치마다 즉시 git push (runner 종료 시 lost 방지). 권장 10"
+        required: false
+        default: "10"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  PATCH_CHECKPOINT_EVERY: ${{ github.event.inputs.checkpoint_every || '10' }}
 
 jobs:
   patch-active-posts:
@@ -58,7 +63,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Patch active posts (v3 입지 분석 → SECTION 2 교체)
+      - name: Configure git (체크포인트·최종 커밋 공통)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Patch posts (v3 입지 분석 → SECTION 2 교체)
+        id: patch
         run: |
           MODE="${{ github.event.inputs.mode }}"
           TARGETS="${{ github.event.inputs.targets }}"
@@ -70,11 +81,9 @@ jobs:
           ARGS=()
           if [ "$MODE" = "targets" ]; then
             # Codex P1 — targets 모드인데 입력이 비면 fail fast.
-            # 의도치 않게 전체 포스트가 재작성되는 footgun 차단.
             if [ -z "$TARGETS" ]; then
               echo "❌ mode=targets 인데 targets 입력이 비어 있습니다." >&2
               echo "   전체 포스트가 재작성되는 사고를 막기 위해 실행을 중단합니다." >&2
-              echo "   targets 입력에 공고 ID 를 공백으로 구분해 입력하거나 mode=all-active/all-past 로 선택하세요." >&2
               exit 1
             fi
             ARGS+=(--targets)
@@ -94,19 +103,28 @@ jobs:
           fi
 
           echo "python tools/patch_posts_location_v3.py ${ARGS[*]}"
-          python tools/patch_posts_location_v3.py "${ARGS[@]}"
+          # tee 로 stdout 도 보존해 결과 카운트를 별도 알림 step 에서 사용.
+          set +e
+          python tools/patch_posts_location_v3.py "${ARGS[@]}" | tee /tmp/patch.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+          # 결과 카운트 추출 — 부분 실패라도 commit step 이 동작하도록 노출.
+          SUMMARY=$(grep -E "^성공 [0-9]+건 / 실패 [0-9]+건" /tmp/patch.log | tail -1 || echo "성공 0건 / 실패 0건")
+          echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+          # 1건이라도 성공이면 main_async 가 0 반환. 전체 실패면 1.
+          # patch step 자체는 항상 통과시켜서 fallback Commit step 이 반드시 실행되게.
+          exit 0
 
-      - name: Commit patched posts
-        if: ${{ github.event.inputs.dry_run != 'true' }}
+      - name: Commit patched posts (fallback safety net)
+        if: ${{ always() && github.event.inputs.dry_run != 'true' }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add output/posts
           if ! git diff --cached --quiet; then
-            git commit -m "feat(location-v3): 포스트 입지 분석 일괄 교체 (mode=${{ github.event.inputs.mode }}) [$(date +%Y-%m-%d)]"
+            git commit -m "feat(location-v3): 포스트 입지 분석 일괄 교체 fallback (mode=${{ github.event.inputs.mode }}) [$(date +%Y-%m-%d)]"
             git push
           else
-            echo "No post changes."
+            echo "No post changes (checkpoint 으로 이미 push 됐거나 변경 없음)."
           fi
 
       - name: Notify Telegram
@@ -118,12 +136,17 @@ jobs:
           fi
           KST="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          SUMMARY="${{ steps.patch.outputs.summary }}"
+          PATCH_EXIT="${{ steps.patch.outputs.exit_code }}"
           ICON="✅"
           if [ "${{ job.status }}" != "success" ]; then
             ICON="❌"
+          elif [ "$PATCH_EXIT" != "0" ]; then
+            ICON="⚠️"
           fi
           MESSAGE="${ICON} 입지 분석 v3 일괄 교체 (${KST})
-          모드: ${{ github.event.inputs.mode }} · dry_run=${{ github.event.inputs.dry_run }} · limit=${{ github.event.inputs.limit }}
+          모드: ${{ github.event.inputs.mode }} · dry_run=${{ github.event.inputs.dry_run }} · limit=${{ github.event.inputs.limit }} · checkpoint=${PATCH_CHECKPOINT_EVERY}
+          결과: ${SUMMARY:-N/A}
           실행 로그: ${REPO_URL}/actions/runs/${GITHUB_RUN_ID}"
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
