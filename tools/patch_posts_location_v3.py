@@ -126,6 +126,8 @@ def md_to_section_html(body_md: str) -> str:
     if len(sections) < MIN_VALID_SECTIONS:
         return ""
 
+    # 접근성: OS 폰트 배율 변경 시 텍스트가 따라가도록 font-size·letter-spacing 은 rem.
+    # 레이아웃(margin·padding·gap·height) 은 px 유지 — 박스 자체가 함께 커지면 모바일 폭에서 깨짐.
     html_sections: list[str] = []
     for head, body in sections:
         # 본문은 빈 줄로 분리해 단락 만들기
@@ -135,13 +137,13 @@ def md_to_section_html(body_md: str) -> str:
             # 단락 안 줄바꿈은 그대로 유지
             inline = _md_inline(p).replace("\n", "<br>")
             paragraph_html.append(
-                f'<p style="font-size:16px;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">'
+                f'<p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">'
                 f'{inline}'
                 f'</p>'
             )
         html_sections.append(
             f'<div>'
-            f'<h3 style="font-size:20px;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">'
+            f'<h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">'
             f'{html.escape(head)}'
             f'</h3>'
             f'{"".join(paragraph_html)}'
@@ -153,10 +155,10 @@ def md_to_section_html(body_md: str) -> str:
         '     SECTION 2 — 입지 분석 (v3-readable)\n'
         '═══════════════════════════════════════════ -->\n'
         '<div style="padding: 0 20px; margin-bottom: 44px;">\n\n'
-        '  <div style="font-size: 12px; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 1.5px; margin-bottom: 10px;">\n'
+        '  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">\n'
         '    02 · 입지 분석\n'
         '  </div>\n'
-        '  <h2 style="font-size: 22px; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">\n'
+        '  <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">\n'
         '    이 동네, 어떤 곳인가요?\n'
         '  </h2>\n\n'
         '  <div style="display:flex;flex-direction:column;gap:28px;">\n'
@@ -185,7 +187,18 @@ def _patch_post_html(notice_id: str, new_section_html: str) -> bool:
     return True
 
 
-async def main_async(targets: list[str], dry_run: bool) -> int:
+def _load_cached_v3(notice_id: str) -> dict:
+    """이전 패치 때 저장해 둔 location_v3.json (LLM 결과) 로드."""
+    p = POSTS_DIR / notice_id / "location_v3.json"
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+async def main_async(targets: list[str], dry_run: bool, repatch_only: bool = False) -> int:
     success: list[str] = []
     failed: list[tuple[str, str]] = []
     for nid in targets:
@@ -199,11 +212,18 @@ async def main_async(targets: list[str], dry_run: bool) -> int:
             continue
         print(f"\n=== {nid} {apt_name} ===")
         print(f"  주소: {address}")
-        try:
-            result = await _run_v3(apt_name, address)
-        except Exception as exc:
-            failed.append((nid, f"v3 호출 실패: {exc}"))
-            continue
+        if repatch_only:
+            # 캐시된 v3 결과 재사용 — LLM 재호출 없이 SECTION 2 HTML 만 재생성.
+            result = _load_cached_v3(nid)
+            if not result:
+                failed.append((nid, "location_v3.json 없음 (이전 패치 기록 없음)"))
+                continue
+        else:
+            try:
+                result = await _run_v3(apt_name, address)
+            except Exception as exc:
+                failed.append((nid, f"v3 호출 실패: {exc}"))
+                continue
         if isinstance(result, dict) and result.get("_error"):
             failed.append((nid, str(result["_error"])))
             continue
@@ -237,9 +257,11 @@ async def main_async(targets: list[str], dry_run: bool) -> int:
             failed.append((nid, "post.html SECTION 2 매칭 실패"))
             continue
         success.append(nid)
-        meta_v3_path = POSTS_DIR / nid / "location_v3.json"
-        meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"  ✅ post.html 패치 + location_v3.json 저장 (섹션 {len(sections)}개)")
+        if not repatch_only:
+            # repatch 모드는 캐시 재사용이라 json 재저장 불필요.
+            meta_v3_path = POSTS_DIR / nid / "location_v3.json"
+            meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"  ✅ post.html 패치 (섹션 {len(sections)}개)")
 
     print()
     print(f"성공 {len(success)}건 / 실패 {len(failed)}건")
@@ -254,6 +276,11 @@ def main() -> int:
     parser.add_argument("--all-active", action="store_true", help="winner_date >= today 인 모든 포스트")
     parser.add_argument("--limit", type=int, default=0, help="최대 처리 건수 (0=제한 없음)")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--repatch-only",
+        action="store_true",
+        help="LLM 재호출 없이 location_v3.json 캐시로 SECTION 2 HTML 만 다시 만듦 (a11y/px→rem 같은 형식 변경용)",
+    )
     args = parser.parse_args()
 
     today = _kst_today()
@@ -266,8 +293,8 @@ def main() -> int:
 
     if args.limit:
         targets = targets[: args.limit]
-    print(f"[patch] 기준일 {today} / 대상 {len(targets)}건 / dry_run={args.dry_run}")
-    return asyncio.run(main_async(targets, args.dry_run))
+    print(f"[patch] 기준일 {today} / 대상 {len(targets)}건 / dry_run={args.dry_run} / repatch_only={args.repatch_only}")
+    return asyncio.run(main_async(targets, args.dry_run, args.repatch_only))
 
 
 if __name__ == "__main__":
