@@ -1,15 +1,16 @@
-name: codex-입지 분석 v3 → 당첨자 발표 전 포스트 일괄 적용
+name: codex-입지 분석 v3 → 포스트 일괄 적용 (발표 전/후)
 
 on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "all-active (당첨발표 미경과 전부) / targets (수동 지정)"
+        description: "all-active / all-past (이미 패치된 포스트 자동 skip) / targets"
         required: false
         default: "all-active"
         type: choice
         options:
           - "all-active"
+          - "all-past"
           - "targets"
       targets:
         description: "mode=targets 일 때 공고 ID 공백으로 구분"
@@ -37,8 +38,10 @@ env:
 jobs:
   patch-active-posts:
     runs-on: ubuntu-latest
-    # Pro + thinking high + Grounding 단지당 2~5분. 32건 처리에 충분히 여유.
-    timeout-minutes: 240
+    # Pro + thinking high + Grounding 단지당 2~5분.
+    # all-active(32건)는 240분이면 충분. all-past(160+건)는 GitHub Actions
+    # 단일 job 최대 360분(6시간)으로도 부족 — limit 으로 분할 실행 권장.
+    timeout-minutes: 360
     permissions:
       contents: write
 
@@ -67,17 +70,19 @@ jobs:
           ARGS=()
           if [ "$MODE" = "targets" ]; then
             # Codex P1 — targets 모드인데 입력이 비면 fail fast.
-            # 의도치 않게 active-posts 전체가 재작성되는 footgun 차단.
+            # 의도치 않게 전체 포스트가 재작성되는 footgun 차단.
             if [ -z "$TARGETS" ]; then
               echo "❌ mode=targets 인데 targets 입력이 비어 있습니다." >&2
-              echo "   전체 active 포스트가 재작성되는 사고를 막기 위해 실행을 중단합니다." >&2
-              echo "   targets 입력에 공고 ID 를 공백으로 구분해 입력하거나 mode=all-active 로 선택하세요." >&2
+              echo "   전체 포스트가 재작성되는 사고를 막기 위해 실행을 중단합니다." >&2
+              echo "   targets 입력에 공고 ID 를 공백으로 구분해 입력하거나 mode=all-active/all-past 로 선택하세요." >&2
               exit 1
             fi
             ARGS+=(--targets)
             for t in $TARGETS; do
               ARGS+=("$t")
             done
+          elif [ "$MODE" = "all-past" ]; then
+            ARGS+=(--all-past)
           else
             ARGS+=(--all-active)
           fi
@@ -98,7 +103,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add output/posts
           if ! git diff --cached --quiet; then
-            git commit -m "feat(location-v3): 당첨자 발표 전 포스트 입지 분석 일괄 교체 [$(date +%Y-%m-%d)]"
+            git commit -m "feat(location-v3): 포스트 입지 분석 일괄 교체 (mode=${{ github.event.inputs.mode }}) [$(date +%Y-%m-%d)]"
             git push
           else
             echo "No post changes."
