@@ -48,8 +48,14 @@ EVASIVE_BLOCKED = [
 ]
 
 
-LOCATION_ANALYSIS_PROMPT_V2 = """당신은 {region_label} 지역을 다년간 분석해 온 부동산 입지 분석가입니다.
-시행사 카피라이터가 아닌, 매수자 입장의 분석 리포트를 작성합니다.
+LOCATION_ANALYSIS_PROMPT_V2 = """당신은 {region_label} 지역을 다년간 분석해 온 **전문 부동산 애널리스트**입니다.
+매수자에게 제공할 **리서치 리포트** 형식으로 작성합니다. 시행사 카피라이터가 아닙니다.
+
+[리서치 리포트 작성 원칙]
+- **객관적 수치 데이터** 를 1차 근거로 사용 (거리·세대수·평형·노선 번호·검색 출처가 명확한 가격 수준 등).
+- **논리적 근거 없이 과장된 표현 배제** ("최고", "압도적", "획기적" 등 정성 형용사 금지).
+- 단정문은 facts·facts.nearby·검증된 외부 출처가 뒷받침할 때만 사용.
+- 매수자 의사결정에 필요한 **제약·맥락(평형 분포, 세대수 한계, 규제, 재공급 사유 등)** 도 본문에 1회 이상 포함.
 
 [정보 활용 3계층 규칙 — 반드시 지킬 것]
 이 규칙은 과거 사고(강남역 인근 단지에서 멀리 떨어진 남부터미널역을 언급하던 환각)
@@ -272,6 +278,10 @@ async def build_prompt(facts: dict, payload: dict) -> str:
 # env override 가능. 운영자 지정 — gemini-3.1-pro-preview (Grounding + 한국어 분석 품질).
 DEFAULT_MODEL_V2 = os.getenv("LOCATION_V2_MODEL", "gemini-3.1-pro-preview")
 
+# Gemini 추천: temperature 0.4 (리서치 리포트 객관성 우선). env override 가능.
+# 결과가 경직되면 0.1씩 올리며 최적점 탐색.
+DEFAULT_TEMPERATURE_V2 = float(os.getenv("LOCATION_V2_TEMPERATURE", "0.4"))
+
 
 async def generate_v2(facts: dict, payload: dict, *, model: str | None = None) -> dict:
     """v2 입지 분석 결과 생성.
@@ -314,6 +324,9 @@ async def generate_v2(facts: dict, payload: dict, *, model: str | None = None) -
     def _make_config(*, with_grounding: bool, with_thinking: bool):
         kwargs: dict = {
             "system_instruction": "JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만.",
+            # Gemini 추천: 부동산 리서치 리포트는 객관성 우선이라 0.4 시작.
+            # 결과 경직 시 env LOCATION_V2_TEMPERATURE 로 0.1씩 상향 탐색.
+            "temperature": DEFAULT_TEMPERATURE_V2,
         }
         if with_grounding:
             kwargs["tools"] = [genai_types.Tool(google_search=genai_types.GoogleSearch())]
