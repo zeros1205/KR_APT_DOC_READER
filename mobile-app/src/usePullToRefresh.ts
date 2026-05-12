@@ -27,6 +27,18 @@ export function usePullToRefresh({ onRefresh, disabled, containerRef }: UsePullT
   const [refreshing, setRefreshing] = useState(false);
   const startYRef = useRef<number | null>(null);
   const trackingRef = useRef(false);
+  // Codex P1 — handleTouchEnd 가 effect 클로저에서 잡은 stale distance/refreshing
+  // 으로 threshold 검사하면 release 조건이 항상 false 라 풀투리프레시가 발동
+  // 하지 않는다. distance/refreshing 의 live 값을 ref 로 동기화해 핸들러 안에서
+  // 그 ref 를 읽도록 한다. 효과 재구독 없이 최신 값 사용 가능.
+  const distanceRef = useRef(0);
+  const refreshingRef = useRef(false);
+  useEffect(() => {
+    distanceRef.current = distance;
+  }, [distance]);
+  useEffect(() => {
+    refreshingRef.current = refreshing;
+  }, [refreshing]);
 
   const getScrollTop = useCallback(() => {
     if (containerRef?.current) return containerRef.current.scrollTop;
@@ -37,7 +49,7 @@ export function usePullToRefresh({ onRefresh, disabled, containerRef }: UsePullT
     if (disabled) return;
 
     function handleTouchStart(e: TouchEvent) {
-      if (refreshing) return;
+      if (refreshingRef.current) return;
       if (getScrollTop() > 0) return;
       const t = e.touches[0];
       if (!t) return;
@@ -65,7 +77,8 @@ export function usePullToRefresh({ onRefresh, disabled, containerRef }: UsePullT
       if (!trackingRef.current) return;
       trackingRef.current = false;
       startYRef.current = null;
-      if (distance >= PULL_THRESHOLD && !refreshing) {
+      // Codex P1 — ref 로 live 값 사용
+      if (distanceRef.current >= PULL_THRESHOLD && !refreshingRef.current) {
         setRefreshing(true);
         // 인디케이터를 trigger 위치로 고정
         setDistance(PULL_THRESHOLD);
@@ -92,15 +105,7 @@ export function usePullToRefresh({ onRefresh, disabled, containerRef }: UsePullT
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchEnd);
     };
-    // distance / refreshing 은 cleanup 의존성 — 매번 재구독은 부담이므로 ref 로 대체했음.
-    // 다만 클로저 stale 방지를 위해 onRefresh 만 의존성에 포함.
   }, [disabled, onRefresh, getScrollTop]);
-
-  // distance 가 클로저에 stale 하므로 ref 로 추적
-  const distanceRef = useRef(0);
-  useEffect(() => {
-    distanceRef.current = distance;
-  }, [distance]);
 
   return {
     distance,
