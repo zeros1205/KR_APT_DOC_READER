@@ -131,7 +131,7 @@ button {
   justify-items: center;
   gap: 24px;
   color: #fff;
-  font-size: 22px;
+  font-size: 1.375rem;
   letter-spacing: -0.03em;
 }
 
@@ -175,7 +175,7 @@ button {
   border-radius: 999px;
   background: rgba(44, 41, 37, 0.92);
   color: #fff;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   line-height: 1.35;
   text-align: center;
@@ -232,7 +232,7 @@ button {
   display: block;
   overflow: hidden;
   color: #2c2925;
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.05;
@@ -244,7 +244,7 @@ button {
   display: block;
   margin-top: 2px;
   color: #6f6a64;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 900;
   letter-spacing: 0.14em;
   line-height: 1.05;
@@ -285,7 +285,7 @@ button {
 .subpage-nav h1 {
   overflow: hidden;
   color: #2c2925;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 850;
   letter-spacing: 0;
   line-height: 1.2;
@@ -363,7 +363,7 @@ button {
 
 .app-dialog h2 {
   color: var(--c-dark);
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1.25;
@@ -371,7 +371,7 @@ button {
 
 .app-dialog p {
   color: var(--c-mid);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.5;
   word-break: keep-all;
@@ -388,7 +388,7 @@ button {
   min-height: 44px;
   border: 0;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 900;
 }
 
@@ -436,7 +436,7 @@ button {
   display: block;
   overflow: hidden;
   color: #2c2925;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 800;
   letter-spacing: 0;
   text-overflow: ellipsis;
@@ -503,7 +503,7 @@ button {
   outline: none;
   background: rgba(255, 255, 255, 0.96);
   color: var(--c-dark);
-  font-size: 13px;
+  font-size: 0.8125rem;
   transition: border-color 150ms, width 200ms, box-shadow 150ms;
 }
 
@@ -570,7 +570,7 @@ button {
   max-width: 460px;
   margin-bottom: 0;
   color: var(--c-dark);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.25;
   word-break: keep-all;
 }
@@ -619,9 +619,9 @@ button {
 .section-eyebrow {
   margin-bottom: 5px;
   color: var(--c-primary);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 0.125rem;
 }
 
 .reports-main {
@@ -641,14 +641,14 @@ button {
 
 .reports-heading h2 {
   color: var(--c-dark);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 800;
   letter-spacing: 0;
 }
 
 .reports-heading > span {
   color: var(--c-mid);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 
@@ -711,7 +711,7 @@ button {
   border-radius: 6px;
   background: var(--c-surface);
   color: var(--c-dark);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
@@ -750,7 +750,7 @@ button {
   }
 
   .web-card-click .card-title {
-    font-size: 19px;
+    font-size: 1.1875rem;
   }
 
   .pagination {
@@ -769,7 +769,7 @@ button {
     border-radius: 8px;
     background: var(--c-surface);
     color: var(--c-dark);
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 800;
   }
 
@@ -791,7 +791,7 @@ button {
   }
 
   .web-card-click .card-title {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
 }
 
@@ -853,7 +853,7 @@ button {
   overflow: hidden;
   margin: 0;
   color: #fff;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 800;
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -861,7 +861,7 @@ button {
 }
 
 .web-card-click .card-title.is-long-title {
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 .web-card-click .card-title-track {
@@ -881,7 +881,7 @@ button {
   padding: 11px 16px;
   background: var(--c-cta-bg);
   color: #fff;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0;
   text-decoration: none;
@@ -985,13 +985,13 @@ button {
   border-radius: 6px;
   background: var(--c-primary-light);
   color: var(--c-primary-dark);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
 }
 
 .notice-card h2 {
   color: var(--c-dark);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.3;
 }
 
@@ -1000,7 +1000,7 @@ button {
   flex-wrap: wrap;
   gap: 8px;
   color: var(--c-mid);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .price-chip {
@@ -1008,7 +1008,7 @@ button {
   border-radius: 7px;
   background: var(--c-green-light);
   color: var(--c-green-dark);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
 }
 
@@ -1038,7 +1038,7 @@ button {
 .settings-page-copy {
   padding: 2px 2px 6px;
   color: var(--c-mid);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 650;
   line-height: 1.45;
 }
@@ -1072,7 +1072,7 @@ button {
   padding: 15px 16px 13px;
   border-bottom: 1px solid rgba(44, 41, 37, 0.08);
   color: var(--c-primary-dark);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 900;
 }
 
@@ -1102,7 +1102,7 @@ button {
 .settings-section-head strong,
 .settings-link-row span {
   color: var(--c-dark);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 850;
   letter-spacing: 0;
   line-height: 1.25;
@@ -1111,7 +1111,7 @@ button {
 .settings-row span,
 .settings-section-head span {
   color: var(--c-mid);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -1125,7 +1125,7 @@ button {
 .settings-nav-row strong {
   overflow: hidden;
   color: var(--c-dark);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 850;
   letter-spacing: 0;
   line-height: 1.25;
@@ -1136,7 +1136,7 @@ button {
 .settings-nav-row span {
   overflow: hidden;
   color: var(--c-mid);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -1212,7 +1212,7 @@ button {
   border-radius: 10px;
   background: rgba(255, 250, 243, 0.54);
   color: var(--c-dark);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
 }
 
@@ -1258,7 +1258,7 @@ button {
   border-radius: 9px;
   background: transparent;
   color: var(--c-mid);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 850;
 }
 
@@ -1271,7 +1271,7 @@ button {
 .settings-empty {
   padding: 14px 0 4px;
   color: var(--c-mid);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-align: center;
 }
@@ -1305,7 +1305,7 @@ button {
 .settings-favorite-main small {
   overflow: hidden;
   color: var(--c-mid);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 750;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -1315,7 +1315,7 @@ button {
 .settings-favorite-main strong {
   overflow: hidden;
   color: var(--c-dark);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 850;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -1357,7 +1357,7 @@ button {
   border-radius: 999px;
   background: var(--c-primary);
   color: #fff;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 850;
 }
 
@@ -1372,13 +1372,13 @@ button {
   border: 0;
   background: transparent;
   color: var(--c-mid);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 850;
 }
 
 .version {
   color: var(--c-mid);
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
 }
 
@@ -1474,7 +1474,7 @@ button {
   }
 
   .site-header-v3-title {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 
   .nav-icon-button {
