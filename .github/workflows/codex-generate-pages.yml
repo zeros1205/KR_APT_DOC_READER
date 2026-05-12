@@ -75,6 +75,25 @@ jobs:
       - name: Verify frozen UI files before generation
         run: python check_ui_freeze.py
 
+      - name: Apply manual meta from latest input sheet (MD)
+        # 입력 시트(notice_url_exports/*_notice_urls.md) 의 8필드 메타를 캐시에
+        # 일괄 주입. 누락 행이 있어도 빌드는 진행하되, 텔레그램 알림 단계에서
+        # 어떤 공고가 미입력 상태로 LLM 기본값 사용했는지 보고된다.
+        # 빌드 게이트로 만들고 싶으면 --strict 옵션 사용.
+        run: python tools/apply_notice_meta_md.py || true
+
+      - name: Commit applied meta (manual_regulation / manual_finance)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/data_cache/notices
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: apply manual meta from input sheet [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No manual meta changes."
+          fi
+
       - name: Sync brand assets
         run: python sync_brand_assets.py
 

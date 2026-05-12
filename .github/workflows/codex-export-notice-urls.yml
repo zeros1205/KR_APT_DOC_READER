@@ -1,6 +1,14 @@
 name: codex-청약홈 링크 목록 만들기
 
 on:
+  # 신규 공고 수집 워크플로우가 끝나면 자동으로 이어서 실행.
+  # 이전에는 텔레그램 '✅ 진행' 클릭이 필요했으나, 메타 입력 자동화 흐름에서는
+  # 입력 시트(MD)를 즉시 만들어 사용자가 한 번에 편집하도록 단순화.
+  workflow_run:
+    workflows:
+      - "codex-분양공고 데이터 가져오기"
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       include_processed:
@@ -29,6 +37,9 @@ jobs:
   export-notice-urls:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # workflow_run 으로 자동 진입한 경우엔 선행 워크플로우 성공만 처리.
+    # 사람이 수동 dispatch 한 경우엔 항상 실행.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
 
@@ -83,30 +94,63 @@ jobs:
             MESSAGE="❌ 청약홈 링크 목록 생성 실패
           실행 로그: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           else
-            URL_LIST="$(python - "$EXPORT_FILE" <<'PY'
+            # 통계와 미입력 단지 목록을 한 번에 산출.
+            SUMMARY="$(python - "$EXPORT_FILE" <<'PY'
           import sys
           from pathlib import Path
 
           path = Path(sys.argv[1])
-          lines = []
+          total = filled = pending = 0
+          pending_lines: list[str] = []
           for line in path.read_text(encoding="utf-8").splitlines():
               if not line.startswith("| "):
                   continue
               cols = [c.strip() for c in line.strip().strip("|").split("|")]
-              if len(cols) < 5:
+              if len(cols) < 15:
                   continue
               if cols[0] == "공고번호" or cols[0].startswith("---"):
                   continue
-              apt_name = cols[1]
-              notice_url = cols[4]
-              if apt_name and notice_url.startswith("http"):
-                  lines.append(f"{apt_name}\n{notice_url}")
-          print("\n\n".join(lines))
+              total += 1
+              status = cols[14]
+              if "✅" in status:
+                  filled += 1
+              else:
+                  pending += 1
+                  apt_name = cols[1]
+                  notice_url = cols[4]
+                  if apt_name and notice_url.startswith("http"):
+                      pending_lines.append(f"{apt_name}\n{notice_url}")
+
+          print(f"TOTAL={total}")
+          print(f"FILLED={filled}")
+          print(f"PENDING={pending}")
+          print("---")
+          print("\n\n".join(pending_lines[:10]))
           PY
             )"
-            MESSAGE="✅ 청약홈 링크 목록 생성 완료
+            TOTAL="$(echo "$SUMMARY" | grep '^TOTAL=' | cut -d= -f2)"
+            FILLED="$(echo "$SUMMARY" | grep '^FILLED=' | cut -d= -f2)"
+            PENDING="$(echo "$SUMMARY" | grep '^PENDING=' | cut -d= -f2)"
+            PENDING_LIST="$(echo "$SUMMARY" | sed -n '/^---$/,$p' | tail -n +2)"
 
-          ${URL_LIST}"
+            REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+            BRANCH="${GITHUB_REF_NAME:-main}"
+            EXPORT_REL="${EXPORT_FILE#./}"
+            MD_URL="${REPO_URL}/edit/${BRANCH}/${EXPORT_REL}"
+
+            MESSAGE="🆕 입력 시트 갱신 완료 (총 ${TOTAL}건 · 입력완료 ${FILLED} / 대기 ${PENDING})
+
+          📝 8필드 메타 입력 시트:
+          ${MD_URL}
+
+          각 공고당 규제 5필드 + 납부비율 3필드를 채워 커밋해 주세요.
+          모든 행이 ✅ 가 되면 codex-페이지 생성 워크플로우로 일괄 발행됩니다.
+          "
+            if [ -n "$PENDING_LIST" ]; then
+              MESSAGE="${MESSAGE}
+          ── 대기 중 (상위 10건) ──
+          ${PENDING_LIST}"
+            fi
           fi
 
           RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
