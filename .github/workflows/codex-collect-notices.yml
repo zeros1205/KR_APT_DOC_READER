@@ -150,14 +150,11 @@ jobs:
 
           ${NOTICE_DETAILS}
 
-          청약홈 URL 목록을 생성하시겠어요?"
-
-            REPLY_MARKUP='{"inline_keyboard":[[{"text":"✅ 진행","callback_data":"export_notice_urls"},{"text":"❌ 무시","callback_data":"ignore"}]]}'
+          입력 시트 자동 갱신이 이어서 진행됩니다. (workflow_run)"
 
             RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
               --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-              --data-urlencode "text=${MESSAGE}" \
-              --data-urlencode "reply_markup=${REPLY_MARKUP}")"
+              --data-urlencode "text=${MESSAGE}")"
           else
             MESSAGE="✅ 공고 수집 완료 (${KST_TIME})
 
