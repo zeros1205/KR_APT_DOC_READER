@@ -2,14 +2,11 @@
 
 운영자 요청: 단지명·주소만 LLM 에 던지고 나머지는 Gemini Grounding(Google
 Search) 의 검색 능력에 맡겨 결과 확인. Gemini 가 직접 추천한 프롬프트 구조
-(Role / Analysis Strategy / Tone & Manner / Structure 5섹션) 를 본문 그대로
-적용하되, 사이트 안전 정책(cliche 금지·회피 문구 금지·대장주 어휘 금지) 만
-얹는다.
+(Role / Analysis Strategy / Tone & Manner / Structure 5섹션) 를 본문 **원문 그대로**
+적용. 사이트 안전 정책(cliche·회피·대장 어휘 금지) 도 의도적으로 비활성 —
+Gemini 추천 결과의 baseline 을 그대로 본다.
 
-v2 와 완전 별도. v2 의 facts.nearby·complex_type 태그·정보 활용 3계층 규칙은
-의도적으로 비활성. 출력은 markdown body 한 덩어리 (`body_md`).
-
-UI 보호 정책 미트리거 — 신규 모듈만 추가.
+v2 와 완전 별도. UI 보호 정책 미트리거 — 신규 모듈만 추가.
 """
 
 from __future__ import annotations
@@ -21,27 +18,7 @@ import sys
 from pathlib import Path
 
 
-CLICHE_BLOCKED = [
-    "쾌적한", "우수한", "체계적", "원활", "편리한", "다양한", "잘 갖추",
-    "주거 환경", "주거 편의", "생활 인프라", "주거 가치", "정주 여건",
-    "안정적", "편안한", "안락한", "조화롭게", "조화를 이루",
-    "주거지로서", "주거 트렌드", "현대적", "쾌적성", "효율성",
-    "프라이버시", "고급 주거", "완성도",
-]
-
-EVASIVE_BLOCKED = [
-    "확인 권장", "확인 필요", "함께 보세요", "함께 살펴", "같이 확인",
-    "공고문을 확인", "공고문으로 확인", "지도를 확인", "지도로 확인",
-    "교육청에 확인", "교육 자료로 확인", "추가 확인", "구체적으로 확인",
-    "꼼꼼히 확인", "직접 확인", "사전에 확인", "검토해야 합니다",
-]
-
-LANDMARK_BLOCKED = [
-    "대장주", "대장 단지", "대장아파트", "대장",
-]
-
-
-# Gemini 가 추천한 마스터 프롬프트(원문 골격 유지) + 사이트 안전장치 추가.
+# Gemini 가 추천한 마스터 프롬프트(원문 골격 그대로). 사이트 안전 사전 미적용.
 LOCATION_ANALYSIS_PROMPT_V3 = """# Role
 당신은 부동산 가치 평가 전문 애널리스트입니다. 주어진 단지에 대해 타 서비스와
 차별화되는 깊이 있는 '입지 분석' 리포트를 작성하는 것이 임무입니다.
@@ -70,24 +47,11 @@ LOCATION_ANALYSIS_PROMPT_V3 = """# Role
   ### 인프라: 생활의 완결성
   ### 미래 가치: 자산의 확장성
 
-# 데이터 정확성 — 절대 위반 금지
-- 검색으로 검증 가능한 정보만 인용. 거리·역명·학교명을 추측해 만들지 마세요.
-- 변동성 큰 수치(현재 시세·실시간 경쟁률·진학률) 는 검색 출처가 명확할 때만,
-  근거를 본문에 자연스럽게 녹여 인용.
-- 투자수익·시세차익·가격상승 예측 금지. 대신 "수요 기반·하방 경직성" 같은
-  객관 표현.
-
-# 사이트 안전 — 절대 금지 어휘·표현
-다음이 본문에 등장하면 작성 실패. 다른 표현으로 즉시 교체.
-- cliche 사전: {cliche_list}
-- 회피·면피 문구: {evasive_list}
-- "대장" 어휘: {landmark_blocked}
-
 # 출력 형식 — JSON 만
 {{
   "headline": "본문의 핵심 결론 한 줄 (제목 형식 X, 평문)",
   "body_md": "...위 5섹션 markdown 본문...",
-  "_grounded_facts_used": ["본문에 인용한 검증된 외부 사실 1~3개. 출처가 Google Search 라면 검증 가능한 사실만"]
+  "_grounded_facts_used": ["본문에 인용한 검증된 외부 사실 1~3개"]
 }}
 
 마크다운 코드블록 없이 순수 JSON 만 출력.
@@ -104,9 +68,6 @@ def build_prompt_v3(apt_name: str, address: str) -> str:
     return LOCATION_ANALYSIS_PROMPT_V3.format(
         apt_name=apt_name or "(미상)",
         address=address or "(미상)",
-        cliche_list=" · ".join(CLICHE_BLOCKED),
-        evasive_list=" · ".join(EVASIVE_BLOCKED),
-        landmark_blocked=" · ".join(LANDMARK_BLOCKED),
     )
 
 
