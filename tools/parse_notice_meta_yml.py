@@ -74,6 +74,15 @@ def parse_dir(directory: Path = META_INPUTS_DIR) -> dict[str, dict[str, str]]:
             print(f"⚠️  YAML 파싱 실패 {rel}: {exc}", file=sys.stderr)
             continue
         if not isinstance(data, dict):
+            # 모바일 편집 실수로 최상위가 리스트/스칼라가 된 경우. YAMLError 가
+            # 발생하지 않아도 사용자 편집이 silently dropped 될 위험이 있어
+            # parse_errors 에 동일하게 누적.
+            rel = str(path.relative_to(ROOT))
+            parse_errors.append((rel, f"top-level not a mapping (got {type(data).__name__})"))
+            print(
+                f"⚠️  YAML 최상위가 mapping 이 아님 {rel}: {type(data).__name__}",
+                file=sys.stderr,
+            )
             continue
         notice_id = _stringify(data.get("notice_id")) or path.stem
         meta = {key: _stringify(data.get(key)) for key in REQUIRED_KEYS}

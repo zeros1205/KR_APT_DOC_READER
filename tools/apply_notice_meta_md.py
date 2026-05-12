@@ -108,11 +108,13 @@ def main() -> int:
         if yml_parsed:
             print(f"[apply] YAML 입력 {len(yml_parsed)}건 발견 — MD 값보다 우선 적용")
             for nid, meta in yml_parsed.items():
-                # _source/_path 등 부가 키 제거하고 REQUIRED 만 머지
+                # _source/_path 등 부가 키 제거하고 REQUIRED 만 머지.
+                # YAML 에 비어있는 값(잘못된 prefill 을 사용자가 의도적으로
+                # 지운 경우 포함) 도 그대로 덮어쓴다 — 빈 값이면 validate 가
+                # 미입력으로 잡아 patch 에서 자동 제외됨.
                 clean = {k: meta.get(k, "") for k in REQUIRED_KEYS}
-                # apt_name 은 MD 에 있는 것 유지
                 if nid in parsed:
-                    parsed[nid].update({k: v for k, v in clean.items() if v})
+                    parsed[nid].update(clean)
                 else:
                     parsed[nid] = clean
         if yml_parse_errors:
