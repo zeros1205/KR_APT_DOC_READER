@@ -128,10 +128,10 @@ function _renderPagination(matched) {
     return;
   }
   var btnBase = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-light-gray);'
-    + 'background:var(--c-surface);color:var(--c-dark);font-size:13px;font-weight:600;'
+    + 'background:var(--c-surface);color:var(--c-dark);font-size: 0.8125rem;font-weight:600;'
     + 'cursor:pointer;font-family:inherit;transition:all 150ms;padding:0 10px;"';
   var btnActive = 'style="min-width:36px;height:36px;border-radius:6px;border:1.5px solid var(--c-primary);'
-    + 'background:var(--c-primary);color:#fff;font-size:13px;font-weight:700;'
+    + 'background:var(--c-primary);color:#fff;font-size: 0.8125rem;font-weight:700;'
     + 'cursor:pointer;font-family:inherit;padding:0 10px;"';
   var html = '';
   var blockSize = 5;
@@ -610,14 +610,14 @@ def _date_cell(label: str, month: str, day: str) -> str:
     if not month:
         return (
             f'<div style="flex:1;padding:12px 14px;text-align:center;">'
-            f'<p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">{label}</p>'
-            f'<p style="font-size:13px;color:var(--c-mid);">-</p>'
+            f'<p style="font-size: 0.625rem;font-weight:600;color:var(--c-mid);letter-spacing: 0.0625rem;margin-bottom:5px;">{label}</p>'
+            f'<p style="font-size: 0.8125rem;color:var(--c-mid);">-</p>'
             f'</div>'
         )
     return (
         f'<div style="flex:1;padding:12px 14px;text-align:center;">'
-        f'<p style="font-size:10px;font-weight:600;color:var(--c-mid);letter-spacing:1px;margin-bottom:5px;">{label}</p>'
-        f'<p style="font-size:16px;font-weight:700;color:var(--c-dark);line-height:1.3;">{month} {day}</p>'
+        f'<p style="font-size: 0.625rem;font-weight:600;color:var(--c-mid);letter-spacing: 0.0625rem;margin-bottom:5px;">{label}</p>'
+        f'<p style="font-size: 1rem;font-weight:700;color:var(--c-dark);line-height:1.3;">{month} {day}</p>'
         f'</div>'
     )
 
@@ -649,10 +649,10 @@ def _render_featured_items(posts: list[dict]) -> str:
             action_attr = ""
         items.append(
             f'''<a href="{href}" class="featured-item" data-name="{apt_name.lower()}" {action_attr} style="display:block;text-decoration:none;">
-              <p class="featured-title" style="font-size:17px;font-weight:800;line-height:1.45;color:var(--c-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;">
+              <p class="featured-title" style="font-size: 1.0625rem;font-weight:800;line-height:1.45;color:var(--c-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;">
                 {apt_name}
               </p>
-              <p class="featured-meta" style="font-size:12px;color:var(--c-mid);line-height:1.6;">
+              <p class="featured-meta" style="font-size: 0.75rem;color:var(--c-mid);line-height:1.6;">
                 {location}
               </p>
             </a>'''
@@ -710,20 +710,20 @@ def _render_card(post: dict) -> str:
         cta_text = "분석결과 보기"
     tag_items = "".join(
         f'<span style="display:inline-block;background:var(--c-tag-{tag_type}-bg);color:var(--c-tag-{tag_type}-text);'
-        f'font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing:0.2px;">#{escape(str(tag))}</span>'
+        f'font-size: 0.6875rem;font-weight:700;padding:3px 9px;border-radius:4px;margin:0 4px 5px 0;letter-spacing: 0.0125rem;">#{escape(str(tag))}</span>'
         for tag in tags
-    ) or '<span style="font-size:11px;color:var(--c-mid);">-</span>'
+    ) or '<span style="font-size: 0.6875rem;color:var(--c-mid);">-</span>'
     return f"""<article class="post-card" data-region="{safe_region}" data-supply="{safe_supply_key}" data-name="{safe_apt_name}" data-url="{safe_url}" data-action="{safe_action}" data-applyhome-url="{safe_applyhome_url}" onclick="{card_click}">
   <div class="card-header" style="background:{header_grad};">
     <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1.5px,transparent 1.5px);background-size:18px 18px;pointer-events:none;"></div>
     <div style="position:relative;margin-bottom:10px;">
-      <span style="font-size:11px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;">{safe_supply_label}</span>
+      <span style="font-size: 0.6875rem;font-weight:900;color:#fff;letter-spacing: 0.0625rem;text-transform:uppercase;">{safe_supply_label}</span>
     </div>
     <p class="card-title">
       <span class="card-title-track">{safe_apt_name}</span>
     </p>
     <div style="position:relative;margin-top:auto;padding-top:12px;">
-      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+      <span style="display:inline-flex;max-width:100%;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size: 0.75rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
         {safe_price_range}
       </span>
     </div>
@@ -734,7 +734,7 @@ def _render_card(post: dict) -> str:
     {_date_cell("1순위", r1_month, r1_day)}
   </div>
   <div style="padding:11px 16px;border-bottom:1px solid var(--c-light-gray);">
-    <p style="font-size:12px;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 {safe_location if safe_location else "위치 정보 없음"}</p>
+    <p style="font-size: 0.75rem;font-weight:500;color:var(--c-dark);margin:0;line-height:1.4;">📌 {safe_location if safe_location else "위치 정보 없음"}</p>
   </div>
   <div style="padding:12px 16px 9px;flex:1;">{tag_items}</div>
   <a href="{cta_href}" class="card-cta" onclick="{cta_click}">{cta_text}</a>

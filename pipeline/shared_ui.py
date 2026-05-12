@@ -146,7 +146,7 @@ SITE_HEADER_V3_CSS = """\
 .site-header-v3-title {
   display: block;
   color: #2C2925;
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.05;
@@ -156,7 +156,7 @@ SITE_HEADER_V3_CSS = """\
   display: block;
   margin-top: 2px;
   color: #6F6A64;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 900;
   letter-spacing: 0.14em;
   line-height: 1.05;
@@ -179,7 +179,7 @@ SITE_HEADER_V3_CSS = """\
     max-width: 158px;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 }"""
 
@@ -242,7 +242,7 @@ def shared_nav(
             f'<button id="palette-btn" onclick="cyclePalette()" title="테마 변경 A→B→C" '
             f'style="display:inline-flex;align-items:center;gap:5px;background:transparent;'
             f'border:1px solid #fff;border-radius:6px;padding:5px 11px;'
-            f'cursor:pointer;font-size:12px;color:#fff;font-family:inherit;'
+            f'cursor:pointer;font-size: 0.75rem;color:#fff;font-family:inherit;'
             f'transition:all 150ms;"'
             f' onmouseover="this.style.borderColor=\'rgba(255,255,255,0.7)\';this.style.color=\'rgba(255,255,255,0.7)\'"'
             f' onmouseout="this.style.borderColor=\'#fff\';this.style.color=\'#fff\'">'
@@ -270,7 +270,7 @@ def shared_nav(
     if include_applyhome:
         applyhome_html = (
             f'<a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener" '
-            f'style="font-size:12px;color:#fff;text-decoration:none;'
+            f'style="font-size: 0.75rem;color:#fff;text-decoration:none;'
             f'border:1px solid #fff;border-radius:6px;padding:5px 12px;'
             f'white-space:nowrap;transition:all 150ms;"'
             f' onmouseover="this.style.color=\'rgba(255,255,255,0.7)\';this.style.borderColor=\'rgba(255,255,255,0.7)\'"'
@@ -290,7 +290,7 @@ def shared_nav(
         f'<a href="{home_href}" style="text-decoration:none;display:flex;align-items:center;gap:10px;">'
         f'<img src="{logo_src}" alt="정과장의 청약노트 로고" '
         f'style="width:30px;height:30px;border-radius:8px;object-fit:cover;flex-shrink:0;display:block;">'
-        f'<span style="color:#fff;font-size:15px;font-weight:800;letter-spacing:-0.3px;">'
+        f'<span style="color:#fff;font-size: 0.9375rem;font-weight:800;letter-spacing:-0.3px;">'
         f'정과장의 청약노트</span>'
         f'</a>'
 
