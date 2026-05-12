@@ -51,7 +51,15 @@
     "raw_text": "[주택형별 정보]\n074.9682 타입 | 전용 102.6336㎡ | 일반 5세대 | 특별 1세대 | 분양가 70400만원\n084.8777A타입 | 전용 116.1193㎡ | 일반 6세대 | 특별 10세대 | 분양가 80000만원\n084.3593B타입 | 전용 116.0836㎡ | 일반 1세대 | 특별 0세대 | 분양가 80000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-11T23:58:23.938558"
+    "collected_at": "2026-05-11T23:58:23.938558",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역",
+    "payment_down": "5%",
+    "payment_middle": "60%",
+    "payment_final": "35%"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "식사동지역주택조합",
@@ -167,5 +175,27 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "manual_verified_2026-05-12",
+    "query": "사용자 직접 입력 (텔레그램 응답)",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-12T11:25:58+09:00"
+  },
+  "manual_payment": {
+    "down_payment": "5%",
+    "middle_payment": "60%",
+    "final_payment": "35%",
+    "source": "manual_verified_2026-05-12",
+    "checked_at": "2026-05-12T11:26:26+09:00"
+  }
 }
