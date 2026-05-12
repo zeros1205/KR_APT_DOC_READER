@@ -58,11 +58,16 @@ def main() -> int:
                 meta["sha256"] = after
 
     if missing:
-        print(f"⚠️  manifest 에 등록됐지만 디스크에 없는 파일 {len(missing)}건:")
+        # check_ui_freeze.py 와 일관되게 missing 은 실패로 취급.
+        # 헬퍼가 성공으로 끝나면 CI 에서 뒤늦게 발견될 수 있어 misleading green.
+        print(f"❌ manifest 에 등록됐지만 디스크에 없는 파일 {len(missing)}건:")
         for m in missing:
             print(f"   - {m}")
+        print("   manifest 에서 의도적으로 제거하거나 누락 파일을 복원하세요.")
 
     if not updates:
+        if missing:
+            return 1
         print("[ui-freeze] 갱신 대상 없음 — 모든 보호 파일 해시가 manifest 와 일치합니다.")
         return 0
 
@@ -73,14 +78,14 @@ def main() -> int:
         print(f"     after : {after[:16]}...")
 
     if args.dry_run:
-        return 0
+        return 1 if missing else 0
 
     MANIFEST_FILE.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     print(f"\n✅ {MANIFEST_FILE.name} 갱신 완료. PR 본문에 변경 사유를 함께 기재하세요.")
-    return 0
+    return 1 if missing else 0
 
 
 if __name__ == "__main__":
