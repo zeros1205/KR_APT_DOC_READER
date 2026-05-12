@@ -43,6 +43,13 @@ PX_RE = re.compile(
     r"(font-size|line-height|letter-spacing)\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*px",
     re.IGNORECASE,
 )
+# 정사각 박스 패턴 — 같은 선언 블록 안에 `width: Npx; height: Npx` 가 있고
+# Codex P2: 그 안의 line-height 까지 rem 으로 바꾸면 OS 폰트 배율 변경 시 텍스트가
+# 원 밖으로 튀어나옴. 정사각 박스 안의 line-height 는 px 그대로 유지해야 함.
+SQUARE_BLOCK_RE = re.compile(
+    r"width:\s*(\d+)px;\s*height:\s*(\d+)px",
+    re.IGNORECASE,
+)
 
 
 def _to_rem(px: float) -> str:
@@ -52,18 +59,36 @@ def _to_rem(px: float) -> str:
     return f"{s}rem"
 
 
+def _is_in_square_block(text: str, pos: int) -> bool:
+    """pos 위치가 정사각 박스 선언({...}) 안에 있는지 판단."""
+    # 가장 가까운 { 와 } 위치 찾기
+    block_start = text.rfind("{", 0, pos)
+    block_end = text.find("}", pos)
+    if block_start == -1 or block_end == -1:
+        return False
+    block = text[block_start:block_end]
+    m = SQUARE_BLOCK_RE.search(block)
+    if not m:
+        return False
+    return m.group(1) == m.group(2)  # width == height
+
+
 def _replace_text_px(text: str) -> tuple[str, int]:
     count = 0
+    skipped_in_square = 0
 
     def repl(match: re.Match[str]) -> str:
-        nonlocal count
-        prop = match.group(1)
+        nonlocal count, skipped_in_square
+        prop = match.group(1).lower()
         px = float(match.group(2))
-        # 0px 는 0 그대로
         if px == 0:
             return match.group(0)
+        # 정사각 박스 안의 line-height 는 px 유지 (Codex P2)
+        if prop == "line-height" and _is_in_square_block(text, match.start()):
+            skipped_in_square += 1
+            return match.group(0)
         count += 1
-        return f"{prop}: {_to_rem(px)}"
+        return f"{match.group(1)}: {_to_rem(px)}"
 
     new_text = PX_RE.sub(repl, text)
     return new_text, count

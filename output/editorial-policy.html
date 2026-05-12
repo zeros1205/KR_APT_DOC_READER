@@ -145,7 +145,9 @@ a:hover, a:focus {
   color: #fff;
   border-radius: 50%;
   text-align: center;
-  line-height: 1.75rem;
+  /* width/height 가 28px 고정이라 line-height 도 px 로 고정해야 OS 폰트 배율
+     변화 시 숫자가 원 밖으로 튀어나오지 않음 (Codex P2). */
+  line-height: 28px;
   font-weight: 800;
   font-size: 0.875rem;
 }
