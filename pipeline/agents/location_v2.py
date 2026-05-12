@@ -298,7 +298,13 @@ async def generate_v2(facts: dict, payload: dict, *, model: str | None = None) -
     prompt = await build_prompt(facts, payload)
     used_model = model or DEFAULT_MODEL_V2
 
-    client = google_genai.Client(api_key=api_key)
+    # gemini-3.1-pro-preview + thinking high 는 응답이 길어질 수 있어 SDK timeout
+    # 명시적으로 넉넉히 (600초). http_options 미지원 버전이면 기본값 사용.
+    try:
+        http_options = genai_types.HttpOptions(timeout=600_000)  # ms
+        client = google_genai.Client(api_key=api_key, http_options=http_options)
+    except (AttributeError, TypeError):
+        client = google_genai.Client(api_key=api_key)
 
     # Grounding + thinking_level=high 활성화. 옵션을 점진 폴백.
     grounding_used = False
