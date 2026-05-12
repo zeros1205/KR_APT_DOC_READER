@@ -1300,7 +1300,14 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
   "isBasedOn": {{
     "@type": "Dataset",
     "name": "청약홈 분양공고 공공데이터",
+    "description": "한국부동산원 청약홈이 공공데이터포털을 통해 공개하는 분양 공고 원본 데이터(분양가·모집 일정·자격·세대수 등)를 본 포스트의 기초 자료로 사용합니다.",
     "url": "{data.notice_url}",
+    "license": "https://www.kogl.or.kr/info/license.do#01-tab",
+    "creator": {{
+      "@type": "Organization",
+      "name": "한국부동산원",
+      "url": "https://www.applyhome.co.kr/"
+    }},
     "provider": {{
       "@type": "Organization",
       "name": "한국부동산원",
