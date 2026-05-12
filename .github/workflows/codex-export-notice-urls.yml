@@ -137,13 +137,18 @@ jobs:
             BRANCH="${GITHUB_REF_NAME:-main}"
             EXPORT_REL="${EXPORT_FILE#./}"
             MD_URL="${REPO_URL}/edit/${BRANCH}/${EXPORT_REL}"
+            YML_DIR_URL="${REPO_URL}/tree/${BRANCH}/output/notice_meta_inputs"
 
             MESSAGE="🆕 입력 시트 갱신 완료 (총 ${TOTAL}건 · 입력완료 ${FILLED} / 대기 ${PENDING})
 
-          📝 8필드 메타 입력 시트:
+          📝 편집 방식 두 가지:
+          ① 공고별 YAML 파일 (모바일 권장 · 한 파일당 8필드만):
+          ${YML_DIR_URL}
+
+          ② 전체 표 (한눈에 보기용):
           ${MD_URL}
 
-          각 공고당 규제 5필드 + 납부비율 3필드를 채워 커밋해 주세요.
+          YAML 값이 있으면 표보다 우선 적용됩니다.
           모든 행이 ✅ 가 되면 codex-페이지 생성 워크플로우로 일괄 발행됩니다.
           "
             if [ -n "$PENDING_LIST" ]; then

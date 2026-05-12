@@ -30,6 +30,11 @@ NOTICE_CACHE_DIR = ROOT / "output" / "data_cache" / "notices"
 sys.path.insert(0, str(ROOT / "tools"))
 from parse_notice_meta_md import REQUIRED_KEYS, parse_md, validate  # noqa: E402
 
+try:
+    from parse_notice_meta_yml import parse_dir as parse_yml_dir  # noqa: E402
+except ImportError:
+    parse_yml_dir = None  # type: ignore[assignment]
+
 
 def _latest_md() -> Path | None:
     if not EXPORT_DIR.exists():
@@ -86,6 +91,26 @@ def main() -> int:
     print(f"[apply] MD: {md_path}")
 
     parsed = parse_md(md_path)
+
+    # YAML 입력 파일이 있으면 같은 notice_id 에 한해 MD 값을 덮어쓴다.
+    # 모바일에서 YAML 한 파일만 수정한 경우 그 값이 정본으로 적용되도록.
+    if parse_yml_dir is not None:
+        try:
+            yml_parsed = parse_yml_dir()
+        except RuntimeError as exc:
+            print(f"⚠️  YAML 파서 비활성: {exc}")
+            yml_parsed = {}
+        if yml_parsed:
+            print(f"[apply] YAML 입력 {len(yml_parsed)}건 발견 — MD 값보다 우선 적용")
+            for nid, meta in yml_parsed.items():
+                # _source/_path 등 부가 키 제거하고 REQUIRED 만 머지
+                clean = {k: meta.get(k, "") for k in REQUIRED_KEYS}
+                # apt_name 은 MD 에 있는 것 유지
+                if nid in parsed:
+                    parsed[nid].update({k: v for k, v in clean.items() if v})
+                else:
+                    parsed[nid] = clean
+
     if not parsed:
         print("[apply] 입력된 행이 없습니다.")
         return 0

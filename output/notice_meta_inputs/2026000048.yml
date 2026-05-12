@@ -1,0 +1,14 @@
+# 이촌 르엘
+# 청약홈: https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000048&pblancNo=2026000048
+
+notice_id: "2026000048"
+
+regulated_zone: 투기과열지구, 청약과열지역
+readmission_limit: 10년
+resale_restriction: 3년
+live_requirement: 2년
+price_cap: 적용
+
+contract_ratio: 20
+midterm_ratio: 60
+balance_ratio: 20

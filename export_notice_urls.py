@@ -24,6 +24,7 @@ from public_notices import is_public_notice_data
 NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
+META_INPUTS_DIR = BASE_DIR / "output" / "notice_meta_inputs"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR / "output" / "pdfs")
 DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
 
@@ -164,6 +165,53 @@ def _iter_rows(*, include_processed: bool, include_with_pdf: bool) -> list[dict[
     return rows
 
 
+def _yaml_quote(value: str) -> str:
+    """간단한 YAML 스칼라 quoting. 한글·공백 안전."""
+    v = (value or "").strip()
+    if not v:
+        return '""'
+    # 콜론·해시·따옴표 등 문제 문자 포함 시 quote
+    if any(c in v for c in [':', '#', "'", '"', '\n']) or v.startswith(('-', '?', '!', '&', '*', '[', '{')):
+        escaped = v.replace('"', '\\"')
+        return f'"{escaped}"'
+    return v
+
+
+def _write_meta_yaml(row: dict[str, str]) -> Path:
+    """공고당 한 개의 YAML 파일 작성. 사용자 편집을 모바일에서도 쉽게 하기 위한 채널.
+
+    이미 파일이 있으면 사용자 편집을 보존하기 위해 덮어쓰지 않는다 (멱등).
+    """
+    META_INPUTS_DIR.mkdir(parents=True, exist_ok=True)
+    yml_path = META_INPUTS_DIR / f"{row['notice_id']}.yml"
+    if yml_path.exists():
+        return yml_path
+
+    # 납부비율은 숫자(% 제거)로 — patch_notice_payment 가 그대로 사용 가능
+    def _num(value: str) -> str:
+        v = (value or "").strip().rstrip("%").strip()
+        return v if v else '""'
+
+    body = (
+        f"# {row['apt_name']}\n"
+        f"# 청약홈: {row['notice_url']}\n"
+        f"\n"
+        f"notice_id: \"{row['notice_id']}\"\n"
+        f"\n"
+        f"regulated_zone: {_yaml_quote(row.get('regulated_zone', ''))}\n"
+        f"readmission_limit: {_yaml_quote(row.get('readmission', ''))}\n"
+        f"resale_restriction: {_yaml_quote(row.get('resale', ''))}\n"
+        f"live_requirement: {_yaml_quote(row.get('live_req', ''))}\n"
+        f"price_cap: {_yaml_quote(row.get('price_cap', ''))}\n"
+        f"\n"
+        f"contract_ratio: {_num(row.get('contract', ''))}\n"
+        f"midterm_ratio: {_num(row.get('midterm', ''))}\n"
+        f"balance_ratio: {_num(row.get('balance', ''))}\n"
+    )
+    yml_path.write_text(body, encoding="utf-8")
+    return yml_path
+
+
 def _write_md(rows: list[dict[str, str]], filename_date: str) -> Path:
     EXPORT_DIR.mkdir(parents=True, exist_ok=True)
     md_path = EXPORT_DIR / f"{filename_date}_notice_urls.md"
@@ -236,6 +284,16 @@ def main() -> None:
     md_path = _write_md(rows, args.date)
     print(f"[export] {len(rows)} rows")
     print(f"[export] {md_path}")
+
+    # 공고당 YAML 입력 파일 생성 (이미 있으면 사용자 편집 보존, 신규만 생성)
+    new_yml = 0
+    for row in rows:
+        yml_path = _write_meta_yaml(row)
+        if yml_path.stat().st_mtime > (yml_path.stat().st_ctime - 1):  # 방금 생성 추정 보정
+            pass
+    # 더 정확히는 created 추적이 복잡하므로 단순히 폴더 카운트 출력
+    yml_total = sum(1 for _ in META_INPUTS_DIR.glob("*.yml")) if META_INPUTS_DIR.exists() else 0
+    print(f"[export] notice_meta_inputs YAML 총 {yml_total}개 (신규는 자동 생성, 기존은 보존)")
 
 
 if __name__ == "__main__":
