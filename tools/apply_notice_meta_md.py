@@ -31,8 +31,10 @@ sys.path.insert(0, str(ROOT / "tools"))
 from parse_notice_meta_md import REQUIRED_KEYS, parse_md, validate  # noqa: E402
 
 try:
-    from parse_notice_meta_yml import parse_dir as parse_yml_dir  # noqa: E402
+    import parse_notice_meta_yml as _yml_mod  # noqa: E402
+    parse_yml_dir = _yml_mod.parse_dir
 except ImportError:
+    _yml_mod = None  # type: ignore[assignment]
     parse_yml_dir = None  # type: ignore[assignment]
 
 
@@ -94,12 +96,15 @@ def main() -> int:
 
     # YAML 입력 파일이 있으면 같은 notice_id 에 한해 MD 값을 덮어쓴다.
     # 모바일에서 YAML 한 파일만 수정한 경우 그 값이 정본으로 적용되도록.
+    yml_parse_errors: list[tuple[str, str]] = []
     if parse_yml_dir is not None:
         try:
             yml_parsed = parse_yml_dir()
         except RuntimeError as exc:
             print(f"⚠️  YAML 파서 비활성: {exc}")
             yml_parsed = {}
+        if _yml_mod is not None:
+            yml_parse_errors = list(_yml_mod.parse_errors)
         if yml_parsed:
             print(f"[apply] YAML 입력 {len(yml_parsed)}건 발견 — MD 값보다 우선 적용")
             for nid, meta in yml_parsed.items():
@@ -110,6 +115,12 @@ def main() -> int:
                     parsed[nid].update({k: v for k, v in clean.items() if v})
                 else:
                     parsed[nid] = clean
+        if yml_parse_errors:
+            # 파싱 실패한 YAML 은 사용자 편집이 silently dropped 될 위험이 있어
+            # 명확히 경고. strict 모드 호출자(워크플로우)에게도 전파.
+            print(f"❌ YAML 파싱 실패 {len(yml_parse_errors)}건 — 해당 사용자 편집 무시됨:")
+            for path, msg in yml_parse_errors:
+                print(f"   - {path}: {msg}")
 
     if not parsed:
         print("[apply] 입력된 행이 없습니다.")
@@ -144,7 +155,7 @@ def main() -> int:
     if failed:
         print(f"  실패 notice_id: {', '.join(failed[:10])}")
 
-    if args.strict and (missing or failed):
+    if args.strict and (missing or failed or yml_parse_errors):
         return 1
     return 0
 

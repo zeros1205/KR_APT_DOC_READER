@@ -68,17 +68,20 @@ jobs:
           echo "$CMD"
           eval "$CMD"
 
-      - name: Commit URL export
+      - name: Commit URL export and meta inputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/notice_url_exports
+          # notice_meta_inputs 도 함께 staging — export_notice_urls.py 가 신규 공고용
+          # YAML 파일을 자동 생성하므로 같은 커밋으로 push 되어야 텔레그램 안내한
+          # YAML 폴더 링크에서 해당 파일을 바로 편집 가능.
+          git add output/notice_url_exports output/notice_meta_inputs
 
           if ! git diff --cached --quiet; then
-            git commit -m "chore: export notice urls [$(date +%Y-%m-%d)]"
+            git commit -m "chore: export notice urls + meta inputs [$(date +%Y-%m-%d)]"
             git push
           else
-            echo "No URL export changes."
+            echo "No URL export / meta input changes."
           fi
 
       - name: Notify Telegram when notice URL export is ready

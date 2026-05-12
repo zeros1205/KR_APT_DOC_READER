@@ -40,6 +40,12 @@ except ImportError:
     yaml = None  # type: ignore[assignment]
 
 
+# 마지막 parse_dir() 호출에서 발생한 YAML 파싱 에러를 보관.
+# strict 모드 / apply 도구가 이를 실패로 취급해 사용자 편집이 silently dropped
+# 되는 사고를 막는다.
+parse_errors: list[tuple[str, str]] = []  # (relative_path, error_message)
+
+
 def _stringify(v: object) -> str:
     if v is None:
         return ""
@@ -47,8 +53,13 @@ def _stringify(v: object) -> str:
 
 
 def parse_dir(directory: Path = META_INPUTS_DIR) -> dict[str, dict[str, str]]:
-    """폴더의 모든 *.yml 파일을 읽어 notice_id → 메타 dict 반환."""
+    """폴더의 모든 *.yml 파일을 읽어 notice_id → 메타 dict 반환.
+
+    파싱 실패한 파일은 결과 dict 에서 제외되며, 그 경로/에러는 모듈 변수
+    `parse_errors` 에 누적된다. strict 모드 호출자는 이 리스트를 확인해야 한다.
+    """
     out: dict[str, dict[str, str]] = {}
+    parse_errors.clear()
     if not directory.exists():
         return out
     if yaml is None:
@@ -58,7 +69,9 @@ def parse_dir(directory: Path = META_INPUTS_DIR) -> dict[str, dict[str, str]]:
         try:
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         except yaml.YAMLError as exc:
-            print(f"⚠️  YAML 파싱 실패 {path.name}: {exc}", file=sys.stderr)
+            rel = str(path.relative_to(ROOT))
+            parse_errors.append((rel, str(exc)))
+            print(f"⚠️  YAML 파싱 실패 {rel}: {exc}", file=sys.stderr)
             continue
         if not isinstance(data, dict):
             continue
@@ -98,10 +111,20 @@ def main() -> int:
     if args.pending_only:
         pending = validate(parsed)
         print(json.dumps(pending, ensure_ascii=False, indent=2))
-        return 1 if (pending and args.strict) else 0
+        if parse_errors:
+            print(f"\n❌ YAML 파싱 실패 {len(parse_errors)}건:", file=sys.stderr)
+            for path, msg in parse_errors:
+                print(f"   - {path}: {msg}", file=sys.stderr)
+        if args.strict and (pending or parse_errors):
+            return 1
+        return 0
 
     print(json.dumps(parsed, ensure_ascii=False, indent=2))
-    if args.strict and validate(parsed):
+    if parse_errors:
+        print(f"\n❌ YAML 파싱 실패 {len(parse_errors)}건:", file=sys.stderr)
+        for path, msg in parse_errors:
+            print(f"   - {path}: {msg}", file=sys.stderr)
+    if args.strict and (validate(parsed) or parse_errors):
         return 1
     return 0
 
