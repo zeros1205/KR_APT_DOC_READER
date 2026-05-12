@@ -96,18 +96,35 @@ def _md_inline(text: str) -> str:
     return text
 
 
-def md_to_section_html(body_md: str) -> str:
-    """v3 body_md (5섹션) 를 사이트 디자인 토큰에 맞춘 HTML 로 변환."""
+# Codex P1 — body_md 가 markdown 형식을 안 지키면 _wrap_section_html 이
+# outer wrapper 만 만들어 빈 본문으로 SECTION 2 가 덮어쓰일 위험. 최소 섹션
+# 수를 강제해 검증 통과 시에만 HTML 생성.
+EXPECTED_SECTIONS = 5
+MIN_VALID_SECTIONS = 4  # 1개 정도 누락은 허용 (Pro 모델이 가끔 4개만 출력)
+
+
+def parse_sections(body_md: str) -> list[tuple[str, str]]:
+    """body_md 에서 (head, body) 튜플 리스트 추출. 본문이 비어 있는 섹션은 제외."""
     if not body_md:
-        return ""
-    # 섹션 단위로 자름. 첫 헤딩 이전의 텍스트는 무시.
+        return []
     parts = re.split(r"(^###\s+.+$)", body_md, flags=re.MULTILINE)
-    # parts = ['', '### 헤딩1', '본문1', '### 헤딩2', '본문2', ...]
-    sections: list[tuple[str, str]] = []
+    out: list[tuple[str, str]] = []
     for i in range(1, len(parts) - 1, 2):
         head = parts[i].lstrip("#").strip()
         body = (parts[i + 1] or "").strip()
-        sections.append((head, body))
+        if head and body:  # 헤딩 + 본문 모두 있어야 유효 섹션
+            out.append((head, body))
+    return out
+
+
+def md_to_section_html(body_md: str) -> str:
+    """v3 body_md (5섹션) 를 사이트 디자인 토큰에 맞춘 HTML 로 변환.
+
+    섹션 수가 MIN_VALID_SECTIONS 미만이면 빈 문자열 반환 — 호출자가 skip 하도록.
+    """
+    sections = parse_sections(body_md)
+    if len(sections) < MIN_VALID_SECTIONS:
+        return ""
 
     html_sections: list[str] = []
     for head, body in sections:
@@ -194,9 +211,26 @@ async def main_async(targets: list[str], dry_run: bool) -> int:
         if not body_md:
             failed.append((nid, "body_md 비어 있음"))
             continue
+        # Codex P1 — md_to_section_html 이 빈 문자열 반환 시 (섹션 수 미달)
+        # production post.html 을 빈 본문으로 덮어쓰지 않도록 skip.
+        sections = parse_sections(body_md)
+        if len(sections) < MIN_VALID_SECTIONS:
+            failed.append((
+                nid,
+                f"섹션 수 미달 (기대 {EXPECTED_SECTIONS}, 실제 유효 {len(sections)}) — post.html 보존",
+            ))
+            # Codex P2 — dry-run 은 작업 트리에 어떤 변경도 만들지 않아야 함.
+            # invalid.json 디버그 저장은 실제 적용 모드에서만.
+            if not dry_run:
+                meta_v3_path = POSTS_DIR / nid / "location_v3.invalid.json"
+                meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+            continue
         new_html = md_to_section_html(body_md)
+        if not new_html:
+            failed.append((nid, "md_to_section_html 빈 결과 — post.html 보존"))
+            continue
         if dry_run:
-            print(f"  [dry-run] 생성 HTML 길이: {len(new_html)}자")
+            print(f"  [dry-run] 생성 HTML 길이: {len(new_html)}자, 섹션 {len(sections)}개")
             success.append(nid)
             continue
         if not _patch_post_html(nid, new_html):
@@ -205,7 +239,7 @@ async def main_async(targets: list[str], dry_run: bool) -> int:
         success.append(nid)
         meta_v3_path = POSTS_DIR / nid / "location_v3.json"
         meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"  ✅ post.html 패치 + location_v3.json 저장")
+        print(f"  ✅ post.html 패치 + location_v3.json 저장 (섹션 {len(sections)}개)")
 
     print()
     print(f"성공 {len(success)}건 / 실패 {len(failed)}건")
