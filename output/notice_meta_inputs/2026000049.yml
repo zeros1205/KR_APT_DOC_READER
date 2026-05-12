@@ -1,0 +1,14 @@
+# 옥정중앙역 대방 디에트르(중상1, 복합1BL)
+# 청약홈: https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000049&pblancNo=2026000049
+
+notice_id: "2026000049"
+
+regulated_zone: 비규제지역
+readmission_limit: 10년
+resale_restriction: 3년
+live_requirement: 없음
+price_cap: 적용
+
+contract_ratio: 10
+midterm_ratio: 60
+balance_ratio: 30

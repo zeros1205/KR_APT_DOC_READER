@@ -1,0 +1,14 @@
+# 힐스테이트 지석(조합원취소분)
+# 청약홈: https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000024&pblancNo=2026000024
+
+notice_id: "2026000024"
+
+regulated_zone: 비규제지역
+readmission_limit: 없음
+resale_restriction: 6개월
+live_requirement: 없음
+price_cap: 미적용
+
+contract_ratio: 10
+midterm_ratio: 0
+balance_ratio: 90

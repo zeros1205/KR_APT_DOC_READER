@@ -68,17 +68,20 @@ jobs:
           echo "$CMD"
           eval "$CMD"
 
-      - name: Commit URL export
+      - name: Commit URL export and meta inputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/notice_url_exports
+          # notice_meta_inputs 도 함께 staging — export_notice_urls.py 가 신규 공고용
+          # YAML 파일을 자동 생성하므로 같은 커밋으로 push 되어야 텔레그램 안내한
+          # YAML 폴더 링크에서 해당 파일을 바로 편집 가능.
+          git add output/notice_url_exports output/notice_meta_inputs
 
           if ! git diff --cached --quiet; then
-            git commit -m "chore: export notice urls [$(date +%Y-%m-%d)]"
+            git commit -m "chore: export notice urls + meta inputs [$(date +%Y-%m-%d)]"
             git push
           else
-            echo "No URL export changes."
+            echo "No URL export / meta input changes."
           fi
 
       - name: Notify Telegram when notice URL export is ready
@@ -137,13 +140,18 @@ jobs:
             BRANCH="${GITHUB_REF_NAME:-main}"
             EXPORT_REL="${EXPORT_FILE#./}"
             MD_URL="${REPO_URL}/edit/${BRANCH}/${EXPORT_REL}"
+            YML_DIR_URL="${REPO_URL}/tree/${BRANCH}/output/notice_meta_inputs"
 
             MESSAGE="🆕 입력 시트 갱신 완료 (총 ${TOTAL}건 · 입력완료 ${FILLED} / 대기 ${PENDING})
 
-          📝 8필드 메타 입력 시트:
+          📝 편집 방식 두 가지:
+          ① 공고별 YAML 파일 (모바일 권장 · 한 파일당 8필드만):
+          ${YML_DIR_URL}
+
+          ② 전체 표 (한눈에 보기용):
           ${MD_URL}
 
-          각 공고당 규제 5필드 + 납부비율 3필드를 채워 커밋해 주세요.
+          YAML 값이 있으면 표보다 우선 적용됩니다.
           모든 행이 ✅ 가 되면 codex-페이지 생성 워크플로우로 일괄 발행됩니다.
           "
             if [ -n "$PENDING_LIST" ]; then
