@@ -55,50 +55,81 @@ DISCLOSURE_SNIPPET = (
 )
 
 
+_PROVIDER = {
+    "@type": "Organization",
+    "name": "한국부동산원",
+    "url": "https://www.applyhome.co.kr/",
+}
+
+# Google Datasets 리치 결과의 필수(description) + 권장(license, creator) 필드까지
+# 채워 GSC '유효하지 않음' 경고를 해소한다.
+_DATASET_DESCRIPTION = (
+    "한국부동산원 청약홈이 공공데이터포털을 통해 공개하는 분양 공고 원본 데이터"
+    "(분양가·모집 일정·자격·세대수 등)를 본 포스트의 기초 자료로 사용합니다."
+)
+_DATASET_LICENSE = "https://www.kogl.or.kr/info/license.do#01-tab"
+
+
+def _build_dataset(notice_url: str) -> dict:
+    return {
+        "@type": "Dataset",
+        "name": "청약홈 분양공고 공공데이터",
+        "description": _DATASET_DESCRIPTION,
+        "url": notice_url,
+        "license": _DATASET_LICENSE,
+        "creator": dict(_PROVIDER),
+        "provider": dict(_PROVIDER),
+    }
+
+
+def _build_author() -> dict:
+    return {
+        "@type": "Person",
+        "@id": f"{SITE_URL}/about.html#person",
+        "name": "정과장",
+        "url": f"{SITE_URL}/about.html",
+        "jobTitle": "청약 분양공고 정보 정리·검수자",
+    }
+
+
 def _insert_author_and_source(data: dict, notice_url: str) -> bool:
-    """Article JSON-LD 에 author·isBasedOn 추가. 변경 여부 반환."""
+    """Article JSON-LD 에 author·isBasedOn 추가/보강. 변경 여부 반환."""
     if data.get("@type") != "Article":
         return False
     changed = False
+
+    # 1) author 누락 시 publisher 뒤에 삽입
     if "author" not in data:
-        # publisher 뒤·isPartOf 앞에 끼워 넣으려면 키 순서를 재구성.
         new_data: dict = {}
         for key, value in data.items():
             new_data[key] = value
             if key == "publisher":
-                new_data["author"] = {
-                    "@type": "Person",
-                    "@id": f"{SITE_URL}/about.html#person",
-                    "name": "정과장",
-                    "url": f"{SITE_URL}/about.html",
-                    "jobTitle": "청약 분양공고 정보 정리·검수자",
-                }
-                if notice_url:
-                    new_data["isBasedOn"] = {
-                        "@type": "Dataset",
-                        "name": "청약홈 분양공고 공공데이터",
-                        "url": notice_url,
-                        "provider": {
-                            "@type": "Organization",
-                            "name": "한국부동산원",
-                            "url": "https://www.applyhome.co.kr/",
-                        },
-                    }
+                new_data["author"] = _build_author()
+                if notice_url and "isBasedOn" not in data:
+                    new_data["isBasedOn"] = _build_dataset(notice_url)
         data.clear()
         data.update(new_data)
         changed = True
-    elif notice_url and "isBasedOn" not in data:
-        data["isBasedOn"] = {
-            "@type": "Dataset",
-            "name": "청약홈 분양공고 공공데이터",
-            "url": notice_url,
-            "provider": {
-                "@type": "Organization",
-                "name": "한국부동산원",
-                "url": "https://www.applyhome.co.kr/",
-            },
-        }
+
+    # 2) isBasedOn 자체가 없으면 추가
+    if notice_url and "isBasedOn" not in data:
+        data["isBasedOn"] = _build_dataset(notice_url)
         changed = True
+
+    # 3) 이미 isBasedOn 이 있어도 GSC Datasets 필수/권장 필드(description, license,
+    #    creator) 누락이면 보강. 기존 값은 덮어쓰지 않아 사용자 편집을 보존.
+    based = data.get("isBasedOn")
+    if isinstance(based, dict) and based.get("@type") == "Dataset":
+        if not based.get("description"):
+            based["description"] = _DATASET_DESCRIPTION
+            changed = True
+        if not based.get("license"):
+            based["license"] = _DATASET_LICENSE
+            changed = True
+        if not based.get("creator"):
+            based["creator"] = dict(_PROVIDER)
+            changed = True
+
     return changed
 
 
@@ -132,11 +163,11 @@ def patch_post(post_dir: Path) -> dict:
             return match.group(0)
         if data.get("@type") != "Article":
             return match.group(0)
-        if "author" in data and "isBasedOn" in data:
-            json_ld_skipped = True
-            return match.group(0)
+        # author/isBasedOn 가 이미 있어도 GSC 필수 필드(description) 등은 누락일 수
+        # 있어 _insert_author_and_source 가 보강 작업 후 changed=False 일 때만 skip 처리.
         changed = _insert_author_and_source(data, notice_url)
         if not changed:
+            json_ld_skipped = True
             return match.group(0)
         new_body = json.dumps(data, ensure_ascii=False, indent=2)
         json_ld_patched = True
