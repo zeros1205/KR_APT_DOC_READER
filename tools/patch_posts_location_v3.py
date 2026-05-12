@@ -219,9 +219,11 @@ async def main_async(targets: list[str], dry_run: bool) -> int:
                 nid,
                 f"섹션 수 미달 (기대 {EXPECTED_SECTIONS}, 실제 유효 {len(sections)}) — post.html 보존",
             ))
-            # 디버그를 위해 body_md 는 location_v3.json 에 저장해 둠
-            meta_v3_path = POSTS_DIR / nid / "location_v3.invalid.json"
-            meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+            # Codex P2 — dry-run 은 작업 트리에 어떤 변경도 만들지 않아야 함.
+            # invalid.json 디버그 저장은 실제 적용 모드에서만.
+            if not dry_run:
+                meta_v3_path = POSTS_DIR / nid / "location_v3.invalid.json"
+                meta_v3_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
             continue
         new_html = md_to_section_html(body_md)
         if not new_html:
