@@ -233,7 +233,7 @@ def _render_header_tag(label: str, radius: str) -> str:
         f'<span style="display:inline-flex;align-items:center;justify-content:center;'
         f' padding:5px 14px; border-radius:{radius};'
         f' border:1px solid rgba(255,255,255,0.28); background:rgba(255,255,255,0.18);'
-        f' color:#FFFFFF; font-size:12px; font-weight:700; letter-spacing:1px;'
+        f' color:#FFFFFF; font-size: 0.75rem; font-weight:700; letter-spacing: 0.0625rem;'
         f' line-height:1;">{label}</span>'
     )
 
@@ -441,13 +441,13 @@ def _finance_uses_non_ratio_display(data: "PostData") -> bool:
 
 def _remove_no_midterm_from_ratio_bar(html: str) -> str:
     html = re.sub(
-        r'\s*<div style="\s*background: #[0-9A-Fa-f]{6};\s*flex: 1;\s*display: flex; align-items: center; justify-content: center;\s*color: #fff; font-size: 16px; font-weight: 800;\s*">\s*0%\s*</div>',
+        r'\s*<div style="\s*background: #[0-9A-Fa-f]{6};\s*flex: 1;\s*display: flex; align-items: center; justify-content: center;\s*color: #fff; font-size: 1rem; font-weight: 800;\s*">\s*0%\s*</div>',
         "",
         html,
         flags=re.S,
     )
     return re.sub(
-        r'\s*<span style="font-size: 14px; letter-spacing: 0.025em; color: #[0-9A-Fa-f]{6}; font-weight: 700;">■ 중도금 (?:0%|없음)</span>',
+        r'\s*<span style="font-size: 0.875rem; letter-spacing: 0.025em; color: #[0-9A-Fa-f]{6}; font-weight: 700;">■ 중도금 (?:0%|없음)</span>',
         "",
         html,
     )
@@ -460,7 +460,7 @@ def _remove_no_midterm_timeline_step(html: str) -> str:
         html = html[:start] + html[end:]
     html = html.replace("<!-- 3. 잔금 -->", "<!-- 2. 잔금 -->", 1)
     return re.sub(
-        r'(<div style="\s*position: absolute; left: -36px; top: 2px;\s*width: 26px; height: 26px;\s*background: #[0-9A-Fa-f]{6}; color: #fff; border-radius: 50%;\s*display: flex; align-items: center; justify-content: center;\s*font-size: 13px; font-weight: 800;\s*">)3(</div>\s*<div style="font-size: 18px; font-weight: 800; color: #[0-9A-Fa-f]{6}; margin-bottom: 10px;">잔금)',
+        r'(<div style="\s*position: absolute; left: -36px; top: 2px;\s*width: 26px; height: 26px;\s*background: #[0-9A-Fa-f]{6}; color: #fff; border-radius: 50%;\s*display: flex; align-items: center; justify-content: center;\s*font-size: 0.8125rem; font-weight: 800;\s*">)3(</div>\s*<div style="font-size: 1.125rem; font-weight: 800; color: #[0-9A-Fa-f]{6}; margin-bottom: 10px;">잔금)',
         r"\g<1>2\2",
         html,
         flags=re.S,
@@ -482,7 +482,7 @@ def remove_special_finance_ratio_bar_from_html(html: str) -> str:
     html = re.sub(
         r'\s*<!-- 납부 비율 시각화 바 \(CSS 차트\) -->\s*'
         r'<div style="margin-bottom: 32px;">\s*'
-        r'<div style="font-size: 15px; font-weight: 700; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin-bottom: 12px;">📊 분양가 납부 비율</div>'
+        r'<div style="font-size: 0.9375rem; font-weight: 700; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin-bottom: 12px;">📊 분양가 납부 비율</div>'
         r'.*?</div>\s*</div>',
         "",
         html,
@@ -495,7 +495,7 @@ def adapt_no_midterm_finance_html(html: str) -> str:
     html = _remove_no_midterm_from_ratio_bar(html)
     html = _remove_no_midterm_timeline_step(html)
     html = re.sub(
-        r'\s*<p style="font-size: 17px; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;"></p>',
+        r'\s*<p style="font-size: 1.0625rem; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;"></p>',
         "",
         html,
     )
@@ -653,7 +653,7 @@ def _notice_doc_btn(notice_url: str, is_lh: bool = False) -> str:
         f'<a href="{notice_url}" target="_blank" rel="noopener noreferrer" '
         f'style="display:inline-flex;align-items:center;gap:8px;'
         f'background:var(--c-surface);color:var(--c-dark);'
-        f'font-size:15px;font-weight:700;'
+        f'font-size: 0.9375rem;font-weight:700;'
         f'padding:14px 28px;border-radius:8px;'
         f'border:2px solid var(--c-primary);'
         f'text-decoration:none;letter-spacing:-0.2px;'
@@ -682,8 +682,8 @@ def _price_range_typed(unit_types: list[UnitType], fallback: str) -> str:
     def _row(price_str: str, type_name: str, prefix: str = "") -> str:
         clean_type = _clean_unit_type_name(type_name)
         return (
-            f'{prefix}<span style="font-size:22px;font-weight:800;">{price_str}</span>'
-            f'<span style="font-size:16px;font-weight:600;opacity:0.85;">({clean_type})</span>'
+            f'{prefix}<span style="font-size: 1.375rem;font-weight:800;">{price_str}</span>'
+            f'<span style="font-size: 1rem;font-weight:600;opacity:0.85;">({clean_type})</span>'
         )
 
     lo = _row(cheapest._fmt(cheapest.price_min), cheapest.type_name)
@@ -735,7 +735,7 @@ def _render_qa_block(qa: QABlock, idx: int, t: dict) -> str:
       <div style="margin: 12px 0; border-radius: {t['radius_sm']}; overflow: hidden;">
         <img src="{qa.image.url}" alt="Q{idx+1} 관련 이미지"
              style="width: 100%; max-height: 200px; object-fit: cover; display: block;" />
-        <p style="font-size: 11px; color: {t['muted']}; margin: 4px 8px; font-style: italic;">📷 {credit}</p>
+        <p style="font-size: 0.6875rem; color: {t['muted']}; margin: 4px 8px; font-style: italic;">📷 {credit}</p>
       </div>"""
 
     return f"""
@@ -750,12 +750,12 @@ def _render_qa_block(qa: QABlock, idx: int, t: dict) -> str:
     ">
       <span style="
         background: {t['q_badge_bg']}; color: {t['q_badge_text']};
-        font-weight: 700; font-size: 12px;
+        font-weight: 700; font-size: 0.75rem;
         padding: 2px 9px; border-radius: {t['radius_sm']};
         flex-shrink: 0; margin-top: 1px;
       ">Q</span>
       <span style="
-        color: {t['q_text']}; font-size: 16px;
+        color: {t['q_text']}; font-size: 1rem;
         font-weight: 700; line-height: 1.6; word-break: keep-all;
       ">{qa.question}</span>
     </div>
@@ -764,10 +764,10 @@ def _render_qa_block(qa: QABlock, idx: int, t: dict) -> str:
       <div style="display: flex; align-items: flex-start; gap: 10px;">
         <span style="
           background: {t['a_badge_bg']}; color: {t['a_badge_text']};
-          font-weight: 700; font-size: 12px;
+          font-weight: 700; font-size: 0.75rem;
           padding: 2px 9px; border-radius: {t['radius_sm']}; flex-shrink: 0;
         ">A</span>
-        <div style="color: {t['text']}; font-size: 16px; line-height: 1.6; word-break: keep-all;">{qa.answer}</div>
+        <div style="color: {t['text']}; font-size: 1rem; line-height: 1.6; word-break: keep-all;">{qa.answer}</div>
       </div>{img_html}
     </div>
   </div>"""
@@ -781,7 +781,7 @@ def _render_seo_tags(tags: list[str], t: dict) -> str:
         clean = tag.lstrip("#")
         spans.append(
             f'<span style="background:{t["tag_bg"]}; color:{t["tag_text"]}; '
-            f'font-size:11px; padding:4px 10px; border-radius:{t["radius_pill"]}; '
+            f'font-size: 0.6875rem; padding:4px 10px; border-radius:{t["radius_pill"]}; '
             f'font-weight:600; display:inline-block;">#{clean}</span>'
         )
     return "\n  ".join(spans)
@@ -797,7 +797,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         type_name = sp.get("type_name", "")
         reqs      = sp.get("requirements", [])
         req_items = "".join(
-            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
+            f'<li style="font-size: 0.875rem;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
             f'<span style="color:{card_color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
             for r in reqs
@@ -807,7 +807,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-top:3px solid {card_color};border-radius:{t["radius_md"]};'
             f'padding:16px 18px;">'
-            f'<div style="font-size:14px;font-weight:800;color:{card_color};'
+            f'<div style="font-size: 0.875rem;font-weight:800;color:{card_color};'
             f'margin-bottom:10px;">{type_name}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{req_items}</ul>'
             f'</div>'
@@ -815,8 +815,8 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
 
     if sp_cards:
         special_block = (
-            f'<div style="font-size:13px;font-weight:700;color:{t["accent"]};'
-            f'letter-spacing:0.5px;margin-bottom:12px;">특별공급</div>'
+            f'<div style="font-size: 0.8125rem;font-weight:700;color:{t["accent"]};'
+            f'letter-spacing: 0.0312rem;margin-bottom:12px;">특별공급</div>'
             f'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;">'
             f'{sp_cards}</div>'
         )
@@ -824,7 +824,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         special_block = (
             f'<div style="background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-radius:{t["radius_md"]};padding:16px 18px;margin-bottom:28px;'
-            f'font-size:14px;color:{t["muted"]};">특별공급 관련 정보가 없습니다.  '
+            f'font-size: 0.875rem;color:{t["muted"]};">특별공급 관련 정보가 없습니다.  '
             f'입주자모집공고문을 확인하세요.</div>'
         )
 
@@ -833,7 +833,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
         if not items:
             items = [f"{label.replace(' 자격', '')} 일반공급 관련  정보가 없습니다.  입주자모집공고문을 확인하세요."]
         li_html = "".join(
-            f'<li style="font-size:14px;color:{t["text2"]};line-height:1.8;'
+            f'<li style="font-size: 0.875rem;color:{t["text2"]};line-height:1.8;'
             f'padding:3px 0;border-bottom:1px solid {t["border"]};">'
             f'<span style="color:{card_color};font-weight:700;margin-right:6px;">·</span>{r}</li>'
             for r in items
@@ -843,15 +843,15 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
             f'background:{t["surface"]};border:1px solid {t["border"]};'
             f'border-top:3px solid {card_color};border-radius:{t["radius_md"]};'
             f'padding:16px 18px;">'
-            f'<div style="font-size:14px;font-weight:800;color:{card_color};'
+            f'<div style="font-size: 0.875rem;font-weight:800;color:{card_color};'
             f'margin-bottom:12px;">{label}</div>'
             f'<ul style="list-style:none;padding:0;margin:0;">{li_html}</ul>'
             f'</div>'
         )
 
     rank_blocks = (
-        f'<div style="font-size:13px;font-weight:700;color:{t["accent"]};'
-        f'letter-spacing:0.5px;margin-bottom:12px;">일반공급</div>'
+        f'<div style="font-size: 0.8125rem;font-weight:700;color:{t["accent"]};'
+        f'letter-spacing: 0.0312rem;margin-bottom:12px;">일반공급</div>'
         f'<div style="display:flex;flex-wrap:wrap;gap:10px;">'
         f'{_rank_block("1순위 자격", data.eligibility_rank1)}'
         f'{_rank_block("2순위 자격", data.eligibility_rank2)}'
@@ -859,7 +859,7 @@ def _render_eligibility(data: "PostData", t: dict) -> str:
     )
 
     notice = (
-        f'<p style="font-size:13px;color:{t["muted"]};margin-top:16px;line-height:1.6;">'
+        f'<p style="font-size: 0.8125rem;color:{t["muted"]};margin-top:16px;line-height:1.6;">'
         f'※ 자격 요건은 공고문 기준이며, 개인 상황에 따라 다를 수 있습니다. '
         f'반드시 공식 분양사 및 청약홈에서 최종 확인하세요.</p>'
     )
@@ -895,12 +895,12 @@ def _render_schedule_timeline(data: "PostData", t: dict) -> str:
         flex-shrink: 0; width: 38px; height: 38px;
         background: var(--c-primary, {t["accent"]}); color: #fff; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 15px; font-weight: 800;
+        font-size: 0.9375rem; font-weight: 800;
       ">{index}</div>
       <div style="flex: 1; padding-top: 5px;">
-        <div style="font-size: 12px; color: {t["muted"]}; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 4px;">{kicker}</div>
-        <div style="font-size: 17px; font-weight: 700; color: var(--c-dark, {t["text"]}); margin-bottom: 3px;">{label}</div>
-        <div style="font-size: 17px; color: var(--c-primary, {t["accent"]}); font-weight: 800;">{value}</div>
+        <div style="font-size: 0.75rem; color: {t["muted"]}; font-weight: 700; letter-spacing: 0.05rem; margin-bottom: 4px;">{kicker}</div>
+        <div style="font-size: 1.0625rem; font-weight: 700; color: var(--c-dark, {t["text"]}); margin-bottom: 3px;">{label}</div>
+        <div style="font-size: 1.0625rem; color: var(--c-primary, {t["accent"]}); font-weight: 800;">{value}</div>
       </div>
     </div>""".rstrip()
         )
@@ -938,8 +938,8 @@ def _header_meta_rows(data: "PostData", text_color: str, sub_color: str) -> str:
             continue
         rows.append(
             f'<div style="margin-bottom:5px;">'
-            f'<span style="color:{sub_color};font-size:13px;">{label}: </span>'
-            f'<strong style="color:{text_color};font-size:14px;">{value}</strong>'
+            f'<span style="color:{sub_color};font-size: 0.8125rem;">{label}: </span>'
+            f'<strong style="color:{text_color};font-size: 0.875rem;">{value}</strong>'
             f'</div>'
         )
     if not rows:
@@ -1065,7 +1065,7 @@ class BlogHTMLRenderer:
             "{{SUPPLY_LOCATION}}":  data.supply_location,
             "{{NAVER_MAP_URL}}":    _naver_map_url(data.supply_location or data.location),
             "{{SUPPLY_SCALE_BLOCK}}": (
-                f'<div style="font-size: 14px; letter-spacing: 0.025em; color: var(--c-mid, {t["text2"]}); margin-bottom: 10px;">'
+                f'<div style="font-size: 0.875rem; letter-spacing: 0.025em; color: var(--c-mid, {t["text2"]}); margin-bottom: 10px;">'
                 f'{data.supply_scale}</div>'
                 if _stringify(data.supply_scale) else ""
             ),
@@ -1171,7 +1171,7 @@ class BlogHTMLRenderer:
             )
             if data.contract_amount:
                 html = re.sub(
-                    r'\s*<p style="font-size: 17px; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;">'
+                    r'\s*<p style="font-size: 1.0625rem; font-weight: 800; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin: 0;">'
                     + re.escape(data.contract_amount)
                     + r"</p>",
                     "",
@@ -1383,7 +1383,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
 .post-compact-title {{
   position: relative;
   margin: 0 0 6px;
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 1.25;
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -1392,7 +1392,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   position: relative;
   margin: 0;
   color: rgba(255,255,255,0.82);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
   font-weight: 600;
 }}
@@ -1406,10 +1406,10 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
     padding: 12px 16px 14px;
   }}
   .post-compact-title {{
-    font-size: 18px;
+    font-size: 1.125rem;
   }}
   .post-compact-subtitle {{
-    font-size: 13px;
+    font-size: 0.8125rem;
   }}
 }}
 </style>
