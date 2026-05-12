@@ -19,7 +19,9 @@ env:
 jobs:
   location-ab:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # gemini-3.1-pro-preview + thinking_level=high + Grounding 조합은 단지당
+    # 2~5분이 일반적이라 4단지 처리에 20분으론 빠듯. 여유롭게 60분으로 확장.
+    timeout-minutes: 60
     permissions:
       contents: write
 
