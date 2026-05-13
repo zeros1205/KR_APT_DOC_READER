@@ -102,18 +102,7 @@ jobs:
               title: "iOS: Setup Capacitor platform",
               head: context.ref.replace('refs/heads/', ''),
               base: "main",
-              body: `## iOS Platform Setup
-
-Generated iOS project structure:
-- ✅ ios/ directory created
-- ✅ CocoaPods dependencies installed
-- ✅ Xcode project configured
-- ✅ Ready for TestFlight builds
-
-**Next steps:**
-1. Merge this PR to main
-2. All subsequent builds run on GitHub Actions (no local Mac needed)
-3. Use \`mobile-app-ios-release.yml\` workflow for TestFlight builds`
+              body: "## iOS Platform Setup\n\nGenerated iOS project structure:\n- ✅ ios/ directory created\n- ✅ CocoaPods dependencies installed\n- ✅ Xcode project configured\n- ✅ Ready for TestFlight builds\n\n**Next steps:**\n1. Merge this PR to main\n2. All subsequent builds run on GitHub Actions (no local Mac needed)\n3. Use `mobile-app-ios-release.yml` workflow for TestFlight builds"
             });
             console.log('Pull request created: ' + pr.html_url);
 
