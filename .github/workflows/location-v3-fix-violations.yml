@@ -1,0 +1,143 @@
+name: codex-입지 분석 v3 → 정책 위반 포스트 자동 색출 후 일괄 재생성
+
+# 일회성 패치 워크플로우.
+#
+# 동작:
+#   1. tools/audit_location_v3_facts.py --include-non-v3 --ids-only 로 정책
+#      (금액·규제 키워드) 위반 단지 ID 를 자동 색출 (v3 + html 모두).
+#   2. 색출된 ID 리스트를 patch_posts_location_v3.py --targets 에 전달해 v3 로
+#      신규 패치 또는 재생성.
+#   3. checkpoint 로 단지 N건마다 자동 git push.
+#
+# 위반 단지가 없거나 0건이면 즉시 종료. 사용자가 ID 를 일일이 입력할 필요 없음.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "최대 처리 건수 (GitHub Actions 6시간 한도 안에서 안전한 값). 0=제한 없음"
+        required: false
+        default: "50"
+      dry_run:
+        description: "true 면 LLM 호출은 실행되지만(비용 발생) post.html 덮어쓰기·캐시 저장·커밋 skip"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      checkpoint_every:
+        description: "N>0 이면 단지 N건 패치마다 즉시 git push (runner 종료 시 lost 방지). 권장 10"
+        required: false
+        default: "10"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  PATCH_CHECKPOINT_EVERY: ${{ github.event.inputs.checkpoint_every || '10' }}
+
+jobs:
+  fix-violations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Audit policy violations (자동 색출)
+        id: audit
+        run: |
+          # --include-non-v3: v3 패치 안 된 단지의 post.html SECTION 2 도 검사
+          # --ids-only: 위반 단지 ID 만 공백 구분으로 출력
+          IDS=$(python tools/audit_location_v3_facts.py --include-non-v3 --ids-only)
+          COUNT=0
+          if [ -n "$IDS" ]; then
+            COUNT=$(echo "$IDS" | tr ' ' '\n' | wc -l | tr -d ' ')
+          fi
+          echo "ids=${IDS}" >> "$GITHUB_OUTPUT"
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "위반 단지: ${COUNT}건"
+          echo "${IDS}" | tr ' ' '\n' | head -20
+
+      - name: Patch violating posts
+        if: ${{ steps.audit.outputs.count != '0' }}
+        id: patch
+        run: |
+          LIMIT="${{ github.event.inputs.limit }}"
+          DRY="${{ github.event.inputs.dry_run }}"
+
+          ARGS=(--targets)
+          for t in ${{ steps.audit.outputs.ids }}; do
+            ARGS+=("$t")
+          done
+          if [ -n "$LIMIT" ] && [ "$LIMIT" != "0" ]; then
+            ARGS+=(--limit "$LIMIT")
+          fi
+          if [ "$DRY" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+
+          echo "python tools/patch_posts_location_v3.py ${ARGS[@]:0:5} ... (총 ${#ARGS[@]} 인자)"
+          set +e
+          python tools/patch_posts_location_v3.py "${ARGS[@]}" | tee /tmp/patch.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          set -e
+          SUMMARY=$(grep -E "^성공 [0-9]+건 / 실패 [0-9]+건" /tmp/patch.log | tail -1 || echo "성공 0건 / 실패 0건")
+          echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+          echo "exit_code=${EXIT_CODE}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit patched posts (fallback safety net)
+        if: ${{ always() && github.event.inputs.dry_run != 'true' && steps.audit.outputs.count != '0' }}
+        run: |
+          git add output/posts
+          if ! git diff --cached --quiet; then
+            git commit -m "feat(location-v3): 정책 위반 포스트 일괄 재생성 fallback [$(date +%Y-%m-%d)]"
+            git push
+          else
+            echo "No post changes (checkpoint 으로 이미 push 됐거나 변경 없음)."
+          fi
+
+      - name: Notify Telegram
+        if: always()
+        run: |
+          if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets 미설정 — 알림 생략"
+            exit 0
+          fi
+          KST="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          COUNT="${{ steps.audit.outputs.count }}"
+          SUMMARY="${{ steps.patch.outputs.summary }}"
+          ICON="✅"
+          if [ "${{ job.status }}" != "success" ]; then
+            ICON="❌"
+          elif [ "${{ steps.patch.outputs.exit_code }}" != "0" ] && [ "$COUNT" != "0" ]; then
+            ICON="⚠️"
+          fi
+          MESSAGE="${ICON} 정책 위반 포스트 일괄 재생성 (${KST})
+          색출: ${COUNT}건 · limit=${{ github.event.inputs.limit }} · checkpoint=${PATCH_CHECKPOINT_EVERY} · dry_run=${{ github.event.inputs.dry_run }}
+          결과: ${SUMMARY:-N/A}
+          실행 로그: ${REPO_URL}/actions/runs/${GITHUB_RUN_ID}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" > /dev/null
