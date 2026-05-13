@@ -1,25 +1,21 @@
-"""audit_location_v3_facts.py — v3 입지 분석 본문의 hallucination 의심 표현 색출.
+"""audit_location_v3_facts.py — v3 입지 분석 본문의 정책 위반 색출.
 
-배경
-  Gemini v3 가 grounded_facts_used 에 없는 정량/금융 표현(계약금 N만원, 전매
-  N년, 무이자 등) 을 만들어 본문에 끼우는 사례 발견. 본 도구는 운영자가
-  육안으로 모든 단지를 검토하지 않고도 의심 후보를 색출하도록 본문에서 정량
-  표현 정규식 매칭 → cache/meta 와 자동 대조해 의심 후보를 출력.
+정책 (location_v3.py 의 Hallucination Guard 반영):
+  · 입지 분석 본문에서 *평형·분양가를 제외한* 모든 금액 표현 금지
+  · 부동산 규제 정보 (전매·재당첨·거주의무·상한제·규제지역) 일체 금지
 
-자동 대조 가능 항목
-  - 계약금 금액(만원 단위) → 분양가 × 5% 와 비교
-  - 전매 표현 ("전매 제한이 없", "전매 N년") → post_meta.resale_restriction 비교
-  - 무이자·후불제·이자 후불 → cache raw_text/pdf_policy_text 미언급 시 의심
-  - 이주비·발코니 확장비 정량 → cache 미언급 시 의심
+본 도구는 v3 패치된 단지의 body_md 를 스캔해 위 두 정책에 걸리는 표현을
+색출하고, 재생성용 --targets 문자열을 출력해 워크플로우에 그대로 복붙
+가능하도록 함.
 
 사용
   python tools/audit_location_v3_facts.py
   python tools/audit_location_v3_facts.py --json    # 머신 판독용
-  python tools/audit_location_v3_facts.py --target 2026000098  # 단일 단지
+  python tools/audit_location_v3_facts.py --target 2026000098
 
 출력
-  - 의심 후보 단지 목록 (재실행 시 --targets 로 그대로 복사 가능)
-  - 단지별 의심 표현 및 사유
+  - 의심 후보 단지 목록 (재생성용 --targets 자동 구성)
+  - 단지별 위반 표현 인용
 """
 
 from __future__ import annotations
@@ -35,14 +31,24 @@ POSTS_DIR = ROOT / "output" / "posts"
 CACHE_DIR = ROOT / "output" / "data_cache" / "notices"
 
 
-# 본문에서 정량/금융 표현 추출 정규식.
-RE_CONTRACT_AMOUNT = re.compile(r"계약금\s*(\d{2,5})\s*만\s*원")
-RE_NO_RESALE = re.compile(r"전매\s*(제한이?\s*)?(없|미적용|해제|면제)")
-RE_RESALE_YEARS = re.compile(r"전매\s*제한\s*(\d+)\s*년")
-RE_NO_INTEREST = re.compile(r"(중도금\s*)?(무이자|이자\s*후불|이자\s*후불제|후불제)")
-RE_RELOC_FUND = re.compile(r"이주비\s*(\d+\s*억|\d+\s*만\s*원)")
-RE_BALCONY_FREE = re.compile(r"발코니\s*확장\s*무료")
-RE_OPTION_PROMO = re.compile(r"옵션\s*(무료|할인|증정)")
+# 정책 1 — 평형·분양가 제외 금액 관련 키워드 (생성 금지).
+MONEY_KEYWORDS = (
+    "계약금", "중도금", "잔금", "무이자", "이자 후불", "이자후불", "후불제",
+    "이주비", "발코니 확장", "발코니확장", "옵션 비용", "옵션비용",
+    "전세보증금", "월세", "시세", "호가", "실거래가", "매매가",
+    "대출 한도", "DSR", "LTV",
+)
+# 본문에서 "평형·분양가가 아닌 맥락의 금액 수치" 를 찾기 위한 단순 정규식.
+# 분양가/평형 컨텍스트는 따로 분리해 사후 화이트리스트 처리.
+RE_MONEY_AMOUNT = re.compile(r"\d[\d,]*\s*(?:만\s*원|억\s*원|억)")
+RE_PRICE_CONTEXT = re.compile(r"(분양가|매매가|호가|시세|실거래가)\s*\d")
+
+# 정책 2 — 부동산 규제 정보 (생성 금지).
+REGULATION_KEYWORDS = (
+    "전매", "재당첨", "거주 의무", "거주의무", "분양가 상한제", "분양가상한제",
+    "투기과열", "조정대상", "규제 지역", "규제지역", "비규제지역", "비규제",
+    "특별 공급", "특별공급", "1순위", "2순위", "청약 자격", "청약자격",
+)
 
 
 def _load_json(p: Path) -> dict:
@@ -52,27 +58,25 @@ def _load_json(p: Path) -> dict:
         return {}
 
 
-def _parse_max_price_won(price_range: str) -> int:
-    """post_meta.price_range = '7억 400만원 ~ 8억원' → 8_0000_0000 (원)."""
-    if not price_range:
-        return 0
-    # '8억원' / '8억' / '8억 100만원'
-    nums = re.findall(r"(\d+)\s*억(?:\s*(\d+)\s*만)?", price_range)
-    if not nums:
-        return 0
-    last = nums[-1]
-    eok = int(last[0]) if last[0] else 0
-    man = int(last[1]) if last[1] else 0
-    return eok * 100_000_000 + man * 10_000
+def _quote_context(body: str, idx: int, span: int = 25) -> str:
+    """인덱스 주변 문맥을 짧게 잘라 인용 — 보고용."""
+    start = max(0, idx - span)
+    end = min(len(body), idx + span)
+    snippet = body[start:end].replace("\n", " ").strip()
+    return f"…{snippet}…"
 
 
 def audit_one(nid: str) -> dict | None:
-    """단지 1건 검사. 의심 항목이 있으면 dict 반환, 없으면 None."""
+    """단지 1건 검사. 정책 위반 표현이 있으면 dict 반환, 없으면 None.
+
+    정책 1: 평형·분양가 외 모든 금액 표현 금지
+    정책 2: 부동산 규제 관련 표현 일체 금지
+    """
     v3_path = POSTS_DIR / nid / "location_v3.json"
     meta_path = POSTS_DIR / nid / "post_meta.json"
     cache_path = CACHE_DIR / f"{nid}.json"
     if not v3_path.exists():
-        return None  # v3 패치되지 않은 단지는 검사 대상 아님.
+        return None
     v3 = _load_json(v3_path)
     meta = _load_json(meta_path)
     cache = _load_json(cache_path)
@@ -84,52 +88,31 @@ def audit_one(nid: str) -> dict | None:
 
     findings: list[str] = []
 
-    # 1. 계약금 금액 — 분양가 5% 와 비교.
-    m = RE_CONTRACT_AMOUNT.search(body)
-    if m:
-        claimed_man = int(m.group(1))  # 만원 단위
-        claimed_won = claimed_man * 10_000
-        max_price = _parse_max_price_won(meta.get("price_range") or "")
-        if max_price:
-            expected_5pct = max_price * 0.05
-            if claimed_won < expected_5pct * 0.5:
-                findings.append(
-                    f"계약금 {claimed_man}만원 (분양가 최대 {max_price//100_000_000}억 기준 5%={int(expected_5pct)//10000}만원과 큰 차이)"
-                )
+    # 정책 1 — 금액 키워드 직접 출현. 평형·분양가 컨텍스트는 별도 white-list.
+    for kw in MONEY_KEYWORDS:
+        idx = body.find(kw)
+        if idx >= 0:
+            findings.append(f"금액 키워드 '{kw}' 출현 — {_quote_context(body, idx)}")
+    # 금액 수치 그 자체 — 분양가·시세 같은 합법 컨텍스트가 아니면 의심.
+    for m in RE_MONEY_AMOUNT.finditer(body):
+        idx = m.start()
+        # 분양가/매매가/호가/시세/실거래가 와 함께 등장하는 경우는 정책 1 위반
+        # (위에서 이미 키워드로 잡힘 — 중복 보고 방지) 아니면, 그냥 금액 수치만
+        # 등장하는 경우 → 평형(㎡·m²) 인접 컨텍스트가 아니라면 의심.
+        ctx_before = body[max(0, idx-15):idx]
+        ctx_after = body[m.end():m.end()+10]
+        ctx = ctx_before + m.group() + ctx_after
+        # 평형 인접: "84㎡" "전용 84m²" — 평형 표시 옆 금액은 거의 없음 (분양가 같이 나오면 분양가 컨텍스트)
+        # 분양가 컨텍스트면 _허용_ — "분양가 8억" 같은 표현은 OK.
+        if "분양가" in ctx or "공급가" in ctx:
+            continue
+        findings.append(f"금액 수치 '{m.group().strip()}' 비-분양가 컨텍스트 — {_quote_context(body, idx)}")
 
-    # 2. 전매 제한 표현 — meta.resale_restriction 과 비교.
-    resale = (meta.get("resale_restriction") or "").strip()
-    if RE_NO_RESALE.search(body):
-        if resale and resale not in {"없음", "미적용", "해제"}:
-            findings.append(f"본문 '전매 제한 없음' 표현 vs meta.resale_restriction='{resale}'")
-    yr = RE_RESALE_YEARS.search(body)
-    if yr and resale:
-        claimed = f"{yr.group(1)}년"
-        if claimed != resale and resale not in {"없음", "미적용"}:
-            findings.append(f"본문 전매 제한 '{claimed}' vs meta.resale_restriction='{resale}'")
-
-    # 3. 무이자/후불제 — cache raw_text + pdf_policy_text 에 명시 없으면 의심.
-    if RE_NO_INTEREST.search(body):
-        src = (doc.get("raw_text") or "") + " " + (doc.get("pdf_policy_text") or "")
-        if not re.search(r"무이자|이자\s*후불|후불제", src):
-            findings.append("본문 '무이자/이자 후불/후불제' 표현 — cache raw_text 미언급")
-
-    # 4. 이주비 정량 — cache 미언급 시 의심.
-    rm = RE_RELOC_FUND.search(body)
-    if rm:
-        src = (doc.get("raw_text") or "") + " " + (doc.get("pdf_policy_text") or "")
-        if "이주비" not in src:
-            findings.append(f"본문 이주비 '{rm.group(0)}' — cache 미언급")
-
-    # 5. 발코니 확장 무료 / 옵션 무료 — cache 미언급 시 의심.
-    if RE_BALCONY_FREE.search(body):
-        src = (doc.get("raw_text") or "") + " " + (doc.get("pdf_policy_text") or "")
-        if not re.search(r"발코니\s*확장\s*(무료|0원)", src):
-            findings.append("본문 '발코니 확장 무료' — cache 미언급")
-    if RE_OPTION_PROMO.search(body):
-        src = (doc.get("raw_text") or "") + " " + (doc.get("pdf_policy_text") or "")
-        if not re.search(r"옵션\s*(무료|할인|증정)", src):
-            findings.append("본문 '옵션 무료/할인/증정' — cache 미언급")
+    # 정책 2 — 규제 키워드 직접 출현.
+    for kw in REGULATION_KEYWORDS:
+        idx = body.find(kw)
+        if idx >= 0:
+            findings.append(f"규제 키워드 '{kw}' 출현 — {_quote_context(body, idx)}")
 
     if not findings:
         return None
