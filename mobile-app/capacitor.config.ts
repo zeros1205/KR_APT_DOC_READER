@@ -5,12 +5,27 @@ const config: CapacitorConfig = {
   appName: "정과장의 청약노트",
   webDir: "dist",
   bundledWebRuntime: false,
+  ios: {
+    contentInset: "always",
+    scrollEnabled: true,
+    backgroundColor: "#fffaf3",
+    preferredContentMode: "mobile"
+  },
   plugins: {
     SplashScreen: {
-      launchAutoHide: true
+      launchAutoHide: true,
+      backgroundColor: "#f46745",
+      showSpinner: false,
+      iosSpinnerStyle: "small",
+      spinnerColor: "#ffffff",
+      launchFadeOutDuration: 300
     },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"]
+    },
+    Keyboard: {
+      resize: "body",
+      resizeOnFullScreen: true
     }
   }
 };
