@@ -52,6 +52,7 @@ const REGIONS = [
 ];
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.1.0";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.aptnote.mobile";
+const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL || "https://apps.apple.com/app/id6745796757";
 const TABLET_POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
@@ -514,7 +515,7 @@ function App() {
             void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
           }
           onShare={shareCard}
-          onUpdate={() => void Browser.open({ url: PLAY_STORE_URL })}
+          onUpdate={() => void Browser.open({ url: Capacitor.getPlatform() === "ios" ? APP_STORE_URL : PLAY_STORE_URL })}
         />
       )}
 
