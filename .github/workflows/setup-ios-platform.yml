@@ -15,7 +15,7 @@ on:
 
 concurrency:
   group: setup-ios-platform-${{ github.ref }}
-  cancel_in_progress: true
+  cancel-in-progress: true
 
 env:
   MOBILE_APP_DIR: mobile-app
