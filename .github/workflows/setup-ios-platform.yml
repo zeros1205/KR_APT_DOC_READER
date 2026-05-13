@@ -82,9 +82,7 @@ jobs:
           git add mobile-app/ios/
           git add mobile-app/package-lock.json
 
-          git commit -m "feat(mobile): setup iOS Capacitor platform
-
-Generated iOS project structure via npx cap add ios. Configured CocoaPods dependencies. Ready for TestFlight builds via GitHub Actions."
+          git commit -m $'feat(mobile): setup iOS Capacitor platform\n\nGenerated iOS project structure via npx cap add ios. Configured CocoaPods dependencies. Ready for TestFlight builds via GitHub Actions.'
 
       - name: Push to main branch
         if: steps.check-ios.outputs.exists == 'false'
