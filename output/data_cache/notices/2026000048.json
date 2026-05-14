@@ -252,5 +252,20 @@
       "약식표기 공급 계약금(20%) 잔금(20%)",
       "동호수 1회(20%) 2회(20%) 3회(20%)"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "2년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:48+09:00"
   }
 }

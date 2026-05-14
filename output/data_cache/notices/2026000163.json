@@ -249,12 +249,16 @@
   "manual_regulation": {
     "regulated_zone": "비규제지역",
     "is_hot_zone": "N",
+    "is_regulated_zone": "N",
     "readmission_limit": "없음",
     "resale_restriction": "없음",
     "live_requirement": "없음",
     "price_cap": "미적용",
     "is_price_cap": "N",
-    "source": "manual_review_image",
-    "note": "사용자 제공 공고문 이미지 단지 주요정보 표 기준 검수 반영"
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:51+09:00"
   }
 }

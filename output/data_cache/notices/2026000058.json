@@ -353,15 +353,11 @@
     "live_requirement": "2년",
     "price_cap": "적용",
     "is_price_cap": "Y",
-    "source": "manual_verified_google_search",
-    "query": "한국부동산원 아파트 입주자모집공고 오티에르 반포 재당첨제한, 전매제한, 거주의무기간",
-    "evidence_urls": [
-      "https://files-scs.pstatic.net/2026/03/31/cHPN9N20iD/%EC%98%A4%ED%8B%B0%EC%97%90%EB%A5%B4%20%EB%B0%98%ED%8F%AC%20%EC%9E%85%EC%A3%BC%EC%9E%90%EB%AA%A8%EC%A7%91%EA%B3%B5%EA%B3%A0%EB%AC%B8%20%281%29.pdf"
-    ],
-    "evidence_notes": [
-      "공고문 첫 페이지 주요정보 표: 투기과열지구/청약과열지역, 재당첨제한 10년, 전매제한 3년, 거주의무기간 2년, 분양가상한제 적용"
-    ],
-    "checked_at": "2026-04-26T20:05:29+09:00"
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:48+09:00"
   },
   "manual_finance": {
     "contract_ratio": "20",

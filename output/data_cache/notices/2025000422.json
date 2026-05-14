@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.7153A타입 | 전용 84.1528㎡ | 일반 14세대 | 특별 15세대 | 분양가 53400만원\n059.9642B타입 | 전용 85.1890㎡ | 일반 30세대 | 특별 24세대 | 분양가 52800만원\n075.4603 타입 | 전용 105.0792㎡ | 일반 8세대 | 특별 13세대 | 분양가 64900만원\n084.9596 타입 | 전용 118.2130㎡ | 일반 1세대 | 특별 12세대 | 분양가 70900만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-14T00:21:54.209883"
+    "collected_at": "2026-05-14T00:21:54.209883",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "양지7지구 3단지 지역주택조합",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:46+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-14T09:28:46+09:00"
+  }
 }

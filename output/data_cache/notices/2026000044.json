@@ -308,5 +308,20 @@
       "분양가격 계약금(10%) 중도금(60%) 잔금",
       "주 택 형 동별 공 세 수 급 대 구 층 분 해 세 수 당 대 대지비 건축비 부가세 계 계 1 약 차 시 1 계 개 2 약 월 차 후 내 202 1 6. 회 06.19 2026 2 . 회 10.16. 2027 3 . 회 02.19. 2027 4 . 회 06.18. 2027 5 . 회 09.17. 2027 6 . 회 12.17. 입주 (3 지 0% 정 ) 일"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:48+09:00"
   }
 }

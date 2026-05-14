@@ -499,5 +499,20 @@
       "계약금(10%) 중도금(60%) 잔금(30%)",
       "동/호 구분 층구분 1차 2차 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역, 토지거래허가구역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:46+09:00"
   }
 }

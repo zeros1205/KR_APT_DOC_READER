@@ -193,5 +193,20 @@
       "공급 분양가격 계약금(10%) 중도금(60%) 잔금(30%)",
       "층 세대 계약 후 1회(10%) 2회(10%) 3회(10%) 4회(10%) 5회(10%) 6회(10%)"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:49+09:00"
   }
 }

@@ -327,5 +327,20 @@
       "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
       "( 표 타 기 입) 단 구 지 분 동 (라 구 인 분 ) 층 구분 세 해 대 당 수 대지비 건축비 부가세 계 계 1 약 차 시 계 2 약 차 후 2 1 0 차 26 ( . 1 0 0 9 % .2 ) 3. 2 2 0 차 27 ( . 1 0 0 3 % .2 ) 3. 2 3 0 차 27 ( . 1 1 0 0 % .2 ) 5. 2 4 0 차 28 ( . 1 0 0 8 % .2 ) 3. 2 5 0 차 29 ( . 1 0 0 1 % .2 ) 3. 2 6 0 차 29 ( . 1 0 0 7 % .2 ) 3. 지 입 정 주 일"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:47+09:00"
   }
 }

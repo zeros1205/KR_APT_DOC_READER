@@ -308,5 +308,20 @@
       "공급금액 계약금(10%) 중도금(60%) 잔금(30%)",
       "주택형 세대수 1차(10%) 2차(10%) 3차(10%) 4차(10%) 5차(10%) 6차(10%) 입주"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:48+09:00"
   }
 }

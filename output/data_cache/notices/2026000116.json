@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n036.9596 타입 | 전용 51.6683㎡ | 일반 20세대 | 특별 23세대 | 분양가 116370만원\n044.7166 타입 | 전용 61.5864㎡ | 일반 4세대 | 특별 5세대 | 분양가 138760만원\n051.8088A타입 | 전용 70.2520㎡ | 일반 4세대 | 특별 5세대 | 분양가 169590만원\n051.7802B타입 | 전용 70.4537㎡ | 일반 3세대 | 특별 5세대 | 분양가 170080만원\n051.7611C타입 | 전용 70.8559㎡ | 일반 10세대 | 특별 12세대 | 분양가 171050만원\n059.9912A타입 | 전용 82.3556㎡ | 일반 6세대 | 특별 5세대 | 분양가 217940만원\n059.9866B타입 | 전용 82.1289㎡ | 일반 4세대 | 특별 1세대 | 분양가 215280만원\n084.9549A타입 | 전용 115.6564㎡ | 일반 32세대 | 특별 41세대 | 분양가 274640만원\n084.9645B타입 | 전용 115.2732㎡ | 일반 26세대 | 특별 33세대 | 분양가 276470만원\n084.9145C타입 | 전용 114.8944㎡ | 일반 17세대 | 특별 20세대 | 분양가 271190만원\n084.9898T타입 | 전용 115.2505㎡ | 일반 3세대 | 특별 3세대 | 분양가 279580만원\n140.8560P타입 | 전용 191.5634㎡ | 일반 3세대 | 특별 0세대 | 분양가 492800만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-14T00:21:52.448569"
+    "collected_at": "2026-05-14T00:21:52.448569",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "투기과열지구, 청약과열지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "노량진8재정비촉진구역주택재개발정비사업조합",
@@ -338,5 +343,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-14T09:28:50+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-14T09:28:50+09:00"
+  }
 }
