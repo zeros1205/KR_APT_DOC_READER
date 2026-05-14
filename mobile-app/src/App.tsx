@@ -20,6 +20,7 @@ import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
+import { hideBottomBanner, initializeAdMob, showBottomBanner } from "./admob";
 import introBackground from "./assets/intro_without_text.png";
 import {
   defaultSettings,
@@ -161,7 +162,20 @@ function App() {
     void fetchLatestVersion().then((version) => {
       if (version) setLatestVersion(version);
     });
+    void initializeAdMob();
   }, []);
+
+  useEffect(() => {
+    if (introVisible) {
+      void hideBottomBanner();
+      return;
+    }
+    if (view === "home" || view === "detail") {
+      void showBottomBanner();
+    } else {
+      void hideBottomBanner();
+    }
+  }, [view, introVisible]);
 
   useEffect(() => {
     if (view !== "home") return;
