@@ -32,6 +32,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from datetime import date
 from pathlib import Path
 
@@ -269,6 +270,10 @@ def _checkpoint_commit(checkpoint_every: int, processed_since_checkpoint: int) -
 
     GitHub Actions runner 디스크는 워크플로우 종료 시 폐기되므로, 중간 결과를
     main 으로 push 해두지 않으면 부분 lost. checkpoint_every<=0 이면 비활성.
+
+    push race 대응: 다른 워크플로우/PR 머지가 main 으로 동시에 들어오면 push 가
+    reject(fast-forward 불가) 됨. 이 경우 pull --rebase origin main 으로 자동
+    동기화 후 재시도 (최대 3회 지수 백오프).
     """
     if checkpoint_every <= 0 or processed_since_checkpoint < checkpoint_every:
         return False
@@ -287,9 +292,29 @@ def _checkpoint_commit(checkpoint_every: int, processed_since_checkpoint: int) -
             ["git", "commit", "-m", f"feat(location-v3): checkpoint — {processed_since_checkpoint}건 단위 커밋"],
             check=True, cwd=ROOT,
         )
-        subprocess.run(["git", "push"], check=True, cwd=ROOT)
-        print(f"  💾 checkpoint commit/push 성공 ({processed_since_checkpoint}건 묶음)")
-        return True
+        # push race 자동 회복 — 최대 3회 지수 백오프.
+        for attempt in range(1, 4):
+            push = subprocess.run(["git", "push"], cwd=ROOT, capture_output=True, text=True)
+            if push.returncode == 0:
+                print(f"  💾 checkpoint commit/push 성공 ({processed_since_checkpoint}건 묶음)")
+                return True
+            stderr = push.stderr or ""
+            rejected = ("rejected" in stderr or "fetch first" in stderr or "non-fast-forward" in stderr)
+            if not rejected or attempt >= 3:
+                print(f"  ⚠️ checkpoint push 실패 (attempt {attempt}): {stderr[:200]}")
+                return False
+            print(f"  🔄 push reject (attempt {attempt}/3) — pull --rebase 후 재시도")
+            pull = subprocess.run(
+                ["git", "pull", "--rebase", "origin", "main"],
+                cwd=ROOT, capture_output=True, text=True,
+            )
+            if pull.returncode != 0:
+                # rebase 충돌 같은 복구 어려운 케이스 — checkpoint 포기, fallback Commit step 에 맡김.
+                print(f"  ⚠️ pull --rebase 실패 (충돌 가능): {pull.stderr[:200]}")
+                subprocess.run(["git", "rebase", "--abort"], cwd=ROOT, capture_output=True)
+                return False
+            time.sleep(attempt * 2)  # 2s, 4s 백오프
+        return False
     except subprocess.CalledProcessError as exc:
         # checkpoint 실패 자체는 fatal 이 아님. 마지막 fallback Commit step 이 한 번 더 시도.
         print(f"  ⚠️ checkpoint 실패 (계속 진행): {exc}")
