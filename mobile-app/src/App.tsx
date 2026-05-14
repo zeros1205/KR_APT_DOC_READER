@@ -73,7 +73,7 @@ async function openStorePage(): Promise<void> {
   }
   await Browser.open({ url: webUrl });
 }
-const TABLET_POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
 type View = "home" | "favorites" | "settings" | "detail";
@@ -886,11 +886,8 @@ type HomeProps = {
 function HomeView(props: HomeProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const filterDockRef = useRef<HTMLDivElement | null>(null);
-  const isTabletLayout = useMediaQuery("(min-width: 560px)");
-  const totalPages = isTabletLayout ? Math.max(1, Math.ceil(props.cards.length / TABLET_POSTS_PER_PAGE)) : 1;
-  const visibleCards = isTabletLayout
-    ? props.cards.slice((currentPage - 1) * TABLET_POSTS_PER_PAGE, currentPage * TABLET_POSTS_PER_PAGE)
-    : props.cards;
+  const totalPages = Math.max(1, Math.ceil(props.cards.length / POSTS_PER_PAGE));
+  const visibleCards = props.cards.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
 
   // 풀투리프레시 — 카드 목록 화면에서만 활성. 이미 로딩 중이면 비활성.
   const { distance: pullDistance, refreshing: pullRefreshing, armed: pullArmed } = usePullToRefresh({
@@ -900,7 +897,7 @@ function HomeView(props: HomeProps) {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [props.activeRegion, props.query, props.cards.length, isTabletLayout]);
+  }, [props.activeRegion, props.query, props.cards.length]);
 
   function goPage(page: number) {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
@@ -1036,7 +1033,7 @@ function HomeView(props: HomeProps) {
                 />
               ))}
             </div>
-            {isTabletLayout && totalPages > 1 && (
+            {totalPages > 1 && (
               <Pagination currentPage={currentPage} totalPages={totalPages} onPage={goPage} />
             )}
           </>
@@ -1084,23 +1081,6 @@ function Pagination({
       )}
     </nav>
   );
-}
-
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(query).matches;
-  });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(query);
-    const updateMatches = () => setMatches(mediaQuery.matches);
-    updateMatches();
-    mediaQuery.addEventListener("change", updateMatches);
-    return () => mediaQuery.removeEventListener("change", updateMatches);
-  }, [query]);
-
-  return matches;
 }
 
 type CardItemProps = {
