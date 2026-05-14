@@ -14,6 +14,8 @@ def npxCommand = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
 def skipWebBuild = providers.gradleProperty("skipWebBuild").map { it == "true" }.orElse(false)
 def androidVersionCode = providers.gradleProperty("androidVersionCode").map { it.toInteger() }.orElse(1)
 def androidVersionName = providers.gradleProperty("androidVersionName").orElse("0.1.0")
+// AdMob 앱 ID 는 환경변수 ADMOB_APP_ID_ANDROID 로 주입. 미설정 시 Google 공개 테스트 ID 사용.
+def admobAppIdAndroid = System.getenv("ADMOB_APP_ID_ANDROID") ?: "ca-app-pub-3940256099942544~3347511713"
 
 tasks.register("buildWebAssets", Exec) {
     workingDir mobileAppDir
@@ -41,6 +43,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode androidVersionCode.get()
         versionName androidVersionName.get()
+        manifestPlaceholders = [admobAppId: admobAppIdAndroid]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
