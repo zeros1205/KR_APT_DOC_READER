@@ -10,7 +10,6 @@
 <link rel="icon" type="image/x-icon" href="https://apt-note.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://apt-note.com/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://apt-note.com/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="https://apt-note.com/android-chrome-192x192.png">
 <link rel="apple-touch-icon" href="https://apt-note.com/apple-touch-icon.png">
 <link rel="manifest" href="https://apt-note.com/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -78,7 +77,7 @@ header {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 800;
   color: var(--c-dark);
   margin-bottom: 12px;
@@ -86,7 +85,7 @@ h1 {
 }
 
 .header-meta {
-  font-size: 0.8125rem;
+  font-size: 13px;
   color: var(--c-mid);
   font-weight: 500;
 }
@@ -99,7 +98,7 @@ main {
 }
 
 h2 {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 700;
   color: var(--c-dark);
   margin-top: 32px;
@@ -113,7 +112,7 @@ h2:first-child {
 }
 
 h3 {
-  font-size: 0.9375rem;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-primary);
   margin-top: 20px;
@@ -121,14 +120,14 @@ h3 {
 }
 
 p {
-  font-size: 0.9375rem;
+  font-size: 15px;
   line-height: 1.8;
   color: var(--c-dark);
   margin-bottom: 14px;
 }
 
 li {
-  font-size: 0.9375rem;
+  font-size: 15px;
   line-height: 1.8;
   color: var(--c-dark);
   margin-left: 20px;
@@ -157,7 +156,7 @@ a:hover {
   padding: 16px 18px;
   border-radius: 4px;
   margin: 24px 0;
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--c-dark);
   line-height: 1.7;
 }
@@ -168,7 +167,7 @@ a:hover {
   padding: 16px 18px;
   border-radius: 4px;
   margin: 24px 0;
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--c-dark);
   line-height: 1.7;
 }
@@ -184,7 +183,7 @@ a:hover {
 }
 
 .footer-nav a {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 600;
   border: none;
   border-bottom: 1px solid transparent;
@@ -205,11 +204,11 @@ a:hover {
   }
 
   h1 {
-    font-size: 1.5rem;
+    font-size: 24px;
   }
 
   h2 {
-    font-size: 1.125rem;
+    font-size: 18px;
   }
 }
 </style>
@@ -303,7 +302,12 @@ a:hover {
     <p>서비스가 제공하는 외부 링크는 참고용이며, 외부 사이트의 콘텐츠에 대해 운영자는 책임지지 않습니다.</p>
 
     <h2>8. 광고</h2>
-    <p>서비스는 Google AdSense 광고를 포함할 수 있습니다. 광고 클릭으로 인한 외부 사이트 이용은 사용자의 책임입니다.</p>
+    <p>본 서비스는 두 가지 채널을 통해 광고를 표시할 수 있습니다:</p>
+    <ul>
+      <li><strong>웹사이트(apt-note.com)</strong>: Google AdSense</li>
+      <li><strong>모바일 앱(Android)</strong>: Google AdMob</li>
+    </ul>
+    <p>광고 클릭으로 인한 외부 사이트 이용은 사용자의 책임이며, 광고 데이터 처리에 관한 사항은 개인정보 보호정책의 "광고" 섹션을 참고하세요.</p>
 
     <h2>9. 약관 변경</h2>
     <p>본 약관은 예고 없이 변경될 수 있습니다. 중요한 변경사항은 서비스 내 공지를 통해 알립니다.</p>
@@ -314,7 +318,7 @@ a:hover {
     <h2>11. 문의</h2>
     <p>이용약관에 대한 문의 사항은 다음 주소로 연락해주세요:</p>
     <ul>
-      <li><strong>이메일</strong>: contact@apt-note.com</li>
+      <li><strong>이메일</strong>: <a href="mailto:contact@apt-note.com">contact<!---->&#64;<!---->apt&#45;note.com</a></li>
       <li><strong>운영자</strong>: 정과장의 청약노트</li>
     </ul>
 
@@ -324,8 +328,6 @@ a:hover {
 
     <div class="footer-nav">
       <a href="/">홈</a>
-      <a href="/about.html">운영자 소개</a>
-      <a href="/editorial-policy.html">검수·운영 정책</a>
       <a href="/privacy.html">개인정보 보호정책</a>
     </div>
   </main>
