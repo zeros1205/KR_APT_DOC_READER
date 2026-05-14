@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n076.0622A타입 | 전용 107.7785㎡ | 일반 11세대 | 특별 14세대 | 분양가 98780만원\n076.0622B타입 | 전용 107.7791㎡ | 일반 1세대 | 특별 0세대 | 분양가 82160만원\n081.7692 타입 | 전용 115.9282㎡ | 일반 10세대 | 특별 11세대 | 분양가 95730만원\n084.8599 타입 | 전용 119.4974㎡ | 일반 24세대 | 특별 28세대 | 분양가 100490만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-14T22:16:32.717689"
+    "collected_at": "2026-05-14T22:16:32.717689",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)에이치더블유",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-15T07:24:47+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-15T07:24:47+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n046.8800 타입 | 전용 63.8600㎡ | 일반 10세대 | 특별 5세대 | 분양가 51700만원\n059.9500 타입 | 전용 81.4200㎡ | 일반 8세대 | 특별 11세대 | 분양가 67260만원\n074.9300A타입 | 전용 101.3400㎡ | 일반 2세대 | 특별 0세대 | 분양가 83710만원\n074.9300B타입 | 전용 101.3900㎡ | 일반 1세대 | 특별 7세대 | 분양가 86310만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-14T22:16:33.845905"
+    "collected_at": "2026-05-14T22:16:33.845905",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "대현청실 외2 가로주택정비사업조합",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-15T07:24:47+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-15T07:24:47+09:00"
+  }
 }
