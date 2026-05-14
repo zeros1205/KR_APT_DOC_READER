@@ -24,12 +24,6 @@ on:
     paths:
       - "mobile-app/**"
       - ".github/workflows/mobile-app-play-release.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "mobile-app/**"
-      - ".github/workflows/mobile-app-play-release.yml"
 
 concurrency:
   group: mobile-app-play-release-${{ github.ref }}
