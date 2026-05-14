@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
+import { AppLauncher } from "@capacitor/app-launcher";
 import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
@@ -54,6 +55,24 @@ const REGIONS = [
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.1.0";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.aptnote.mobile";
 const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL || "https://apps.apple.com/app/id6745796757";
+const PLAY_STORE_NATIVE_URL = "market://details?id=app.aptnote.mobile";
+const APP_STORE_NATIVE_URL = "itms-apps://itunes.apple.com/app/id6745796757";
+
+async function openStorePage(): Promise<void> {
+  const isIos = Capacitor.getPlatform() === "ios";
+  const nativeUrl = isIos ? APP_STORE_NATIVE_URL : PLAY_STORE_NATIVE_URL;
+  const webUrl = isIos ? APP_STORE_URL : PLAY_STORE_URL;
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const result = await AppLauncher.openUrl({ url: nativeUrl });
+      if (result.completed) return;
+    } catch {
+      // 스토어 앱 미설치 또는 OS 거부 — 웹으로 폴백
+    }
+  }
+  await Browser.open({ url: webUrl });
+}
 const TABLET_POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
@@ -93,6 +112,33 @@ function displayRegion(region: string): string {
   return shortNames[region] || region;
 }
 
+function buildShareText(card: NoticeCard): string {
+  const lines: string[] = [`[${card.apt_name}] 청약 정보 한눈에 보기`, ""];
+  const region = card.region?.trim();
+  if (region) lines.push(`📍 ${region}`);
+  const noticeDate = card.notice_date?.trim();
+  if (noticeDate) lines.push(`🗓 모집공고일 ${noticeDate}`);
+  const price = (card as FavoriteNotice).price_range || extractPriceRange(card);
+  if (price) lines.push(`💰 ${price}`);
+  if (lines.length > 2) lines.push("");
+  lines.push(
+    "🏠 분양가·일정·입지·자격 핵심 정리",
+    "📋 청약 전 꼭 확인해야 할 정보 모음",
+    "✨ 정과장의 청약노트"
+  );
+  return lines.join("\n");
+}
+
+function buildGenericShareText(title: string): string {
+  return [
+    title,
+    "",
+    "🏠 복잡한 청약 공고문, 깔끔하게 정리",
+    "📋 분양가·일정·입지·자격 한눈에",
+    "✨ 정과장의 청약노트"
+  ].join("\n");
+}
+
 function sanitizeCardHtml(card: NoticeCard): string {
   const html = card.html || "";
   const titleClass = card.apt_name.replace(/\s+/g, "").length >= 13 ? "card-title is-long-title" : "card-title";
@@ -121,6 +167,7 @@ function App() {
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState("");
   const [latestVersion, setLatestVersion] = useState(APP_VERSION);
+  const [installedVersion, setInstalledVersion] = useState(APP_VERSION);
   const [toastMessage, setToastMessage] = useState("");
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const lastHomeBackAtRef = useRef(0);
@@ -135,6 +182,11 @@ function App() {
     void fetchLatestVersion().then((version) => {
       if (version) setLatestVersion(version);
     });
+    if (Capacitor.isNativePlatform()) {
+      void CapacitorApp.getInfo().then((info) => {
+        if (info.version) setInstalledVersion(info.version);
+      });
+    }
     void initializeAdMob();
   }, []);
 
@@ -404,14 +456,7 @@ function App() {
 
   async function shareCard(card: NoticeCard) {
     const url = absolutePostUrl(card.post_url);
-    const text = [
-      card.apt_name,
-      url,
-      "",
-      "🏠 분양가·일정·입지·자격 한눈에 정리",
-      "📋 청약 전 꼭 확인해야 할 정보 모음",
-      "✨ 정과장의 청약노트"
-    ].join("\n");
+    const text = buildShareText(card);
     await Share.share({ text, url });
   }
 
@@ -469,7 +514,10 @@ function App() {
           onShare={() =>
             detailPage.card
               ? void shareCard(detailPage.card)
-              : void Share.share({ title: detailPage.title, url: detailPage.url })
+              : void Share.share({
+                  text: buildGenericShareText(detailPage.title),
+                  url: detailPage.url
+                })
           }
           onToggleFavorite={() => detailPage.card && void toggleFavorite(detailPage.card)}
         />
@@ -516,6 +564,7 @@ function App() {
       {view === "settings" && (
         <SettingsView
           favorites={favorites}
+          installedVersion={installedVersion}
           latestVersion={latestVersion}
           page={settingsPage}
           settings={settings}
@@ -529,7 +578,7 @@ function App() {
             void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
           }
           onShare={shareCard}
-          onUpdate={() => void Browser.open({ url: Capacitor.getPlatform() === "ios" ? APP_STORE_URL : PLAY_STORE_URL })}
+          onUpdate={() => void openStorePage()}
         />
       )}
 
@@ -1139,6 +1188,7 @@ function FavoritesView({
 
 function SettingsView({
   favorites,
+  installedVersion,
   latestVersion,
   page,
   settings,
@@ -1153,6 +1203,7 @@ function SettingsView({
   onUpdate
 }: {
   favorites: FavoriteNotice[];
+  installedVersion: string;
   latestVersion: string;
   page: SettingsPage;
   settings: UserSettings;
@@ -1180,7 +1231,7 @@ function SettingsView({
     }
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
-  const hasUpdate = APP_VERSION !== latestVersion;
+  const hasUpdate = installedVersion !== latestVersion;
 
   if (page === "notifications") {
     return (
@@ -1342,7 +1393,7 @@ function SettingsView({
         <div className="settings-row version-row">
           <div>
             <strong>앱 정보</strong>
-            <span>현재 {APP_VERSION} · 최신 {latestVersion}</span>
+            <span>현재 {installedVersion} · 최신 {latestVersion}</span>
           </div>
           <button className="update-button" disabled={!hasUpdate} onClick={onUpdate}>
             업데이트
