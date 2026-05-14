@@ -140,6 +140,7 @@ function App() {
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState("");
   const [latestVersion, setLatestVersion] = useState(APP_VERSION);
+  const [installedVersion, setInstalledVersion] = useState(APP_VERSION);
   const [toastMessage, setToastMessage] = useState("");
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const lastHomeBackAtRef = useRef(0);
@@ -154,6 +155,11 @@ function App() {
     void fetchLatestVersion().then((version) => {
       if (version) setLatestVersion(version);
     });
+    if (Capacitor.isNativePlatform()) {
+      void CapacitorApp.getInfo().then((info) => {
+        if (info.version) setInstalledVersion(info.version);
+      });
+    }
     void initializeAdMob();
   }, []);
 
@@ -535,6 +541,7 @@ function App() {
       {view === "settings" && (
         <SettingsView
           favorites={favorites}
+          installedVersion={installedVersion}
           latestVersion={latestVersion}
           page={settingsPage}
           settings={settings}
@@ -1158,6 +1165,7 @@ function FavoritesView({
 
 function SettingsView({
   favorites,
+  installedVersion,
   latestVersion,
   page,
   settings,
@@ -1172,6 +1180,7 @@ function SettingsView({
   onUpdate
 }: {
   favorites: FavoriteNotice[];
+  installedVersion: string;
   latestVersion: string;
   page: SettingsPage;
   settings: UserSettings;
@@ -1199,7 +1208,7 @@ function SettingsView({
     }
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
-  const hasUpdate = APP_VERSION !== latestVersion;
+  const hasUpdate = installedVersion !== latestVersion;
 
   if (page === "notifications") {
     return (
@@ -1361,7 +1370,7 @@ function SettingsView({
         <div className="settings-row version-row">
           <div>
             <strong>앱 정보</strong>
-            <span>현재 {APP_VERSION} · 최신 {latestVersion}</span>
+            <span>현재 {installedVersion} · 최신 {latestVersion}</span>
           </div>
           <button className="update-button" disabled={!hasUpdate} onClick={onUpdate}>
             업데이트
