@@ -1185,6 +1185,7 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "무등산 더힐 지산동 청약 33세대 분양가 정리", "text": "[무등산 더힐(조합원 취소분)] 청약 정보 한눈에 보기\n\n📍 광주\n🗓 모집공고일 2026-03-13\n💰 5억 1,840만원 ~ 7억 4,280만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1208,12 +1209,17 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   }
 
   function getShareData() {
-    var title = (document.querySelector('meta[property="og:title"]') || {}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
       || (document.querySelector('meta[name="description"]') || {}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {
       title: title,
       text: description,
