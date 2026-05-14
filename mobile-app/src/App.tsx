@@ -758,7 +758,7 @@ function DetailNav({
         <ArrowLeft size={21} />
       </button>
       <div className="detail-title">
-        <span>{page.title}</span>
+        <span>{page.card ? "청약 공고문 분석" : page.title}</span>
       </div>
       <div className="detail-actions">
         {page.card && (
