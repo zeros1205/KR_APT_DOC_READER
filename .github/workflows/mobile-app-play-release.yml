@@ -95,7 +95,7 @@ jobs:
           grep -q "청약Home 이동" "$app"
           grep -q "intro_without_text" "$app"
           grep -q "로딩 중" "$app"
-          grep -q "TABLET_POSTS_PER_PAGE" "$app"
+          grep -q "POSTS_PER_PAGE" "$app"
           grep -q "Pagination" "$app"
           grep -q "app.aptnote.mobile" "$gradle" "$MOBILE_APP_DIR/capacitor.config.ts"
           grep -q "sync-post-assets" "$MOBILE_APP_DIR/package.json"
