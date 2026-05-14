@@ -53,7 +53,6 @@ jobs:
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
       GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.GOOGLE_SERVICES_JSON_B64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON || secrets.ANDROID_GOOGLE_SERVICES_JSON || secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
-      ADMOB_APP_ID_ANDROID: ${{ secrets.ADMOB_APP_ID_ANDROID }}
       RELEASE_VERSION_CODE: ${{ github.event_name == 'workflow_dispatch' && inputs.version_code || github.run_number }}
       RELEASE_VERSION_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.version_name || '0.1.0' }}
 
@@ -203,8 +202,6 @@ jobs:
         working-directory: mobile-app
         env:
           VITE_APP_VERSION: ${{ env.RELEASE_VERSION_NAME }}
-          VITE_ADMOB_BANNER_ID_ANDROID: ${{ secrets.VITE_ADMOB_BANNER_ID_ANDROID }}
-          VITE_ADMOB_USE_TEST: ${{ secrets.VITE_ADMOB_USE_TEST }}
         run: npm run build
 
       - name: Write Google Services config
