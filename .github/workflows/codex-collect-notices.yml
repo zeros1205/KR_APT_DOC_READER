@@ -62,13 +62,15 @@ jobs:
           START_DATE="${{ github.event.inputs.start_date || '' }}"
           LIMIT="${{ github.event.inputs.limit || '0' }}"
 
-          CMD="python collect_notices_weekly.py --days $DAYS --limit $LIMIT"
+          # eval 제거 — 사용자 입력의 셸 메타문자가 명령으로 해석되지 않도록
+          # 인자 배열로 직접 호출 (location-v3-active-posts.yml 와 같은 패턴).
+          ARGS=(--days "$DAYS" --limit "$LIMIT")
           if [ -n "$START_DATE" ]; then
-            CMD="$CMD --start-date $START_DATE"
+            ARGS+=(--start-date "$START_DATE")
           fi
 
-          echo "$CMD"
-          eval "$CMD"
+          echo "python collect_notices_weekly.py ${ARGS[*]}"
+          python collect_notices_weekly.py "${ARGS[@]}"
 
       - name: Detect new notice cache files
         id: cache_changes

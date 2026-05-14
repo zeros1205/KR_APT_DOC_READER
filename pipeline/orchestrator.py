@@ -1474,6 +1474,54 @@ def _normalize_location_output(result: dict, facts: dict, notice_text: str = "")
     return normalized
 
 
+# Gemini 호출 transient retry 토큰 — patch_posts_location_v3._run_v3 와 동일 정책.
+_GEMINI_TRANSIENT_TOKENS = (
+    "503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED",
+    "temporarily", "rate", "exceeded", "timeout", "deadline",
+    "INTERNAL", "500", "502", "504",
+)
+
+
+def _gemini_call_with_retry(*, model: str, contents, config, max_attempts: int = 3) -> str:
+    """Gemini generate_content 호출에 timeout(600s) + transient retry(지수 백오프).
+
+    orchestrator 의 4개 호출 지점(입지 분석·특별공급 자격·규제 정보·입지 검증)이
+    동일한 안전장치를 갖도록 통합. location_v2/v3 와 동일 정책.
+
+    raw text 반환. 호출자가 JSON 파싱.
+    """
+    import time as _time
+    from google import genai as google_genai
+    from google.genai import types as genai_types
+
+    try:
+        http_options = genai_types.HttpOptions(timeout=600_000)
+        client = google_genai.Client(api_key=GEMINI_API_KEY, http_options=http_options)
+    except (AttributeError, TypeError):
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+
+    delay = 2.0
+    last_exc: Exception | None = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = client.models.generate_content(
+                model=model, contents=contents, config=config,
+            )
+            return (resp.text or "").strip()
+        except Exception as exc:
+            last_exc = exc
+            err = str(exc)
+            transient = any(tok in err for tok in _GEMINI_TRANSIENT_TOKENS)
+            if attempt >= max_attempts or not transient:
+                raise
+            print(f"  ⏳ Gemini transient → {delay:.0f}s 후 재시도 (attempt {attempt}/{max_attempts}): {err[:120]}")
+            _time.sleep(delay)
+            delay *= 3
+    if last_exc:
+        raise last_exc
+    return ""
+
+
 async def agent_location_analysis_gemini(facts: dict) -> dict:
     """Agent 2: Gemini 3.5 Pro 기반 입지 분석 생성."""
     print(f"  [Agent 2] 입지 분석 시작 ({LLM_LOCATION_MODEL})...")
@@ -1481,11 +1529,9 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
         print("  [Agent 2] GEMINI_API_KEY 미설정 → 결정론적 폴백 사용")
         return _fallback_location_analysis(facts, "")
     try:
-        from google import genai as google_genai
         from google.genai import types as genai_types
 
-        client = google_genai.Client(api_key=GEMINI_API_KEY)
-        resp = client.models.generate_content(
+        raw = _gemini_call_with_retry(
             model=LLM_LOCATION_MODEL,
             contents=LOCATION_ANALYSIS_PROMPT.format(
                 facts_json=json.dumps(facts, ensure_ascii=False, indent=2)
@@ -1494,7 +1540,6 @@ async def agent_location_analysis_gemini(facts: dict) -> dict:
                 system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
             ),
         )
-        raw = resp.text.strip()
         try:
             result = json.loads(raw)
         except json.JSONDecodeError:
@@ -1597,11 +1642,9 @@ async def agent_special_eligibility_grounding(facts: dict, notice_id: str) -> di
         return facts
 
     try:
-        from google import genai as google_genai
         from google.genai import types as genai_types
 
-        client = google_genai.Client(api_key=GEMINI_API_KEY)
-        resp = client.models.generate_content(
+        raw = _gemini_call_with_retry(
             model=LLM_LOCATION_MODEL,
             contents=SPECIAL_ELIGIBILITY_GROUNDING_PROMPT.format(
                 facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
@@ -1612,7 +1655,6 @@ async def agent_special_eligibility_grounding(facts: dict, notice_id: str) -> di
                 tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
             ),
         )
-        raw = (resp.text or "").strip()
         try:
             result = json.loads(raw)
         except json.JSONDecodeError:
@@ -1731,11 +1773,9 @@ async def agent_regulation_grounding(facts: dict, notice_id: str) -> dict:
     }
 
     try:
-        from google import genai as google_genai
         from google.genai import types as genai_types
 
-        client = google_genai.Client(api_key=GEMINI_API_KEY)
-        resp = client.models.generate_content(
+        raw = _gemini_call_with_retry(
             model=LLM_LOCATION_MODEL,
             contents=REGULATION_GROUNDING_PROMPT.format(
                 facts_json=json.dumps(facts, ensure_ascii=False, indent=2),
@@ -1746,7 +1786,6 @@ async def agent_regulation_grounding(facts: dict, notice_id: str) -> dict:
                 tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
             ),
         )
-        raw = (resp.text or "").strip()
         try:
             result = json.loads(raw)
         except json.JSONDecodeError:
@@ -1784,11 +1823,9 @@ async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict
         print("  [Agent 3] GEMINI_API_KEY 미설정 → 검증 건너뜀")
         return location_data
     try:
-        from google import genai as google_genai
         from google.genai import types as genai_types
 
-        client = google_genai.Client(api_key=GEMINI_API_KEY)
-        resp = client.models.generate_content(
+        raw = _gemini_call_with_retry(
             model=LLM_LOCATION_MODEL,
             contents=LOCATION_VERIFY_PROMPT.format(
                 apt_name=facts.get("apt_name", ""),
@@ -1799,7 +1836,6 @@ async def agent_location_verify_gemini(location_data: dict, facts: dict) -> dict
                 system_instruction="JSON만 출력하세요. 마크다운 코드블록 없이 순수 JSON만 출력합니다.",
             ),
         )
-        raw = resp.text.strip()
         try:
             result = json.loads(raw)
         except json.JSONDecodeError:
