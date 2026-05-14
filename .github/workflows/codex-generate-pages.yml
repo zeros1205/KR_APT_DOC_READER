@@ -105,22 +105,24 @@ jobs:
           INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
           REQUIRE_PDF="${{ github.event.inputs.require_pdf || 'true' }}"
 
-          CMD="python generate_posts_from_cache.py --limit $LIMIT"
+          # eval 제거 — 인자 배열로 직접 호출. notice_id 같은 사용자 입력에
+          # 셸 메타문자가 있어도 안전.
+          ARGS=(--limit "$LIMIT")
           if [ -n "$NOTICE_ID" ]; then
-            CMD="$CMD --notice-id $NOTICE_ID"
+            ARGS+=(--notice-id "$NOTICE_ID")
           fi
           if [ "$INCLUDE_MANUAL" = "true" ]; then
-            CMD="$CMD --include-manual"
+            ARGS+=(--include-manual)
           fi
           if [ "$INCLUDE_PROCESSED" = "true" ]; then
-            CMD="$CMD --include-processed"
+            ARGS+=(--include-processed)
           fi
           if [ "$REQUIRE_PDF" = "true" ]; then
-            CMD="$CMD --require-pdf"
+            ARGS+=(--require-pdf)
           fi
 
-          echo "$CMD"
-          eval "$CMD" 2>&1 | tee /tmp/generate_log.txt
+          echo "python generate_posts_from_cache.py ${ARGS[*]}"
+          python generate_posts_from_cache.py "${ARGS[@]}" 2>&1 | tee /tmp/generate_log.txt
 
       - name: Patch newly created posts with v3 location analysis
         # generate_posts_from_cache.py 가 만든 SECTION 2 는 v1 본문 (3섹션, 이모지 없음).
