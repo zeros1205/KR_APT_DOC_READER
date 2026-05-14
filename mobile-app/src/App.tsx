@@ -524,7 +524,6 @@ function App() {
           error={error}
           favoriteIds={favoriteIds}
           loading={loading}
-          preferredCount={settings.regions.length}
           query={query}
           regions={regionTabs}
           onOpen={openUrl}
@@ -858,7 +857,6 @@ type HomeProps = {
   error: string;
   favoriteIds: Set<string>;
   loading: boolean;
-  preferredCount: number;
   query: string;
   regions: string[];
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
@@ -979,7 +977,7 @@ function HomeView(props: HomeProps) {
                 key={region}
                 onClick={() => props.onRegion(region)}
               >
-                {region === PREFERRED_REGION_KEY ? `관심지역(${props.preferredCount})` : displayRegion(region)}
+                {region === PREFERRED_REGION_KEY ? "관심지역" : displayRegion(region)}
               </button>
             ))}
           </div>
