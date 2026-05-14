@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-14T09:21:55+09:00",
-  "count": 211,
-  "ready_count": 211,
+  "generated_at": "2026-05-15T07:16:35+09:00",
+  "count": 215,
+  "ready_count": 215,
   "manual_review_count": 0,
   "notices": [
     {
@@ -269,6 +269,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000535.json"
+    },
+    {
+      "notice_id": "2025000537",
+      "apt_name": "성남복정1지구 B1블록 복정역 에피트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2025000537.json"
     },
     {
       "notice_id": "2025000541",
@@ -759,6 +766,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000017.json"
+    },
+    {
+      "notice_id": "2026000018",
+      "apt_name": "리첸시아 표선 IB EDU",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000018.json"
     },
     {
       "notice_id": "2026000019",
@@ -1459,6 +1473,20 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000185.json"
+    },
+    {
+      "notice_id": "2026000187",
+      "apt_name": "엘리프 역곡",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000187.json"
+    },
+    {
+      "notice_id": "2026000188",
+      "apt_name": "해운대 마티안 디 에디션",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000188.json"
     },
     {
       "notice_id": "2026000193",
