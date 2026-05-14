@@ -1232,6 +1232,7 @@ li { margin-bottom: 8px; }
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "청주 한양립스 더 벨루체 지북동 3억대부터 청약정리", "text": "[청주 한양립스 더 벨루체] 청약 정보 한눈에 보기\n\n📍 충청북도\n🗓 모집공고일 2026-05-08\n💰 3억 6,444만원 ~ 5억 1,575만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1255,12 +1256,17 @@ li { margin-bottom: 8px; }
   }
 
   function getShareData() {
-    var title = (document.querySelector('meta[property="og:title"]') || {}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
       || (document.querySelector('meta[name="description"]') || {}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {
       title: title,
       text: description,

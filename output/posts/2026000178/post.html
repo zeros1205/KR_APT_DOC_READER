@@ -1250,6 +1250,15 @@ li { margin-bottom: 8px; }
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "중앙하이츠 원종역 부천 원종동 4억대 분양 정리", "text": "[중앙하이츠 원종역] 청약 정보 한눈에 보기
+
+📍 경기도
+🗓 모집공고일 2026-05-08
+💰 4억 7,900만원 ~ 5억 6,070만원
+
+🏠 분양가·일정·입지·자격 핵심 정리
+📋 청약 전 꼭 확인해야 할 정보 모음
+✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1273,12 +1282,17 @@ li { margin-bottom: 8px; }
   }
 
   function getShareData() {
-    var title = (document.querySelector('meta[property="og:title"]') || {}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
       || (document.querySelector('meta[name="description"]') || {}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {
       title: title,
       text: description,

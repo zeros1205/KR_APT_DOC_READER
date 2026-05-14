@@ -322,6 +322,31 @@ def _canonical_subtitle(post_subtitle: str, supply_location: str, location: str)
     return _stringify(supply_location) or _stringify(location) or _stringify(post_subtitle)
 
 
+def _build_share_text(apt_name: str, region: str, notice_date: str, price_range: str) -> str:
+    """앱과 동일한 멀티라인 카드형 공유 텍스트.
+
+    동기화 원본: mobile-app/src/App.tsx buildShareText()
+    """
+    lines = [f"[{_stringify(apt_name)}] 청약 정보 한눈에 보기", ""]
+    region_clean = _stringify(region)
+    if region_clean:
+        lines.append(f"📍 {region_clean}")
+    notice_clean = _stringify(notice_date)
+    if notice_clean:
+        lines.append(f"🗓 모집공고일 {notice_clean}")
+    price_clean = _stringify(price_range)
+    if price_clean:
+        lines.append(f"💰 {price_clean}")
+    if len(lines) > 2:
+        lines.append("")
+    lines.extend([
+        "🏠 분양가·일정·입지·자격 핵심 정리",
+        "📋 청약 전 꼭 확인해야 할 정보 모음",
+        "✨ 정과장의 청약노트",
+    ])
+    return "\n".join(lines)
+
+
 def _canonical_supply_scale(supply_scale: str, total_households: str, unit_types: list["UnitType"]) -> str:
     scale = _stringify(supply_scale)
     if scale:
@@ -1239,6 +1264,19 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         f"모집공고일 {compact_notice_date}" if compact_notice_date else "모집공고일 확인 필요"
     )
 
+    from regions import region_name_to_category
+    share_region = region_name_to_category(data.location)
+    share_text = _build_share_text(
+        apt_name=data.apt_name,
+        region=share_region,
+        notice_date=data.notice_date,
+        price_range=data.price_range,
+    )
+    share_payload_json = json.dumps(
+        {"title": data.post_title, "text": share_text},
+        ensure_ascii=False,
+    ).replace("</", "<\\/")
+
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
 <head>
@@ -1538,6 +1576,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{share_payload_json}</script>
 <script>
 (function() {{
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1561,12 +1600,17 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   }}
 
   function getShareData() {{
-    var title = (document.querySelector('meta[property="og:title"]') || {{}}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {{}}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {{
+      try {{ payload = JSON.parse(payloadEl.textContent || '{{}}'); }} catch (_) {{}}
+    }}
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {{}}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {{}}).content
       || (document.querySelector('meta[name="description"]') || {{}}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {{
       title: title,
       text: description,
@@ -1602,8 +1646,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
 
-    from regions import region_name_to_category
-    region_category = region_name_to_category(data.location)
+    region_category = share_region
 
     meta = {
         "notice_id":       post_slug,

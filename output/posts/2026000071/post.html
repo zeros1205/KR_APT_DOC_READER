@@ -1309,6 +1309,7 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "르네오션 고성 퍼스트뷰 고성 청간리 분양가 총정리", "text": "[르네오션 고성 퍼스트뷰] 청약 정보 한눈에 보기\n\n📍 강원도\n🗓 모집공고일 2026-04-03\n💰 4억 4,500만원 ~ 23억 4,600만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1332,12 +1333,17 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   }
 
   function getShareData() {
-    var title = (document.querySelector('meta[property="og:title"]') || {}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
       || (document.querySelector('meta[name="description"]') || {}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {
       title: title,
       text: description,

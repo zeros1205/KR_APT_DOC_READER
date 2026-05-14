@@ -1195,6 +1195,7 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "더샵 중앙로역센터폴 대구 중구 분양가·청약일정 정리", "text": "[더샵 중앙로역센터폴] 청약 정보 한눈에 보기\n\n📍 대구\n🗓 모집공고일 2026-05-04\n💰 7억 8,493만원 ~ 17억 3,716만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1218,12 +1219,17 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   }
 
   function getShareData() {
-    var title = (document.querySelector('meta[property="og:title"]') || {}).content
-      || document.title
-      || '정과장의 청약노트';
-    var description = (document.querySelector('meta[property="og:description"]') || {}).content
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
       || (document.querySelector('meta[name="description"]') || {}).content
       || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
     return {
       title: title,
       text: description,
