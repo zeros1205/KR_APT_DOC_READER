@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
+import { AppLauncher } from "@capacitor/app-launcher";
 import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
@@ -54,6 +55,24 @@ const REGIONS = [
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || "0.1.0";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=app.aptnote.mobile";
 const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL || "https://apps.apple.com/app/id6745796757";
+const PLAY_STORE_NATIVE_URL = "market://details?id=app.aptnote.mobile";
+const APP_STORE_NATIVE_URL = "itms-apps://itunes.apple.com/app/id6745796757";
+
+async function openStorePage(): Promise<void> {
+  const isIos = Capacitor.getPlatform() === "ios";
+  const nativeUrl = isIos ? APP_STORE_NATIVE_URL : PLAY_STORE_NATIVE_URL;
+  const webUrl = isIos ? APP_STORE_URL : PLAY_STORE_URL;
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const result = await AppLauncher.openUrl({ url: nativeUrl });
+      if (result.completed) return;
+    } catch {
+      // 스토어 앱 미설치 또는 OS 거부 — 웹으로 폴백
+    }
+  }
+  await Browser.open({ url: webUrl });
+}
 const TABLET_POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
@@ -529,7 +548,7 @@ function App() {
             void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
           }
           onShare={shareCard}
-          onUpdate={() => void Browser.open({ url: Capacitor.getPlatform() === "ios" ? APP_STORE_URL : PLAY_STORE_URL })}
+          onUpdate={() => void openStorePage()}
         />
       )}
 
