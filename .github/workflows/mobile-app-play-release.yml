@@ -257,20 +257,20 @@ jobs:
           jarsigner -verify -verbose -certs "$AAB" > aab-signature-verify.txt
           grep -q "jar verified" aab-signature-verify.txt
 
-          # AAB의 base manifest에서 AD_ID 권한 존재 확인 (Play Console 차단 방지)
+          # APK의 manifest에서 AD_ID 권한 존재 확인 (AAB와 동일 manifest, Play Console 차단 방지)
           SDK_BT_DIR=$(ls -d "$ANDROID_SDK_ROOT"/build-tools/* | sort -V | tail -n 1)
-          unzip -p "$AAB" base/manifest/AndroidManifest.xml > aab-base-manifest.bin
-          "$SDK_BT_DIR/aapt2" dump xmltree --file aab-base-manifest.bin /dev/stdin < aab-base-manifest.bin > aab-base-manifest.txt 2>&1 || true
-          # 더 직관적인 방법: aapt2 dump badging (압축된 manifest 해독)
-          "$SDK_BT_DIR/aapt2" dump permissions "$AAB" > aab-permissions.txt 2>&1 || true
-          echo "=== AAB declared permissions ==="
-          cat aab-permissions.txt
-          echo "================================"
-          if ! grep -q "com.google.android.gms.permission.AD_ID" aab-permissions.txt; then
-            echo "::error::AD_ID 권한이 빌드된 AAB의 manifest에서 누락. manifest merger 단계에서 제거된 것으로 추정. 즉시 점검 필요."
+          "$SDK_BT_DIR/aapt2" dump permissions "$APK" > apk-permissions.txt
+          echo "=== Built APK declared permissions ==="
+          cat apk-permissions.txt
+          echo "======================================"
+          if ! grep -q "com.google.android.gms.permission.AD_ID" apk-permissions.txt; then
+            echo "::error::AD_ID 권한이 빌드 산출물의 manifest에서 누락. manifest merger 단계에서 제거된 것으로 추정."
             exit 1
           fi
-          echo "✅ AD_ID 권한 AAB에 포함 확인."
+          echo "✅ AD_ID 권한 빌드 산출물에 포함 확인."
+
+          # AAB의 base manifest도 함께 덤프 (디버깅용)
+          unzip -p "$AAB" base/manifest/AndroidManifest.xml > aab-base-manifest.bin || true
 
           SDK_BT_DIR=$(ls -d "$ANDROID_SDK_ROOT"/build-tools/* | sort -V | tail -n 1)
           "$SDK_BT_DIR/apksigner" verify --verbose --print-certs "$APK" > apk-signature-verify.txt
