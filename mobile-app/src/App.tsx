@@ -92,6 +92,33 @@ function displayRegion(region: string): string {
   return shortNames[region] || region;
 }
 
+function buildShareText(card: NoticeCard): string {
+  const lines: string[] = [`[${card.apt_name}] 청약 정보 한눈에 보기`, ""];
+  const region = card.region?.trim();
+  if (region) lines.push(`📍 ${region}`);
+  const noticeDate = card.notice_date?.trim();
+  if (noticeDate) lines.push(`🗓 모집공고일 ${noticeDate}`);
+  const price = (card as FavoriteNotice).price_range || extractPriceRange(card);
+  if (price) lines.push(`💰 ${price}`);
+  if (lines.length > 2) lines.push("");
+  lines.push(
+    "🏠 분양가·일정·입지·자격 핵심 정리",
+    "📋 청약 전 꼭 확인해야 할 정보 모음",
+    "✨ 정과장의 청약노트"
+  );
+  return lines.join("\n");
+}
+
+function buildGenericShareText(title: string): string {
+  return [
+    title,
+    "",
+    "🏠 복잡한 청약 공고문, 깔끔하게 정리",
+    "📋 분양가·일정·입지·자격 한눈에",
+    "✨ 정과장의 청약노트"
+  ].join("\n");
+}
+
 function sanitizeCardHtml(card: NoticeCard): string {
   const html = card.html || "";
   const titleClass = card.apt_name.replace(/\s+/g, "").length >= 13 ? "card-title is-long-title" : "card-title";
@@ -390,14 +417,7 @@ function App() {
 
   async function shareCard(card: NoticeCard) {
     const url = absolutePostUrl(card.post_url);
-    const text = [
-      card.apt_name,
-      url,
-      "",
-      "🏠 분양가·일정·입지·자격 한눈에 정리",
-      "📋 청약 전 꼭 확인해야 할 정보 모음",
-      "✨ 정과장의 청약노트"
-    ].join("\n");
+    const text = buildShareText(card);
     await Share.share({ text, url });
   }
 
@@ -455,7 +475,10 @@ function App() {
           onShare={() =>
             detailPage.card
               ? void shareCard(detailPage.card)
-              : void Share.share({ title: detailPage.title, url: detailPage.url })
+              : void Share.share({
+                  text: buildGenericShareText(detailPage.title),
+                  url: detailPage.url
+                })
           }
           onToggleFavorite={() => detailPage.card && void toggleFavorite(detailPage.card)}
         />
