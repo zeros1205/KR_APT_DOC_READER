@@ -93,7 +93,7 @@ type DetailPage = {
 };
 
 function normalizeRegion(region: string): string {
-  return region.replace("특별시", "").replace("광역시", "").trim();
+  return region.replace("특별시", "").replace("광역시", "").replace("제주도", "제주").trim();
 }
 
 function displayRegion(region: string): string {
