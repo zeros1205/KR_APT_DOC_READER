@@ -1623,7 +1623,7 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
       var data = getShareData();
       if (navigator.share) {{
         try {{
-          await navigator.share(data);
+          await navigator.share({{text: data.text, url: data.url}});
           return;
         }} catch (err) {{
           if (err && err.name === 'AbortError') return;

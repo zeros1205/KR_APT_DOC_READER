@@ -1335,7 +1335,7 @@ li { margin-bottom: 8px; }
       var data = getShareData();
       if (navigator.share) {
         try {
-          await navigator.share(data);
+          await navigator.share({text: data.text, url: data.url});
           return;
         } catch (err) {
           if (err && err.name === 'AbortError') return;

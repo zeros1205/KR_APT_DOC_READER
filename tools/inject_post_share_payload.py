@@ -116,7 +116,7 @@ def patch_post(notice_id: str, dry_run: bool = False) -> str:
 
     # 1) payload script 삽입/교체
     if PAYLOAD_TAG_PATTERN.search(text):
-        text = PAYLOAD_TAG_PATTERN.sub(payload_script, text, count=1)
+        text = PAYLOAD_TAG_PATTERN.sub(lambda _: payload_script, text, count=1)
         changes.append("payload(replaced)")
     elif TOAST_ANCHOR in text:
         text = text.replace(TOAST_ANCHOR, TOAST_ANCHOR + "\n" + payload_script, 1)
@@ -126,14 +126,24 @@ def patch_post(notice_id: str, dry_run: bool = False) -> str:
 
     # 2) getShareData 본문 교체
     if OLD_GET_SHARE_DATA_PATTERN.search(text):
-        text = OLD_GET_SHARE_DATA_PATTERN.sub(
-            lambda _: NEW_GET_SHARE_DATA.replace("\\", "\\\\"), text, count=1
-        )
+        text = OLD_GET_SHARE_DATA_PATTERN.sub(lambda _: NEW_GET_SHARE_DATA, text, count=1)
         changes.append("getShareData(updated)")
     elif "var payloadEl = document.getElementById('post-share-data');" in text:
         changes.append("getShareData(already-new)")
     else:
         changes.append("getShareData(pattern-not-found)")
+
+    # 3) navigator.share(data) → navigator.share({text:data.text,url:data.url})
+    #    title 필드를 제외해 KakaoTalk 이 "{title} - {text}" 로 붙이는 문제 방지
+    OLD_SHARE_CALL = "await navigator.share(data);"
+    NEW_SHARE_CALL = "await navigator.share({text: data.text, url: data.url});"
+    if OLD_SHARE_CALL in text:
+        text = text.replace(OLD_SHARE_CALL, NEW_SHARE_CALL)
+        changes.append("navigatorShare(fixed)")
+    elif NEW_SHARE_CALL in text:
+        changes.append("navigatorShare(already-fixed)")
+    else:
+        changes.append("navigatorShare(not-found)")
 
     if text == original:
         return f"noop: {notice_id}"

@@ -1380,7 +1380,7 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
       var data = getShareData();
       if (navigator.share) {
         try {
-          await navigator.share(data);
+          await navigator.share({text: data.text, url: data.url});
           return;
         } catch (err) {
           if (err && err.name === 'AbortError') return;
