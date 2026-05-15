@@ -1250,15 +1250,7 @@ li { margin-bottom: 8px; }
   </button>
 </div>
 <div id="post-share-toast" role="status" aria-live="polite"></div>
-<script id="post-share-data" type="application/json">{"title": "중앙하이츠 원종역 부천 원종동 4억대 분양 정리", "text": "[중앙하이츠 원종역] 청약 정보 한눈에 보기
-
-📍 경기도
-🗓 모집공고일 2026-05-08
-💰 4억 7,900만원 ~ 5억 6,070만원
-
-🏠 분양가·일정·입지·자격 핵심 정리
-📋 청약 전 꼭 확인해야 할 정보 모음
-✨ 정과장의 청약노트"}</script>
+<script id="post-share-data" type="application/json">{"title": "중앙하이츠 원종역 부천 원종동 4억대 분양 정리", "text": "[중앙하이츠 원종역] 청약 정보 한눈에 보기\n\n📍 경기도\n🗓 모집공고일 2026-05-08\n💰 4억 7,900만원 ~ 5억 6,070만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
 <script>
 (function() {
   var topBtn = document.getElementById('post-scroll-top-btn');
@@ -1305,7 +1297,7 @@ li { margin-bottom: 8px; }
       var data = getShareData();
       if (navigator.share) {
         try {
-          await navigator.share(data);
+          await navigator.share({text: data.text, url: data.url});
           return;
         } catch (err) {
           if (err && err.name === 'AbortError') return;
