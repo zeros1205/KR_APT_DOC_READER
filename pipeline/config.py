@@ -50,7 +50,7 @@ LLM_EMBED_MODEL = "text-embedding-3-small"
 
 # ── Google Gemini (입지 분석 전용) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite-preview")
+LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite")
 
 # ── OpenAI 팩트체크 ──
 LLM_FACTCHECK_MODEL = "gpt-5.4-mini"
