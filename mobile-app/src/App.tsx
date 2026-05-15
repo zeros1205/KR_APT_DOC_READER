@@ -28,9 +28,10 @@ import {
   loadSettings,
   resetLocalData,
   saveFavorites,
-  saveSettings
+  saveSettings,
+  syncDeviceWithBackend
 } from "./storage";
-import type { FavoriteNotice, NoticeCard, UserSettings } from "./types";
+import type { FavoriteNotice, NoticeCard, PushDataPayload, UserSettings } from "./types";
 
 const REGIONS = [
   "서울",
@@ -171,6 +172,9 @@ function App() {
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
   const lastHomeBackAtRef = useRef(0);
   const toastTimerRef = useRef<number | null>(null);
+  const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
+  const cardsRef = useRef<NoticeCard[]>([]);
+  const settingsRef = useRef<UserSettings>(defaultSettings);
 
   useEffect(() => {
     void Promise.all([loadFavorites(), loadSettings()]).then(([savedFavorites, savedSettings]) => {
@@ -192,6 +196,25 @@ function App() {
     if (view !== "home") return;
     setActiveRegion(settings.regions.length > 0 ? PREFERRED_REGION_KEY : "전체");
   }, [view, settings.regions]);
+
+  useEffect(() => {
+    cardsRef.current = cards;
+    const pending = pendingPushPayloadRef.current;
+    if (pending && cards.length > 0) {
+      pendingPushPayloadRef.current = null;
+      handlePushPayload(pending);
+    }
+  }, [cards]);
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+
+  useEffect(() => {
+    if (settings.pushPendingSync && settings.pushEnabled) {
+      void syncDeviceWithBackend(settings, { appVersion: installedVersion });
+    }
+  }, [settings.pushPendingSync, settings.pushEnabled, installedVersion]);
 
   useEffect(() => {
     if (loading) return;
@@ -221,8 +244,9 @@ function App() {
     const pushListener = PushNotifications.addListener("pushNotificationReceived", (notification) => {
       showToast(notification.title || "새 알림이 도착했습니다.");
     });
-    const actionListener = PushNotifications.addListener("pushNotificationActionPerformed", () => {
-      setView("home");
+    const actionListener = PushNotifications.addListener("pushNotificationActionPerformed", (event) => {
+      const payload = (event?.notification?.data || {}) as PushDataPayload;
+      handlePushPayload(payload);
     });
 
     const registration = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
@@ -327,31 +351,33 @@ function App() {
 
   async function savePushToken(token: string) {
     setSettings((current) => {
-      const next = {
+      const next: UserSettings = {
         ...current,
         pushEnabled: true,
         pushToken: token,
         pushTokenUpdatedAt: new Date().toISOString()
       };
       void saveSettings(next);
+      void syncDeviceWithBackend(next, { appVersion: installedVersion, immediate: true });
       return next;
     });
   }
 
   async function setPushEnabled(enabled: boolean) {
     setSettings((current) => {
-      const next = { ...current, pushEnabled: enabled };
+      const next: UserSettings = { ...current, pushEnabled: enabled };
       void saveSettings(next);
+      void syncDeviceWithBackend(next, { appVersion: installedVersion, immediate: true });
       return next;
     });
   }
 
   async function toggleRegion(region: string) {
     const exists = settings.regions.includes(region);
-    await updateSettings({
-      ...settings,
-      regions: exists ? settings.regions.filter((item) => item !== region) : [...settings.regions, region]
-    });
+    const nextRegions = exists ? settings.regions.filter((item) => item !== region) : [...settings.regions, region];
+    const next: UserSettings = { ...settings, regions: nextRegions };
+    await updateSettings(next);
+    void syncDeviceWithBackend(next, { appVersion: installedVersion });
   }
 
   async function enablePush() {
@@ -359,20 +385,70 @@ function App() {
       await setPushEnabled(false);
       return;
     }
+
+    if (!settings.pushConsentedAt) {
+      const consented = await askConfirm({
+        title: "푸시 알림 수신 동의",
+        message:
+          "신규 청약 공고를 알려드리기 위해 단말 푸시 토큰과 선택한 관심지역 정보를 서버에 안전하게 저장합니다. 동의하시겠어요?",
+        confirmLabel: "동의",
+        cancelLabel: "취소"
+      });
+      if (!consented) return;
+      const consented_settings: UserSettings = {
+        ...settings,
+        pushConsentedAt: new Date().toISOString()
+      };
+      await updateSettings(consented_settings);
+    }
+
     if (!Capacitor.isNativePlatform()) {
       await setPushEnabled(true);
       return;
     }
     try {
       const permission = await PushNotifications.requestPermissions();
-      if (permission.receive === "granted") {
-        await setPushEnabled(true);
-        await PushNotifications.register();
+      if (permission.receive !== "granted") {
+        await setPushEnabled(false);
+        showToast("알림 권한이 거부되어 푸시를 켤 수 없어요.");
+        return;
       }
+      await setPushEnabled(true);
+      await PushNotifications.register();
     } catch {
       await setPushEnabled(false);
       showToast("알림 권한 설정을 완료하지 못했습니다.");
     }
+  }
+
+  function handlePushPayload(payload: PushDataPayload) {
+    const type = String(payload.type || "");
+    const noticeId = (payload.notice_id || "").trim();
+
+    if ((type === "1" || type === "3") && noticeId) {
+      const ready = cardsRef.current.length > 0;
+      if (!ready) {
+        pendingPushPayloadRef.current = payload;
+        return;
+      }
+      const card = cardsRef.current.find((c) => c.notice_id === noticeId);
+      if (card) {
+        void openUrl(card.post_url, card.apt_name, card);
+        return;
+      }
+      pendingPushPayloadRef.current = payload;
+      return;
+    }
+
+    if (type === "2") {
+      setView("home");
+      const hasPreferred = settingsRef.current.regions.length > 0;
+      setActiveRegion(hasPreferred ? PREFERRED_REGION_KEY : "전체");
+      return;
+    }
+
+    setView("home");
+    setActiveRegion("전체");
   }
 
   function askConfirm(options: Omit<ConfirmDialogState, "resolve">): Promise<boolean> {

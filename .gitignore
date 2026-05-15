@@ -25,6 +25,17 @@ mobile-app/android/app/src/main/assets/public/
 mobile-app/android/app/src/main/assets/capacitor*.json
 mobile-app/android/app/src/main/res/xml/config.xml
 
+# Firebase 설정 (시크릿) — CI에서 base64 디코드해 주입
+mobile-app/android/app/google-services.json
+mobile-app/ios/App/App/GoogleService-Info.plist
+mobile-app/ios/App/Pods/
+mobile-app/ios/App/Podfile.lock
+
+# Cloudflare Worker 로컬 산출물
+cloudflare-worker/node_modules/
+cloudflare-worker/.wrangler/
+cloudflare-worker/dist/
+
 # ChromaDB 벡터 저장소
 chroma_db/
 
