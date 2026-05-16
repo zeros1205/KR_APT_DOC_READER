@@ -280,6 +280,10 @@ xcodebuild archive \
 - **원인 4**: `APP_STORE_CONNECT_KEY_ID` / `APP_STORE_CONNECT_ISSUER_ID` 값 오타
   - **해결**: GitHub Secret 재등록 (값을 다시 볼 수 없으니 의심되면 그냥 재등록)
 
+### "SDK version issue. This app was built with the iOS X SDK. All iOS apps must be built with the iOS 26 SDK or later"
+- **원인**: GitHub Actions의 `macos-latest` runner는 Xcode 16.x (iOS 18.5 SDK) 사용
+- **해결**: `runs-on: macos-26` 사용 (Xcode 26 / iOS 26 SDK 포함) - 이미 적용됨
+
 ---
 
 ## 운영 체크리스트
@@ -302,6 +306,7 @@ xcodebuild archive \
 - GitHub Secret은 보안상 저장 후 **값을 볼 수 없음** (정상 동작)
 - "Update secret" 클릭 시 빈칸으로 표시되는 것은 정상
 - 값 확인 필요 시 **새로 등록**하는 것이 유일한 방법
+
 
 ---
 
@@ -353,6 +358,7 @@ xcodebuild archive \
 | #92 | Pods 서명 비활성화 + App 타겟 project.pbxproj 동적 수정 |
 | #93 | ExportOptions.plist에 manual signing 정보 추가 |
 | #94 | `.p8` 파일을 `~/private_keys/AuthKey_${KEY_ID}.p8` 표준 경로에 저장 |
+| #95 | `macos-26` runner 사용 (Xcode 26 / iOS 26 SDK) + 트러블슈팅 문서 보강 |
 
 ---
 
