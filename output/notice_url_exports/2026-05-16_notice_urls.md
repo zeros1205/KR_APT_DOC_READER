@@ -1,7 +1,7 @@
 # 청약홈 상세페이지 URL · 수동 입력 시트
 
 - 생성일: 2026-05-16
-- 대상 공고: 4건  (입력 완료 0건 / 대기 4건)
+- 대상 공고: 0건  (입력 완료 0건 / 대기 0건)
 - PDF 업로드 폴더: `input/pdfs/`
 
 ## 입력 안내
@@ -20,7 +20,3 @@
 
 | 공고번호 | 단지명 | 모집공고일 | 당첨자 발표일 | 청약홈 링크 | 권장 PDF 파일명 | 규제지역 | 재당첨 | 전매 | 거주의무 | 분양가상한제 | 계약금 | 중도금 | 잔금 | 상태 |
 |---|---|---:|---:|---|---|---|---|---|---|---|---:|---:|---:|:-:|
-| 2026000120 | 써밋 더힐 | 2026-05-15 | 2026-06-05 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000120&pblancNo=2026000120 | `2026000120 써밋 더힐 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000138 | 힐스테이트 시흥더클래스 | 2026-05-15 | 2026-06-08 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000138&pblancNo=2026000138 | `2026000138 힐스테이트 시흥더클래스 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000162 | 검암역자이르네 | 2026-05-15 | 2026-06-04 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000162&pblancNo=2026000162 | `2026000162 검암역자이르네 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000217 | 동래사적공원 오네뜨 | 2026-05-15 | 2026-06-05 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000217&pblancNo=2026000217 | `2026000217 동래사적공원 오네뜨 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
