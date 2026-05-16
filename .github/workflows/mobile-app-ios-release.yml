@@ -32,7 +32,7 @@ env:
 jobs:
   signed-ios-release:
     name: Build signed iOS release
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 60
     permissions:
       contents: write
