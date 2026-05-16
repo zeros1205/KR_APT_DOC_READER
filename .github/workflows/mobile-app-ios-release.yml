@@ -190,6 +190,31 @@ jobs:
           xcrun agvtool new-marketing-version "${{ inputs.version_name }}"
           xcrun agvtool new-version -all "${{ inputs.build_number }}"
 
+      - name: Configure App target signing (project.pbxproj)
+        working-directory: mobile-app/ios/App
+        env:
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        run: |
+          set -euo pipefail
+          gem install xcodeproj --no-document
+          ruby -e "
+            require 'xcodeproj'
+            project = Xcodeproj::Project.open('App.xcodeproj')
+            project.targets.each do |target|
+              next unless target.name == 'App'
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+                config.build_settings['DEVELOPMENT_TEAM'] = ENV['TEAM_ID']
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROFILE_NAME']
+                config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
+                config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = 'iPhone Distribution'
+              end
+            end
+            project.save
+            puts 'App target signing configured.'
+          "
+
       - name: Build and archive iOS app
         working-directory: mobile-app/ios/App
         run: |
@@ -199,11 +224,7 @@ jobs:
             -scheme App \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -destination "generic/platform=iOS" \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM="${{ secrets.IOS_TEAM_ID }}" \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE="$PROFILE_UUID"
+            -destination "generic/platform=iOS"
 
       - name: Export IPA
         run: |
