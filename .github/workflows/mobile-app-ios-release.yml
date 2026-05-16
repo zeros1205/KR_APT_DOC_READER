@@ -181,6 +181,7 @@ jobs:
             | plutil -extract UUID raw -)
           cp "$RUNNER_TEMP/profile.mobileprovision" "$PROFILES_DIR/${PROFILE_UUID}.mobileprovision"
           echo "Installed provisioning profile UUID: $PROFILE_UUID"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
 
       - name: Set version in Xcode project
         working-directory: mobile-app/ios/App
@@ -202,7 +203,7 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="${{ secrets.IOS_TEAM_ID }}" \
             CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+            PROVISIONING_PROFILE="$PROFILE_UUID" \
             | xcpretty
 
       - name: Export IPA
