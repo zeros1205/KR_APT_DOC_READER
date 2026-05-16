@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    e편한세상 센텀 하이베뉴는 부산광역시 해운대구 재송동에 위치하여 해운대구의 생활 인프라를 공유하는 입지적 특성을 갖추고 있습니다. 도심 생활권과 인접하여 편리한 주거 환경을 누릴 수 있는 여건을 갖췄습니다. 실거주에 적합한 정주 여건을 제공하며 거주자의 생활 편의성을 고려한 배치를 보여줍니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 간선도로를 통해 부산 도심 및 인근 지역으로 이동할 수 있는 광역 교통망이 형성되어 있습니다. 대중교통 이용이 가능한 입지에 위치하여 출퇴근 및 일상적인 이동이 가능합니다.</li><li>인근 도로망을 이용해 부산 내 주요 업무 지구와 생활 편의시설로 접근할 수 있는 연결성이 확보되어 있습니다. 거주자의 생활 동선을 고려한 도로 체계가 갖춰져 있어 이동 편의성이 존재합니다.</li><li>체계적인 교통 인프라가 인접하여 다양한 대중교통 수단을 통한 도심지 접근이 가능합니다. 효율적인 교통 환경은 입주민의 일상적인 이동을 지원하는 역할을 합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변으로 교육 시설이 자리하고 있어 자녀를 둔 세대가 통학하기에 무리가 없는 환경입니다. 안정적인 분위기 속에서 등하교가 가능한 주거 입지는 학부모들의 주거 선호도와 밀접한 관련이 있습니다.</li><li>인근 주거 지역과 연계된 교육 인프라는 지역 커뮤니티 형성을 지원하는 기반이 됩니다. 자녀의 교육을 고려하는 주거 수요자에게 일상적인 교육 환경을 제공합니다.</li><li>인근에 생활 편의시설이 밀집해 있어 교육뿐만 아니라 일상적인 생활을 영위하기에 적합합니다. 가족 단위 거주에 필요한 기본적인 환경이 어우러져 주거지로서의 기능을 수행합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>e편한세상 센텀 하이베뉴는 부산광역시 해운대구 재송동 1030번지 일원에 위치한 단지입니다. 해당 단지의 평면 구성은 타입별로 상이하므로 공급 정보를 상세히 살펴볼 필요가 있습니다.</li><li>본 단지의 공급 공고와 관련된 모집공고일 및 입주 예정 시기는 해당 사업지의 공식 안내 자료를 확인해야 합니다. 일정과 공급 조건을 종합적으로 검토하여 실거주 계획을 수립하는 것이 중요합니다.</li><li>규제 지역 여부 및 분양 관련 조건은 해당 공고 시점의 정책에 따라 달라질 수 있습니다. 청약 및 계약 관련 세부 사항은 입주자 모집공고문을 통해 정확하게 확인하시기 바랍니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">&#x27;e편한세상 센텀 하이베뉴&#x27;는 센텀시티의 완성된 인프라와 우수한 정주 여건을 공유하는 해운대구 핵심 신축 단지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">노후 주택 비율이 높은 재송동 일대에서 희소성 높은 브랜드 신축으로 공급되어 탄탄한 대기 수요를 확보하고 있습니다. 특히 센텀권역의 직주근접성과 쾌적한 주거 환경을 동시에 누릴 수 있어 <strong>하방 경직성</strong>이 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변으로 다소 경사가 있는 지형이나, 학군과 인프라 접근성으로 이를 충분히 상쇄합니다. 실수요자들의 선호도가 지속적으로 높게 유지될 것으로 분석됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">동해선 재송역을 도보권으로 이용할 수 있어 부산 주요 업무지구 및 광역 이동 편의성이 돋보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">반경 1km 내 위치한 재송역을 통해 부산도시철도 2호선 환승역인 벡스코역까지 단 두 정거장 만에 도달합니다. 또한 1호선 환승역인 교대역까지 네 정거장 거리로, 서면 등 핵심 도심권 진입이 수월한 <strong>광역교통망</strong> 🚆을 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대중교통 환승 체계가 잘 갖춰져 있어 자차 이동뿐만 아니라 지하철을 이용한 출퇴근 환경도 매우 쾌적합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 옆에 초등학교와 중학교가 맞닿아 있어 학령기 자녀를 둔 가구에 최적화된 <strong>초품아</strong> 📚 입지를 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">반산초등학교와 재송중학교가 단지와 인접해 있어 횡단보도를 건너지 않는 안전한 도보 통학권이 확보되었습니다. 더불어 재송여중, 장산중, 반여고 등 다수의 학교가 밀집해 있어 면학 분위기가 우수하게 형성되어 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">센텀시티 인근에 형성된 우수한 학원가 인프라를 편리하게 이용할 수 있습니다. 자녀 교육에 민감한 3040 세대의 강력한 실수요 유입이 기대되는 핵심적인 강점입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산의 대표적인 핵심 상권인 센텀시티 생활권을 그대로 공유하여 주거 생활의 질이 매우 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신세계백화점, 롯데백화점, 벡스코 등 대형 <strong>앵커시설</strong>이 밀집한 센텀시티로의 접근성이 뛰어납니다. 풍부한 상업 시설을 바탕으로 쇼핑과 문화생활을 원스톱으로 누리는 쾌적한 주거 환경이 조화를 이룹니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">해운대구 내에서도 완성된 도심 인프라를 가깝게 이용할 수 있는 <strong>슬세권</strong> 입지입니다. 입주 직후부터 인프라 부족에 따른 불편함 없이 완벽한 생활 편의성을 제공받을 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">센텀2지구 도시첨단산업단지 조성 계획에 따른 대규모 일자리 창출과 인프라 확장의 수혜가 예상됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인근 반여동 일원에 정보통신기술 및 영상 콘텐츠 등 첨단산업을 유치하는 센텀2지구가 조성될 계획입니다. 개발 완료 시 고소득 종사자 유입에 따른 막대한 <strong>직주근접</strong> 수요가 발생하여 자산 가치를 견인할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">해운대구 내 신축 공급이 부족한 상황에서 대규모 개발 호재를 품은 브랜드 재건축 단지입니다. 이러한 입지적 희소성은 장기적인 자산 가치 상승 여력을 충분히 뒷받침하는 요소입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1128,6 +1161,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "e편한세상 센텀 하이베뉴 해운대구 6억 1,801만원 정리", "text": "[e편한세상 센텀 하이베뉴] 청약 정보 한눈에 보기\n\n📍 부산\n🗓 모집공고일 2026-01-30\n💰 6억 1,801만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

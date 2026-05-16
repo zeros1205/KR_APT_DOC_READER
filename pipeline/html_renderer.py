@@ -322,6 +322,31 @@ def _canonical_subtitle(post_subtitle: str, supply_location: str, location: str)
     return _stringify(supply_location) or _stringify(location) or _stringify(post_subtitle)
 
 
+def _build_share_text(apt_name: str, region: str, notice_date: str, price_range: str) -> str:
+    """앱과 동일한 멀티라인 카드형 공유 텍스트.
+
+    동기화 원본: mobile-app/src/App.tsx buildShareText()
+    """
+    lines = [f"[{_stringify(apt_name)}] 청약 정보 한눈에 보기", ""]
+    region_clean = _stringify(region)
+    if region_clean:
+        lines.append(f"📍 {region_clean}")
+    notice_clean = _stringify(notice_date)
+    if notice_clean:
+        lines.append(f"🗓 모집공고일 {notice_clean}")
+    price_clean = _stringify(price_range)
+    if price_clean:
+        lines.append(f"💰 {price_clean}")
+    if len(lines) > 2:
+        lines.append("")
+    lines.extend([
+        "🏠 분양가·일정·입지·자격 핵심 정리",
+        "📋 청약 전 꼭 확인해야 할 정보 모음",
+        "✨ 정과장의 청약노트",
+    ])
+    return "\n".join(lines)
+
+
 def _canonical_supply_scale(supply_scale: str, total_households: str, unit_types: list["UnitType"]) -> str:
     scale = _stringify(supply_scale)
     if scale:
@@ -1239,6 +1264,19 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
         f"모집공고일 {compact_notice_date}" if compact_notice_date else "모집공고일 확인 필요"
     )
 
+    from regions import region_name_to_category
+    share_region = region_name_to_category(data.location)
+    share_text = _build_share_text(
+        apt_name=data.apt_name,
+        region=share_region,
+        notice_date=data.notice_date,
+        price_range=data.price_range,
+    )
+    share_payload_json = json.dumps(
+        {"title": data.post_title, "text": share_text},
+        ensure_ascii=False,
+    ).replace("</", "<\\/")
+
     full_html = f"""<!DOCTYPE html>
 <html lang="ko" data-palette="A">
 <head>
@@ -1412,6 +1450,57 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
     font-size: 0.8125rem;
   }}
 }}
+.post-floating-actions {{
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}}
+.post-floating-actions button {{
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}}
+.post-floating-actions button:hover {{
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}}
+.post-floating-actions button:focus-visible {{
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}}
+#post-share-toast {{
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}}
+#post-share-toast.is-visible {{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -1470,12 +1559,94 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
   onScroll();
 }})();
 </script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{share_payload_json}</script>
+<script>
+(function() {{
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {{
+    topBtn.addEventListener('click', function() {{
+      window.scrollTo({{ top: 0, behavior: 'smooth' }});
+    }});
+  }}
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {{
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {{
+      toast.classList.remove('is-visible');
+    }}, 1800);
+  }}
+
+  function getShareData() {{
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {{
+      try {{ payload = JSON.parse(payloadEl.textContent || '{{}}'); }} catch (_) {{}}
+    }}
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {{}}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {{}}).content
+      || (document.querySelector('meta[name="description"]') || {{}}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {{
+      title: title,
+      text: description,
+      url: location.href
+    }};
+  }}
+
+  if (shareBtn) {{
+    shareBtn.addEventListener('click', async function() {{
+      var data = getShareData();
+      if (navigator.share) {{
+        try {{
+          await navigator.share({{text: data.text, url: data.url}});
+          return;
+        }} catch (err) {{
+          if (err && err.name === 'AbortError') return;
+        }}
+      }}
+      if (navigator.clipboard && navigator.clipboard.writeText) {{
+        try {{
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        }} catch (_) {{}}
+      }}
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    }});
+  }}
+}})();
+</script>
 </body>
 </html>"""
     (post_dir / "post.html").write_text(full_html, encoding="utf-8")
 
-    from regions import region_name_to_category
-    region_category = region_name_to_category(data.location)
+    region_category = share_region
 
     meta = {
         "notice_id":       post_slug,
@@ -1515,7 +1686,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
     }
-    import json
     (post_dir / "post_meta.json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
     )

@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -558,7 +609,7 @@ li { margin-bottom: 8px; }
   </h2>
 
   <div style="display:flex;flex-direction:column;gap:28px;">
-    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">힐스테이트 구월아트파크는 인천의 전통적 중심 업무지구인 구월동의 핵심 입지를 선점한 랜드마크 단지입니다. 옛 롯데백화점 부지라는 상징성이 주거 가치로 직결되며, 하이엔드 주거의 새로운 기준을 제시합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 하부와 주변으로 대형 상업 시설과 문화 공간이 밀집해 있어 완벽한 <strong>슬세권</strong>을 형성합니다. 지역 내 핵심 <strong>앵커시설</strong> 역할을 수행하며 탄탄한 대기 수요를 끌어들일 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">상업지구 중심에 위치한 주상복합의 특성상, 도심의 편리함과 쾌적한 주거 환경의 조화가 매수자의 주요 선택 기준이 됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인천지하철 1호선 예술회관역과 직접 연결되는 초역세권 입지로 압도적인 대중교통 편의성을 자랑합니다. 날씨에 구애받지 않는 지하철 이동 동선은 자산 가치를 높이는 핵심 요소로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단 한 정거장 거리인 인천시청역에는 향후 GTX-B 노선이 개통될 예정입니다. 이를 통해 서울 주요 업무지구(CBD/YBD)까지의 이동 시간이 획기적으로 단축됩니다. 결과적으로 <strong>직주근접</strong> 💼 프리미엄이 극대화될 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 버스망과 제2경인고속도로 접근성도 우수하여, 서울 및 수도권 전역으로의 차량 이동이 매우 수월합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심 중심부임에도 불구하고 도보권 내에 초중고교가 위치하여 학령기 자녀 가구의 선호도가 높습니다. <strong>안심 통학권</strong> 확보는 주거 수요를 탄탄하게 지탱하는 강력한 요인입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구월동 일대에 기형성된 대규모 <strong>학원가</strong>를 가깝게 이용할 수 있어 우수한 학업 성취도를 기대할 수 있습니다. 이는 단순한 거주를 넘어 자녀 교육을 위한 장기 정주 여건을 완벽하게 충족합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 상업지역 내에 위치한 만큼, 저학년 자녀의 통학 시에는 주변 상권 동선을 고려한 안전한 경로 확인이 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인천 최고 수준의 상업 및 의료 인프라가 단지 주변에 밀집해 있어 생활의 완결성이 매우 뛰어납니다. 롯데백화점, 뉴코아아울렛 등 대형 유통 시설을 도보로 가깝게 이용할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">가천대길병원과 같은 상급 종합병원이 인접한 <strong>병세권</strong> 입지는 고령화 시대에 강력한 프리미엄입니다. 또한 인천문화예술회관과 중앙공원이 제공하는 <strong>공세권</strong> 🌳 환경은 도심 속 주거 쾌적성을 보장합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">풍부한 녹지 공간과 문화 시설의 결합은 입주민의 삶의 질을 근본적으로 향상시키는 중요한 가치입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구월동 원도심의 인프라를 누리면서 최신 설계가 적용된 신축 단지라는 점에서 강력한 <strong>하방 경직성</strong>을 확보합니다. 풍부한 대기 수요를 바탕으로 시장 침체기에도 훌륭한 가격 방어력을 보여줄 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">GTX-B 노선 개통이라는 초대형 교통 호재와 구월동 일대의 지속적인 도시 재생 사업이 맞물려 있습니다. 이는 단지의 미래 자산 가치를 한 단계 더 도약시킬 핵심 동력으로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">풍부한 유동인구와 배후 수요를 바탕으로, 향후 인천 남동구 일대의 시세를 리딩하는 대장주로 자리매김할 것입니다.</p></div>
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">힐스테이트 구월아트파크는 인천의 전통적 중심지인 구월동의 완성된 인프라를 온전히 누리는 하이엔드 주거 단지입니다. 옛 롯데백화점 부지라는 상징성이 입증하듯, 상업과 문화의 중심에 자리하여 탄탄한 <strong>하방 경직성</strong>을 확보하고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 반경 1km 내에 쇼핑, 의료, 녹지 등 생활에 필요한 모든 <strong>앵커시설</strong>이 밀집해 있어 주거 편의성이 매우 뛰어납니다. 신축 공급이 희소한 원도심 중심부에 들어서는 만큼, 지역 내 갈아타기 수요를 흡수할 랜드마크로 자리매김할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만, 상업지역 중심부에 위치하여 주거지 특유의 한적함보다는 도심의 활력이 강조되는 입지입니다. 따라서 쾌적성보다는 도심 인프라 활용도를 중시하는 수요층에게 최적화된 환경을 제공합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인천 지하철 1호선 예술회관역과 단지가 직접 연결되는 초역세권으로, 압도적인 <strong>직주근접</strong> 💼 환경을 자랑합니다. 지하철과 직결된 동선은 궂은 날씨에도 쾌적한 이동을 보장하며, 출퇴근 소요 시간을 획기적으로 단축합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">한 정거장 거리인 인천시청역을 통해 인천 지하철 2호선으로 환승이 가능하여 인천 전역으로의 이동이 수월합니다. 향후 인천시청역에 <strong>GTX-B</strong> 노선이 개통될 예정입니다. 이를 통해 서울 주요 업무지구 접근성이 대폭 개선될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">핵심 상권과 인접해 있어 주말이나 출퇴근 시간대 주변 도로의 차량 정체가 발생할 수 있습니다. 자차 이용 시 주변 도로의 교통 혼잡도를 고려한 동선 계획이 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변으로 구월초등학교를 비롯해 다수의 초·중·고교가 밀집하여 우수한 <strong>학세권</strong>을 형성하고 있습니다. 학령기 자녀를 둔 가구의 안정적인 거주 수요를 이끄는 핵심 요인으로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단순한 학교 접근성을 넘어, 구월동 일대에 기형성된 대형 학원가와 교육 인프라를 편리하게 이용할 수 있습니다. 이는 자녀의 학업 성취도를 높이고 면학 분위기를 조성하는 데 긍정적인 영향을 미칩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심 한가운데 위치한 특성상, 통학로 주변으로 상업 시설이 혼재되어 있습니다. 따라서 저학년 자녀의 경우 안전한 도보 통학 동선에 대한 사전 점검이 권장됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">롯데백화점 인천점과 로데오거리 상권이 인접해 있어, 도보로 쇼핑과 여가를 즐기는 <strong>슬세권</strong> 입지를 갖췄습니다. 또한, 국내 최고 수준의 의료 서비스를 제공하는 가천대길병원이 가까운 병세권 단지이기도 합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 앞에는 약 35만㎡ 규모의 중앙공원이 자리합니다. 도심 속에서도 풍부한 녹지를 누리는 <strong>공세권</strong> 🌳 프리미엄을 제공합니다. 대형 공원과의 인접성은 입주민의 주거 쾌적성을 극대화하며 자산 가치 상승에 기여합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이미 완성된 원도심 인프라를 입주와 동시에 누릴 수 있다는 점은 신도시 초기 입주 단지와 차별화되는 강력한 경쟁력입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구월동 일대는 현재 대규모 정비사업과 복합개발이 동시다발적으로 추진되며 도시 공간의 혁신적인 변화를 앞두고 있습니다. 특히 인천도시공사가 주도하는 <strong>구월아이시티</strong> 조성 사업은 지역의 가치를 한 단계 끌어올릴 핵심 동력입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">옛 구월 농수산물시장 부지 개발과 함께 상업, 업무, 주거가 결합된 복합문화공간이 조성될 계획입니다. 이러한 주변의 대형 개발 호재는 단지의 장기적인 자산 가치 상승을 견인할 든든한 기반이 됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용면적 84㎡ 및 101㎡의 중대형 평형 위주로 구성되었습니다. 이는 향후 고급 주거 수요를 안정적으로 흡수할 수 있는 잠재력을 지니고 있습니다.</p></div>
   </div>
 </div>
 
@@ -1135,6 +1186,89 @@ li { margin-bottom: 8px; }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "힐스테이트 구월아트파크 구월동 분양가·일정 정리", "text": "[힐스테이트 구월아트파크] 청약 정보 한눈에 보기\n\n📍 인천\n🗓 모집공고일 2026-05-06\n💰 8억 8,800만원 ~ 11억 2,900만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-12T08:58:25+09:00",
-  "count": 209,
-  "ready_count": 209,
+  "generated_at": "2026-05-16T08:55:09+09:00",
+  "count": 219,
+  "ready_count": 219,
   "manual_review_count": 0,
   "notices": [
     {
@@ -31,6 +31,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000420.json"
+    },
+    {
+      "notice_id": "2025000422",
+      "apt_name": "오남역 서희스타힐스 여의재 3단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2025000422.json"
     },
     {
       "notice_id": "2025000423",
@@ -262,6 +269,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2025000535.json"
+    },
+    {
+      "notice_id": "2025000537",
+      "apt_name": "성남복정1지구 B1블록 복정역 에피트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2025000537.json"
     },
     {
       "notice_id": "2025000541",
@@ -754,6 +768,13 @@
       "cache_path": "output/data_cache/notices/2026000017.json"
     },
     {
+      "notice_id": "2026000018",
+      "apt_name": "리첸시아 표선 IB EDU",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000018.json"
+    },
+    {
       "notice_id": "2026000019",
       "apt_name": "구리역 하이니티 리버파크",
       "requires_manual_input": false,
@@ -1223,6 +1244,20 @@
       "cache_path": "output/data_cache/notices/2026000115.json"
     },
     {
+      "notice_id": "2026000116",
+      "apt_name": "아크로 리버스카이",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000116.json"
+    },
+    {
+      "notice_id": "2026000120",
+      "apt_name": "써밋 더힐",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000120.json"
+    },
+    {
       "notice_id": "2026000121",
       "apt_name": "문수로 라티에르 673",
       "requires_manual_input": false,
@@ -1293,6 +1328,13 @@
       "cache_path": "output/data_cache/notices/2026000133.json"
     },
     {
+      "notice_id": "2026000138",
+      "apt_name": "힐스테이트 시흥더클래스",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000138.json"
+    },
+    {
       "notice_id": "2026000142",
       "apt_name": "왕숙 아테라 공공분양주택(본청약)",
       "requires_manual_input": false,
@@ -1361,6 +1403,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000156.json"
+    },
+    {
+      "notice_id": "2026000162",
+      "apt_name": "검암역자이르네",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000162.json"
     },
     {
       "notice_id": "2026000163",
@@ -1447,11 +1496,32 @@
       "cache_path": "output/data_cache/notices/2026000185.json"
     },
     {
+      "notice_id": "2026000187",
+      "apt_name": "엘리프 역곡",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000187.json"
+    },
+    {
+      "notice_id": "2026000188",
+      "apt_name": "해운대 마티안 디 에디션",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000188.json"
+    },
+    {
       "notice_id": "2026000193",
       "apt_name": "남양주왕숙2 A-3블록 공공분양주택(본청약)",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000193.json"
+    },
+    {
+      "notice_id": "2026000217",
+      "apt_name": "동래사적공원 오네뜨",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000217.json"
     },
     {
       "notice_id": "2026820002",

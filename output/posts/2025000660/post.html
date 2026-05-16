@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    드파인 연희는 서울특별시 서대문구 연희동 일원에 위치하여 도심 및 주요 업무 지구로의 이동이 가능한 입지 환경을 갖추고 있습니다. 서대문구의 주거 인프라를 공유하며 정주 여건의 균형을 이룹니다. 다양한 평면 구성을 통해 주거 공간의 선택지를 제공합니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 간선 도로망을 통해 서울 도심부 및 서북권으로의 이동이 가능합니다. 인근 교통망과 연계된 환승 체계를 통해 대중교통 이용의 접근성을 고려할 수 있습니다.</li><li>다양한 시내버스 노선을 이용할 수 있어 지역 내 이동 및 지하철역 연계가 가능합니다. 차량 이용 시 간선도로와 인접한 입지 특성으로 지역 간 이동 효율을 기대할 수 있습니다.</li><li>주변 교통 정비 사업과 연계된 도로망 체계는 지역 내 교통 환경에 영향을 줍니다. 출퇴근 시간대 이동 흐름은 해당 지역의 교통 여건을 파악하는 주요 지표가 됩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주거지 인근에 교육 시설들이 위치하여 통학 환경이 조성되어 있습니다. 교육 시설이 밀집된 지역 내 입지로 자녀들의 등하교 편의를 고려할 수 있습니다.</li><li>주변 교육 인프라는 지역 주거 환경의 주요 요소로 작용합니다. 학군과 면학 분위기는 주거지를 선택하는 가족 단위 세대에게 고려 대상이 됩니다.</li><li>지역 내 교육 관련 커뮤니티가 형성되어 주거 환경의 안정성을 유지합니다. 교육 시설들이 정돈된 주거지 내에 배치되어 있어 교육 접근성이 용이합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>드파인 연희는 공급 위치와 타입 구성을 확인하는 것이 중요합니다. 이번 공급은 59A, 59B, 74A, 74B 등 다양한 평면 타입으로 구성되어 있습니다.</li><li>모집공고일은 2026년 1월 9일이며, 입주 예정 시기는 2029년 1월입니다. 세부적인 공급 일정과 청약 조건은 모집공고문을 통해 상세히 확인해야 합니다.</li><li>서울시 서대문구 연희동 533-5번지 일원에 위치하며, 투기과열지구 및 청약과열지역 등 해당 지역의 규제 사항을 반드시 검토해야 합니다. 전매제한 및 분양가상한제 미적용 여부 등 법적 규제와 입주 조건을 함께 파악하는 것이 필요합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">드파인 연희는 도심 속 쾌적한 자연환경과 <strong>신축의 희소성</strong>을 갖춘 단지입니다. 서울 서북권 주거 벨트의 새로운 중심축으로 성장할 잠재력을 지녔습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">연희1구역 재개발을 통해 공급되는 이곳은 하이엔드 브랜드가 서울 최초로 적용되었습니다. 주변의 풍부한 녹지와 수변 공간이 어우러져 <strong>주거 쾌적성</strong>이 매우 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 지하철역과 초등학교가 도보권에서 다소 떨어져 있다는 점은 매수 시 고려해야 합니다. 자차 이용이 잦고 정주 환경의 쾌적성을 중시하는 수요자에게 적합합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주요 업무지구로의 차량 접근성이 우수하여 탄탄한 <strong>직주근접</strong> 💼 수요를 확보할 수 있습니다. 내부순환로 진입이 수월해 서울 전역으로의 차량 이동이 매우 편리합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근에 경의중앙선 가좌역이 위치해 상암 DMC 및 홍대입구 방면 환승이 가능합니다. 이를 통해 CBD 및 YBD로 출퇴근하는 직장인들의 편의성을 충족합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">현재 가좌역까지의 거리가 도보로 약 20분 소요되어 완벽한 역세권으로 보기는 어렵습니다. 대중교통 이용 시 지선버스 등을 통한 환승 연계가 필수적인 입지입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주변으로 전통적인 명문 학군과 대학가가 밀집해 있어 <strong>면학 분위기</strong>가 우수하게 조성되어 있습니다. 자녀의 연령대에 따라 교육 환경의 체감도가 다소 다를 수 있는 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근에 서대문구의 주요 중·고등학교가 포진해 있으며 신촌 일대 인프라를 공유합니다. 명문 대학가 주변에 형성된 우수한 학원가 이용도 비교적 수월한 편입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 배정 예정인 연희초등학교까지의 거리가 약 1.4km로 도보 통학에는 아쉬움이 있습니다. 학령기 저학년 자녀를 둔 가구라면 안전한 통학 동선 점검이 반드시 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신촌과 홍대 상권의 풍부한 인프라를 누리면서도 복잡한 상업지구와 분리되어 조용합니다. 이른바 <strong>슬세권</strong>의 편리함과 고즈넉한 주거 안정성을 동시에 확보한 것이 특징입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">세브란스병원 등 대형 의료시설이 인접해 수준 높은 의료 서비스를 신속하게 받을 수 있습니다. 연희동 특유의 감성적인 골목 상권과 카페거리도 도보로 쉽게 이용 가능합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 앞에 홍제천 산책로가 흐르고 뒤편으로 안산도시자연공원과 궁동근린공원이 자리합니다. 도심 한복판에서 완벽한 <strong>공세권</strong> 🌳 프리미엄을 누릴 수 있는 것이 강점입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">서대문구 일대의 대규모 정비사업이 순차적으로 진행됨에 따라 주거 환경이 획기적으로 개선됩니다. 지역 내 대단지 신축으로서 주변 시세를 리딩하는 앵커시설 역할을 수행할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">연희동 일대는 오랫동안 신축 공급이 부족했던 지역으로 브랜드 대단지의 <strong>하방 경직성</strong>이 뛰어납니다. 주변 노후 주거지 정비가 완료되면 인프라 확충에 따른 시너지 효과가 기대됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">교통 소외 지역이라는 단점을 보완할 서부선 및 강북횡단선 경전철 사업이 현재 계획 중입니다. 향후 해당 노선들이 가시화될 경우 광역 교통망 확충에 따른 자산 가치 상승이 예상됩니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1281,6 +1314,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "드파인 연희 청약정리, 연희동 12억대부터 확인", "text": "[드파인 연희] 청약 정보 한눈에 보기\n\n📍 서울\n🗓 모집공고일 2026-01-09\n💰 12억 100만원 ~ 23억 5,900만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

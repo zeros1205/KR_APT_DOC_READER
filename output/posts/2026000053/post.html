@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -558,7 +609,7 @@ li { margin-bottom: 8px; }
   </h2>
 
   <div style="display:flex;flex-direction:column;gap:28px;">
-    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주월송 진아레히는 세종시와 인접한 금흥2지구에 자리하여, 우수한 <strong>직주근접</strong> 💼 여건을 갖춘 신축 랜드마크 단지입니다. 공주 지역 내 누적된 신축 대기 수요를 흡수할 수 있는 강력한 입지적 우위를 지닙니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주시 내 입주 5년 이하 아파트 비율은 매우 낮은 수준입니다. 28년 만에 공급되는 811세대 규모의 대단지는 그 자체로 희소성이 큽니다. 특히 100㎡ 초과 중대형 평형이 다수 포함되어 지역 내 고소득 실수요자의 이전 수요를 자극합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 완성된 구도심 중심부와는 약간의 거리가 있습니다. 초기 상권 형성기에는 대단지 내부 커뮤니티에 대한 의존도가 높을 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">세종시 주요 업무지구까지 차량 10분대 이동이 가능합니다. 사실상 세종 생활권을 공유하는 <strong>광역교통망</strong> 🚆 프리미엄을 누릴 수 있습니다. 이는 외부 출퇴근 수요를 견인하는 핵심 요소입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근으로 공주와 세종을 잇는 광역 BRT 노선이 계획되어 있어 대중교통 환승 편의성이 크게 개선될 전망입니다. 또한 세종-서울 고속도로의 서세종IC가 가까워 수도권 및 타 지자체로의 이동이 매우 수월합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보권 내 지하철역이 없는 지방 도시 특성상 자가용 이용이 필수적입니다. 출퇴근 시간대 세종 방향 도로의 교통량 증가는 매수자가 고려해야 할 변수입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 내 다자녀 및 신혼부부 특별공급 비중이 높게 배정되었습니다. 학령기 자녀를 둔 3040 세대의 탄탄한 <strong>실수요</strong>를 확보하기 유리한 환경입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">초등학교는 신관초등학교 통학 구역에 배정되며, 중학교는 공주중, 봉황중 등 전통적인 공주 명문 학군으로 진학이 가능합니다. 신축 대단지가 조성됨에 따라 단지 주변으로 보습학원 등 사교육 인프라가 빠르게 확충될 가능성이 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">초등학교가 도보로 즉시 접근하기에는 다소 거리가 있어 초품아 단지는 아닙니다. 저학년 자녀의 경우 통학 셔틀버스 등 안전한 통학 동선 확보가 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">월송지구의 신흥 상권과 신관동 구도심 인프라를 동시에 누릴 수 있습니다. 주거 쾌적성과 생활 편의성을 모두 충족하는 <strong>슬세권</strong> 입지를 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">법원과 검찰청 등 주요 관공서가 인접해 있어 치안이 우수하고 주변 환경이 정돈되어 있습니다. 또한 인근에 대형 마트와 병원 등 필수 생활 시설이 자리하여 입주 직후에도 인프라 부족으로 인한 불편함이 적습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">초대형 복합 쇼핑몰 등 광역 단위의 앵커시설을 도보로 이용하기는 어렵습니다. 이를 위해서는 세종시나 대전시 등 인접 대도시로 이동해야 하는 제약이 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">비규제 지역의 이점과 계약 직후 전매가 가능한 유연한 조건을 갖추었습니다. 실거주뿐만 아니라 투자 관점에서도 자산 가치의 <strong>하방 경직성</strong>이 돋보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주시는 청약 및 대출 조건이 비교적 자유로워 외부 투자 자금의 유입이 용이합니다. 세종시의 지속적인 팽창에 따른 배후 주거지로서의 역할이 부각되며 장기적인 시세 상승 여력이 충분합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지방 부동산 시장의 전반적인 침체 우려가 존재하는 점은 유의해야 합니다. 단기 차익보다는 세종시 인프라 확장과 연계한 중장기적 관점의 접근이 바람직합니다.</p></div>
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주월송 진아레히는 세종시와 맞닿은 <strong>월송생활권</strong>에 자리하여 두 도시의 인프라를 모두 누리는 핵심 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량 10분대로 세종시 주요 행정 및 업무시설에 닿을 수 있어 탄탄한 <strong>직주근접 💼</strong> 수요를 확보할 수 있습니다.<br>또한 공주 지역에서 희소성이 높은 전용 84~132㎡의 중대형 평형 위주로 구성되어 실수요자의 선호도가 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주시 내에서 가장 높은 27층 규모로 설계되어 향후 지역을 대표하는 랜드마크로 자리매김할 잠재력을 지녔습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 교통망 확충 계획을 통해 세종 및 수도권으로의 접근성이 획기적으로 개선될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근으로 공주-세종 <strong>광역 BRT</strong> 노선이 계획되어 있어 대중교통을 통한 두 도시 간 이동이 더욱 편리해집니다.<br>또한 세종-서울 고속도로(계획)의 서세종IC가 인접해 있어 차량 이용 시 외부 지역으로 빠르게 이동할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">국도 23호선을 이용하면 천안과 세종시 주요 거점까지 30분대에 도달할 수 있어 광역 이동 편의성이 우수합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 내 보육 시설과 인근 학교가 연계되어 학령기 자녀를 둔 가구에 우수한 안심 교육 환경을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 내에 국공립 어린이집과 다함께 돌봄센터, 도서관이 조성되어 영유아 보육 여건이 탁월합니다.<br>인근에 신월초등학교가 위치해 도보 통학이 가능하며, 공주대학교와 인접해 전반적인 면학 분위기가 우수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">안전한 통학로 확보와 단지 내 교육 특화 시설은 주거 만족도를 높이고 자산 가치의 <strong>하방 경직성</strong>을 강화합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">월송지구와 신관동의 풍부한 상권을 동시에 누릴 수 있는 <strong>슬세권</strong> 입지로 주거 편의성이 매우 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공주지방법원과 검찰청 등 주요 관공서가 밀집한 행정 중심지에 자리하여 공공 서비스 이용이 수월합니다.<br>경희한방병원과 대형 마트 등 의료 및 쇼핑 시설이 차량 5분 거리에 있어 생활의 완결성을 더해줍니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 금흥2지구 개발이 완료되면 상업 시설이 추가로 확충되어 정주 여건은 더욱 개선될 것으로 예상됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">삼성물산 리조트부문과 협업한 특화 조경과 대규모 커뮤니티 시설은 단지의 미래 가치를 견인하는 핵심 요소입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지상에 차가 없는 <strong>공세권 🌳</strong> 단지로 설계되며, 에버스케이프 조경이 적용되어 쾌적한 주거 환경을 제공합니다.<br>사우나와 실내 골프연습장 등 811세대 대단지에 걸맞은 고급 커뮤니티 시설이 지역 내 차별성을 부여합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">세종시의 지속적인 성장과 광역 교통망 확충이 맞물려, 생활권 통합에 따른 장기적인 자산 가치 상승이 기대됩니다.</p></div>
   </div>
 </div>
 
@@ -1153,6 +1204,89 @@ li { margin-bottom: 8px; }
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "공주월송 진아레히 청약정리, 금흥동 4억대부터", "text": "[공주월송 진아레히] 청약 정보 한눈에 보기\n\n📍 충청남도\n🗓 모집공고일 2026-04-30\n💰 4억 2,800만원 ~ 6억 5,700만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    문수로 라티에르 673은 울산광역시 남구 신정동에 위치한 단지로, 주거 선호도가 높은 문수로 생활권에 속해 있습니다. 교통 및 교육, 생활 편의시설이 인접하여 주거 인프라가 갖춰진 환경입니다. 입주민의 생활 패턴에 따른 이동 동선과 주변 인프라의 활용성을 종합적으로 고려해야 합니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>본 단지는 울산의 주요 간선 도로인 문수로와 봉월로를 통해 시내외로의 이동이 용이한 위치에 자리 잡고 있습니다. 자차를 이용한 업무지구 및 주요 거점 이동 시 도로망의 연결성을 면밀히 살펴보는 것이 좋습니다.</li><li>울산 지역 특성상 대중교통 이용 시 노선 및 환승 동선을 사전에 파악하여 실제 출퇴근 시간을 확인해야 합니다. 인근 도로 정비 상태와 대중교통 정류장 위치를 현장에서 확인하면 실거주 시의 이동 편의성을 더 명확히 체감할 수 있습니다.</li><li>향후 인근 지역의 교통 정비 사업과 광역 교통망 확충 여부를 확인하면 장기적인 이동 환경 변화를 예측하는 데 도움이 됩니다. 주요 이동 경로에 따른 체감 거리와 교통량은 단지의 실거주 만족도를 결정짓는 주요 요소입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변으로 신정초등학교 등 교육 시설이 분포해 있어 자녀 교육 환경을 고려하는 수요자들에게 적합한 입지입니다. 초등학교 배정 여부와 통학로의 안전성을 교육청 공고와 현장 실사를 통해 세부적으로 확인하시기 바랍니다.</li><li>주변에 위치한 학원가와 교육 시설들은 지역 내 교육 인프라의 성숙도를 보여주는 지표가 됩니다. 자녀의 연령대와 교육 과정을 고려하여 학교와의 접근성 및 주변 교육 환경을 검토하는 것이 중요합니다.</li><li>주거 단지 밀집 지역으로서 학업 분위기와 교육 관련 생활 인프라가 잘 조성되어 있습니다. 교육 시설과의 물리적 거리뿐만 아니라 통학 환경의 쾌적성을 함께 분석하여 자녀 교육 계획을 수립하시길 권장합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>문수로 라티에르 673은 울산 남구 신정동 673-1번지 일대에 공급되는 단지로, 전용면적 84㎡와 104㎡ 등 다양한 타입으로 구성되어 있습니다. 각 타입별 구조와 공급 구성을 확인하여 개인의 가구 구성과 라이프스타일에 맞는 평면을 선택하는 것이 좋습니다.</li><li>공급 일정과 입주 예정 시기는 주거 이전 계획을 수립하는 데 필수적인 정보로, 모집공고문을 통해 정확한 일정을 확인해야 합니다. 입주 전까지 진행되는 공사 진행 상황과 주변 환경 변화를 주기적으로 점검하는 것이 바람직합니다.</li><li>해당 지역의 규제 현황과 전매 제한 등 법적 요건을 사전에 숙지하여 공급 조건을 명확히 파악해야 합니다. 분양가상한제 미적용 등 구체적인 규제 항목을 확인하고 본인의 자금 계획 및 주거 환경 요구에 부합하는지 신중히 검토하시기 바랍니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">문수로 라티에르 673은 울산의 최선호 주거지인 남구 신정동과 옥동 생활권을 모두 공유하는 핵심 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변으로 상업, 교육, 자연환경 등 주거에 필요한 모든 인프라가 이미 완성되어 있습니다. 특히 신축 주상복합으로서 지역 내 랜드마크로 자리매김할 잠재력을 지녔습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 도심 중심부에 위치하여 출퇴근 시간대 차량 정체가 발생할 수 있으므로, 대중교통망 활용도를 고려하는 것이 좋습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">가장 돋보이는 강점은 2029년 개통을 목표로 추진 중인 울산 트램 1호선 <strong>공업로터리역</strong> 🚆 초역세권 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">트램이 개통되면 태화강역부터 신복교차로까지 도심 이동 편의성이 획기적으로 개선됩니다. 또한 삼산로와 문수로 등 주요 간선도로가 인접해 직주근접성이 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">현재는 트램 공사로 인한 일시적인 교통 혼잡이 있을 수 있으나, 완공 후에는 광역 대중교통망의 핵심 결절점이 될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이 단지는 울산 최고 수준의 명문 학군을 도보권에 품고 있어 학령기 자녀를 둔 가구의 탄탄한 실수요가 예상됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">울산여고, 학성고, 신정고 등 지역 내 선호도가 높은 학교들이 단지 가까이에 밀집해 있습니다. 더불어 울산 최대 규모인 <strong>옥동 학원가</strong> 📚 접근성이 우수하여 면학 분위기가 탁월합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">우수한 교육 환경은 주택 시장의 하방 경직성을 높이는 주요 요인이므로, 장기적인 자산 가치 유지에 긍정적으로 작용합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보로 이용 가능한 대형 마트와 병원 등 풍부한 생활 편의시설을 갖춘 전형적인 <strong>슬세권</strong> 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">롯데마트 울산점이 가까이 있으며, 삼산동의 백화점 상권과 시청 등 행정 인프라까지 쉽게 누릴 수 있습니다. 또한 364만㎡ 규모의 울산대공원이 인접한 쾌적한 <strong>공세권</strong> 🌳 환경을 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심의 편리함과 대형 공원의 여유로움을 동시에 누릴 수 있어, 다양한 연령층의 주거 만족도를 충족시킬 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신정동 일대의 지속적인 정비사업과 신교통망 확충은 단지의 미래 자산 가치를 견인하는 핵심 동력입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이차전지 특화단지로 지정된 울산미포국가산업단지 등 주요 업무지구와의 접근성이 좋아 고소득 종사자들의 배후 수요가 풍부합니다. 전용 84㎡와 104㎡ 위주의 중대형 평형 구성은 지역 내 하이엔드 주거로서의 희소성을 더합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 트램 노선이 구체화되고 주변 정비사업이 완료되면, 남구 중심 주거벨트의 핵심축으로서 가치 상승이 기대됩니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1158,6 +1191,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "문수로 라티에르 673 울산 남구 분양가 총정리", "text": "[문수로 라티에르 673] 청약 정보 한눈에 보기\n\n📍 울산\n🗓 모집공고일 2026-04-10\n💰 9억 500만원 ~ 11억 8,300만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

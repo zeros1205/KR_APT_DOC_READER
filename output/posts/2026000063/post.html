@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    오션포레베네스트하우스는 인천광역시 중구 미단시티 내에 위치하여 자연 친화적인 주거 환경을 제공하는 단지입니다. 총 253세대로 구성되어 차분하고 독립적인 주거 공간을 지향합니다. 주변 환경과의 조화를 고려한 설계를 통해 실거주 중심의 안정적인 거주지로서의 가치를 갖추고 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>인근 도로망을 통해 인천 내 주요 지역으로의 이동이 가능하며, 계획적인 교통 동선 확보를 통해 차량을 이용한 접근성을 높였습니다. 지역 내 도로 인프라가 정비되어 있어 자차를 활용한 외부 이동이 비교적 원활한 편입니다.</li><li>인천국제공항 및 주요 산업 물류 단지와의 물리적 연계성을 갖추고 있어 해당 지역으로 출퇴근하는 수요자에게 고려 대상이 됩니다. 교통 여건은 단지가 위치한 지역의 특성을 반영하여 구성되어 있습니다.</li><li>향후 인근 지역의 교통 기반 시설이 단계적으로 개선됨에 따라 거주자의 교통 편의성 또한 점진적으로 변화할 것으로 예상됩니다. 이는 지역 내 거주하는 이용자들의 이동 효율을 뒷받침하는 요소가 될 것입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주거지 인근에 교육 시설들이 배치되어 있어 자녀들의 학습 환경을 조성하기 위한 기본 인프라를 갖추고 있습니다. 주거 단지로서의 안락함과 교육 시설 접근성이 어우러져 생활의 균형을 이룹니다.</li><li>쾌적함이 강조되는 주거 환경 속에서 교육 인프라를 일상적으로 이용할 수 있는 입지적 특성을 지니고 있습니다. 자녀들의 통학 환경 및 면학 분위기 조성을 위해 필요한 기초적인 생활 여건이 마련되어 있습니다.</li><li>단지 주변으로 조성된 주거 환경은 교육과 생활이 조화를 이루는 안정적인 정주 여건을 지원합니다. 가족 단위 거주자가 주거지를 선정할 때 고려하는 기본적인 교육 환경 요소를 포함하고 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>오션포레베네스트하우스(미단시티 공동8BL)의 단지 구성과 부대 시설 정보는 모집공고문에 첨부된 단지 배치도, 평면도 등 공식 자료를 통해 확인하시는 것이 가장 정확합니다. 공급되는 타입 구성과 청약 자격 조건은 본문 상단의 분양 일정·공급 정보 섹션에서 함께 살펴보세요.</li><li>다양한 평면 구성으로 설계되어 입주자의 라이프스타일과 가족 구성원 수에 따라 선택의 폭을 넓혔습니다. 실내 공간의 효율적인 배치를 통해 거주자가 공간을 실용적으로 활용할 수 있도록 고려하였습니다.</li><li>비규제지역이라는 입지적 특성을 바탕으로 실거주를 고려하는 세대에게 주거 선택의 기회를 제공합니다. 단지는 주거지로서의 본연의 기능에 충실하며 안정적인 정주 환경을 지향합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">영종국제도시 미단시티에 위치한 오션포레베네스트하우스는 바다와 녹지를 품은 쾌적한 주거 환경이 돋보이는 단지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">해안가와 인접해 탁 트인 조망을 확보하며, 대규모 계획도시의 깔끔한 기반 시설을 누릴 수 있습니다. 복잡한 도심을 벗어나 여유로운 생활을 원하는 수요층에게 매우 적합한 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 미단시티 내부의 생활 인프라가 아직 형성 단계이므로, 입주 초기에는 다소 불편함이 따를 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공항철도 영종역과 인접하여 서울 및 수도권 주요 업무지구로의 접근성이 양호한 편입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량 이용 시 금산 IC를 통해 영종대교 진입이 수월하여 광역 이동이 매우 편리합니다. 향후 <strong>제3연륙교</strong> 🌉 개통이 계획되어 있어 청라국제도시와의 연계성이 크게 강화될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대중교통망이 지속적으로 확충되고 있으나, 현재로서는 자가용 이용이 이동 시간 단축에 훨씬 유리합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">글로벌 수준의 교육 환경이 조성될 예정으로, 학령기 자녀를 둔 가구의 관심이 집중되는 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근 미단시티 내에 명문 <strong>국제학교</strong> 📚 설립이 추진 중이며, 우수한 학업 성취도를 기대할 수 있습니다. 이는 지역 내 탄탄한 교육 수요를 창출하고 정주 여건을 한 단계 끌어올릴 핵심 요소입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">아직 학교 설립이 완료되지 않은 계획 단계이므로, 실제 개교 전까지는 주변 도심의 학군을 이용해야 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">자연 친화적인 여가 시설과 대규모 복합 개발이 어우러져 독보적인 힐링 라이프를 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">예단포 둘레길과 해안 산책로가 가까워 일상 속에서 쾌적한 휴식을 누리기에 아주 좋습니다. 인근 한상드림아일랜드 개발로 대형 레저 시설 이용이 더욱 편리해질 예정입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 마트나 종합 병원 등 필수 상업 시설은 영종하늘도시 등 인접 도심의 인프라를 공유해야 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">영종국제도시의 굵직한 개발 호재를 바탕으로 장기적인 자산 가치 상승이 기대되는 유망 지역입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">미단시티 복합리조트 사업과 영종도 순환도로 연결 등 <strong>광역교통망</strong> 확충이 꾸준히 진행되고 있습니다. 이는 지역 내 인구 유입을 촉진하고 주거 수요의 하방 경직성을 튼튼하게 다지는 원동력이 됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대규모 개발 사업의 특성상 진행 속도에 따라 가치 상승 시점이 변동될 수 있어 긴 호흡의 접근이 필요합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1121,6 +1154,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "오션포레베네스트하우스 인천 중구 4억대 청약정리", "text": "[오션포레베네스트하우스(미단시티 공동8BL)] 청약 정보 한눈에 보기\n\n📍 인천\n🗓 모집공고일 2026-03-18\n💰 4억 3,300만원 ~ 4억 8,500만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

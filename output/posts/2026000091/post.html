@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -553,7 +604,7 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   </h2>
 
   <div style="display:flex;flex-direction:column;gap:28px;">
-    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소제지구 A4BL 중흥S-클래스 우미린은 여수 신흥 주거타운의 대장주 역할을 수행할 단지입니다. 분양가 상한제가 적용되어 주변 시세 대비 우수한 <strong>하방 경직성</strong>을 확보했습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">여수 국가산업단지 배후 주거지로서 탄탄한 실수요를 품어 안정적인 자산 가치를 유지합니다. 소호동 일대 41만 8천㎡ 규모로 조성되는 택지개발지구의 첫 분양이라는 점에서 선점 효과가 큽니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">일부 세대에서 누릴 수 있는 남해안 <strong>오션뷰</strong>는 자산 가치를 높이는 핵심 프리미엄입니다. 향후 인프라가 완성되면 웅천지구를 잇는 여수의 새로운 주거 중심축으로 자리매김할 것입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근의 소호로와 쌍봉로를 통해 여수 도심권 및 주요 업무지구로 빠르게 이동할 수 있습니다. 여수 국가산업단지까지 차량 접근성이 뛰어나 완벽한 <strong>직주근접</strong> 💼 환경을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 교통망의 연계성도 훌륭한 편으로 KTX 여천역과 여수종합버스터미널 이용이 편리합니다. 22번 지방도를 통한 순천 방면 진출입도 수월하여 광역 이동의 편의성을 더해줍니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 신도시 초기 입주 시점에는 대중교통 노선이 다소 부족할 수 있어 주의가 필요합니다. 따라서 자차 이동을 중심으로 한 출퇴근 동선 계획이 우선적으로 필요할 것으로 보입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보권 내에 안심초등학교가 위치하여 학령기 자녀를 둔 가구의 선호도가 매우 높습니다. 향후 소제지구 내에 새로운 초등학교가 개교할 예정으로 <strong>초품아</strong> 단지의 이점을 누리게 됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">안전한 통학로 확보는 주거 만족도와 직결되는 중요한 요소로 작용하여 수요를 견인합니다. 여수시립쌍봉도서관이 인접해 있어 자녀들의 면학 분위기 조성에도 유리한 환경을 갖추고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">중고등학교 학군과 대형 <strong>학원가</strong>는 기존 도심인 학동 일대의 완성된 인프라를 공유해야 합니다. 입주 후 지구 내 근린생활시설에 교육 인프라가 형성되기까지 일정 시간이 소요될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">여수시청, 하나로마트, CGV 등 기존 도심의 풍부한 생활 편의시설을 가깝게 이용할 수 있습니다. 신도시의 쾌적함과 구도심의 완성된 인프라를 동시에 누릴 수 있는 매력적인 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">자연 친화적인 주거 환경은 이 단지의 자산 가치를 높이는 가장 큰 경쟁력 중 하나입니다. 축구장 11개 규모의 공원과 녹지가 지구 내에 조성되어 완벽한 <strong>공세권</strong> 🌳 프리미엄을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소호요트경기장과 안심산 폭포공원 등 해양 및 녹지 인프라가 단지 주변에 인접해 있습니다. 입주민들은 일상 속에서 수준 높은 여가 생활과 휴식을 즐기며 주거 만족도를 높일 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소호동동다리 연장 사업은 단지의 미래 가치를 견인할 핵심적인 지역 개발 호재입니다. 해안 산책로가 확장되면 바다 접근성이 개선되어 해양 관광 및 주거 쾌적성이 극대화됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">7천 명 이상을 수용하는 소제지구의 개발이 완료되면 다양한 <strong>앵커시설</strong>들이 속속 들어설 예정입니다. 대규모 브랜드 타운이 형성되며 지역 내 주거 문화를 선도하는 랜드마크로 자리 잡을 가능성이 큽니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">분양가 상한제 적용으로 진입 장벽을 낮춘 만큼 장기적인 자산 가치 상승이 기대되는 곳입니다. 신도시 조성 초기 단계의 불편함을 감수한다면 충분한 보상을 얻을 수 있는 유망한 투자처입니다.</p></div>
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">본 단지는 해양 관광 인프라와 탄탄한 배후 수요를 겸비한 <strong>신흥 주거 타운</strong>의 핵심입니다. 여수국가산업단지와의 뛰어난 접근성을 바탕으로 풍부한 실수요를 확보하고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지가 들어서는 소제지구는 약 41만 8천㎡ 규모로 조성되는 대규모 택지개발지구입니다. 주거와 상업, 대규모 공원 시설이 체계적으로 들어설 예정으로 쾌적한 정주 여건이 기대됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 대규모 택지 조성 초기 단계인 점을 매수 시점에 충분히 고려해야 합니다. 초기 입주 시점에는 상업 시설 등 일부 인프라 형성에 물리적인 시간이 소요될 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;"><strong>직주근접</strong> 💼의 가치를 극대화하는 쾌속 광역 교통망을 갖추고 있습니다. 주요 업무지구인 여수국가산업단지까지 차량 이동이 수월하여 출퇴근 피로도를 크게 낮출 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소호로와 쌍봉로를 통해 여수 도심권인 학동 및 웅천지구로의 이동이 매우 편리합니다. 또한 KTX 여천역과 여수공항, 22번 지방도를 통한 광역 이동망도 우수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 소호와 웅천을 잇는 해상교량 등 핵심 도로망이 새롭게 확충될 계획입니다. 해당 교량이 완공될 경우 도심 내부의 교통 체증이 획기적으로 해소될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">안전한 도보 통학권을 확보하여 학령기 자녀 가구의 선호도가 높은 <strong>초품아</strong> 입지입니다. 근거리에 안심초등학교가 자리하여 어린 자녀들의 안전하고 편리한 도보 통학이 가능합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">여기에 소제지구 내에 새로운 초등학교 부지가 계획되어 있어 교육 인프라는 더욱 탄탄해질 전망입니다. 학교 주변으로 학원가 등 필수 교육 시설이 자연스럽게 형성될 가능성이 큽니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신설 학교의 개교 일정은 지구 개발 속도에 따라 변동될 수 있으므로 지속적인 확인이 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">바다를 품은 <strong>공세권</strong> 🌳 입지로 주거 쾌적성과 자산 가치를 동시에 끌어올리는 환경입니다. 일부 세대에서는 탁 트인 남해 바다 조망을 누릴 수 있어 프리미엄 형성에 유리합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근으로 소호동동다리와 소호요트경기장, 이순신공원 등 해양 레저 공간이 밀집해 있습니다. 특히 소호동동다리 연장 사업이 추진 중으로 해안 산책로 접근성이 더욱 향상될 예정입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 마트와 병원 등 핵심 상업 시설은 인접한 웅천지구와 학동의 완성된 인프라를 공유할 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소제지구의 체계적인 개발과 산업단지의 배후 수요가 맞물려 강력한 <strong>하방 경직성</strong>을 확보합니다. 신규 택지지구의 앵커시설 역할을 수행하며 지역 내 새로운 주거 랜드마크로 자리 잡을 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">약 3천여 가구가 유입되는 소제지구는 여수의 새로운 주거 중심축으로 성장할 잠재력을 지녔습니다. 쾌적한 자연환경과 복합 주거 기능이 결합되어 장기적인 자산 가치 상승을 견인할 것으로 보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용면적 84㎡ 위주의 평형으로 구성되어 실수요자들의 환금성 측면에서도 유리한 조건을 갖췄습니다.</p></div>
   </div>
 </div>
 
@@ -1155,6 +1206,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "여수 소호동 중흥S-클래스 우미린 분양가·일정 정리", "text": "[소제지구 A4BL 중흥S-클래스 우미린] 청약 정보 한눈에 보기\n\n📍 전라남도\n🗓 모집공고일 2026-04-24\n💰 4억 8,800만원 ~ 4억 9,300만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

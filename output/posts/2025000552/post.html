@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    한화포레나 부산대연은 부산광역시 남구 대연동 일대에 위치하여 도심 생활 인프라를 누릴 수 있는 입지적 조건을 갖추고 있습니다. 주요 간선도로와 인접하여 부산 주요 도심으로의 접근이 가능하며, 지역 내 핵심 거점을 연결하는 교통 환경이 형성되어 있습니다. 정주 여건이 우수한 대연동의 중심부에서 주거 편의성을 확보할 수 있는 입지입니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 간선도로를 통해 부산 주요 도심 및 부도심으로의 이동이 가능한 교통망을 갖추고 있습니다. 이를 통해 시내외 진출입이 용이하여 다양한 지역으로의 접근성이 확보됩니다.</li><li>대중교통망이 배치되어 있어 일상적인 출퇴근과 외부 활동에 필요한 교통 편의를 이용할 수 있습니다. 인근 도로망은 입주민의 원활한 이동을 지원하는 역할을 합니다.</li><li>인근 교통망을 통해 지역 내 대형 상업 시설 및 문화 시설로 접근할 수 있는 요건을 갖추고 있습니다. 이동의 효율성이 확보된 입지 환경은 일상생활의 편리함을 높이는 요소입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주변 지역 내에 다수의 교육 시설이 자리하고 있어 지역 내 학습 분위기가 조성되어 있습니다. 자녀를 둔 세대가 주거지를 선택할 때 고려할 수 있는 교육 환경이 구성되어 있습니다.</li><li>인근 주거 밀집 지역의 특성상 통학 환경과 관련 시설들의 접근성이 확보되어 있습니다. 교육 시설과의 물리적 위치는 학생들에게 학습 여건을 제공하는 기반이 됩니다.</li><li>도심 속 주거지로서 생활 인프라와 교육 시설이 조화를 이루고 있습니다. 이는 교육 수요가 있는 가구에 편리한 주거 생활 환경을 제공하는 요건이 됩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>한화포레나 부산대연은 해당 위치의 공급 구성과 공고 내용을 확인할 수 있습니다. 이번 공급에서는 059.8962 타입 등의 구성을 포함하고 있습니다.</li><li>이번 공고의 모집공고일은 2025-12-12이며, 입주 예정 시기는 2026년 05월로 예정되어 있습니다. 입주 일정과 공급 조건을 면밀히 확인하여 계획을 수립하는 것이 좋습니다.</li><li>부산광역시 남구 대연동 455-25번지에 위치하며, 해당 사업지의 규제 현황 및 분양가상한제 적용 여부 등을 공고문을 통해 상세히 확인할 필요가 있습니다. 공급 조건과 단지 정보를 종합적으로 검토하시기 바랍니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">한화포레나 부산대연은 부산 남구 주거 벨트의 핵심인 대남교차로 일대에 자리하여 탄탄한 주거 선호도를 자랑합니다. 기존 도심의 완성된 인프라를 즉시 누릴 수 있는 것이 가장 큰 무기입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이 단지는 수영구 남천동과 남구 대연동의 생활권을 공유하는 이른바 <strong>대남라인</strong>의 중심에 위치합니다. 두 지역의 상권과 학군을 동시에 이용할 수 있어 실수요자의 선호도가 매우 높게 형성되어 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 300세대 규모의 중소형 단지라는 점은 대단지 대비 커뮤니티 규모 면에서 다소 아쉬운 요소로 작용할 수 있습니다. 하지만 입지 자체가 지닌 희소성이 이를 충분히 상쇄할 것으로 분석됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산 도시철도 2호선 남천역과 경성대·부경대역을 도보로 이용할 수 있는 더블 역세권 입지를 확보하고 있습니다. 이를 통해 서면 업무지구 등 주요 도심으로의 <strong>직주근접</strong> 💼이 완벽하게 실현됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량을 이용할 경우 대남교차로를 통해 황령터널과 광안대교로의 진입이 매우 수월합니다. 이는 해운대 권역과 부산항 일대의 주요 거점으로 빠르게 이동할 수 있는 광역 교통망의 핵심 축입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">출퇴근 시간대 대남교차로 일대의 차량 정체는 매수자가 사전에 인지해야 할 도로 교통의 제약 사항입니다. 대중교통망을 적극적으로 활용하는 것이 입지의 시간적 가치를 극대화하는 방안입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산 내에서도 최상위권 학업 성취도를 자랑하는 남천중학교와 대연고등학교가 인접해 있어 탁월한 교육 환경을 제공합니다. 이는 학령기 자녀를 둔 3040 가구의 강력한 주거 진입 동기가 되는 핵심 요소입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">특히 부산 최대 규모로 꼽히는 <strong>남천동 학원가</strong>를 도보로 이용할 수 있습니다. 이러한 밀집된 교육 인프라는 자산 가치의 하방 경직성을 견고하게 만드는 요인입니다. 용문초등학교 등 우수한 초등 학군도 인접해 안심 통학권을 확보했습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">명문 학군과 밀집된 학원가는 주택 시장의 변동기에도 수요를 꾸준히 견인하는 핵심 동력으로 작용합니다. 이는 해당 단지의 장기적인 자산 가치 보존에 매우 긍정적인 영향을 미치게 됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">경성대·부경대 상권과 남천동 해변시장 등 부산을 대표하는 대형 상업 시설을 슬세권으로 누릴 수 있습니다. 도심 한가운데 위치하여 일상생활에 필요한 모든 인프라가 이미 완벽하게 구축되어 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광안리 해수욕장과 이기대 수변공원이 인접해 있어 쾌적한 자연환경을 누릴 수 있습니다. 도심 속에서도 자연을 곁에 두는 <strong>공세권</strong> 🌳 프리미엄을 확실하게 확보했습니다. 이러한 주거 쾌적성은 현대 부동산 시장에서 자산 가치 상승을 이끄는 주요 지표입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주말이나 공휴일에는 광안리 일대의 외부 방문객 유입으로 인해 단지 주변 상권이 다소 혼잡해질 수 있습니다. 하지만 이는 역으로 해당 상권의 뛰어난 활력과 편의성을 방증하는 긍정적 요소이기도 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대연동과 남천동 일대에서 동시다발적으로 진행되는 대규모 정비사업에 주목해야 합니다. 이러한 변화는 해당 지역을 부산의 새로운 신흥 부촌으로 빠르게 변모시키고 있습니다. 주변 정주 여건의 획기적인 개선에 따른 직접적인 미래 가치 수혜가 예상되는 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용면적 59㎡ 위주의 구성과 8억원대의 분양가는 최근 1~2인 가구 증가 추세와 맞물려 높은 환금성을 기대하게 합니다. 도심 내 신축 아파트에 대한 높은 희소성이 단지의 본연적인 가치를 더욱 끌어올릴 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인근 대형 재건축 단지들의 입주가 완료되면 일대의 주거 인프라는 한 단계 더 도약할 것으로 전망됩니다. 이는 장기적인 관점에서 자산 가치의 꾸준한 우상향을 견인할 훌륭한 앵커시설 역할을 합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1100,6 +1133,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "한화포레나 부산대연 청약 핵심정리 8억1,400만원", "text": "[한화포레나 부산대연] 청약 정보 한눈에 보기\n\n📍 부산\n🗓 모집공고일 2025-12-12\n💰 8억 1,400만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

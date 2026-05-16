@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    구서 다움포레는 부산광역시 금정구 구서동에 위치하여 지역 내 생활 기반 시설을 가까이에서 누릴 수 있는 단지입니다. 인근 교통망을 통해 주요 도심지로의 이동이 가능하며 실거주에 적합한 정주 여건을 갖추고 있습니다. 구서동의 기존 주거 인프라를 바탕으로 편리한 생활 환경을 제공합니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 인근으로 부산 지하철 1호선 구서역이 위치하여 대중교통을 이용한 이동이 가능합니다. 역세권 입지를 통해 부산 주요 도심지로의 접근성이 확보되어 있습니다.</li><li>구서IC를 통해 경부고속도로 등 광역 교통망으로의 진출입이 수월합니다. 차량을 이용한 인근 지역 및 타 도시로의 광역 이동 여건이 양호한 편입니다.</li><li>단지 주변으로 다수의 버스 노선이 운행되고 있어 시내외 대중교통 이용이 용이합니다. 주요 도로망과의 연계를 통해 출퇴근 및 일상적인 교통 편의성을 높이고 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>인근에 동래여자고등학교, 구서여자중학교 등 다수의 교육 시설이 위치하고 있습니다. 학령기 자녀를 둔 세대가 통학하기에 비교적 양호한 환경을 갖추고 있습니다.</li><li>주변 지역으로 다양한 학원가와 교육 관련 인프라가 형성되어 있습니다. 안정적인 면학 분위기 조성이 가능하며 자녀 교육을 위한 주거 기반을 제공합니다.</li><li>단지 주변으로 교육 시설과 주거 환경이 조화를 이루고 있습니다. 전 연령층이 생활하기에 적합한 주거지로서의 요건을 갖추고 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>중소형 위주의 실속 있는 평면 구성을 통해 공간 활용도를 높였습니다. 입주민의 라이프스타일을 고려한 효율적인 설계가 적용되었습니다.</li><li>구서 다움포레의 단지 구성과 부대 시설 정보는 모집공고문에 첨부된 단지 배치도, 평면도 등 공식 자료를 통해 확인하시는 것이 가장 정확합니다. 공급되는 타입 구성과 청약 자격 조건은 본문 상단의 분양 일정·공급 정보 섹션에서 함께 살펴보세요.</li><li>2026년 5월 입주가 예정되어 있으며 체계적인 단지 구성을 목표로 하고 있습니다. 거주자들을 위한 주거 시설로서의 기능에 충실한 단지입니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구서 다움포레는 부산 금정구의 완성된 주거 인프라를 즉시 누릴 수 있는 <strong>도심형 실속 단지</strong>입니다. 교통, 학군, 상권이 밀집한 평지 입지에 조성되어 주거 편의성이 매우 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산 지하철 1호선 라인을 따라 형성된 풍부한 생활권과 쾌적한 자연환경을 동시에 품고 있습니다. 특히 신축 공급이 귀한 구도심 내에 들어서며, 전용 59~84㎡ 위주의 선호도 높은 중소형 평형으로 구성됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 소규모 단지 특성상 자체 커뮤니티 시설의 규모는 다소 제한적일 수 있습니다. 따라서 단지 내부의 화려함보다는 주변 상권과 인프라를 적극 활용하는 실용적인 라이프스타일에 적합합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산 지하철 1호선 <strong>두실역</strong>과 구서역을 도보로 이용할 수 있는 더블 역세권 입지를 자랑합니다. 이를 통해 부산시청, 연산, 서면 등 주요 도심 업무지구로의 직주근접 💼 환경을 완벽히 지원합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량 이용 시 경부고속도로 구서 IC와 산성터널 진입이 수월하여 광역 교통망이 우수합니다. 번영로를 통해 시내외 어디로든 빠르게 이동할 수 있는 사통팔달의 교통 요충지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">출퇴근 시간대 중앙대로의 차량 정체가 발생할 수 있다는 점은 사전에 고려해야 합니다. 하지만 도보권에 위치한 지하철을 통해 정시성을 확보할 수 있어 대중교통 의존도가 높은 가구에 유리합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 앞에 <strong>두실초등학교</strong>가 위치하여 길을 건너지 않고 통학할 수 있는 초품아 입지를 확보했습니다. 이는 저학년 자녀를 둔 학부모들에게 가장 선호되는 안심 통학권 프리미엄을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구서초, 구서여중, 동래여고, 지산고 등 부산 내에서도 손꼽히는 우수한 명문 학군이 밀집해 있습니다. 또한 구서역 일대에 형성된 대형 학원가 📚 와의 접근성도 뛰어나 학령기 내내 안정적인 거주가 가능합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이러한 탄탄한 교육 환경은 주택 시장의 하방 경직성을 강하게 지지하는 핵심 요소입니다. 학군 수요가 꾸준히 유입되는 지역인 만큼 장기적인 자산 가치 유지에 매우 긍정적으로 작용합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이마트 구서점과 NC백화점 등 대형 쇼핑 시설이 인접해 있어 슬세권의 편리함을 누릴 수 있습니다. 관공서와 금융기관, 다양한 병의원 상권이 도보권에 밀집하여 일상의 완결성이 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 서측으로는 부산의 명산인 <strong>금정산</strong>이 자리하고, 동측으로는 온천천이 흐르는 배산임수의 지형입니다. 도심 한가운데서도 쾌적한 공세권 🌳 및 수변 환경을 누릴 수 있어 주거 쾌적성이 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">소규모 단지의 한계를 주변의 거대 상권이 완벽하게 보완해 주는 상호 보완적 구조입니다. 차량 이동 없이도 도보로 대부분의 생활 필수 인프라를 해결할 수 있다는 점이 가장 큰 경쟁력입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">구서동 일대는 노후 주택 비율이 높아 <strong>신축 아파트</strong>에 대한 잠재적 대기 수요가 매우 풍부한 지역입니다. 완성된 구도심 인프라 위에 들어서는 신축이라는 희소성 자체가 훌륭한 미래 가치로 평가받습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주변으로 진행 중인 다양한 정비 사업과 도로망 확충 계획은 지역 전반의 가치를 상승시킬 동력입니다. 금정구 중심 생활권의 인프라 개선이 지속됨에 따라 정주 여건은 더욱 고도화될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대단지 랜드마크 아파트와 비교하면 시세 상승폭이 상대적으로 완만하게 나타날 수는 있습니다. 그러나 탄탄한 실수요를 바탕으로 안정적인 가치 방어가 가능한 실속형 자산으로서의 매력이 돋보입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1109,6 +1142,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "구서 다움포레 청약 정리, 금정구 4억대부터", "text": "[구서 다움포레] 청약 정보 한눈에 보기\n\n📍 부산\n🗓 모집공고일 2026-03-30\n💰 4억 2,731만원 ~ 5억 3,695만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

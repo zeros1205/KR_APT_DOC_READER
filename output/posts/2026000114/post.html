@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    공덕역자이르네는 서울특별시 마포구 도화동에 위치하여 서울 주요 업무지구로의 이동이 편리한 입지 조건을 갖추고 있습니다. 도심의 생활 인프라를 가까이에서 누릴 수 있는 환경입니다. 실수요자에게 필요한 주거 편의시설이 인접해 있어 주거 편의성이 높습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 교통 거점인 공덕역을 중심으로 지하철 노선 간 환승이 용이하여 서울 전역으로의 이동이 수월합니다. 다수의 노선이 교차하는 공덕역을 통해 출퇴근 시 대중교통 이용 편의성을 확보하고 있습니다.</li><li>서울 주요 업무지구인 여의도, 광화문 등으로의 접근성이 뛰어나 직주근접성이 우수한 환경입니다. 도심권역 내 이동 시간이 단축되어 대중교통을 통한 통근 효율이 높습니다.</li><li>마포대교와 강변북로 등 주요 도로망과 인접하여 차량을 이용한 서울 도심 및 외곽 지역으로의 이동이 가능합니다. 대중교통은 물론 자차를 이용한 광역 교통망 접근성이 양호합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>도보권 내에 초등학교 및 중학교 등 교육 시설이 위치하여 자녀를 둔 가정의 통학 환경이 조성되어 있습니다. 학교가 가까워 자녀들의 안전한 등하교가 가능한 입지입니다.</li><li>마포구 일대의 학원가와 교육 관련 인프라를 공유할 수 있어 학령기 자녀를 둔 가정에 적합한 환경을 갖추고 있습니다. 정주 여건 측면에서 교육 관련 시설에 대한 접근성이 확보되어 있습니다.</li><li>인근 교육 시설들을 중심으로 안정적인 주거 및 교육 인프라가 형성되어 있습니다. 자녀 교육을 위한 기초적인 환경이 단지 주변으로 잘 갖추어져 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>총 177세대의 중소규모 단지로 구성되어 주거 환경이 조용하고 일상적인 거주에 적합한 환경을 제공합니다. 세대 구성원의 사생활 보호와 정온한 주거 생활을 고려한 배치가 특징입니다.</li><li>다양한 평면 구성을 통해 주거 공간의 실용성을 높이고자 하였습니다. 공간 활용도를 높인 설계를 통해 입주민의 라이프스타일에 맞춘 거주 환경을 지원합니다.</li><li>도화동 중심부에 위치하여 인근의 상업시설과 공원 등 다양한 생활 인프라를 편리하게 이용할 수 있습니다. 단지 외부의 생활 편의 시설과 연계된 쾌적한 주거 경험을 제공합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공덕역자이르네는 서울 도심권 핵심 업무지구와 맞닿아 압도적인 <strong>직주근접</strong> 💼 프리미엄을 누릴 수 있는 단지입니다. 쿼드러플 역세권이라는 희소성 높은 입지적 장점이 자산 가치를 견인합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지하철 5·6호선과 경의중앙선, 공항철도가 교차하는 공덕역이 도보권에 위치하여 서울 전역으로의 이동이 자유롭습니다. 특히 CBD(광화문·종로)와 YBD(여의도) 등 주요 업무지구로 환승 없이 빠르게 접근할 수 있어 배후 수요가 탄탄합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용면적 48~59㎡의 중소형 평형 위주로 구성되어 1~3인 가구의 선호도가 높을 전망입니다. 도심 한복판에 자리한 만큼 쾌적성보다는 생활의 편의성과 시간적 가치에 중점을 둔 수요자에게 적합합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지의 가장 큰 경쟁력은 4개 철도 노선이 교차하는 <strong>초역세권</strong>의 탁월한 광역 교통망입니다. 출퇴근 시간을 획기적으로 단축하여 입주민에게 높은 시간적 가치를 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">공항철도를 이용하면 서울역은 물론 김포공항과 인천국제공항까지 환승 없이 도달할 수 있습니다. 마포대로를 지나는 다수의 간선버스 노선까지 더해져 대중교통 이용 편의성이 서울 최고 수준에 달합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 신안산선 2단계 연장 구간이 공덕역을 지날 것으로 계획되어 있어 교통 결절점으로서의 위상은 더욱 강화될 것입니다. 이는 장기적인 자산 가치 상승을 기대하게 하는 입지적 핵심 요소로 작용합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심 상업지구 인근임에도 불구하고 우수한 학군과 학원가를 동시에 누릴 수 있어 정주 여건이 뛰어납니다. 학령기 자녀를 둔 가구의 탄탄한 실수요가 뒷받침되어 <strong>하방 경직성</strong>을 확보했습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 반경 500m 이내에 선호도가 높은 염리초등학교와 동도중학교가 자리하여 안심 통학권을 제공합니다. 숭문중·고등학교 등 명문 학군이 인접해 우수한 면학 분위기를 형성하고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">특히 마포구 내 대표적인 교육 인프라인 대흥동 학원가 접근성이 우수하여 사교육 여건도 훌륭합니다. 다만 단지 규모가 작아 단지 내 보육 시설이 부족할 수 있다는 점은 매수 시 고려해야 할 사항입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">쇼핑, 문화, 자연환경이 단지 주변에 밀집해 있어 멀리 나가지 않고도 모든 것을 누리는 슬세권 입지를 자랑합니다. 완성된 도심 인프라는 입주 직후부터 거주자에게 높은 주거 만족도를 선사합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이마트 마포점 등 대형 상업 시설과 마포아트센터가 가까워 쇼핑과 문화생활이 매우 편리합니다. 단지 주변으로 병원과 은행 등 각종 생활 편의 시설이 촘촘하게 형성되어 일상의 완결성이 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심 속 오아시스 역할을 하는 경의선숲길과 효창공원이 인접해 쾌적한 <strong>공세권</strong> 🌳 환경을 제공합니다. 풍부한 녹지 공간은 도심형 주거 단지의 단점을 보완하며 삶의 질을 크게 높여줍니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">마포로1구역 도시정비형 재개발을 통해 조성되는 본 단지는 마포 일대 신흥 주거 타운의 가치를 공유합니다. 주변 노후 구역의 정비사업이 지속됨에 따라 전반적인 주거 환경은 꾸준히 개선될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">마포자이, 공덕파크자이 등 인근에 대규모 자이 브랜드 타운이 형성되어 있어 긍정적인 시너지 효과가 기대됩니다. 통일된 브랜드 벨트 형성은 지역 전반의 주거 수준을 끌어올리는 앵커시설 역할을 합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신안산선 개통 계획 등 굵직한 교통 호재가 대기하고 있어 광역 접근성은 한층 더 강화될 것입니다. 이는 단지의 미래 가치를 높이고 자산의 확장성을 보장하는 강력한 동력으로 작용할 것입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1173,6 +1206,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "공덕역자이르네 청약 총정리, 마포 도화동 12.7억부터", "text": "[공덕역자이르네] 청약 정보 한눈에 보기\n\n📍 서울\n🗓 모집공고일 2026-04-17\n💰 12억 7,200만원 ~ 17억 6,900만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

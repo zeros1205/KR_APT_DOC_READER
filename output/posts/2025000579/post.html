@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,37 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">울산 호수공원 에일린의 뜰 1단지의 자세한 단지 구성과 부대 시설 정보는 모집공고문에 첨부된 단지 배치도와 평면도 등 공식 자료를 통해 확인해보세요. 공급되는 타입 구성과 청약 자격 조건은 본문 상단의 분양 일정·공급 정보 섹션을 함께 참고하시면 도움이 됩니다.</p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변 주요 간선도로망을 통해 울산 시내외로의 이동이 가능합니다. 도로 여건을 활용하여 지역 내 주요 거점으로의 접근성을 확보하고 있습니다.</li><li>인근 노선버스를 이용하여 시내 전역을 연계하는 대중교통망을 활용할 수 있습니다. 출퇴근 시간대의 교통 편의성을 고려한 거주가 가능합니다.</li><li>인근 도로 정비 및 교통 인프라 개선에 따라 지역 내 이동 효율이 결정됩니다. 도로 환경의 변화에 따라 주민들의 이동 편의가 점진적으로 변화할 수 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변에 교육 시설이 위치하여 자녀를 둔 세대의 통학 환경을 고려할 수 있습니다. 학교와 주거지가 인접하여 도보 통학 여건을 확인하는 것이 좋습니다.</li><li>주거지 인근 교육 인프라를 통해 자녀를 위한 학습 환경을 구성할 수 있습니다. 면학 분위기가 형성된 지역으로서 교육 여건을 검토할 수 있습니다.</li><li>도보 거리에 위치한 교육 기관들과 인근의 주거 환경이 어우러져 있습니다. 자녀의 등하교 경로와 교육 시설의 위치를 확인하는 것이 권장됩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>울산 호수공원 에일린의 뜰 1단지는 84㎡형 및 102㎡형 등 다양한 타입으로 구성된 단지입니다. 공급 타입을 상세히 확인하여 본인의 주거 계획에 맞는 구조를 선택할 수 있습니다.</li><li>모집공고일은 2025년 11월 21일이며 입주 예정 시기는 2028년 5월입니다. 단지의 건설 일정과 공급 조건을 사전에 파악하여 입주 계획을 수립할 수 있습니다.</li><li>울산광역시 남구 야음동 일원에 위치하며 비규제지역, 분양가상한제 미적용, 전매제한 6개월 등의 조건을 적용받습니다. 해당 단지의 규제 현황과 상세 공급 조건을 꼼꼼히 확인해야 합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">울산 호수공원 에일린의 뜰 1단지는 도심 인프라와 자연환경이 결합된 완성형 입지를 자랑합니다. 남구 야음동 일대의 대규모 정비사업과 맞물려 신흥 주거타운의 핵심으로 부상하고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변으로 야음 8·10·13지구 등 약 9,000세대 규모의 <strong>신흥 주거타운</strong> 조성이 진행 중입니다. 이는 지역 내 인구 유입을 촉진하고 상권 확장을 유도하여 자산 가치의 <strong>하방 경직성</strong>을 견고하게 만듭니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 대규모 정비사업이 동시다발적으로 진행되는 만큼, 입주 초기에는 주변 환경이 다소 어수선할 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 교통망과 대중교통 확충 계획을 통해 주요 업무지구로의 <strong>직주근접</strong> 💼 실현이 가능한 교통 요지입니다. 울산 전역으로의 이동 편의성이 지속적으로 개선될 전망입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 반경 약 500m 내에 울산 도시철도 2호선 야음사거리역(계획)이 들어설 예정입니다. 수암로와 산업로를 통해 울산테크노 일반산업단지 등 주요 일자리 거점으로 빠르게 이동할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도시철도 노선은 현재 계획 및 착공 예정 단계이므로, 실제 개통 시기까지는 버스 등 기존 대중교통망에 의존해야 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보권 내 초·중·고교가 모두 밀집해 있어 학령기 자녀를 둔 가구의 탄탄한 실수요를 확보할 수 있습니다. 안심 통학권은 단지의 핵심 경쟁력 중 하나입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 인근에 야음초등학교가 위치하여 <strong>초품아</strong> 프리미엄을 누릴 수 있습니다. 야음중학교와 대현고등학교 역시 도보로 통학이 가능합니다. 울산 최고 수준인 옥동 및 대현동 학원가와 인접해 학업 성취도 향상에 유리합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">명문 학원가로의 이동은 대중교통이나 차량을 이용해야 하므로, 통학 시간대 교통 혼잡도를 고려한 동선 계획이 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 상업시설과 쾌적한 자연환경이 어우러져 수준 높은 <strong>슬세권</strong> 라이프를 제공합니다. 일상생활에 필요한 핵심 앵커시설이 단지 인근에 고르게 분포합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 옆에 선암호수공원이 자리하여 독보적인 <strong>공세권</strong> 🌳 프리미엄을 형성합니다. 대형마트, 국민체육센터, 행정복지센터 등 생활 편의시설이 가까워 주거 쾌적성과 편의성을 동시에 충족합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">호수공원 인접 단지의 특성상 주말이나 공휴일에는 외부 방문객 유입으로 인해 단지 주변 도로가 다소 혼잡해질 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">야음동 일대의 대규모 정비사업과 교통망 확충이 시너지를 내며, 울산 남구의 새로운 주거 중심지로 도약할 잠재력을 지녔습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용 84㎡ 및 102㎡의 중대형 평형 위주로 구성된 1단지는 고급화된 주거 수요를 흡수하기에 적합합니다. 도시철도 1·2호선(계획) 환승 체계가 구축되면 광역 접근성이 획기적으로 개선될 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">계획된 인프라와 교통망이 완전히 자리 잡기까지는 일정 시간이 소요되므로, 장기적인 관점에서의 접근이 바람직합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1165,6 +1200,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "울산 호수공원 에일린의 뜰 1단지 청약 핵심정리", "text": "[울산 호수공원 에일린의 뜰 1단지] 청약 정보 한눈에 보기\n\n📍 울산\n🗓 모집공고일 2025-11-21\n💰 6억 9,200만원 ~ 8억 3,700만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

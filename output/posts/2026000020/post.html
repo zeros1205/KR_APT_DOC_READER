@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    부산광역시 금정구 장전동에 위치한 금정산 하늘채 루미엘은 주거 선호도가 높은 금정산 인근의 입지를 갖추고 있습니다. 총 213세대로 구성되어 있으며, 중소형부터 중대형까지 다양한 타입으로 조성되어 실거주 수요자의 선택 폭을 넓혔습니다. 도심 생활 인프라와 자연 친화적인 환경을 동시에 누릴 수 있는 주거지입니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 간선 도로망과의 접근성이 양호하여 부산 시내외로의 이동이 원활한 환경을 갖추고 있습니다. 인근 교통망을 통해 지역 주요 거점으로의 이동 편의성을 확보하였습니다.</li><li>대중교통 이용이 용이한 위치에 자리 잡고 있어 출퇴근 및 일상적인 이동이 편리합니다. 다수의 버스 노선과 연계된 교통 환경이 조성되어 실거주자에게 긍정적인 요소가 됩니다.</li><li>단지 주변으로 도로 체계가 형성되어 있어 생활권 내 이동 효율을 높였습니다. 체계적인 도로 인프라를 통해 지역 내 이동 스트레스를 최소화하였습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변으로 여러 교육 시설이 자리하고 있어 자녀를 둔 세대에 안정적인 환경을 제공합니다. 통학 거리가 비교적 가까운 곳에 교육 기관이 위치하여 학부모들의 주거 선호도가 높은 편입니다.</li><li>주거지 인근에 학군이 형성되어 있어 학습 분위기 조성을 기대할 수 있습니다. 교육 인프라가 갖춰진 주거지로서의 입지적 장점을 보유하고 있습니다.</li><li>단지 반경 내에 생활 편의 시설과 교육 시설이 조화롭게 어우러져 실생활의 만족도를 뒷받침합니다. 아이들의 통학 환경과 정주 여건이 균형을 이루고 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>금정산 하늘채 루미엘은 부산광역시 금정구 장전동 618-1번지 일원에 위치하며 공급되는 타입은 59A, 59B, 74, 84 등 실수요 중심의 평면으로 구성됩니다. 단지 규모와 세대수 등 구체적인 공급 구성 정보를 사전에 확인하는 것이 좋습니다.</li><li>모집공고일 및 입주 예정 시기를 포함한 사업 일정은 공고문을 통해 상세히 확인해야 합니다. 향후 진행되는 공급 일정과 세부 조건을 면밀히 살펴 주거 계획을 세울 필요가 있습니다.</li><li>비규제지역에서의 공급 등 분양 조건과 관련된 규제 사항을 정확히 인지하는 것이 중요합니다. 전매제한 및 재당첨 제한 여부 등 공급 유형에 따른 세부적인 내용을 공고문을 통해 검토하시기 바랍니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">금정산 하늘채 루미엘은 부산 원도심의 완성된 생활 인프라와 쾌적한 자연환경을 동시에 품은 단지입니다. 도심 한복판에서 국립공원의 가치를 일상적으로 누리는 입지적 희소성이 매우 돋보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">특히 <strong>온천장 상권</strong>과 동래 명문 학군을 도보권에 둔 점은 탄탄한 실수요를 유인하는 핵심 요소입니다. 48층 초고층 설계가 적용되어 지역 내 새로운 랜드마크로 자리매김할 잠재력을 지녔습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산도시철도 1호선 온천장역을 도보로 이용할 수 있는 <strong>역세권</strong> 🚆 입지를 자랑합니다. 이를 통해 서면 등 부산 주요 업무지구(CBD)로의 환승 없는 직주근접성이 매우 뛰어나게 평가됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도로망의 경우 중앙대로와 우장춘로를 통해 부산 전역으로의 차량 이동이 수월합니다. 경부고속도로 구서 IC가 인접해 있어 시외곽으로 연결되는 광역 교통망 접근성도 우수하게 확보했습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">여기에 만덕~센텀 도시고속화도로가 개통될 계획으로, 향후 해운대권역 이동 시간이 획기적으로 단축될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">금빛초등학교와 금정초등학교를 도보로 통학할 수 있는 <strong>초품아</strong> 수준의 안심 교육 환경을 제공합니다. 학령기 자녀를 둔 가구의 탄탄한 실수요를 확보하여 주거 선호도가 높게 형성됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">장전중학교를 비롯해 동래여고, 부산과학고 등 이른바 &#x27;동래 8학군&#x27;으로 불리는 명문 학교들이 인접해 있습니다. 우수한 학업 성취도를 기대할 수 있는 최적의 교육 인프라를 갖추고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">또한 주변으로 밀집한 사교육 학원가는 면학 분위기를 조성하며 단지의 하방 경직성을 견고하게 만듭니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 반경 1km 내에 홈플러스, 롯데백화점 동래점, CGV 등 대형 쇼핑 및 문화 시설이 밀집해 있습니다. 도보로 모든 편의를 누리는 <strong>슬세권</strong> 입지의 전형을 보여주는 훌륭한 정주 여건입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">온천장 상권과 부산대학교 앞 상권을 모두 공유할 수 있어 상업 시설 이용의 선택지가 넓습니다. 광혜병원 등 대형 의료시설도 가까워 병세권의 이점도 함께 누릴 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이러한 풍부한 앵커시설은 입주민의 주거 만족도를 극대화하며, 지역 내 주거 선호도를 높이는 긍정적 요인입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">국내 최초 도심형 국립공원으로 지정된 금정산 국립공원을 배후에 둔 <strong>공세권</strong> 🌳 단지입니다. 쾌적한 녹지 공간은 현대 주거 시장에서 주거 쾌적성을 극대화하고 자산 가치를 높이는 핵심 프리미엄입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변 온천동과 장전동 일대에는 다수의 재개발 및 정비 사업이 활발하게 진행 중입니다. 향후 이 일대가 대규모 신흥 브랜드 주거타운으로 탈바꿈할 예정으로 긍정적인 시너지가 기대됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">48층 초고층 주상복합이라는 상징성과 주변 환경 개선이 맞물려, 장기적인 자산 가치 상승을 기대할 수 있습니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1183,6 +1216,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "금정산 하늘채 루미엘 부산 금정구 분양가 정리", "text": "[금정산 하늘채 루미엘] 청약 정보 한눈에 보기\n\n📍 부산\n🗓 모집공고일 2026-02-13\n💰 6억 7,460만원 ~ 23억 2,870만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

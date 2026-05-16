@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.8125rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    리첸시아 표선 IB EDU는 제주특별자치도 서귀포시 표선면에 위치하여 자연 친화적인 주거 여건을 갖추고 있습니다. 총 50세대의 소규모 단지로 구성되어 프라이빗한 주거 환경을 제공합니다. 서귀포시 일대의 생활 인프라를 공유하며 안정적인 정주 여건을 누릴 수 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>제주특별자치도 내 주요 도로망을 통해 도내 지역 간 이동이 가능한 환경입니다. 차량을 이용한 접근성을 바탕으로 서귀포시 주요 거점 및 편의시설로 이동할 수 있습니다.</li><li>단지 주변으로 정비된 도로 체계가 갖춰져 있어 일상적인 이동 편의를 도모합니다. 체계적인 교통망은 거주자의 원활한 이동을 지원하는 역할을 합니다.</li><li>대중교통을 통한 도내 주요 지역 접근성을 갖추고 있습니다. 안정적인 교통 환경은 입주민의 일상생활을 뒷받침하는 기반이 됩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 인근으로 교육 시설이 위치해 있어 자녀를 둔 세대의 교육적 편의가 고려됩니다. 지역 내 교육 시설과의 접근성은 주거지 선택 시 중요한 요소입니다.</li><li>주거 환경 측면에서 정온한 분위기가 조성되어 있어 안정적인 면학 분위기를 기대할 수 있습니다. 교육적인 주거 여건은 장기적인 거주 만족도에 기여합니다.</li><li>인근의 교육 인프라는 아이들이 성장하기에 적합한 정주 여건을 제공합니다. 체계적인 교육 환경은 주거 생활의 안정성을 높이는 요소입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>총 50세대로 구성된 단지로 소규모 단지만의 조용하고 독립적인 주거 문화를 누릴 수 있습니다. 세대수가 적어 쾌적한 단지 관리가 가능한 환경입니다.</li><li>87㎡에서 90㎡에 이르는 타입으로 구성되어 실거주자의 취향에 맞는 평면 선택이 가능합니다. 효율적인 공간 설계는 주거 편의성을 높이는 데 도움을 줍니다.</li><li>비규제지역에 위치하여 주택 보유 여부나 거주 기간에 따른 청약 제약이 상대적으로 적습니다. 중도금 무이자 혜택은 실거주자의 자금 계획 수립을 지원합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">제주 동남부의 중심지인 표선면에 위치하여 쾌적한 자연과 우수한 교육 환경을 동시에 누리는 입지입니다. 특히 국제 공인 교육 과정인 IB 프로그램이 도입된 학군을 품고 있어 맹모들의 관심이 집중됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">표선리는 행정 및 상업 인프라가 밀집된 지역으로 실거주 편의성이 매우 뛰어납니다. <strong>IB 교육특구</strong> 📚 프리미엄을 바탕으로 학령기 자녀를 둔 가구의 탄탄한 실수요가 뒷받침되는 곳입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 제주도 외곽에 위치하여 제주시 도심권 접근에는 일정 시간이 소요됩니다. 따라서 직주근접보다는 자녀의 교육과 여유로운 전원생활을 우선시하는 수요자에게 적합한 단지입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">제주 주요 권역을 잇는 간선도로망 접근성이 우수하여 차량을 이용한 광역 이동이 수월합니다. 번영로와 일주동로를 통해 제주시와 서귀포시 중심부로 빠르게 연결됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">번영로(97번 지방도)를 이용하면 제주시 도심 및 제주국제공항 방면으로의 이동이 편리합니다. 또한 일주동로를 통해 서귀포 시내와 성산읍 등 인접 지역으로의 접근성도 훌륭하게 확보되어 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대중교통보다는 자가용 의존도가 높은 제주도의 지역적 특성을 고려해야 합니다. 주요 업무지구로 출퇴근하는 경우 이동 시간을 사전에 점검하는 것이 좋습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지명에서 알 수 있듯, 표선면 일대의 완성된 <strong>IB 월드스쿨</strong> 학군이 이 단지의 가장 강력한 무기입니다. 표선초등학교, 표선중학교, 표선고등학교가 모두 국제 바칼로레아 인증을 받았습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이러한 공교육 혁신은 타 지역 학생들의 유입을 이끌며 표선면의 인구 증가를 견인하고 있습니다. 우수한 학업 성취도와 창의적 교육 환경은 단지의 자산 가치를 방어하는 강력한 하방 경직성으로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 유명 학원가가 밀집한 제주시 도심권과는 물리적 거리가 존재합니다. 사교육보다는 공교육 중심의 자기주도학습 환경을 선호하는 학부모에게 최적화된 입지입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">표선면의 중심인 표선리에 위치하여 관공서와 대형 마트 등 필수 생활 인프라를 도보권에서 누릴 수 있습니다. <strong>슬세권</strong> 🛒 입지로 일상생활의 편의성이 극대화된 환경을 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">표선면사무소, 보건지소, 우체국 등 행정 시설과 하나로마트, 은행 등 상업 시설이 단지 인근에 밀집해 있습니다. 또한 표선해수욕장과 제주민속촌 등 풍부한 관광 인프라도 일상 속에서 쉽게 접근 가능합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 백화점이나 종합병원을 이용하려면 서귀포 시내나 제주시로 이동해야 하는 번거로움이 있습니다. 하지만 일상적인 장보기와 기본 의료 서비스는 지역 내에서 충분히 해결할 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">교육을 매개로 한 인구 유입이 지속되면서 표선면 일대의 정주 여건은 꾸준히 개선되고 있습니다. 교육기반형 지역 발전 모델이 성공적으로 안착하며 지역 경제에도 활력을 불어넣고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">IB 교육의 성과가 가시화됨에 따라 학군 수요는 더욱 탄탄해질 것으로 전망됩니다. 이는 주택 수요의 증가로 이어져 장기적인 관점에서 <strong>자산 가치 상승</strong> 여력을 높이는 핵심 동력이 됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">제주 제2공항 개발 등 주변 지역의 굵직한 국책 사업 향방에 따라 간접적인 수혜도 기대해 볼 수 있습니다. 쾌적한 자연환경과 명품 학군의 결합은 대체 불가능한 프리미엄으로 자리 잡을 것입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1165,6 +1198,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "리첸시아 표선 IB EDU 제주 표선 5억대 청약 정리", "text": "[리첸시아 표선 IB EDU] 청약 정보 한눈에 보기\n\n📍 제주도\n🗓 모집공고일 2026-02-12\n💰 5억 500만원 ~ 5억 8,500만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

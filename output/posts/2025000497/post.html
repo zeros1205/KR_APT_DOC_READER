@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    아크로 드 서초는 서울특별시 서초구 서초동에 위치하여 우수한 도심 접근성과 생활 인프라를 갖춘 주거지입니다. 서초 권역의 풍부한 편의시설을 편리하게 누릴 수 있는 입지적 장점이 돋보입니다. 교통과 교육, 생활 환경이 조화를 이루어 실거주 여건이 우수합니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주요 간선 도로와 대중교통망이 정비되어 있어 서울 전역으로의 이동이 용이합니다. 입주민은 대중교통 인프라를 통해 업무 중심지와 주요 상업 지구를 효율적으로 오갈 수 있습니다.</li><li>다양한 교통망이 인접하여 출퇴근 및 이동 편의성이 확보되어 있습니다. 대중교통 접근성이 양호한 환경은 이동 시간을 단축하는 데 기여합니다.</li><li>인근 대중교통 연계가 원활하여 일상적인 이동 편의성이 높습니다. 체계적인 교통 환경은 입주민에게 안정적인 이동 경험을 제공합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주거지 인근으로 다양한 교육 시설이 자리하고 있어 자녀 교육을 고려하는 세대에게 안정적인 환경을 제공합니다. 우수한 학군과 교육 인프라는 자녀의 학습 환경을 지원하는 데 긍정적인 요소가 됩니다.</li><li>도보 통학이 가능한 교육 기관들이 분포하여 안전한 등하교가 가능합니다. 학령기 자녀를 둔 세대의 주거 만족도를 높이는 요인으로 작용합니다.</li><li>인근에 교육 서비스를 누릴 수 있는 인프라가 갖춰져 있습니다. 자녀들의 다양한 활동과 학습을 지원하기에 적합한 환경입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>아크로 드 서초는 이번 공고에서 059.3700 타입, 059.3700A 타입, 059.2100C 타입 등 다양한 평면 구성을 선보입니다. 공급 구성을 면밀히 살펴보고 입주자의 라이프스타일에 적합한 타입을 확인할 필요가 있습니다.</li><li>본 단지의 모집공고일은 2026년 3월 20일이며, 입주 예정 시기는 2029년 2월로 계획되어 있습니다. 상세한 공급 일정과 입주 계획을 사전에 확인하여 준비하는 것이 좋습니다.</li><li>서울특별시 서초구 서초동 1333번지 일원에 위치하며, 투기과열지구 및 청약과열지역으로 지정되어 있습니다. 분양가상한제 적용과 전매제한 3년 등 관련 규제 사항을 반드시 확인해야 합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">아크로 드 서초는 강남 최상위 업무지구와 맞닿은 <strong>직주근접</strong> 💼 특화 단지입니다. 서초동의 핵심 인프라를 도보로 온전히 누릴 수 있는 압도적인 주거 편의성을 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">강남역 일대의 거대 상권과 서초동 특유의 쾌적한 주거 환경이 교차하는 최적의 지점입니다. 업무와 교육, 여가 등 생활에 필요한 모든 요소를 단지 반경 1km 내에서 해결할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 강남 중심부 특성상 차량 통행량이 많아 출퇴근 시간대 도로 혼잡도가 높을 수 있습니다. 따라서 자차보다는 촘촘하게 구축된 광역 대중교통망을 적극적으로 활용하는 것이 유리합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지하철 2호선과 신분당선 강남역을 도보로 이용할 수 있는 <strong>멀티 역세권</strong> 🚆 입지입니다. 강남권 주요 업무지구(GBD)로의 출퇴근 소요 시간을 혁신적으로 단축할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">강남역 외에도 2·3호선 교대역과 3호선 양재역 접근성이 뛰어나 환승 편의성이 훌륭합니다. 경부고속도로 서초IC가 인접해 있어 수도권 외곽으로 진출입하는 광역 이동망도 탄탄합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주요 간선도로 진입이 수월하지만, 상습 정체 구간인 강남대로의 교통량은 감안해야 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 옆에 서이초등학교가 위치하여 안전한 통학로를 확보한 <strong>초품아</strong> 프리미엄을 갖췄습니다. 학령기 자녀를 둔 가구의 탄탄한 실수요가 뒷받침되어 뛰어난 자산 하방 경직성을 보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">길 건너편의 서운중학교를 비롯해 서초구 내 우수한 학업 성취도를 자랑하는 명문 학군이 밀집해 있습니다. 또한 대한민국 교육 1번지로 불리는 대치동 학원가로의 접근성이 우수해 교육 인프라가 완벽합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 우수 학군지 특성상 학령기 진입 세대의 유입이 많아 단지 내 경쟁이 치열할 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">강남역 상권과 대형 의료시설을 가까이서 누리는 완벽한 <strong>슬세권</strong> 주거 환경을 제공합니다. 쇼핑부터 문화, 의료까지 일상생활의 완결성을 극대화하는 풍부한 앵커시설을 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신세계백화점 강남점과 코스트코 등 대형 상업시설이 인접해 있어 쇼핑 편의성이 매우 높습니다. 가톨릭대학교 서울성모병원과 강남세브란스병원 등 대형 종합병원이 가까운 병세권 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도심 한가운데 위치함에도 서리풀공원이 가까워 쾌적한 숲세권의 이점까지 동시에 누릴 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">경부간선도로 지하화 사업과 서리풀 복합개발 등 대형 호재가 집중된 <strong>성장 거점</strong>입니다. 서초동 일대의 주거 지도를 새롭게 재편하며 단지의 미래 자산 가치를 크게 확장할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">양재부터 한남까지 이어지는 경부간선도로 지하화가 완료되면 상습적인 교통 정체가 해소됩니다. 옛 국군정보사사령부 부지에 조성되는 업무복합단지와 문화시설은 지역의 가치를 한 단계 높입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대규모 개발 사업은 완공까지 상당한 시일이 소요되므로 장기적인 관점에서의 접근이 필요합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1149,6 +1182,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "아크로 드 서초 청약 정리, 서초동 17억대 분양가 체크", "text": "[아크로 드 서초] 청약 정보 한눈에 보기\n\n📍 서울\n🗓 모집공고일 2026-03-20\n💰 17억 9,340만원 ~ 18억 6,490만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -540,39 +591,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    마린시티는 경상북도 울진군 후포면 후포리에 위치하여 동해안과 인접한 지리적 환경을 갖추고 있습니다. 지역 내 주요 생활권을 기반으로 자연 친화적인 주거 환경을 누릴 수 있는 입지입니다. 단지 주변의 인프라를 통해 기본적인 실거주 편의성을 도모할 수 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>본 단지는 차량을 이용한 인근 지역으로의 이동이 용이한 도로망을 갖추고 있습니다. 후포면 내 주요 거점으로의 접근성이 확보되어 있어 일상적인 차량 이용 시 편리합니다.</li><li>단지 주변 도로를 통해 울진군 주요 지역 및 인근 도시로의 차량 이동이 가능합니다. 대중교통 노선 및 도로 여건에 따라 실생활의 이동 경로를 구성할 수 있습니다.</li><li>지역 간 연결 도로를 통해 외부로의 접근이 가능하며 차량 이동이 주된 교통 수단으로 활용됩니다. 도로 환경의 연계성을 통해 거주지에서의 이동 범위를 결정할 수 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변으로 후포 지역 내 교육 시설들이 위치하여 자녀를 둔 세대의 교육 환경을 뒷받침합니다. 거주지 인근에 위치한 학교를 통해 통학의 물리적 거리를 가늠할 수 있습니다.</li><li>주거지 주변은 전반적으로 차분한 환경이 조성되어 있어 정주 여건으로서의 기능을 수행합니다. 교육 시설과의 접근성을 고려하여 일상적인 생활 패턴을 구성하는 것이 중요합니다.</li><li>인근 교육 시설은 지역 주민들의 생활권 내에 위치하여 통학 및 교육 활동을 지원합니다. 자녀의 학습 환경을 고려하는 입주민들에게 고려 대상이 되는 인프라입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>마린시티는 공급 위치와 공고문에 적힌 공급 구성을 함께 봐야 특징이 잘 보입니다. 이번 공고에서는 082.9274C타입, 084.3009A타입, 084.3485B타입 타입 구성을 확인해볼 수 있습니다.</li><li>이번 공고 기준 모집공고일은 2025-11-10, 입주 예정 시기는 2025년 12월입니다. 일정과 공급 조건을 같이 보면서 준비 흐름을 확인해보세요.</li><li>규제 측면에서는 비규제지역, 분양가상한제 미적용, 전매제한 없음 여부를 함께 보셔야 해요. 경상북도 울진군 후포면 후포리 581-1에 들어서는 공고인 만큼 위치와 규제 조건을 같이 읽는 편이 좋습니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">마린시티는 동해안의 탁 트인 바다 조망과 해양 레저 인프라를 동시에 누릴 수 있는 희소성 높은 단지입니다. 자연이 선사하는 쾌적한 주거 환경과 지역 내 핵심 인프라가 조화를 이루고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지가 위치한 울진군 후포면은 <strong>후포항</strong>과 마리나항만을 품고 있어 지역 경제와 관광의 중심지 역할을 합니다. 바다와 인접한 지리적 이점은 주거 쾌적성을 극대화하며 자산의 하방 경직성을 받쳐줍니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">해양 관광 거점이라는 지역적 특성상 외부 유동 인구가 꾸준히 유입되고 있습니다. 이러한 흐름은 지역 상권의 활성화와 전반적인 정주 여건 개선으로 자연스럽게 이어집니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 이동을 위한 도로망이 잘 갖춰져 있어 인접 도시로의 접근성이 우수합니다. 동해안을 따라 뻗어 있는 핵심 도로망을 통해 타 지역으로 원활한 이동이 가능합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근의 <strong>국도 7호선</strong> 🚗을 통해 주요 해안 도시로 빠르게 연결됩니다. 북쪽으로는 삼척, 남쪽으로는 영덕과 포항 등 주요 거점 도시로의 접근성이 뛰어납니다. 또한 내륙으로 이어지는 국도 36호선을 통해 타 권역으로의 이동도 수월한 편입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 대도시권 수준의 촘촘한 대중교통망이나 철도 인프라는 다소 부족합니다. 따라서 자가용을 이용한 광역 이동이 거주민들의 주된 교통 수단이 될 것으로 예상됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지역 내에서 초중고교를 모두 통학할 수 있는 안정적인 교육 환경을 제공합니다. 학령기 자녀를 둔 가구의 탄탄한 실수요를 안정적으로 확보할 수 있는 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 주변으로 후포초등학교를 비롯해 후포중학교와 <strong>후포고등학교</strong>가 자리 잡고 있어 안심 통학권이 형성되어 있습니다. 특히 후포고등학교는 지역 내 오랜 전통을 가진 공립 고등학교로 안정적인 면학 분위기를 조성합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 학원가가 밀집한 도심 지역에 비해서는 사교육 인프라가 제한적일 수 있습니다. 하지만 자연 친화적이고 공교육 중심의 쾌적한 양육 환경을 누리기에는 부족함이 없습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">후포항 상권을 중심으로 일상생활에 필요한 필수 인프라가 알차게 형성되어 있습니다. 슬세권 내에서 편리한 생활 편의성을 누릴 수 있는 쾌적한 주거 환경입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전통적인 상업 시설과 더불어 식당가, 마트, 관공서 등이 밀집해 있어 거주민의 생활 만족도가 높습니다. 특히 <strong>후포마리나항</strong> ⛵ 인근에 조성된 클럽하우스와 상가 시설은 주거지 인근의 여가 수준을 한층 높여줍니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 백화점이나 복합 쇼핑몰 등 광역 상업 시설의 부재는 다소 아쉬울 수 있습니다. 하지만 도보권 내의 지역 밀착형 상권이 일상적인 편의성을 충분히 보완하고 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">국내 최대 규모의 거점형 마리나항만 개발을 통해 해양 레저 관광의 중심지로 도약하고 있습니다. 이는 단지의 장기적인 가치 상승을 견인할 핵심 앵커시설로 작용할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이미 준공된 후포마리나항은 요트 계류 시설과 해양 체험 공간을 갖추어 전국적인 관광 수요를 끌어들입니다. 이러한 <strong>해양 관광 인프라</strong> 확충은 지역 경제 활성화와 일자리 창출로 이어져 직주근접 수요를 만듭니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 해양 리조트 유치 등 추가적인 활성화 사업이 지속적으로 검토 및 추진 중입니다. 이러한 계획이 실현되면 지역 브랜드 가치 상승과 함께 단지의 위상도 도약할 것입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1102,6 +1135,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "마린시티 울진 후포리 청약 3억9,500만원 정리", "text": "[마린시티] 청약 정보 한눈에 보기\n\n📍 경상북도\n🗓 모집공고일 2025-11-10\n💰 3억 9,500만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

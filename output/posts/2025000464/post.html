@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    경상남도 김해시 안동 일원에 위치한 김해 안동 에피트는 총 765세대로 구성된 주거 단지입니다. 김해시의 주요 도로망을 통해 지역 내 주요 거점으로의 이동이 가능합니다. 거주자를 고려한 평면 구성을 통해 주거 기능을 갖추고 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>김해시 내외를 연결하는 주요 도로망과의 접근성이 확보되어 있어 시내 곳곳으로의 이동이 가능합니다. 주요 간선도로 이용 시 인근 산업단지 및 도심 지역으로 접근할 수 있는 여건을 갖추고 있습니다.</li><li>인근 지역을 연결하는 버스 등 다양한 대중교통 수단을 활용하여 이동할 수 있습니다. 체계적으로 조성된 도로망을 통해 지역 내 접근성을 확보하고 있습니다.</li><li>광역 이동이 가능한 도로망과 인접해 있어 시외 지역으로의 이동 경로를 이용할 수 있습니다. 교통 인프라를 바탕으로 지역 내외를 연결하는 교통망을 활용합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 주변으로 교육 시설들이 위치하고 있어 학령기 자녀의 통학을 위한 여건이 형성되어 있습니다. 자녀들이 교육 시설을 이용하며 생활할 수 있는 주거 환경을 갖추고 있습니다.</li><li>인근 주거 밀집 지역 내 교육 인프라를 통해 필요한 교육 서비스를 이용할 수 있습니다. 학교 시설과 인접한 입지는 자녀 학습 환경 형성에 영향을 미치는 요소입니다.</li><li>지역 내 학교 시설과의 접근성을 통해 교육 시설을 이용하는 데 소요되는 시간을 단축할 수 있습니다. 안정적인 교육 환경이 인근에 배치되어 주거 편의를 지원합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>김해 안동 에피트의 단지 구성과 부대 시설 정보는 모집공고문에 첨부된 단지 배치도, 평면도 등 공식 자료를 통해 확인하시는 것이 가장 정확합니다. 공급되는 타입 구성과 청약 자격 조건은 본문 상단의 분양 일정·공급 정보 섹션에서 함께 살펴보세요.</li><li>59㎡부터 135㎡에 이르는 다양한 평면 구성을 통해 수요자의 선택 폭을 넓혔습니다. 가족 구성원의 규모와 생활 방식에 따라 공간을 선택할 수 있도록 설계되었습니다.</li><li>2029년 4월 입주 예정인 단지로, 정해진 공사 일정에 따라 사업이 진행되고 있습니다. 계획된 주거 공간을 통해 입주민들을 위한 생활 환경이 조성될 예정입니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">김해 안동 에피트는 동김해 권역의 새로운 주거 중심축으로 부상하는 핵심 랜드마크입니다. 교통과 학군, 그리고 쾌적한 자연환경을 모두 아우르는 완성형 입지를 자랑합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">안동1도시개발지구와 연계된 약 7천 세대 규모의 <strong>동김해 신주거벨트</strong> 형성이 예정되어 있습니다. 이는 지역 내 탄탄한 하방 경직성을 부여하며, 전용 59~135㎡의 다양한 평형 구성으로 폭넓은 수요를 흡수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대규모 주거 타운이 완성되는 과정에서 인프라 확충이 지속될 전망입니다. 초기 입주 시점보다는 중장기적인 관점에서 정주 여건의 비약적인 상승을 기대할 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산과 창원을 잇는 광역 교통망의 결절점에 위치하여 탁월한 <strong>직주근접</strong> 💼 환경을 제공합니다. 출퇴근 시간 단축과 환승 편의성은 거주자의 삶의 질을 높이는 핵심 요소입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">부산김해경전철 김해대학역이 도보권에 위치해 대중교통 이용이 매우 편리합니다. 또한 단지에서 약 500m 거리에 동김해IC가 있어 남해고속도로를 통한 광역 이동이 수월합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대동첨단산업단지까지 차량으로 약 20분 내외로 접근이 가능하여 배후 수요가 풍부합니다. 서부산권 복합산업단지와의 연계성도 뛰어나 산업단지 종사자들의 유입이 기대되는 입지입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보 통학이 가능한 안전한 교육 환경을 갖추어 학령기 자녀를 둔 가구의 실수요를 이끕니다. 안심 통학권 확보는 주거 선택의 최우선 기준이자 자산 가치를 방어하는 요인입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근에 활천초등학교와 활천중학교가 위치해 도보로 안전하게 통학할 수 있습니다. 한일여고, 김해고 등 우수한 명문 학군이 밀집해 있어 전반적인 면학 분위기가 우수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">인제대학교와 김해대학교 등 고등 교육기관도 인접해 있어 지역 내 교육 인프라가 풍부합니다. 향후 주변 대규모 주거단지 조성과 함께 학원가가 형성되면 교육 프리미엄은 더욱 강화될 것입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 안팎으로 완벽한 생활 인프라와 쾌적한 자연환경을 동시에 누릴 수 있는 <strong>공세권</strong> 🌳 입지입니다. 도심 속 녹지 공간이 제공하는 주거 쾌적성은 하이엔드 주거지로서의 가치를 견인합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 옆에 약 3만㎡ 규모의 대형 근린공원 조성이 계획되어 있어 숲세권 프리미엄을 기대합니다. 수영장과 사우나를 품은 4,400㎡ 규모의 고급 커뮤니티는 지역 내 앵커시설 역할을 수행합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">기존 도심의 상업시설과 공공기관 등 주요 인프라를 입주 초기부터 가깝게 이용할 수 있습니다. 대규모 단지 입주에 따른 자체 상권 활성화로 슬세권의 편의성은 더욱 극대화될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">노후화된 구도심을 대체하는 신흥 주거 타운의 랜드마크로서 독보적인 자산 가치 확장이 기대됩니다. 대규모 개발 호재와 인프라 확충은 해당 입지의 본연의 가치를 한 단계 끌어올리는 촉매제입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">동김해 일대의 대규모 도시개발사업이 본궤도에 오르며 전반적인 주거 환경이 획기적으로 개선됩니다. 1,539세대의 매머드급 단지 규모는 향후 지역 부동산 시장을 리딩하는 대장주 역할을 수행합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 주변 개발 사업의 진행 속도에 따라 주변 인프라의 완전한 형성 시기가 달라질 수 있습니다. 따라서 신주거벨트가 최종적으로 완성되는 시점까지 바라보는 긴 호흡의 입지적 접근이 필요합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1239,6 +1272,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "김해 안동 에피트 청약 총정리 분양가 3.8억부터", "text": "[김해 안동 에피트] 청약 정보 한눈에 보기\n\n📍 경상남도\n🗓 모집공고일 2025-11-07\n💰 3억 8,012만원 ~ 8억 8,388만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

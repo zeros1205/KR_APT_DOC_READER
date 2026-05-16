@@ -230,5 +230,20 @@
       "약식표기 해당 공 급 금 액 계약금(5%) 중도금 잔금",
       "2층 2 175,200,000 262,800,000 438,000,000 21,900,000 1,000,000 415,100,000"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:43:04+09:00"
   }
 }

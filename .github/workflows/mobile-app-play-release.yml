@@ -94,7 +94,7 @@ jobs:
           grep -q "청약Home 이동" "$app"
           grep -q "intro_without_text" "$app"
           grep -q "로딩 중" "$app"
-          grep -q "TABLET_POSTS_PER_PAGE" "$app"
+          grep -q "POSTS_PER_PAGE" "$app"
           grep -q "Pagination" "$app"
           grep -q "app.aptnote.mobile" "$gradle" "$MOBILE_APP_DIR/capacitor.config.ts"
           grep -q "sync-post-assets" "$MOBILE_APP_DIR/package.json"
@@ -128,6 +128,41 @@ jobs:
           if [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ] && [ -z "${GOOGLE_SERVICES_JSON:-}" ]; then
             echo "::notice::Google Services secret not configured. Continuing without Firebase google-services.json."
           fi
+
+          # 운영자가 어느 secret 이름을 등록했는지 빌드 로그로 가시화 (값은 노출 X).
+          # 다중 폴백 정리 시 참고. 미설정은 [-], 설정은 [✓] 만 표시.
+          echo "::group::Resolved secret name origins (debug)"
+          mark() { [ -n "${!1:-}" ] && echo "  [✓] ${1}" || echo "  [-] ${1}"; }
+          for n in KEYSTORE_BASE64 ANDROID_KEYSTORE_BASE64 \
+                   KEYSTORE_STORE_PASSWORD ANDROID_KEYSTORE_STORE_PASSWORD \
+                   KEYSTORE_KEY_ALIAS ANDROID_KEYSTORE_KEY_ALIAS \
+                   KEYSTORE_KEY_PASSWORD ANDROID_KEYSTORE_KEY_PASSWORD \
+                   GOOGLE_SERVICES_JSON_BASE64 GOOGLE_SERVICES_JSON_B64 \
+                   ANDROID_GOOGLE_SERVICES_JSON_BASE64 ANDROID_GOOGLE_SERVICES_JSON_B64 \
+                   FIREBASE_GOOGLE_SERVICES_JSON_BASE64 FIREBASE_GOOGLE_SERVICES_JSON_B64 \
+                   GOOGLE_SERVICES_JSON ANDROID_GOOGLE_SERVICES_JSON FIREBASE_GOOGLE_SERVICES_JSON; do
+            mark "RAW_${n}"
+          done
+          echo "::endgroup::"
+        env:
+          # 폴백 분석을 위해 raw secret 이름들을 RAW_* 접두로 임시 노출 (값 마스킹은 GitHub 가 자동).
+          RAW_KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          RAW_ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          RAW_KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          RAW_ANDROID_KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
+          RAW_KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          RAW_ANDROID_KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
+          RAW_KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          RAW_ANDROID_KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
+          RAW_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+          RAW_GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
+          RAW_ANDROID_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }}
+          RAW_ANDROID_GOOGLE_SERVICES_JSON_B64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 }}
+          RAW_FIREBASE_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}
+          RAW_FIREBASE_GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
+          RAW_GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          RAW_ANDROID_GOOGLE_SERVICES_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+          RAW_FIREBASE_GOOGLE_SERVICES_JSON: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
 
       - name: Validate Android version inputs
         run: |

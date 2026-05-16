@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    경상남도 진주시 평거동에 위치한 힐스테이트 평거 센트럴은 주거 선호도가 높은 지역적 특성을 갖추고 있습니다. 진주시의 주요 인프라와 접근성이 우수한 입지로, 쾌적한 정주 여건을 제공합니다. 생활 편의시설이 인접하여 주거 만족도가 높은 환경입니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>진주시 내 주요 간선도로망과 연계되어 있어 차량을 이용한 시내외 이동이 원활합니다. 체계적인 도로망을 통해 진주 내 주요 거점으로의 접근성이 양호합니다.</li><li>단지 인근으로 대중교통 노선이 경유하여 시내 전역으로의 이동이 가능합니다. 대중교통을 이용한 통근 및 통학 환경이 일상적인 수준에서 확보됩니다.</li><li>교통 흐름이 비교적 원활한 평거동의 지리적 이점을 누릴 수 있는 위치입니다. 출퇴근 시간대의 도로 이용 효율이 주거 편의성에 긍정적인 영향을 미칩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>인근에 교육 시설들이 위치하여 자녀를 둔 가구의 통학이 가능한 환경입니다. 주거지와 학교 간의 이동 동선이 확보되어 안전한 등하교 여건이 마련되어 있습니다.</li><li>주변 주거 밀집 지역을 중심으로 학원 및 교육 관련 인프라가 형성되어 있습니다. 지역 내 교육 환경을 공유하며 학습 분위기를 형성할 수 있는 구조입니다.</li><li>평거동 내 형성된 교육 인프라를 바탕으로 면학 분위기를 조성할 수 있습니다. 교육 관련 시설과의 접근성이 좋아 교육 여건 측면에서 강점을 보입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지는 총 261세대로 계획되어 입주민들에게 정온한 주거 환경을 제공합니다. 세대 구성과 단지 배치를 통해 거주 공간의 효율성을 고려하였습니다.</li><li>중대형 면적 위주로 구성되어 있어 입주민의 라이프스타일에 따른 다양한 공간 활용이 가능합니다. 여유로운 실내 평면 구성을 통해 거주 만족도를 높일 수 있습니다.</li><li>브랜드 단지로서 커뮤니티 시설과 주거 편의 시스템이 설계에 반영되어 있습니다. 이는 단지 내에서 다양한 생활 편의를 누릴 수 있도록 구성된 특징입니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">진주시 평거동 일원에 7년 만에 공급되는 신축 단지로 <strong>희소성</strong>이 돋보이는 입지입니다. 완성된 도심 인프라를 입주 즉시 누릴 수 있어 지역 내 주거 선호도가 매우 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">전용 84㎡와 105㎡의 중대형 평형으로 구성되어 탄탄한 실수요를 확보하고 있습니다. 진주 최초로 적용되는 스카이브릿지 특화 설계는 단지의 상징성을 한층 끌어올립니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">기존 평거동 거주자들의 신축 갈아타기 수요가 풍부하여 <strong>하방 경직성</strong>이 견고합니다. 다만 대규모 택지개발이 아닌 점은 매수 시 참고할 만한 입지적 맥락입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">서진주IC와 3번 국도가 인접해 있어 광역 교통망 접근성이 매우 우수한 입지입니다. 통영대전고속도로 진입이 수월하여 시외곽 및 타 도시로의 이동이 쾌적합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주요 간선도로를 통해 진주 시내 핵심 업무지구까지 빠르게 도달하는 <strong>직주근접</strong> 💼 환경을 제공합니다. 지역 내 다양한 버스 노선이 확충되어 있어 대중교통 이용의 편의성도 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">2031년 준공을 목표로 추진 중인 남부내륙철도 사업은 광역 교통망을 개선할 계획입니다. 이는 장기적인 교통 편의성 증대로 이어져 단지의 입지적 가치를 높일 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신진초등학교와 진주제일중학교를 도보 약 10분 내외로 통학할 수 있는 안심 교육 환경입니다. 학령기 자녀를 둔 가구의 선호도가 높은 탄탄한 학군지 입지를 자랑하고 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">경해여중과 경해여고 등 우수 학군이 고르게 분포하여 지역 내 학업 성취도를 견인합니다. 진양호로 대로변을 중심으로 대규모 <strong>학원가</strong>가 밀집해 사교육 인프라도 훌륭합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 주요 명문 고등학교의 경우 도보 통학보다는 대중교통을 이용해야 하는 거리입니다. 자녀의 연령대에 따른 통학 동선을 사전에 점검하는 것이 매수자에게 권장됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">탑마트와 하나로마트 등 대형 상업 시설이 도보권에 위치해 완벽한 <strong>슬세권</strong>을 형성합니다. 전통시장과 은행, 병원 등 필수 생활 편의 시설이 촘촘하게 밀집해 있는 환경입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">진주법조타운과 관공서가 가까워 양질의 행정 서비스를 편리하게 이용할 수 있습니다. 이미 상권이 성숙한 평거동의 중심 입지라 입주 직후부터 생활의 불편함이 없습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">남강 둔치와 석갑산 등 풍부한 녹지 공간이 인접해 쾌적한 <strong>공세권</strong> 🌳 프리미엄을 누립니다. 도심 속에서도 자연 친화적인 여가 생활과 산책을 즐기기에 부족함이 없는 환경입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">평거동은 진주 내에서도 주거 쾌적성과 편의성이 검증된 전통적인 부촌으로 평가받습니다. 신규 공급 부지가 부족한 상황에서 등장한 신축 브랜드 단지라는 점이 핵심 경쟁력입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">지역 내 최초로 도입되는 스카이브릿지와 고급 커뮤니티 시설은 랜드마크로서의 가치를 더합니다. 이는 주변 노후 단지들과 뚜렷하게 차별화되는 프리미엄 요소로 작용할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">남부내륙철도 등 대형 국책 사업이 계획대로 진행될 경우 추가적인 가치 상승이 기대됩니다. 완성된 도심 인프라 위에서 자산 가치의 안정적인 확장을 도모할 수 있는 단지입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1167,6 +1200,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "힐스테이트 평거 센트럴 진주 평거동 6.6억부터", "text": "[힐스테이트 평거 센트럴] 청약 정보 한눈에 보기\n\n📍 경상남도\n🗓 모집공고일 2026-04-10\n💰 6억 6,000만원 ~ 9억 1,200만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

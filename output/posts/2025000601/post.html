@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    창원 센트럴 아이파크는 경상남도 창원시 성산구 신월동의 중심 생활권에 위치하여 입지적 편의성을 갖추고 있습니다. 창원시 내 주요 생활 인프라와 조화를 이루며 실거주를 위한 정주 여건을 확보하고 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>창원시 성산구의 주요 도로망을 통해 시내외로의 이동이 원활한 교통 환경을 갖추고 있습니다. 창원 국가산업단지를 비롯한 주요 업무 지구로의 출퇴근 접근성이 양호합니다.</li><li>다양한 대중교통 노선이 인근에 배치되어 있어 창원 시내 각지로의 이동이 용이합니다. 도심 내 주요 거점으로 연결되는 교통망을 통해 효율적인 이동이 가능합니다.</li><li>주요 간선도로와의 인접성 덕분에 자가용을 이용한 광역 교통망 이용이 수월합니다. 창원 전역을 빠르게 잇는 교통 체계를 통해 입주민의 이동 편의성이 지원됩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>단지 인근에 교육 시설들이 배치되어 있어 자녀 교육을 위한 정주 여건이 조성되어 있습니다. 교육 시설 접근성이 양호하여 등하교 시 통학 부담을 줄이는 데 기여합니다.</li><li>학군이 형성된 지역적 특성을 갖추고 있어 학령기 자녀를 둔 가정에 적합한 환경을 제공합니다. 주거지 주변으로 필요한 교육 기반 시설이 마련되어 있다는 점이 특징입니다.</li><li>단지 주변 생활 환경을 통해 공공 교육 지원 시설을 이용하기에 용이한 위치입니다. 아이들의 학습 환경과 거주 편의성이 조화롭게 어우러진 주거지입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>창원 센트럴 아이파크는 신월동 주거 밀집 지역에 위치하여 기존의 생활 인프라를 공유할 수 있는 입지입니다. 다양한 생활 편의 시설이 단지 주변으로 형성되어 있어 실거주 편의성이 높습니다.</li><li>해당 단지는 2026년 09월 입주를 예정하고 있으며, 주변 생활권의 정주 여건을 확인하는 것이 중요합니다. 입주 시점에 맞춰 주변 인프라의 이용 흐름을 확인하는 과정이 필요합니다.</li><li>경상남도 창원시 성산구 신월동 90번지 일원에 위치하며 공급 구성 및 규제 사항은 관련 공고문을 통해 상세히 확인할 수 있습니다. 단지의 입지 환경과 함께 모집 공고상의 세부 조건을 면밀히 살펴봐야 합니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">창원 센트럴 아이파크는 성산구 중심 생활권의 완성된 인프라를 누리는 <strong>핵심 입지</strong>를 자랑합니다. 행정, 상업, 자연환경이 밀집된 창원의 중심축에서 희소성 높은 대단지 신축으로 공급됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">창원국가산업단지와 인접해 탄탄한 배후 수요를 확보한 것이 가장 큰 강점입니다. LG전자 스마트파크와 한화에어로스페이스 등 주요 대기업으로의 출퇴근이 매우 용이합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">노후 단지가 밀집한 신월동 일대에서 1,509세대 규모의 <strong>재건축</strong> 🏗️ 단지로 조성됩니다. 이에 따라 지역 내 풍부한 주거 상향 및 갈아타기 수요가 집중될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">시내외를 빠르게 연결하는 쾌속 광역 교통망을 확보하여 이동 편의성이 뛰어납니다. 창원의 주요 간선도로인 원이대로와 창원대로를 통해 도심 전역으로 빠르게 접근할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">KTX 창원중앙역이 차량으로 가까운 거리에 있어 타 지역으로의 광역 이동도 수월합니다. 다수의 시내버스 노선이 단지 주변을 경유하여 대중교통 이용 환경도 우수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">현재 창원시 내에서 검토 중인 새로운 대중교통망 확충 계획이 실현될 경우, 도심 접근성은 한층 더 강화될 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보권 내에 초·중·고교가 모두 밀집해 있어 학령기 자녀를 둔 가구의 선호도가 매우 높습니다. 신월초등학교를 걸어서 통학할 수 있는 <strong>초품아</strong> 입지로 안심 통학권을 확보했습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">토월중학교와 신월고등학교 등 지역 내 우수한 학군이 단지 반경 500m 내에 포진해 있습니다. 주변으로 학원가와 학습 커뮤니티가 잘 형성되어 있어 면학 분위기가 우수합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">창원대학교와도 인접해 있어 전반적인 교육 인프라의 완성도가 높습니다. 우수한 학군 수요에 따른 자산 가치의 하방 경직성이 탄탄하게 유지될 환경입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">창원 시청과 경남도청 등 주요 행정타운이 인접해 완벽한 <strong>슬세권</strong> 인프라를 제공합니다. 롯데백화점, 이마트, 롯데마트 등 대형 상업시설을 근거리에서 편리하게 이용할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">성산아트홀, 시민생활체육관 등 문화·체육 시설이 가까워 여가 생활의 질을 높여줍니다. 종합병원과 다수의 병·의원이 인접한 병세권 입지로 수준 높은 의료 서비스를 누릴 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">가음산공원과 창원광장 등 풍부한 녹지 공간이 단지를 둘러싸고 있습니다. 도심 한복판에서도 자연 친화적이고 쾌적한 <strong>공세권</strong> 라이프를 즐길 수 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">성산구 중심부의 노후 주거지가 신흥 주거타운으로 탈바꿈하는 변화의 중심에 서 있습니다. 1,509세대의 대단지 규모와 1군 건설사 브랜드 파워가 결합되어 지역 랜드마크로 자리매김할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">창원국가산업단지의 고소득 종사자를 기반으로 한 <strong>직주근접</strong> 💼 수요가 지속적으로 유입될 환경입니다. 이는 탄탄한 실수요를 창출하여 장기적인 자산 가치 상승의 강력한 동력으로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">주변 정비사업들이 순차적으로 완료되면 일대의 주거 환경이 획기적으로 개선됩니다. 이에 따라 창원 센트럴 아이파크의 입지적 위상과 미래 가치는 더욱 높아질 전망입니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1098,6 +1131,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "창원 센트럴 아이파크 신월동 6억 8,530만원 청약 정리", "text": "[창원 센트럴 아이파크] 청약 정보 한눈에 보기\n\n📍 경상남도\n🗓 모집공고일 2025-11-28\n💰 6억 8,530만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

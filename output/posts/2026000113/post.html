@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    동탄2 택지개발지구 내 신동에 위치한 동탄 그웬 160은 쾌적한 주거 환경을 갖춘 단지로 조성됩니다. 택지개발지구의 계획적인 인프라를 바탕으로 체계적인 생활 편의를 누릴 수 있는 입지입니다. 인근의 자연환경과 연계된 주거 여건이 마련되어 있어 안정적인 정주 환경을 제공합니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>동탄2 택지개발지구 내에 위치하여 광역 교통망을 이용한 인근 도시로의 이동이 가능합니다. 도로망을 통해 주변 업무지구 및 주요 생활권으로의 접근성을 확보하고 있습니다.</li><li>단지 주변으로 조성된 도로 체계는 지역 내 주요 시설로의 연계성을 높여줍니다. 계획적인 택지지구의 특성상 도로망이 체계적으로 정비되어 있습니다.</li><li>지구 내 대중교통 인프라를 활용하여 지역 내 거점 시설로 이동할 수 있습니다. 향후 인근 교통망의 개선에 따라 지역 간 이동의 효율성이 점진적으로 보완될 것입니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주거 지구 내에 교육 시설들이 계획적으로 배치되어 있어 통학 환경을 조성하고 있습니다. 아이들의 교육 여건을 고려한 주거 환경이 단지 인근의 특징입니다.</li><li>택지개발지구 내 교육 인프라를 통해 학군 환경을 이용할 수 있습니다. 자녀 양육과 교육에 적합한 주거지로서의 요건을 갖추고 있습니다.</li><li>인근 주거 단지들과 함께 형성되는 교육 커뮤니티는 학생들에게 학습 환경을 제공합니다. 생활권 내에서 필요한 교육적 인프라가 계획에 따라 확충되고 있습니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>총 160세대로 구성된 중대형 위주의 평면 구성은 입주민들에게 주거 공간을 제공합니다. 다양한 타입의 설계를 통해 라이프스타일에 맞춘 공간 활용이 가능합니다.</li><li>단지 내부는 채광과 통풍을 고려하여 배치되었으며 주거 성능을 확보하는 데 집중하였습니다. 각 세대의 평면적 특징은 거주 시 활용도를 높이는 중요한 요소입니다.</li><li>택지개발지구 내에 위치하여 단지 주변으로 정비된 근린 시설과 녹지 공간을 가깝게 접할 수 있습니다. 자연과 도심이 조화된 주거 환경을 갖추고 있습니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신주거문화타운에 위치한 &#x27;동탄 그웬 160&#x27;은 도심 속 자연을 누리는 <strong>공세권</strong> 입지입니다. 자족 기능을 갖춘 직주근접성을 동시에 확보하여 전반적인 주거 가치가 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이곳은 동탄의 마지막 계획구역으로, 쾌적한 정주 여건과 풍부한 미래 가치를 지니고 있습니다. 특히 인근 대규모 산업단지와의 연계성이 뛰어나 탄탄한 배후 수요를 자랑합니다. 이를 통해 자산 가치의 <strong>하방 경직성</strong>을 견고하게 다질 수 있는 입지입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만, 신도시 외곽에 위치한 특성상 초기 인프라 형성까지는 다소 시간이 소요될 수 있습니다. 쾌적성과 편의성 사이에서 매수자의 라이프스타일에 맞춘 신중한 접근이 필요합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">광역 교통망 접근성을 통해 수도권 주요 업무지구로의 이동 편의성을 점진적으로 확보해 나가는 입지입니다. 현재 동탄역을 통해 <strong>GTX-A</strong> 노선과 SRT를 이용하며 서울 및 전국 주요 거점으로 수월하게 이동할 수 있습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">향후 단지 인근으로 <strong>동탄 트램</strong> 노선이 계획되어 있어 동탄역 접근성은 더욱 개선될 전망입니다. 또한, 화성시와 용인시가 공동 추진 중인 남사터널 개통이 활발히 논의되고 있습니다. 터널 개통 시 인접한 반도체 국가산업단지로의 출퇴근 시간이 획기적으로 단축됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만, 현재 대중교통망이 완성 단계는 아니므로 자차 이동의 의존도가 높을 수 있습니다. 트램 개통 및 도로망 확충 전까지는 출퇴근 동선에 대한 사전 점검이 필수적입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 바로 앞에 초등학교가 위치하여 학령기 자녀를 둔 가구에 최적화된 환경입니다. 현민초등학교가 인접해 있어 횡단보도를 건너지 않는 <strong>초품아</strong> 프리미엄을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">여기에 병설 유치원 신설이 예정되어 있으며, 도보권 내에 중학교와 고등학교 부지가 계획되어 있습니다. 초·중·고를 아우르는 원스톱 학군이 조성되어 자녀의 성장 주기에 맞춘 장기 거주 수요를 유인합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신설 학교들의 개교 시점과 주변 학원가 형성 속도는 입주 초기와 차이가 있을 수 있습니다. 따라서 자녀의 진학 시기에 맞춘 면밀한 학군 인프라 점검이 반드시 요구됩니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">풍부한 녹지 공간을 품고 있어 주거 쾌적성이 극대화된 <strong>숲세권</strong> 🌳 입지를 자랑합니다. 동탄 다올공원과 왕배산 체육공원이 가까워 입주민들에게 수준 높은 여가 생활을 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 인근으로 약 1만 5,200㎡ 규모의 대형 공원 조성이 추가로 계획되어 있습니다. 신주거문화타운 내 상업 시설 부지도 계획되어 있어, 향후 슬세권 인프라도 점진적으로 확충될 예정입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">현재는 대형 마트나 종합 병원 등 핵심 앵커시설을 이용하기 위해 중심 상권으로 이동해야 합니다. 상권 성숙기까지는 다소간의 생활 불편을 감수해야 할 수 있으므로 유의해야 합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">용인 남사읍 일대에 조성되는 대규모 <strong>반도체 국가산업단지</strong>와의 인접성이 가장 큰 무기입니다. 약 320조 원이 투입되는 반도체 클러스터가 완성되면 막대한 고소득 일자리가 창출됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이러한 대규모 일자리 창출은 강력한 <strong>직주근접</strong> 💼 수요로 이어질 전망입니다. 대형 평형 특화 설계와 테라스 등 차별화된 상품성은 고급 주거 수요를 흡수하는 핵심 경쟁력입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만, 산업단지 조성 및 도로망 확충 등 대형 개발 호재는 행정 절차에 따라 변동될 수 있습니다. 단기적인 시각보다는 중장기적인 관점에서의 자산 가치 상승을 기대하는 것이 바람직합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1185,6 +1218,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "동탄 그웬 160 분양가 8.7억부터, 동탄2 청약 핵심정리", "text": "[동탄 그웬 160 (동탄2 B11BL)] 청약 정보 한눈에 보기\n\n📍 경기도\n🗓 모집공고일 2026-04-16\n💰 8억 7,000만원 ~ 12억 580만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

@@ -105,22 +105,55 @@ jobs:
           INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
           REQUIRE_PDF="${{ github.event.inputs.require_pdf || 'true' }}"
 
-          CMD="python generate_posts_from_cache.py --limit $LIMIT"
+          # eval 제거 — 인자 배열로 직접 호출. notice_id 같은 사용자 입력에
+          # 셸 메타문자가 있어도 안전.
+          ARGS=(--limit "$LIMIT")
           if [ -n "$NOTICE_ID" ]; then
-            CMD="$CMD --notice-id $NOTICE_ID"
+            ARGS+=(--notice-id "$NOTICE_ID")
           fi
           if [ "$INCLUDE_MANUAL" = "true" ]; then
-            CMD="$CMD --include-manual"
+            ARGS+=(--include-manual)
           fi
           if [ "$INCLUDE_PROCESSED" = "true" ]; then
-            CMD="$CMD --include-processed"
+            ARGS+=(--include-processed)
           fi
           if [ "$REQUIRE_PDF" = "true" ]; then
-            CMD="$CMD --require-pdf"
+            ARGS+=(--require-pdf)
           fi
 
-          echo "$CMD"
-          eval "$CMD" 2>&1 | tee /tmp/generate_log.txt
+          echo "python generate_posts_from_cache.py ${ARGS[*]}"
+          python generate_posts_from_cache.py "${ARGS[@]}" 2>&1 | tee /tmp/generate_log.txt
+
+      - name: Patch newly created posts with v3 location analysis
+        # generate_posts_from_cache.py 가 만든 SECTION 2 는 v1 본문 (3섹션, 이모지 없음).
+        # 신규 단지의 location_v3.json 이 없는 상태이므로, 같은 단지를
+        # patch_posts_location_v3.py --targets 로 곧바로 v3 본문(5섹션·이모지·가드레일)
+        # 으로 덮어쓰기. 이미 v3 패치된 단지는 자동 skip.
+        run: |
+          # location_v3.json 없는 모든 단지(active + past) 자동 추출.
+          NEW_IDS=$(python - <<'PY'
+          import sys
+          sys.path.insert(0, "tools")
+          from patch_posts_location_v3 import _list_posts_by_winner_date, _kst_today
+          today = _kst_today()
+          new_active = _list_posts_by_winner_date(today, past=False, skip_already_patched=True)
+          new_past = _list_posts_by_winner_date(today, past=True, skip_already_patched=True)
+          ids = [n for n, _, _ in new_active] + [n for n, _, _ in new_past]
+          print(" ".join(ids))
+          PY
+          )
+
+          if [ -z "$NEW_IDS" ]; then
+            echo "[v3-auto-patch] 신규 단지 없음 — skip"
+            exit 0
+          fi
+          echo "[v3-auto-patch] 대상: $NEW_IDS"
+
+          # checkpoint=5 — 신규 단지는 보통 소수라 자주 push 해도 부담 없음.
+          export PATCH_CHECKPOINT_EVERY=5
+          set +e
+          python tools/patch_posts_location_v3.py --targets $NEW_IDS --checkpoint-every 5 2>&1 | tee -a /tmp/generate_log.txt
+          set -e
 
       - name: Verify frozen UI files after generation
         run: |

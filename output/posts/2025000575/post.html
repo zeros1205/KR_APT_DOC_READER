@@ -333,6 +333,57 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
     font-size: 0.9375rem;
   }
 }
+.post-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+.post-floating-actions button {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.92);
+  border-radius: 12px;
+  background: rgba(217,119,87,0.7);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(217,119,87,0.32);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease, opacity 150ms ease;
+}
+.post-floating-actions button:hover {
+  background: rgba(184,92,56,0.78);
+  transform: translateY(-2px);
+}
+.post-floating-actions button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#post-share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(30,30,30,0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 70;
+}
+#post-share-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- ga4-injected:G-D5SCQRYKSM -->
 <!-- Google tag (gtag.js) -->
@@ -541,39 +592,21 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
 
 
 <!-- ══════════════════════════════════════════
-     SECTION 2 — 입지 분석
+     SECTION 2 — 입지 분석 (v3-readable)
 ═══════════════════════════════════════════ -->
 <div style="padding: 0 20px; margin-bottom: 44px;">
 
-  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.0938rem; margin-bottom: 10px;">
+  <div style="font-size: 0.75rem; font-weight: 700; color: var(--c-primary, #CC5F3F); letter-spacing: 0.09375rem; margin-bottom: 10px;">
     02 · 입지 분석
   </div>
   <h2 style="font-size: 1.375rem; font-weight: 800; color: var(--c-dark, #2C2825); margin: 0 0 20px 0; line-height: 1.4;">
     이 동네, 어떤 곳인가요?
   </h2>
 
-  <p style="font-size: 1rem; color: var(--c-mid, #6A635C); line-height: 1.6; margin: 0 0 26px 0;">
-    두산위브더제니스 센트럴 천안은 충청남도 천안시 청당동 일원에 위치하며 1,202세대의 대규모 단지로 조성됩니다. 천안시 주요 거점을 연결하는 교통망을 바탕으로 지역 내 이동이 용이합니다. 청당동 생활권의 인프라를 공유하며 정주 여건을 갖추고 있습니다.
-  </p>
-
-  <div style="display:flex;flex-direction:column;gap:22px;">
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">1. 교통 및 입지 여건</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>천안 도심 및 주요 산업단지로의 이동이 용이한 도로 교통망을 갖추고 있습니다. 이를 통해 시내외를 잇는 원활한 출퇴근 환경을 지원합니다.</li><li>대중교통 이용이 가능한 노선들과 연계된 광역 교통 체계가 구축되어 있습니다. 단지 주변의 교통망은 입주민들의 일상적인 이동 편의성을 높이는 요소입니다.</li><li>주요 간선도로 접근성이 양호하여 차량 이용 시 외부 이동이 비교적 편리합니다. 도로망을 통해 천안 지역 내 주요 시설로의 이동이 원활합니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">2. 교육 및 주거 환경</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>주변 지역 내에 교육 시설이 배치되어 있어 학생들의 안정적인 학습 환경 조성이 가능합니다. 학령기 자녀를 둔 가정에서 고려할 수 있는 주거 입지입니다.</li><li>단지 근거리의 교육 인프라를 통해 통학 여건을 확보하고 체계적인 교육 활동을 지원할 수 있습니다. 학교와 주거 단지가 인접하여 안정적인 교육 환경을 제공합니다.</li><li>지역 교육 환경의 관리와 더불어 면학 분위기가 조성되어 있는 것이 특징입니다. 인근 교육 시설과의 접근성은 학생들의 통학 및 교육 활동에 영향을 미칩니다.</li></ul></div>
-    </div>
-
-    <div>
-      <div style="font-size: 1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 10px 0;">3. 단지 특징</div>
-      <div style="font-size: 1rem;color:var(--c-dark, #2C2825);line-height:1.75;"><ul><li>두산위브더제니스 센트럴 천안은 청당동 310-6번지 일원에 위치하며 1,202세대의 대단지로 구성됩니다. 전용면적 84㎡ 위주의 평면 구성으로 수요자들의 선택 폭을 넓혔습니다.</li><li>입주 예정 시기는 2029년 1월로 계획되어 있습니다. 단지는 대규모 세대수에 걸맞은 조경과 커뮤니티 시설을 배치하여 주거 만족도를 높이고자 합니다.</li><li>해당 단지는 비규제지역 내에 공급되어 관련 공급 요건과 청약 조건을 확인해야 합니다. 분양가상한제 미적용 등 구체적인 규제 사항은 공고문을 통해 상세히 파악할 수 있습니다.</li></ul></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:28px;">
+    <div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📍 입지 총평</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">천안 동남권 신흥 주거지인 청당동 행정타운의 핵심 입지를 선점한 대단지입니다. 공공기관 밀집 구역이 제공하는 탄탄한 배후 수요와 쾌적한 정주 여건이 돋보입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">반경 1km 내에 대전지방법원, 천안세무서 등 주요 관공서가 밀집해 있습니다. 이는 고소득 전문직 종사자들의 <strong>직주근접</strong> 💼 수요를 꾸준히 창출하여 자산 가치의 하방 경직성을 높입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">다만 구도심과 신도심의 경계에 위치해 상권 확장성에는 일부 한계가 있을 수 있습니다. 행정타운 완성에 따른 점진적인 인프라 확충 과정을 지켜볼 필요가 있습니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🚇 교통: 시간적 가치</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량 이동망을 중심으로 천안 시내외 및 수도권으로의 광역 접근성이 우수한 입지입니다. 인근 주요 업무지구 및 산업단지로의 출퇴근 편의성이 수요자들에게 높게 평가됩니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">차량 이용 시 남부대로와 천안대로를 통해 천안 전역으로 빠르게 이동할 수 있습니다. 약 15분 거리에 KTX·SRT 천안아산역이 있어 수도권 진입이 수월하며, 남천안IC를 통한 고속도로 접근성도 뛰어납니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">현재 도보권 내 지하철역이 부재하다는 점은 대중교통 이용자에게 아쉬운 요소입니다. 향후 천안역 <strong>GTX-C 연장</strong> 🚆 계획과 청수역 신설 검토가 현실화될 경우 대중교통 편의성이 크게 개선될 전망입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🏫 교육: 정주 여건의 핵심</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">도보 통학이 가능한 초등학교와 우수한 학원가를 동시에 품어 학령기 자녀 가구의 선호도가 높습니다. 안심 통학권 확보는 주거 만족도를 높이고 단지의 핵심 프리미엄으로 작용합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지에서 도보 약 5분 거리에 청당초등학교가 위치해 <strong>초품아</strong> 📚 프리미엄을 누릴 수 있습니다. 가온중학교와 청수고등학교가 가깝고, 청당동 학원가도 인접해 우수한 면학 분위기를 제공합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">단지 내 종로엠스쿨 입점 및 교보문고 북큐레이션 서비스가 계획되어 있습니다. 이러한 교육 특화 시설은 지역 내 타 단지와 차별화되는 강력한 경쟁력이 될 것입니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">🛒 인프라: 생활의 완결성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">행정타운의 완성된 상권과 풍부한 녹지 공간을 동시에 누리는 쾌적한 생활 환경을 자랑합니다. 쇼핑, 문화, 휴식을 아우르는 생활의 완결성이 뛰어나 실거주 만족도가 높습니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">이마트 천안점과 하나로마트 등 대형 유통시설이 차량 10분 거리에 위치해 편리합니다. 청수호수공원, 천안생활체육공원 등 대규모 녹지가 인접한 <strong>공세권</strong> 🌳 입지로 주거 쾌적성이 탁월합니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">대형 종합병원이 도보권에 없다는 점은 의료 인프라 측면에서 다소 아쉽게 느껴질 수 있습니다. 하지만 차량 이동 시 순천향대학교 부속 천안병원 등 대형 의료시설의 이용은 충분히 가능합니다.</p></div><div><h3 style="font-size:1.25rem;font-weight:800;color:var(--c-dark, #2C2825);margin:0 0 12px 0;line-height:1.4;">📈 미래 가치: 자산의 확장성</h3><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">청당동 일대 약 1만 3천 세대 규모의 미니 신도시급 주거 타운 형성으로 지역 가치 상승이 기대됩니다. 1,202세대 전용 84㎡ 단일 평형으로 구성된 하이엔드 브랜드의 랜드마크 상징성도 큽니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">풍세일반산업단지 등 인근 산업단지의 확장은 지속적인 양질의 인구 유입을 유도합니다. 이는 탄탄한 실수요층을 형성하여 장기적인 자산 가치 상승의 강력한 동력으로 작용할 것입니다.</p><p style="font-size:1rem;color:var(--c-dark, #2C2825);line-height:1.75;margin:0 0 12px 0;">신흥 주거타운의 특성상 초기에는 일부 생활 인프라의 성숙도가 다소 부족할 수 있습니다. 하지만 지역 개발이 완료되는 시점에는 천안 동남권을 대표하는 <strong>대장 단지</strong> 🏗️ 로 자리매김할 잠재력이 충분합니다.</p></div>
   </div>
 </div>
-
 
 <!-- 구분선 -->
 <div style="height: 1px; background: #DED9D1; margin: 0 20px 44px;"></div>
@@ -1149,6 +1182,89 @@ body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSy
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   onScroll();
+})();
+</script>
+<div class="post-floating-actions" aria-label="페이지 작업">
+  <button id="post-share-btn" type="button" aria-label="공유하기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+  </button>
+  <button id="post-scroll-top-btn" type="button" aria-label="최상단으로 이동">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"></path>
+    </svg>
+  </button>
+</div>
+<div id="post-share-toast" role="status" aria-live="polite"></div>
+<script id="post-share-data" type="application/json">{"title": "두산위브더제니스 센트럴 천안 분양가·일정 정리", "text": "[두산위브더제니스 센트럴 천안] 청약 정보 한눈에 보기\n\n📍 충청남도\n🗓 모집공고일 2025-11-21\n💰 4억 8,760만원 ~ 4억 9,790만원\n\n🏠 분양가·일정·입지·자격 핵심 정리\n📋 청약 전 꼭 확인해야 할 정보 모음\n✨ 정과장의 청약노트"}</script>
+<script>
+(function() {
+  var topBtn = document.getElementById('post-scroll-top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  var shareBtn = document.getElementById('post-share-btn');
+  var toast = document.getElementById('post-share-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('is-visible');
+    }, 1800);
+  }
+
+  function getShareData() {
+    var payload = null;
+    var payloadEl = document.getElementById('post-share-data');
+    if (payloadEl) {
+      try { payload = JSON.parse(payloadEl.textContent || '{}'); } catch (_) {}
+    }
+    var ogTitle = (document.querySelector('meta[property="og:title"]') || {}).content || '';
+    var ogDesc = (document.querySelector('meta[property="og:description"]') || {}).content
+      || (document.querySelector('meta[name="description"]') || {}).content
+      || '';
+    var title = (payload && payload.title) || ogTitle || document.title || '정과장의 청약노트';
+    var description = (payload && payload.text) || ogDesc || '';
+    return {
+      title: title,
+      text: description,
+      url: location.href
+    };
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function() {
+      var data = getShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share({text: data.text, url: data.url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(data.url);
+          showToast('링크가 복사되었습니다');
+          return;
+        } catch (_) {}
+      }
+      location.href = 'mailto:?subject=' + encodeURIComponent(data.title)
+        + '&body=' + encodeURIComponent(data.url);
+    });
+  }
 })();
 </script>
 </body>

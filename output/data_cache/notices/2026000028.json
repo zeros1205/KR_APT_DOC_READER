@@ -211,5 +211,20 @@
       "약식표기 공급 동 구분 해당 공급금액 계약금 (10%) 잔금 (90%)",
       "약식표기 공급 동 구분 해당 공급금액 계약금 (10%) 잔금 (90%)"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:43:03+09:00"
   }
 }

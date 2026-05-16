@@ -13,9 +13,12 @@ TEMPLATE_DIR = BASE_DIR / "templates"
 OUTPUT_DIR = BASE_DIR / "output"
 CHROMA_DIR = BASE_DIR / "chroma_db"
 
-# cwd/.env와 프로젝트 루트 .env를 모두 시도
-load_dotenv()
+# 프로젝트 루트의 .env 가 정식 위치. cwd/.env 는 fallback (개발 편의용).
+# 프로젝트 루트가 우선순위 높도록 먼저 로드 — load_dotenv 는 기본적으로 기존 환경
+# 변수를 덮어쓰지 않으므로(override=False), 먼저 로드된 값이 우선 사용됨.
 load_dotenv(BASE_DIR / ".env")
+if Path.cwd() != BASE_DIR:
+    load_dotenv()  # cwd/.env 가 다른 경우만 추가 로드
 
 
 def _clear_dead_local_proxy() -> None:
@@ -47,7 +50,7 @@ LLM_EMBED_MODEL = "text-embedding-3-small"
 
 # ── Google Gemini (입지 분석 전용) ──
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite-preview")
+LLM_LOCATION_MODEL = os.getenv("LLM_LOCATION_MODEL", "gemini-3.1-flash-lite")
 
 # ── OpenAI 팩트체크 ──
 LLM_FACTCHECK_MODEL = "gpt-5.4-mini"

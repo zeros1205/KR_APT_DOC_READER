@@ -194,5 +194,20 @@
       "공급 금액 계약금(5%) 중도금(60%)",
       "약식 세대수 라인 층 해당 계약 계약 1회 2회 3회 4회 5회 6회 (35%)"
     ]
+  },
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "소유권 이전등기 시까지",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:43:04+09:00"
   }
 }

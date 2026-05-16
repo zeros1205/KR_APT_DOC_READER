@@ -57,16 +57,17 @@ jobs:
           INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"
           INCLUDE_WITH_PDF="${{ github.event.inputs.include_with_pdf || 'false' }}"
 
-          CMD="python export_notice_urls.py"
+          # eval 제거 — 인자 배열로 직접 호출.
+          ARGS=()
           if [ "$INCLUDE_PROCESSED" = "true" ]; then
-            CMD="$CMD --include-processed"
+            ARGS+=(--include-processed)
           fi
           if [ "$INCLUDE_WITH_PDF" = "true" ]; then
-            CMD="$CMD --include-with-pdf"
+            ARGS+=(--include-with-pdf)
           fi
 
-          echo "$CMD"
-          eval "$CMD"
+          echo "python export_notice_urls.py ${ARGS[*]}"
+          python export_notice_urls.py "${ARGS[@]}"
 
       - name: Commit URL export and meta inputs
         run: |
