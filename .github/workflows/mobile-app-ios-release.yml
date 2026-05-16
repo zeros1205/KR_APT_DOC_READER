@@ -235,9 +235,18 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>teamID</key>
             <string>${{ secrets.IOS_TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>iPhone Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>app.aptnote.mobile</key>
+              <string>${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}</string>
+            </dict>
             <key>uploadBitcode</key>
             <false/>
             <key>uploadSymbols</key>
@@ -249,8 +258,7 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -exportPath "$RUNNER_TEMP/ipa" \
-            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
-            | xcpretty
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
 
           IPA="$(find "$RUNNER_TEMP/ipa" -name '*.ipa' | head -n 1)"
           echo "IPA_PATH=$IPA" >> "$GITHUB_ENV"
