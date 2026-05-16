@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n074.6595A타입 | 전용 99.3357㎡ | 일반 10세대 | 특별 14세대 | 분양가 77470만원\n084.7599A타입 | 전용 109.3976㎡ | 일반 172세대 | 특별 205세대 | 분양가 87850만원\n084.9615B타입 | 전용 110.5592㎡ | 일반 12세대 | 특별 17세대 | 분양가 87550만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-15T23:55:05.297317"
+    "collected_at": "2026-05-15T23:55:05.297317",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년(과밀억제권역)",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "신한자산신탁 주식회사",
@@ -167,5 +172,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년(과밀억제권역)",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:10:49+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-16T09:10:49+09:00"
+  }
 }

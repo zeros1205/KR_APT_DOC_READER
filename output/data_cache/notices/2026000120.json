@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n039.3700A타입 | 전용 53.2928㎡ | 일반 5세대 | 특별 1세대 | 분양가 122450만원\n039.9000C타입 | 전용 54.1181㎡ | 일반 2세대 | 특별 0세대 | 분양가 121850만원\n049.8300A타입 | 전용 67.6036㎡ | 일반 3세대 | 특별 0세대 | 분양가 164780만원\n049.7000B타입 | 전용 68.0504㎡ | 일반 4세대 | 특별 0세대 | 분양가 167510만원\n059.8700A타입 | 전용 81.6972㎡ | 일반 92세대 | 특별 102세대 | 분양가 222210만원\n059.8800B타입 | 전용 81.6498㎡ | 일반 6세대 | 특별 2세대 | 분양가 209150만원\n059.9200C타입 | 전용 81.9500㎡ | 일반 25세대 | 특별 24세대 | 분양가 222860만원\n059.8800D타입 | 전용 81.5798㎡ | 일반 46세대 | 특별 56세대 | 분양가 219610만원\n059.9700E타입 | 전용 81.8328㎡ | 일반 9세대 | 특별 7세대 | 분양가 224700만원\n059.9700F타입 | 전용 81.9628㎡ | 일반 10세대 | 특별 7세대 | 분양가 209950만원\n084.9000A타입 | 전용 114.3484㎡ | 일반 8세대 | 특별 13세대 | 분양가 295890만원\n084.7800C타입 | 전용 113.9878㎡ | 일반 1세대 | 특별 9세대 | 분양가 297820만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-15T23:55:07.583793"
+    "collected_at": "2026-05-15T23:55:07.583793",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "투기과열지구, 청약과열지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "흑석11재정비촉진구역재개발정비사업조합",
@@ -338,5 +343,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구, 청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:10:49+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-16T09:10:49+09:00"
+  }
 }

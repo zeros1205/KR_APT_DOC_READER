@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n072.6854A타입 | 전용 93.0094㎡ | 일반 1세대 | 특별 1세대 | 분양가 56000만원\n084.9124A타입 | 전용 107.4241㎡ | 일반 41세대 | 특별 35세대 | 분양가 65000만원\n084.8252B타입 | 전용 107.1542㎡ | 일반 19세대 | 특별 13세대 | 분양가 63800만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-15T23:55:00.482067"
+    "collected_at": "2026-05-15T23:55:00.482067",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "코리아신탁(주)",
@@ -167,5 +172,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-16T09:10:50+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-16T09:10:50+09:00"
+  }
 }
