@@ -1686,7 +1686,6 @@ body {{ font-family: {FONT_FAMILY}; margin: 0; padding: 0; background: #fffaf3; 
         "notice_url":           data.notice_url,
         "generated_at":    datetime.now().isoformat(),
     }
-    import json
     (post_dir / "post_meta.json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
     )
