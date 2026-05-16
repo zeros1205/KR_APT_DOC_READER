@@ -148,8 +148,9 @@ jobs:
           printf '%s' "$CER_BASE64" | base64 --decode > "$RUNNER_TEMP/certificate.cer"
           printf '%s' "$KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/private.key"
 
+          openssl x509 -in "$RUNNER_TEMP/certificate.cer" -inform DER -out "$RUNNER_TEMP/certificate.pem" -outform PEM
           openssl pkcs12 -export \
-            -in "$RUNNER_TEMP/certificate.cer" \
+            -in "$RUNNER_TEMP/certificate.pem" \
             -inkey "$RUNNER_TEMP/private.key" \
             -out "$RUNNER_TEMP/certificate.p12" \
             -name "iOS Distribution" \
