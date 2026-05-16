@@ -90,6 +90,24 @@
 
 ---
 
+## 사전 준비 사항 (필수)
+
+### 0단계: App Store Connect에 앱 등록
+TestFlight 업로드 전에 반드시 앱이 App Store Connect에 등록되어 있어야 함.
+
+1. [App Store Connect](https://appstoreconnect.apple.com) → **My Apps** → **+** → **New App**
+2. 입력:
+   - Platforms: `iOS`
+   - Name: `정과장의 청약노트`
+   - Primary Language: `Korean`
+   - Bundle ID: `app.aptnote.mobile` (Apple Developer에서 생성한 App ID)
+   - SKU: `aptnote-ios-001` (임의 식별자)
+   - User Access: `Full Access`
+
+⚠️ 이 단계를 건너뛰면 TestFlight 업로드 시 401 인증 실패 발생
+
+---
+
 ## 인증서 발급 절차 (Mac 없이)
 
 ### 1단계: CSR 생성 (Git Bash on Windows)
@@ -119,9 +137,11 @@ openssl req -new -newkey rsa:2048 -nodes \
 
 ### 5단계: App Store Connect API 키
 1. Users and Access → Integrations → App Store Connect API → +
-2. Name: `GitHub Actions`, Role: `Developer`
+2. Name: `GitHub Actions`, **Access: `App Manager`** ⚠️
 3. Key ID, Issuer ID 복사
-4. `.p8` 파일 다운로드 (1회만 가능)
+4. `.p8` 파일 다운로드 (1회만 가능, 분실 시 새 키 생성 필요)
+
+⚠️ **Access 권한 주의**: `Developer`로 설정하면 TestFlight 업로드 권한 부족으로 401 에러 발생. 반드시 **App Manager** 또는 더 높은 권한 부여.
 
 ### 6단계: Base64 인코딩 (Git Bash)
 ```bash
@@ -246,6 +266,24 @@ xcodebuild archive \
 ### Archive Failed (xcpretty가 에러 감춤)
 - **확인**: `xcpretty` 제거 후 전체 로그 확인 (이미 적용됨)
 
+### "exportArchive App.app requires a provisioning profile"
+- **원인**: ExportOptions.plist에 서명 정보(signingStyle, certificate, provisioningProfiles) 누락
+- **해결**: ExportOptions.plist에 manual signing 정보 추가 (이미 적용됨)
+
+### TestFlight Upload "401 Unauthorized" / "Failed to load AuthKey file"
+- **원인 1**: `.p8` 파일이 `~/private_keys/AuthKey_${KEY_ID}.p8` 표준 경로에 없음
+  - **해결**: 워크플로우에서 자동 저장됨 (이미 적용)
+- **원인 2**: App Store Connect API 키 권한 부족 (`Developer`로는 부족)
+  - **해결**: API 키 권한을 **`App Manager`** 이상으로 변경
+- **원인 3**: App Store Connect에 앱이 등록되지 않음
+  - **해결**: My Apps에서 새 앱 생성 (Bundle ID: `app.aptnote.mobile`)
+- **원인 4**: `APP_STORE_CONNECT_KEY_ID` / `APP_STORE_CONNECT_ISSUER_ID` 값 오타
+  - **해결**: GitHub Secret 재등록 (값을 다시 볼 수 없으니 의심되면 그냥 재등록)
+
+### "SDK version issue. This app was built with the iOS X SDK. All iOS apps must be built with the iOS 26 SDK or later"
+- **원인**: GitHub Actions의 `macos-latest` runner는 Xcode 16.x (iOS 18.5 SDK) 사용
+- **해결**: `runs-on: macos-26` 사용 (Xcode 26 / iOS 26 SDK 포함) - 이미 적용됨
+
 ---
 
 ## 운영 체크리스트
@@ -261,8 +299,14 @@ xcodebuild archive \
 - [ ] `IOS_PROVISIONING_PROFILE_BASE64` 업데이트
 
 ### App Store Connect API 키 분실 시
-- [ ] 새 API 키 생성 (기존 키 revoke 가능)
+- [ ] 새 API 키 생성 (Access: **App Manager** ⚠️)
 - [ ] `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_KEY_BASE64` 모두 업데이트
+
+### GitHub Secret 값 재확인 불가
+- GitHub Secret은 보안상 저장 후 **값을 볼 수 없음** (정상 동작)
+- "Update secret" 클릭 시 빈칸으로 표시되는 것은 정상
+- 값 확인 필요 시 **새로 등록**하는 것이 유일한 방법
+
 
 ---
 
@@ -312,3 +356,24 @@ xcodebuild archive \
 | #90 | 프로비저닝 프로파일 UUID 사용 |
 | #91 | xcpretty 제거 (에러 로그 가시화) |
 | #92 | Pods 서명 비활성화 + App 타겟 project.pbxproj 동적 수정 |
+| #93 | ExportOptions.plist에 manual signing 정보 추가 |
+| #94 | `.p8` 파일을 `~/private_keys/AuthKey_${KEY_ID}.p8` 표준 경로에 저장 |
+| #95 | `macos-26` runner 사용 (Xcode 26 / iOS 26 SDK) + 트러블슈팅 문서 보강 |
+
+---
+
+## 빌드 단계별 통과 확인 체크리스트
+
+각 빌드 시도 후 어디까지 통과했는지 확인하는 방법:
+
+| 단계 | 성공 시 로그 메시지 |
+|------|-------------------|
+| 1. 인증서 import | `1 certificate imported.` |
+| 2. 프로비저닝 프로파일 설치 | `Installed provisioning profile UUID: xxx-xxx-xxx` |
+| 3. App 타겟 서명 설정 | `App target signing configured.` |
+| 4. Archive | `** ARCHIVE SUCCEEDED **` |
+| 5. Export IPA | `IPA_PATH=...` 환경변수 설정됨 |
+| 6. IPA 검증 | sha256 체크섬 출력 |
+| 7. TestFlight 업로드 | `p8 private key loaded from '~/private_keys/...'`, 이후 인증 성공 |
+
+각 단계에서 실패 시 트러블슈팅 섹션의 해당 항목 참조.
