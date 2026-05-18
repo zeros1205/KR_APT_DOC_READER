@@ -4,7 +4,7 @@ import { Capacitor, CapacitorHttp } from "@capacitor/core";
 export const SITE_ORIGIN = "https://apt-note.com";
 export const WORKER_ORIGIN =
   (import.meta.env.VITE_WORKER_ORIGIN as string | undefined) ||
-  "https://apt-note-tg-bot.zeros1205.workers.dev";
+  "https://apt-note-tg-bot.jax1205.workers.dev";
 
 export type DeviceRegistration = {
   token: string;

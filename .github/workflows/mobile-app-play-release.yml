@@ -202,6 +202,7 @@ jobs:
         working-directory: mobile-app
         env:
           VITE_APP_VERSION: ${{ env.RELEASE_VERSION_NAME }}
+          VITE_WORKER_ORIGIN: ${{ secrets.WORKER_ORIGIN }}
         run: npm run build
 
       - name: Write Google Services config
