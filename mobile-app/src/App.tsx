@@ -178,7 +178,7 @@ function App() {
       setSettings(savedSettings);
     });
     void refreshPosts();
-    void fetchLatestVersion().then((version) => {
+    void fetchLatestVersion(Capacitor.getPlatform()).then((version) => {
       if (version) setLatestVersion(version);
     });
     if (Capacitor.isNativePlatform()) {

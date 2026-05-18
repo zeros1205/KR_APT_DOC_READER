@@ -13,14 +13,16 @@ export function extractPriceRange(card: NoticeCard): string | undefined {
   return match?.[1]?.replace(/\s+/g, " ").trim();
 }
 
-export async function fetchLatestVersion(): Promise<string | undefined> {
+export async function fetchLatestVersion(platform?: string): Promise<string | undefined> {
   try {
     const response = await fetch(`${SITE_ORIGIN}/app-version.json`, {
       headers: { Accept: "application/json" },
       cache: "no-store"
     });
     if (!response.ok) return undefined;
-    const data = (await response.json()) as { latest?: string };
+    const data = (await response.json()) as { android?: string; ios?: string; latest?: string };
+    if (platform === "ios" && data.ios) return data.ios;
+    if (platform === "android" && data.android) return data.android;
     return data.latest;
   } catch {
     return undefined;

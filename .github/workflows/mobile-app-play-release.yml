@@ -279,7 +279,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p output
-          printf '{"latest": "%s"}\n' "$RELEASE_VERSION_NAME" > output/app-version.json
+          if [ ! -s output/app-version.json ]; then
+            echo '{}' > output/app-version.json
+          fi
+          # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
+          tmp="$(mktemp)"
+          jq --arg v "$RELEASE_VERSION_NAME" '.android = $v' output/app-version.json > "$tmp"
+          mv "$tmp" output/app-version.json
 
           if git diff --quiet -- output/app-version.json; then
             echo "app-version.json unchanged; skipping commit."
@@ -289,7 +295,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add output/app-version.json
-          git commit -m "chore(mobile): publish app-version.json $RELEASE_VERSION_NAME"
+          git commit -m "chore(mobile): publish app-version.json android=$RELEASE_VERSION_NAME"
           git push origin HEAD:main
 
       - name: Upload release verification logs
