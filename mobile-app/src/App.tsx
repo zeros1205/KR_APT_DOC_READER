@@ -154,12 +154,16 @@ function isApplyHomeCard(card?: NoticeCard): boolean {
 
 const PUSH_PROMPT_RETRY_DAYS = 3;
 
+function shouldShowOnboarding(settings: UserSettings): boolean {
+  return !settings.onboardingCompletedAt;
+}
+
 function shouldShowPushPrompt(settings: UserSettings): boolean {
   if (settings.pushEnabled) return false;
   if (settings.pushConsentedAt) return false;
   if (settings.pushPromptDismissed) return false;
+  if (!settings.onboardingCompletedAt) return false;
   const count = settings.pushPromptCount || 0;
-  if (count === 0) return true;
   if (count === 1 && settings.pushPromptLastShownAt) {
     const last = new Date(settings.pushPromptLastShownAt).getTime();
     if (Number.isNaN(last)) return false;
@@ -191,7 +195,10 @@ function App() {
   const toastTimerRef = useRef<number | null>(null);
   const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
   const pushPromptShownRef = useRef(false);
+  const onboardingShownRef = useRef(false);
   const settingsLoadedRef = useRef(false);
+  const [onboardingVisible, setOnboardingVisible] = useState(false);
+  const [onboardingPage, setOnboardingPage] = useState<1 | 2>(1);
   const cardsRef = useRef<NoticeCard[]>([]);
   const settingsRef = useRef<UserSettings>(defaultSettings);
 
@@ -243,14 +250,24 @@ function App() {
   }, [loading]);
 
   useEffect(() => {
-    if (loading) return;
-    if (introVisible) return;
+    if (loading || introVisible) return;
+    if (!settingsLoadedRef.current) return;
+    if (onboardingShownRef.current) return;
+    if (!shouldShowOnboarding(settings)) return;
+    onboardingShownRef.current = true;
+    setOnboardingPage(1);
+    setOnboardingVisible(true);
+  }, [loading, introVisible, settings]);
+
+  useEffect(() => {
+    if (loading || introVisible) return;
+    if (onboardingVisible) return;
     if (!settingsLoadedRef.current) return;
     if (pushPromptShownRef.current) return;
     if (!shouldShowPushPrompt(settings)) return;
     pushPromptShownRef.current = true;
     void promptPushConsent();
-  }, [loading, introVisible, settings]);
+  }, [loading, introVisible, onboardingVisible, settings]);
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
@@ -503,6 +520,63 @@ function App() {
     }
   }
 
+  async function handleOnboardingConsent(granted: boolean) {
+    const cur = settingsRef.current;
+    const nowIso = new Date().toISOString();
+
+    if (!granted) {
+      await updateSettings({
+        ...cur,
+        pushPromptCount: 1,
+        pushPromptLastShownAt: nowIso,
+        onboardingCompletedAt: nowIso
+      });
+      setOnboardingVisible(false);
+      return;
+    }
+
+    await updateSettings({
+      ...cur,
+      pushConsentedAt: nowIso,
+      onboardingCompletedAt: nowIso
+    });
+
+    if (!Capacitor.isNativePlatform()) {
+      await setPushEnabled(true);
+      setOnboardingVisible(false);
+      return;
+    }
+    try {
+      const permission = await PushNotifications.requestPermissions();
+      if (permission.receive !== "granted") {
+        await updateSettings({
+          ...settingsRef.current,
+          pushPromptCount: 1,
+          pushPromptLastShownAt: nowIso
+        });
+        showToast("알림 권한이 거부되어 푸시를 켤 수 없어요.");
+        setOnboardingVisible(false);
+        return;
+      }
+      await setPushEnabled(true);
+      await PushNotifications.register();
+    } catch {
+      showToast("알림 권한 설정을 완료하지 못했습니다.");
+    }
+    setOnboardingVisible(false);
+  }
+
+  async function skipOnboarding() {
+    const cur = settingsRef.current;
+    await updateSettings({
+      ...cur,
+      onboardingCompletedAt: new Date().toISOString(),
+      pushPromptCount: 1,
+      pushPromptLastShownAt: new Date().toISOString()
+    });
+    setOnboardingVisible(false);
+  }
+
   function handlePushPayload(payload: PushDataPayload) {
     const type = String(payload.type || "");
     const noticeId = (payload.notice_id || "").trim();
@@ -650,6 +724,16 @@ function App() {
   return (
     <main className={`app-shell ${view === "detail" ? "detail-mode" : ""}`}>
       {introVisible && <IntroScreen />}
+      {onboardingVisible && (
+        <OnboardingTutorial
+          page={onboardingPage}
+          settings={settings}
+          onRegionToggle={toggleRegion}
+          onNext={() => setOnboardingPage(2)}
+          onSkip={skipOnboarding}
+          onConsent={handleOnboardingConsent}
+        />
+      )}
       {view === "detail" && detailPage ? (
         <DetailNav
           page={detailPage}
@@ -770,6 +854,87 @@ function IntroScreen() {
           <span />
         </div>
         <p>로딩 중...</p>
+      </div>
+    </section>
+  );
+}
+
+type OnboardingTutorialProps = {
+  page: 1 | 2;
+  settings: UserSettings;
+  onRegionToggle: (region: string) => Promise<void>;
+  onNext: () => void;
+  onSkip: () => Promise<void>;
+  onConsent: (granted: boolean) => Promise<void>;
+};
+
+function OnboardingTutorial({ page, settings, onRegionToggle, onNext, onSkip, onConsent }: OnboardingTutorialProps) {
+  return (
+    <section className="onboarding-overlay" aria-label="앱 시작 안내">
+      <div className="onboarding-page">
+        <div className="onboarding-indicator" aria-hidden="true">
+          <span className={page === 1 ? "dot active" : "dot"} />
+          <span className={page === 2 ? "dot active" : "dot"} />
+        </div>
+
+        {page === 1 ? (
+          <>
+            <div className="onboarding-icon" aria-hidden="true">🏘️</div>
+            <h2 className="onboarding-title">관심 지역을 선택해주세요</h2>
+            <p className="onboarding-copy">
+              선택한 지역의 신규 청약 공고를 홈에서 가장 먼저 보여드려요.
+              <br />
+              나중에 설정에서 언제든 바꿀 수 있어요.
+            </p>
+            <div className="onboarding-region-grid">
+              {REGIONS.map((region) => {
+                const selected = settings.regions.includes(region);
+                return (
+                  <button
+                    key={region}
+                    type="button"
+                    className={selected ? "settings-check selected" : "settings-check"}
+                    onClick={() => void onRegionToggle(region)}
+                  >
+                    <span>{selected && <Check size={14} />}</span>
+                    {region}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="onboarding-actions">
+              <button className="onboarding-secondary" type="button" onClick={() => void onSkip()}>
+                건너뛰기
+              </button>
+              <button className="onboarding-primary" type="button" onClick={onNext}>
+                다음
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="onboarding-icon" aria-hidden="true">🔔</div>
+            <h2 className="onboarding-title">신규 공고 알림을 받으시겠어요?</h2>
+            <p className="onboarding-copy">
+              새 아파트 분양 공고가 등록되면
+              <br />
+              앱 푸시 알림으로 가장 먼저 알려드릴게요.
+              <br />
+              <br />
+              {settings.regions.length > 0
+                ? "선택하신 관심지역의 공고만 받아볼 수 있어요."
+                : "관심지역을 설정하면 그 지역의 공고만 받아볼 수 있어요."}
+            </p>
+            <div className="onboarding-actions onboarding-actions-stack">
+              <button className="onboarding-primary onboarding-primary-wide" type="button" onClick={() => void onConsent(true)}>
+                알림 받기
+              </button>
+              <button className="onboarding-secondary" type="button" onClick={() => void onConsent(false)}>
+                나중에
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

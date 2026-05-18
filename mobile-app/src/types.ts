@@ -27,6 +27,7 @@ export type UserSettings = {
   pushPromptCount?: number;
   pushPromptLastShownAt?: string;
   pushPromptDismissed?: boolean;
+  onboardingCompletedAt?: string;
   quietHoursEnabled: boolean;
   updatedAt?: string;
 };
