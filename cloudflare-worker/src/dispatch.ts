@@ -84,27 +84,27 @@ function buildMessageContent(
   if (type === 1) {
     return {
       title: PUSH_TITLE,
-      body: `신규 아파트 청약 공고를 확인해보세요.\n${aptName}`,
+      body: `신규 아파트 청약 공고를 확인해보세요.\n📍 ${aptName}`,
       target_url: lead.post_url,
     };
   }
   if (type === 2) {
     return {
       title: PUSH_TITLE,
-      body: `신규 아파트 청약 공고를 확인해보세요.\n${aptName}${tail}`,
+      body: `신규 아파트 청약 공고를 확인해보세요.\n📍 ${aptName}${tail}`,
       target_url: "/?tab=preferred",
     };
   }
   if (type === 3) {
     return {
       title: PUSH_TITLE,
-      body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n${aptName}`,
+      body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n📍 ${aptName}`,
       target_url: lead.post_url,
     };
   }
   return {
     title: PUSH_TITLE,
-    body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n${aptName}${tail}`,
+    body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n📍 ${aptName}${tail}`,
     target_url: "/",
   };
 }
