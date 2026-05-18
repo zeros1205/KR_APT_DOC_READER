@@ -117,11 +117,28 @@ async function handleDispatch(request: Request, env: Env): Promise<Response> {
       headers: { "Content-Type": "application/json" },
     });
   }
-  const summary = await dispatchPush(env, body);
-  return new Response(JSON.stringify(summary), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  try {
+    const summary = await dispatchPush(env, body);
+    return new Response(JSON.stringify(summary), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    console.error("dispatchPush error:", message, stack);
+    return new Response(
+      JSON.stringify({
+        error: "dispatch_error",
+        message,
+        // 디버깅용 stack 일부만 노출 (보안 위해 1000자 제한)
+        stack: stack ? stack.slice(0, 1000) : undefined,
+        has_fcm_project_id: Boolean(env.FCM_PROJECT_ID),
+        has_fcm_service_account: Boolean(env.FCM_SERVICE_ACCOUNT_JSON),
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
+  }
 }
 
 async function handleCallback(
