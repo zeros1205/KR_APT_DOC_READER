@@ -12,3 +12,15 @@ crons = [
   "0 2 * * *",
   "0 6 * * *"
 ]
+
+# DEVICES_KV: 푸시 토큰·관심지역·발송이력 저장
+# Cloudflare Dashboard → Workers & Pages → KV 에서 생성한 namespace.
+[[kv_namespaces]]
+binding = "DEVICES_KV"
+id = "0c75f73ec8754e00a122ec209b992104"
+preview_id = "0c75f73ec8754e00a122ec209b992104"
+
+# 시크릿: `wrangler secret put <NAME>` 으로 등록
+#   DISPATCH_TOKEN           — GitHub Actions → Worker 인증 토큰
+#   FCM_PROJECT_ID           — Firebase 프로젝트 ID
+#   FCM_SERVICE_ACCOUNT_JSON — 서비스 계정 키 JSON 전문

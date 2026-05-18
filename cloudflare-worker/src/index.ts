@@ -1,9 +1,6 @@
-interface Env {
-  TELEGRAM_TOKEN: string;
-  TELEGRAM_CHAT_ID: string;
-  GITHUB_PAT: string;
-  GITHUB_REPO: string;
-}
+import type { Env } from "./env";
+import { handleOptions, registerDevice, unregisterDevice } from "./routes/devices";
+import { dispatchPush, DispatchInput } from "./dispatch";
 
 interface TelegramUpdate {
   message?: {
@@ -23,8 +20,25 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    if (request.method === "OPTIONS") {
+      return handleOptions();
+    }
+
+    if (request.method === "POST" && path === "/devices") {
+      return registerDevice(request, env);
+    }
+    if (request.method === "DELETE" && path.startsWith("/devices/")) {
+      return unregisterDevice(request, env);
+    }
+    if (request.method === "POST" && path === "/push/dispatch") {
+      return handleDispatch(request, env);
+    }
+
     if (request.method !== "POST") {
-      return new Response("apt-note telegram bot", { status: 200 });
+      return new Response("apt-note worker", { status: 200 });
     }
 
     let update: TelegramUpdate;
@@ -61,6 +75,42 @@ export default {
     await sendMessage(env, parseInt(env.TELEGRAM_CHAT_ID), message);
   },
 };
+
+async function handleDispatch(request: Request, env: Env): Promise<Response> {
+  const auth = request.headers.get("X-Dispatch-Token") || "";
+  if (!env.DISPATCH_TOKEN || auth !== env.DISPATCH_TOKEN) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  let body: DispatchInput;
+  try {
+    body = (await request.json()) as DispatchInput;
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid_json" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  if (body.window !== "morning" && body.window !== "afternoon") {
+    return new Response(JSON.stringify({ error: "invalid_window" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  if (!Array.isArray(body.posts)) {
+    return new Response(JSON.stringify({ error: "invalid_posts" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  const summary = await dispatchPush(env, body);
+  return new Response(JSON.stringify(summary), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
 async function handleCallback(
   env: Env,

@@ -20,7 +20,8 @@ end
 
 target 'App' do
   capacitor_pods
-  # Add your Pods here
+  # Firebase Cloud Messaging (FCM) — APNs 토큰을 Firebase 토큰으로 교환
+  pod 'Firebase/Messaging'
 end
 
 post_install do |installer|

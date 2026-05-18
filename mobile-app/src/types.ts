@@ -21,8 +21,18 @@ export type UserSettings = {
   pushEnabled: boolean;
   pushToken?: string;
   pushTokenUpdatedAt?: string;
+  pushSyncedAt?: string;
+  pushPendingSync?: boolean;
+  pushConsentedAt?: string;
   quietHoursEnabled: boolean;
   updatedAt?: string;
+};
+
+export type PushDataPayload = {
+  type?: string;
+  notice_id?: string;
+  region?: string;
+  target_url?: string;
 };
 
 export type PostsIndex = {

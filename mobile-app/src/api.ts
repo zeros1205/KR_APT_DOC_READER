@@ -2,6 +2,49 @@ import type { NoticeCard, PostsIndex } from "./types";
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
 
 export const SITE_ORIGIN = "https://apt-note.com";
+export const WORKER_ORIGIN =
+  (import.meta.env.VITE_WORKER_ORIGIN as string | undefined) ||
+  "https://apt-note-tg-bot.zeros1205.workers.dev";
+
+export type DeviceRegistration = {
+  token: string;
+  platform: "android" | "ios" | "web";
+  regions: string[];
+  pushEnabled: boolean;
+  appVersion?: string;
+};
+
+async function workerFetch(path: string, init: RequestInit): Promise<Response> {
+  const url = `${WORKER_ORIGIN}${path}`;
+  return fetch(url, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...(init.headers || {}) }
+  });
+}
+
+export async function registerDevice(payload: DeviceRegistration): Promise<boolean> {
+  try {
+    const response = await workerFetch("/devices", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function unregisterDevice(token: string): Promise<boolean> {
+  if (!token) return true;
+  try {
+    const response = await workerFetch(`/devices/${encodeURIComponent(token)}`, {
+      method: "DELETE"
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
 
 export function absolutePostUrl(postUrl: string): string {
   return new URL(postUrl.replace(/^\/+/, ""), `${SITE_ORIGIN}/`).toString();
