@@ -1406,6 +1406,14 @@ function SettingsView({
   return (
     <section className="screen settings-screen">
       <section className="settings-list settings-flat-list">
+        <button className="settings-link-row settings-nav-row" onClick={() => onPage("notifications")}>
+          <div>
+            <strong>알림 설정</strong>
+            <span>{settings.pushEnabled ? "켜짐" : "꺼짐"}</span>
+          </div>
+          <ChevronRight size={18} />
+        </button>
+
         <button className="settings-link-row settings-nav-row" onClick={() => onPage("regions")}>
           <div>
             <strong>관심지역 설정</strong>
