@@ -162,6 +162,142 @@ button {
   }
 }
 
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #fdfaf3;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  overflow-y: auto;
+  padding: calc(48px + env(safe-area-inset-top)) 24px calc(32px + env(safe-area-inset-bottom));
+}
+
+.onboarding-page {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.onboarding-indicator {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.onboarding-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(44, 41, 37, 0.18);
+  transition: background-color 200ms ease, transform 200ms ease;
+}
+
+.onboarding-indicator .dot.active {
+  background: #3B82F6;
+  transform: scale(1.2);
+}
+
+.onboarding-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.onboarding-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #1f1d1a;
+}
+
+.onboarding-copy {
+  margin: 0 0 24px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(44, 41, 37, 0.78);
+}
+
+.onboarding-region-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 480px) {
+  .onboarding-region-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.onboarding-region-grid .settings-check {
+  min-height: 44px;
+}
+
+.onboarding-actions {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.onboarding-actions-stack {
+  flex-direction: column-reverse;
+}
+
+.onboarding-actions-stack > button {
+  width: 100%;
+}
+
+.onboarding-primary {
+  flex: 1;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  background: #3B82F6;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.onboarding-primary:hover {
+  background: #3573dd;
+}
+
+.onboarding-primary-wide {
+  flex: 1 1 100%;
+}
+
+.onboarding-secondary {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: rgba(44, 41, 37, 0.65);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.onboarding-secondary:hover {
+  color: #1f1d1a;
+}
+
 .app-toast {
   position: fixed;
   right: 24px;
