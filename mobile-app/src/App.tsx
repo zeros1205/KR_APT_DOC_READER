@@ -196,6 +196,7 @@ function App() {
   const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
   const pushPromptShownRef = useRef(false);
   const onboardingShownRef = useRef(false);
+  const navKeyRef = useRef<string>("home");
   const settingsLoadedRef = useRef(false);
   const [onboardingVisible, setOnboardingVisible] = useState(false);
   const [onboardingPage, setOnboardingPage] = useState<1 | 2>(1);
@@ -324,12 +325,55 @@ function App() {
       handleHomeBack();
     });
 
+    // iOS WKWebView edge swipe-back / 브라우저 뒤로가기 동기화:
+    // back-able 화면 진입 시 history에 push, popstate 이벤트로 react state를 한 단계 뒤로.
+    const navKey =
+      onboardingVisible ? "onboarding" :
+      menuOpen ? "menu" :
+      view === "detail" ? "detail" :
+      view === "settings" && settingsPage !== "main" ? `settings:${settingsPage}` :
+      view === "settings" ? "settings" :
+      view === "favorites" ? "favorites" :
+      "home";
+
+    if (navKey !== "home" && navKey !== "onboarding" && navKeyRef.current !== navKey) {
+      window.history.pushState({ navKey }, "");
+    }
+    navKeyRef.current = navKey;
+
+    const popstateHandler = () => {
+      if (onboardingVisible) {
+        // 온보딩 중에는 시스템 뒤로가기를 무시 — pushState로 history 복원.
+        window.history.pushState({ navKey: "onboarding-block" }, "");
+        return;
+      }
+      if (menuOpen) {
+        setMenuOpen(false);
+        return;
+      }
+      if (view === "detail") {
+        goBackFromDetail();
+        return;
+      }
+      if (view === "settings" && settingsPage !== "main") {
+        setSettingsPage("main");
+        return;
+      }
+      if (view !== "home") {
+        setView("home");
+        return;
+      }
+      // home: 무시 (시스템 뒤로가기로 home에서 벗어나지 않음)
+    };
+    window.addEventListener("popstate", popstateHandler);
+
     return () => {
       void registration.then((handle) => handle.remove());
       void registrationListener.then((handle) => handle.remove());
       void registrationErrorListener.then((handle) => handle.remove());
       void pushListener.then((handle) => handle.remove());
       void actionListener.then((handle) => handle.remove());
+      window.removeEventListener("popstate", popstateHandler);
     };
   }, [detailPage, menuOpen, onboardingVisible, settingsPage, view]);
 
