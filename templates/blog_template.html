@@ -333,7 +333,7 @@ li { margin-bottom: 8px; }
   <!-- FINANCE_RATIO_BAR_START -->
   <!-- 납부 비율 시각화 바 (CSS 차트) -->
   <div style="margin-bottom: 32px;">
-    <div style="font-size: 0.9375rem; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 12px;">📊 분양가 납부 비율</div>
+    <div style="font-size: 0.9375rem; font-weight: 700; color: var(--c-dark, {{T_TEXT}}); margin-bottom: 12px;">분양가 납부 비율(%)</div>
 
     <div style="display: flex; border-radius: {{T_RADIUS_MD}}; overflow: hidden; height: 48px; box-shadow: {{T_SHADOW_SM}};">
       <div style="
@@ -342,20 +342,20 @@ li { margin-bottom: 8px; }
         display: flex; align-items: center; justify-content: center;
         color: #fff; font-size: 0.9375rem; font-weight: 800;
         flex-shrink: 0;
-      ">{{CONTRACT_RATIO}}%</div>
+      ">{{CONTRACT_RATIO}}</div>
       <div style="
         background: {{T_STEP2}};
         flex: 1;
         display: flex; align-items: center; justify-content: center;
         color: #fff; font-size: 1rem; font-weight: 800;
-      ">{{MIDTERM_RATIO}}%</div>
+      ">{{MIDTERM_RATIO}}</div>
       <div style="
         background: {{T_STEP3}};
         width: {{BALANCE_RATIO}}%;
         display: flex; align-items: center; justify-content: center;
         color: #fff; font-size: 0.9375rem; font-weight: 800;
         flex-shrink: 0;
-      ">{{BALANCE_RATIO}}%</div>
+      ">{{BALANCE_RATIO}}</div>
     </div>
 
     <div style="display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap;">

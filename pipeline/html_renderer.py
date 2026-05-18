@@ -507,7 +507,7 @@ def remove_special_finance_ratio_bar_from_html(html: str) -> str:
     html = re.sub(
         r'\s*<!-- 납부 비율 시각화 바 \(CSS 차트\) -->\s*'
         r'<div style="margin-bottom: 32px;">\s*'
-        r'<div style="font-size: 0.9375rem; font-weight: 700; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin-bottom: 12px;">📊 분양가 납부 비율</div>'
+        r'<div style="font-size: 0.9375rem; font-weight: 700; color: var\(--c-dark, #[0-9A-Fa-f]{6}\); margin-bottom: 12px;">분양가 납부 비율\(%\)</div>'
         r'.*?</div>\s*</div>',
         "",
         html,
