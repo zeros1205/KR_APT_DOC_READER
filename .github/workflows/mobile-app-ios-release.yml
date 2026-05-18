@@ -211,6 +211,23 @@ jobs:
                 config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = 'iPhone Distribution'
                 config.build_settings['CODE_SIGN_ENTITLEMENTS'] = 'App/App.entitlements'
               end
+              if File.exist?('App/GoogleService-Info.plist')
+                group = project.main_group.find_subpath('App', true)
+                already = target.resources_build_phase.files.any? do |bf|
+                  ref = bf.file_ref
+                  ref && (ref.path == 'GoogleService-Info.plist' || ref.path&.end_with?('/GoogleService-Info.plist'))
+                end
+                unless already
+                  file_ref = group.files.find { |f| f.path == 'GoogleService-Info.plist' } ||
+                             group.new_reference('GoogleService-Info.plist')
+                  target.resources_build_phase.add_file_reference(file_ref, true)
+                  puts 'Added GoogleService-Info.plist to App target Resources.'
+                else
+                  puts 'GoogleService-Info.plist already in App target Resources.'
+                end
+              else
+                puts 'WARN: App/GoogleService-Info.plist not found on disk; skipping registration.'
+              end
             end
             project.save
             puts 'App target signing configured.'
