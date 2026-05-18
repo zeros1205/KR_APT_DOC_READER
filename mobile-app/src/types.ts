@@ -24,6 +24,9 @@ export type UserSettings = {
   pushSyncedAt?: string;
   pushPendingSync?: boolean;
   pushConsentedAt?: string;
+  pushPromptCount?: number;
+  pushPromptLastShownAt?: string;
+  pushPromptDismissed?: boolean;
   quietHoursEnabled: boolean;
   updatedAt?: string;
 };
