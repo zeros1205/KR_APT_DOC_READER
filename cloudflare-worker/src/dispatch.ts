@@ -72,37 +72,38 @@ function regionAlias(region: string): string {
   return shortNames[region] || region;
 }
 
+const PUSH_TITLE = "정과장의 청약노트 도착";
+
 function buildMessageContent(
   type: PushType,
   lead: PushPost,
   extra: number,
 ): { title: string; body: string; target_url: string } {
   const aptName = lead.apt_name;
-  const region = regionAlias(lead.region);
   const tail = extra > 0 ? ` 외 ${extra}건` : "";
   if (type === 1) {
     return {
-      title: "관심지역 신규 아파트 청약 공고 안내",
-      body: `${region} 신규 아파트 청약 공고를 확인해보세요.\n${aptName}`,
+      title: PUSH_TITLE,
+      body: `신규 아파트 청약 공고를 확인해보세요.\n${aptName}`,
       target_url: lead.post_url,
     };
   }
   if (type === 2) {
     return {
-      title: "관심지역 신규 아파트 청약 공고 안내",
-      body: `${region} 신규 아파트 청약 공고를 확인해보세요.\n${aptName}${tail}`,
+      title: PUSH_TITLE,
+      body: `신규 아파트 청약 공고를 확인해보세요.\n${aptName}${tail}`,
       target_url: "/?tab=preferred",
     };
   }
   if (type === 3) {
     return {
-      title: "신규 아파트 청약 공고 안내",
+      title: PUSH_TITLE,
       body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n${aptName}`,
       target_url: lead.post_url,
     };
   }
   return {
-    title: "신규 아파트 청약 공고 안내",
+    title: PUSH_TITLE,
     body: `오늘 등록된 신규 아파트 청약 공고를 확인해보세요.\n${aptName}${tail}`,
     target_url: "/",
   };
