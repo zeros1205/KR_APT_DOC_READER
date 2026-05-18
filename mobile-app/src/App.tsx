@@ -353,12 +353,15 @@ function App() {
     setSettings((current) => {
       const next: UserSettings = {
         ...current,
-        pushEnabled: true,
         pushToken: token,
         pushTokenUpdatedAt: new Date().toISOString()
       };
       void saveSettings(next);
-      void syncDeviceWithBackend(next, { appVersion: installedVersion, immediate: true });
+      // 사용자가 명시적으로 ON 한 상태일 때만 백엔드 등록.
+      // Firebase 자동 init 으로 토큰이 먼저 도착해도 토글이 OFF면 등록하지 않는다.
+      if (current.pushEnabled) {
+        void syncDeviceWithBackend(next, { appVersion: installedVersion, immediate: true });
+      }
       return next;
     });
   }
