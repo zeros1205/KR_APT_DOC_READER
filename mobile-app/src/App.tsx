@@ -297,6 +297,10 @@ function App() {
     });
 
     const registration = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+      // 온보딩 튜토리얼이 표시 중이면 뒤로가기로 우회할 수 없게 차단.
+      if (onboardingVisible) {
+        return;
+      }
       if (menuOpen) {
         setMenuOpen(false);
         return;
@@ -327,7 +331,7 @@ function App() {
       void pushListener.then((handle) => handle.remove());
       void actionListener.then((handle) => handle.remove());
     };
-  }, [detailPage, menuOpen, settingsPage, view]);
+  }, [detailPage, menuOpen, onboardingVisible, settingsPage, view]);
 
   async function refreshPosts() {
     setLoading(true);
@@ -734,7 +738,7 @@ function App() {
           onConsent={handleOnboardingConsent}
         />
       )}
-      {view === "detail" && detailPage ? (
+      {!onboardingVisible && view === "detail" && detailPage ? (
         <DetailNav
           page={detailPage}
           isFavorite={detailPage.card ? favoriteIds.has(detailPage.card.notice_id) : false}
@@ -749,17 +753,17 @@ function App() {
           }
           onToggleFavorite={() => detailPage.card && void toggleFavorite(detailPage.card)}
         />
-      ) : view === "favorites" || view === "settings" ? (
+      ) : !onboardingVisible && (view === "favorites" || view === "settings") ? (
         <SubpageNav
           title={view === "favorites" ? "즐겨찾기" : getSettingsTitle()}
           onBack={goBackFromSubpage}
           onMenu={toggleMenu}
         />
-      ) : (
+      ) : !onboardingVisible ? (
         <SiteNav view={view} onMenu={toggleMenu} />
-      )}
+      ) : null}
 
-      {view === "home" && (
+      {!onboardingVisible && view === "home" && (
         <HomeView
           activeRegion={activeRegion}
           cards={filteredCards}
@@ -777,7 +781,7 @@ function App() {
         />
       )}
 
-      {view === "favorites" && (
+      {!onboardingVisible && view === "favorites" && (
         <FavoritesView
           favorites={favorites}
           onOpen={openUrl}
@@ -788,7 +792,7 @@ function App() {
         />
       )}
 
-      {view === "settings" && (
+      {!onboardingVisible && view === "settings" && (
         <SettingsView
           favorites={favorites}
           installedVersion={installedVersion}
@@ -809,9 +813,9 @@ function App() {
         />
       )}
 
-      {view === "detail" && detailPage && <DetailView page={detailPage} />}
+      {!onboardingVisible && view === "detail" && detailPage && <DetailView page={detailPage} />}
 
-      {menuOpen && view !== "detail" && (
+      {!onboardingVisible && menuOpen && view !== "detail" && (
         <AppMenu
           currentView={view}
           onClose={closeMenu}
