@@ -307,7 +307,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p output
-          printf '{"latest": "%s"}\n' "${{ inputs.version_name }}" > output/app-version.json
+          if [ ! -s output/app-version.json ]; then
+            echo '{}' > output/app-version.json
+          fi
+          # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
+          tmp="$(mktemp)"
+          jq --arg v "${{ inputs.version_name }}" '.ios = $v' output/app-version.json > "$tmp"
+          mv "$tmp" output/app-version.json
 
           if git diff --quiet -- output/app-version.json; then
             echo "app-version.json unchanged; skipping commit."
@@ -317,5 +323,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add output/app-version.json
-          git commit -m "chore(mobile): publish app-version.json ${{ inputs.version_name }}"
+          git commit -m "chore(mobile): publish app-version.json ios=${{ inputs.version_name }}"
           git push origin HEAD:main
