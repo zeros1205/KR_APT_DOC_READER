@@ -152,6 +152,23 @@ function isApplyHomeCard(card?: NoticeCard): boolean {
   return card?.index_action === "applyhome";
 }
 
+const PUSH_PROMPT_RETRY_DAYS = 3;
+
+function shouldShowPushPrompt(settings: UserSettings): boolean {
+  if (settings.pushEnabled) return false;
+  if (settings.pushConsentedAt) return false;
+  if (settings.pushPromptDismissed) return false;
+  const count = settings.pushPromptCount || 0;
+  if (count === 0) return true;
+  if (count === 1 && settings.pushPromptLastShownAt) {
+    const last = new Date(settings.pushPromptLastShownAt).getTime();
+    if (Number.isNaN(last)) return false;
+    const days = (Date.now() - last) / 86400000;
+    return days >= PUSH_PROMPT_RETRY_DAYS;
+  }
+  return false;
+}
+
 function App() {
   const [introVisible, setIntroVisible] = useState(true);
   const [view, setView] = useState<View>("home");
@@ -173,6 +190,8 @@ function App() {
   const lastHomeBackAtRef = useRef(0);
   const toastTimerRef = useRef<number | null>(null);
   const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
+  const pushPromptShownRef = useRef(false);
+  const settingsLoadedRef = useRef(false);
   const cardsRef = useRef<NoticeCard[]>([]);
   const settingsRef = useRef<UserSettings>(defaultSettings);
 
@@ -180,6 +199,7 @@ function App() {
     void Promise.all([loadFavorites(), loadSettings()]).then(([savedFavorites, savedSettings]) => {
       setFavorites(savedFavorites);
       setSettings(savedSettings);
+      settingsLoadedRef.current = true;
     });
     void refreshPosts();
     void fetchLatestVersion(Capacitor.getPlatform()).then((version) => {
@@ -221,6 +241,16 @@ function App() {
     const timer = window.setTimeout(() => setIntroVisible(false), 300);
     return () => window.clearTimeout(timer);
   }, [loading]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (introVisible) return;
+    if (!settingsLoadedRef.current) return;
+    if (pushPromptShownRef.current) return;
+    if (!shouldShowPushPrompt(settings)) return;
+    pushPromptShownRef.current = true;
+    void promptPushConsent();
+  }, [loading, introVisible, settings]);
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
@@ -420,6 +450,55 @@ function App() {
       await PushNotifications.register();
     } catch {
       await setPushEnabled(false);
+      showToast("알림 권한 설정을 완료하지 못했습니다.");
+    }
+  }
+
+  async function promptPushConsent() {
+    const cur = settingsRef.current;
+    const count = (cur.pushPromptCount || 0) + 1;
+    const nowIso = new Date().toISOString();
+
+    const consented = await askConfirm({
+      title: "푸시 알림 받으시겠어요?",
+      message:
+        "신규 청약 공고가 등록되면 가장 먼저 알려드릴게요. 관심지역을 설정하면 그 지역의 공고만 받아볼 수 있어요.",
+      confirmLabel: "동의",
+      cancelLabel: "나중에"
+    });
+
+    if (!consented) {
+      const next: UserSettings = {
+        ...cur,
+        pushPromptCount: count,
+        pushPromptLastShownAt: nowIso,
+        pushPromptDismissed: count >= 2
+      };
+      await updateSettings(next);
+      return;
+    }
+
+    const consentedSettings: UserSettings = {
+      ...cur,
+      pushConsentedAt: nowIso,
+      pushPromptCount: count,
+      pushPromptLastShownAt: nowIso
+    };
+    await updateSettings(consentedSettings);
+
+    if (!Capacitor.isNativePlatform()) {
+      await setPushEnabled(true);
+      return;
+    }
+    try {
+      const permission = await PushNotifications.requestPermissions();
+      if (permission.receive !== "granted") {
+        showToast("알림 권한이 거부되어 푸시를 켤 수 없어요.");
+        return;
+      }
+      await setPushEnabled(true);
+      await PushNotifications.register();
+    } catch {
       showToast("알림 권한 설정을 완료하지 못했습니다.");
     }
   }
