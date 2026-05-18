@@ -217,7 +217,7 @@ a:hover {
 <div class="container">
   <header>
     <h1>개인정보 보호정책</h1>
-    <p class="header-meta">마지막 수정: 2026년 4월 27일</p>
+    <p class="header-meta">마지막 수정: 2026년 5월 18일</p>
   </header>
 
   <main>
@@ -237,8 +237,17 @@ a:hover {
     <p>현재 서비스는 회원가입이 필요하지 않으며, 개인정보 입력 폼이 없습니다.</p>
 
     <div class="notice-box">
-      <strong>🔒 중요:</strong> 검색 입력창에 입력한 단지명은 로컬 브라우저에만 저장되며, 서버로 전송되지 않습니다.
+      <strong>🔒 중요:</strong> 검색 입력창에 입력한 단지명은 로컬 브라우저(또는 모바일 앱 내부 저장소)에만 저장되며, 서버로 전송되지 않습니다.
     </div>
+
+    <h3>2.3 모바일 앱(Android · iOS)에서 수집되는 정보</h3>
+    <p>정과장의 청약노트 모바일 앱은 다음 항목만 수집·처리합니다. 이름·전화번호·이메일 등 직접 식별 가능한 개인정보는 수집하지 않습니다.</p>
+    <ul>
+      <li><strong>푸시 알림용 디바이스 토큰</strong>: 신규 분양공고 알림을 보내기 위해 Firebase Cloud Messaging(FCM) 또는 Apple Push Notification service(APNs) 가 발급하는 디바이스 식별 토큰을 운영자 서버(Cloudflare Workers KV)에 저장합니다. 토큰만으로는 사용자 신원을 식별할 수 없으며, 사용자가 앱 알림을 비활성화하거나 앱을 삭제하면 다음 발송 시도에서 토큰이 자동으로 폐기됩니다.</li>
+      <li><strong>관심 지역 설정(선택)</strong>: 사용자가 앱에서 직접 선택한 시/도·시/군/구 코드를 알림 매칭 용도로 토큰과 함께 저장합니다. 언제든 앱 화면에서 해제할 수 있습니다.</li>
+      <li><strong>로컬 저장 데이터</strong>: 즐겨찾기·검색 기록·테마 설정 등은 앱 기기 내 저장소에만 보관되며, 외부로 전송되지 않습니다.</li>
+    </ul>
+    <p><strong>iOS 앱은 광고 식별자(IDFA)를 수집하지 않으며, 앱 추적 투명성(App Tracking Transparency) 권한도 요청하지 않습니다.</strong> 위치정보, 연락처, 사진, 마이크, 카메라 등 시스템 권한도 요청하지 않습니다.</p>
 
     <h2>3. 정보 이용 목적</h2>
     <p>수집된 정보는 다음 목적으로만 이용됩니다:</p>
@@ -253,7 +262,8 @@ a:hover {
     <ul>
       <li><strong>Google Analytics 데이터</strong>: Google 정책에 따라 관리 (기본 26개월 보관)</li>
       <li><strong>서버 로그</strong>: 90일 이후 자동 삭제</li>
-      <li><strong>검색 기록</strong>: 사용자 기기에서만 저장, 언제든 삭제 가능</li>
+      <li><strong>검색 기록 · 즐겨찾기</strong>: 사용자 기기(브라우저 또는 모바일 앱)에서만 저장, 언제든 삭제 가능</li>
+      <li><strong>푸시 토큰 · 관심 지역 설정</strong>: 앱 알림 비활성화 또는 앱 삭제 시 다음 발송 시도에서 무효 토큰으로 폐기. 사용자가 <a href="mailto:contact@apt-note.com">contact@apt-note.com</a> 으로 즉시 삭제를 요청할 수 있습니다.</li>
     </ul>
 
     <h2>5. 제3자 공유</h2>
@@ -284,8 +294,9 @@ a:hover {
     <ul>
       <li><strong>웹사이트(apt-note.com)</strong>: Google AdSense</li>
       <li><strong>모바일 앱(Android)</strong>: Google AdMob</li>
+      <li><strong>모바일 앱(iOS)</strong>: 광고를 표시하지 않으며, 광고 식별자(IDFA)도 수집하지 않습니다.</li>
     </ul>
-    <p>모바일 앱은 Android 광고 ID(Advertising ID)를 사용하여 광고 게재·측정·사기 방지·맞춤 광고에 활용합니다. 사용자는 단말의 <em>설정 → Google → 광고</em> 메뉴에서 광고 ID 를 재설정하거나 "맞춤 광고 사용 안함" 을 선택할 수 있습니다.</p>
+    <p>Android 앱은 Android 광고 ID(Advertising ID)를 사용하여 광고 게재·측정·사기 방지·맞춤 광고에 활용합니다. 사용자는 단말의 <em>설정 → Google → 광고</em> 메뉴에서 광고 ID 를 재설정하거나 "맞춤 광고 사용 안함" 을 선택할 수 있습니다.</p>
     <p>Google 의 광고 데이터 처리 방식은 <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Google 광고 정책</a> 을 참고하세요.</p>
 
     <h2>9. 사용자의 권리</h2>
@@ -310,6 +321,7 @@ a:hover {
     <div class="footer-nav">
       <a href="/">홈</a>
       <a href="/terms.html">이용약관</a>
+      <a href="/support.html">지원</a>
     </div>
   </main>
 </div>

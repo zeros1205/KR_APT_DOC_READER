@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko" data-palette="A">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-8234120897033274">
+<title>지원 · 문의 - 정과장의 청약노트</title>
+<meta name="description" content="정과장의 청약노트 앱·웹 사용 중 문제가 있거나 문의 사항이 있을 때 도움을 받을 수 있는 페이지입니다.">
+<link rel="canonical" href="https://apt-note.com/support.html">
+<link rel="icon" type="image/x-icon" href="https://apt-note.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://apt-note.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://apt-note.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://apt-note.com/apple-touch-icon.png">
+<link rel="manifest" href="https://apt-note.com/manifest.json">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>(function(){var p=localStorage.getItem("apt-palette")||"A";document.documentElement.setAttribute("data-palette",p);})();</script>
+<style>
+html {
+  --c-primary:        #d97757;
+  --c-primary-dark:   #b85c38;
+  --c-primary-light:  #fdf0ea;
+  --c-accent:         #6a9bcc;
+  --c-bg:             #faf9f5;
+  --c-surface:        #ffffff;
+  --c-dark:           #2c2925;
+  --c-mid:            #767370;
+  --c-light-gray:     #e8e6dc;
+}
+
+html[data-palette="B"] {
+  --c-primary:        #386641;
+  --c-primary-dark:   #2f5236;
+  --c-primary-light:  #e8efdb;
+  --c-accent:         #6a994e;
+  --c-bg:             #f2e8cf;
+  --c-surface:        #ffffff;
+  --c-dark:           #2c2925;
+  --c-mid:            #6a994e;
+  --c-light-gray:     rgba(56,102,65,0.20);
+}
+
+html[data-palette="C"] {
+  --c-primary:        #ffafcc;
+  --c-primary-dark:   #cc7fa0;
+  --c-primary-light:  #fff0f5;
+  --c-accent:         #a2d2ff;
+  --c-bg:             #fdf8ff;
+  --c-surface:        #ffffff;
+  --c-dark:           #2d1f3d;
+  --c-mid:            #8070a0;
+  --c-light-gray:     #ddd0f0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-dark);
+  font-family: Pretendard, Inter, -apple-system, system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 2px solid var(--c-light-gray);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--c-dark);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.header-meta {
+  font-size: 13px;
+  color: var(--c-mid);
+  font-weight: 500;
+}
+
+main {
+  background: var(--c-surface);
+  border-radius: 8px;
+  padding: 36px 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-dark);
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--c-primary-light);
+}
+
+h2:first-child {
+  margin-top: 0;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-primary);
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--c-dark);
+  margin-bottom: 14px;
+}
+
+li {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--c-dark);
+  margin-left: 20px;
+  margin-bottom: 8px;
+}
+
+ul, ol {
+  margin-bottom: 14px;
+}
+
+a {
+  color: var(--c-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--c-primary-light);
+  transition: all 200ms;
+}
+
+a:hover {
+  color: var(--c-primary-dark);
+  border-bottom-color: var(--c-primary-dark);
+}
+
+.contact-card {
+  background: var(--c-primary-light);
+  border-left: 4px solid var(--c-primary);
+  padding: 18px 20px;
+  border-radius: 4px;
+  margin: 24px 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--c-dark);
+}
+
+.contact-card strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.faq-item {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--c-light-gray);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.faq-q {
+  font-weight: 700;
+  color: var(--c-dark);
+  margin-bottom: 8px;
+}
+
+.faq-a {
+  color: var(--c-dark);
+  margin-bottom: 0;
+}
+
+.footer-nav {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 2px solid var(--c-light-gray);
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-bottom: 1px solid transparent;
+  transition: all 200ms;
+}
+
+.footer-nav a:hover {
+  border-bottom: 1px solid var(--c-primary);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  main {
+    padding: 24px 18px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+</style>
+<!-- ga4-injected:G-D5SCQRYKSM -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D5SCQRYKSM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D5SCQRYKSM');
+</script>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>지원 · 문의</h1>
+    <p class="header-meta">정과장의 청약노트 앱·웹 사용 중 도움이 필요하실 때</p>
+  </header>
+
+  <main>
+    <h2>먼저 확인해 보세요</h2>
+    <p>
+      정과장의 청약노트는 한국부동산원 청약홈 공공데이터를 기반으로 매일 새 분양공고를
+      정리해 드리는 무료 서비스입니다. 회원가입·결제 없이 누구나 자유롭게 이용할 수 있습니다.
+    </p>
+    <ul>
+      <li>모바일 앱(Android · iOS)과 웹사이트(<a href="https://apt-note.com/">apt-note.com</a>)에서 동일한 콘텐츠를 제공합니다.</li>
+      <li>실제 청약 신청은 반드시 <a href="https://www.applyhome.co.kr/" target="_blank" rel="noopener">한국부동산원 청약홈</a>에서 진행해 주세요.</li>
+      <li>분양가·일정·자격 정보가 모집공고문과 다르다고 판단되면 아래 문의 채널로 알려 주세요. 영업일 기준 24시간 이내에 확인·수정합니다.</li>
+    </ul>
+
+    <h2>자주 묻는 질문</h2>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. 앱이 푸시 알림을 보내지 않아요.</p>
+      <p class="faq-a">
+        A. 시스템 <em>설정 → 알림 → 정과장의 청약노트</em>에서 알림이 허용돼 있는지 확인해 주세요.
+        앱 첫 실행 시 알림 허용을 거부하셨다면 시스템 설정에서 직접 다시 켤 수 있습니다.
+        관심 지역 설정을 해 두면 해당 지역 공고만 알림으로 받습니다(미설정 시 전국 신규 공고 알림).
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. 분양가·일정 정보가 청약홈과 달라요.</p>
+      <p class="faq-a">
+        A. 청약노트는 청약홈 공공데이터를 기준으로 발행되며, 공고 정정이 있을 때 일정 시간차가
+        발생할 수 있습니다. 발견하신 항목을 <a href="mailto:contact@apt-note.com">contact@apt-note.com</a> 으로
+        알려 주시면 검토 후 정정합니다. 실제 청약 참여 직전에는 청약홈 공고문 원본을 다시 확인해 주세요.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. 즐겨찾기·검색 기록은 어디에 저장되나요?</p>
+      <p class="faq-a">
+        A. 앱이나 브라우저의 기기 내 저장소에만 보관됩니다. 서버로 전송되지 않으며, 앱 삭제 또는
+        브라우저 데이터 삭제 시 함께 사라집니다. 자세한 내용은
+        <a href="/privacy.html">개인정보 보호정책</a>을 참고해 주세요.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. 계정을 만들어야 하나요?</p>
+      <p class="faq-a">
+        A. 아니요. 청약노트는 회원가입 없이 모든 기능을 사용할 수 있습니다. 이름·이메일·전화번호
+        등 개인정보를 수집하지 않습니다.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. iOS 앱에 광고가 있나요?</p>
+      <p class="faq-a">
+        A. iOS 앱은 광고를 표시하지 않으며, 광고 식별자(IDFA)도 사용하지 않습니다. 추적 권한
+        요청 팝업도 표시되지 않습니다.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Q. 푸시 알림 토큰 같은 정보를 삭제하고 싶어요.</p>
+      <p class="faq-a">
+        A. 앱 알림을 비활성화하거나 앱을 삭제하면 다음 발송 시도에서 토큰이 자동으로 폐기됩니다.
+        즉시 삭제를 원하시면 <a href="mailto:contact@apt-note.com">contact@apt-note.com</a> 으로
+        요청해 주세요.
+      </p>
+    </div>
+
+    <h2>문의 채널</h2>
+    <div class="contact-card">
+      <strong>이메일</strong>
+      <a href="mailto:contact@apt-note.com">contact@apt-note.com</a><br>
+      운영자: 정과장의 청약노트<br>
+      응답 시간: 영업일 기준 24시간 이내
+    </div>
+
+    <p>문의 시 다음 정보를 함께 적어 주시면 더 빠르게 도와드릴 수 있습니다.</p>
+    <ul>
+      <li>사용 기기(예: iPhone 15, iOS 18.4 / Android 14 Galaxy S24)</li>
+      <li>앱 버전(앱 하단 설정 화면에서 확인 가능)</li>
+      <li>문제가 발생한 화면이나 단지명 · 공고일자</li>
+      <li>오류 상황을 보여 주는 스크린샷(선택)</li>
+    </ul>
+
+    <h2>관련 링크</h2>
+    <ul>
+      <li><a href="/about.html">운영자 소개</a></li>
+      <li><a href="/editorial-policy.html">검수·운영 정책</a></li>
+      <li><a href="/privacy.html">개인정보 보호정책</a></li>
+      <li><a href="/terms.html">이용약관</a></li>
+    </ul>
+
+    <div class="footer-nav">
+      <a href="/">홈</a>
+      <a href="/privacy.html">개인정보 보호정책</a>
+      <a href="/terms.html">이용약관</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
