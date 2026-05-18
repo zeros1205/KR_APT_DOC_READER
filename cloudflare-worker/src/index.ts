@@ -21,7 +21,9 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-    const path = url.pathname;
+    // 클라이언트가 origin 끝에 trailing slash 를 붙여 보낸 경우(//push/dispatch 등)
+    // pathname 이 중복 슬래시가 되어 라우트 매칭이 실패한다. 정규화로 방어.
+    const path = url.pathname.replace(/\/+/g, "/");
 
     if (request.method === "OPTIONS") {
       return handleOptions();
@@ -52,7 +54,17 @@ export default {
       update.message?.chat?.id ?? update.callback_query?.message?.chat?.id;
 
     if (String(chatId) !== env.TELEGRAM_CHAT_ID) {
-      return new Response("Unauthorized", { status: 403 });
+      // 디버그: 어떤 경로/메서드가 텔레그램 분기로 빠졌는지 응답에 노출.
+      // 정상 텔레그램 webhook 은 chatId 가 일치하므로 영향 없음.
+      return new Response(
+        JSON.stringify({
+          error: "unauthorized_or_unknown_route",
+          method: request.method,
+          path: url.pathname,
+          normalized_path: path,
+        }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
     }
 
     if (update.callback_query) {
