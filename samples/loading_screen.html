@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정과장의 청약노트 - 로딩</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --c-bg:           #faf9f5;
+    --c-dark:         #2c2925;
+    --c-mid:          #767370;
+    --c-coral:        #d97757;
+    --c-coral-dark:   #b85c38;
+    --c-track:        rgba(44,41,37,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--c-bg);
+  }
+
+  body {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+                 system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    color: var(--c-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .loading-stage {
+    width: min(420px, 86vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .brand {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--c-dark);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--c-mid);
+    letter-spacing: -0.2px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--c-track);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-bar {
+    position: absolute;
+    inset: 0;
+    width: 38%;
+    background: linear-gradient(90deg, var(--c-coral) 0%, var(--c-coral-dark) 100%);
+    border-radius: 999px;
+    transform: translateX(-100%);
+    animation: progress-slide 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  @keyframes progress-slide {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(60%); }
+    100% { transform: translateX(280%); }
+  }
+
+  .progress-caption {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--c-mid);
+    letter-spacing: 0.2px;
+    margin-top: -8px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress-bar {
+      animation: none;
+      transform: translateX(0);
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="loading-stage" role="status" aria-live="polite" aria-label="페이지 로딩 중">
+    <div class="brand">정과장의 청약노트</div>
+    <div class="subtitle">분양 공고를 정리하고 있어요</div>
+    <div class="progress-track" aria-hidden="true">
+      <div class="progress-bar"></div>
+    </div>
+    <div class="progress-caption">잠시만 기다려 주세요</div>
+  </main>
+</body>
+</html>
