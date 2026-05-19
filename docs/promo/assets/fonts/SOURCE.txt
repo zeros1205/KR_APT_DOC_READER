@@ -1,0 +1,3 @@
+Pretendard — https://github.com/orioncactus/pretendard
+License: SIL Open Font License 1.1
+Downloaded version: 1.3.9
