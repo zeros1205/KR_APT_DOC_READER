@@ -7,7 +7,8 @@ NotebookLM의 Play Store 프로모 카드 스타일을 차용한, 정과장의 �
 | 스토어 | 사이즈 | 디렉터리 |
 |-------|--------|---------|
 | Google Play Store | 1080 × 1920 (9:16) | `out/play/` |
-| Apple App Store (iPhone 6.7" 필수 규격) | 1290 × 2796 | `out/ios/` |
+| Apple App Store — iPhone 6.7" (필수) | 1290 × 2796 | `out/ios/` |
+| Apple App Store — iPad 12.9"/13" Pro | 2048 × 2732 (3:4) | `out/ipad/` |
 
 각 세트는 동일한 5장으로 구성됩니다.
 

@@ -68,21 +68,33 @@ class CanvasSpec:
     width: int
     height: int
 
-    # Layout (computed lazily as fractions of width/height)
+    # Layout ratios — overridable per device family. Phone defaults below match
+    # the 9:16 / 9:19.5 portrait look. Tablet specs override with smaller
+    # text/phone ratios because the canvas is much wider relative to its
+    # height (3:4) and a width-bound headline would otherwise dwarf the page.
+    headline_ratio: float = 0.085        # of width
+    headline_top_ratio: float = 0.075    # of height
+    phone_width_ratio: float = 0.74      # of width
+    phone_top_ratio: float = 0.30        # of height
+    intro_headline_ratio: float = 0.1088
+    intro_headline_top_ratio: float = 0.10
+    intro_tagline_ratio: float = 0.0978
+    intro_tagline_top_ratio: float = 0.74
+
     @property
     def out_dir(self) -> Path:
         d = OUT_DIR / self.name
         d.mkdir(parents=True, exist_ok=True)
         return d
 
-    # Headline metrics — sized off width so long Korean lines never overflow
+    # Headline (phone-mockup pages)
     @property
     def headline_size(self) -> int:
-        return int(self.width * 0.085)
+        return int(self.width * self.headline_ratio)
 
     @property
     def headline_top(self) -> int:
-        return int(self.height * 0.075)
+        return int(self.height * self.headline_top_ratio)
 
     @property
     def line_height(self) -> int:
@@ -91,28 +103,28 @@ class CanvasSpec:
     # Phone mockup
     @property
     def phone_width(self) -> int:
-        return int(self.width * 0.74)
+        return int(self.width * self.phone_width_ratio)
 
     @property
     def phone_top(self) -> int:
-        return int(self.height * 0.30)
+        return int(self.height * self.phone_top_ratio)
 
     @property
     def frame_radius(self) -> int:
-        return int(self.width * 0.07)
+        return int(self.phone_width * 0.095)
 
     @property
     def frame_thickness(self) -> int:
-        return int(self.width * 0.018)
+        return int(self.phone_width * 0.024)
 
-    # Text-only intro layout — width-bound for headline width safety
+    # Text-only intro layout
     @property
     def intro_headline_size(self) -> int:
-        return int(self.width * 0.1088)
+        return int(self.width * self.intro_headline_ratio)
 
     @property
     def intro_headline_top(self) -> int:
-        return int(self.height * 0.10)
+        return int(self.height * self.intro_headline_top_ratio)
 
     @property
     def intro_line_height(self) -> int:
@@ -120,11 +132,11 @@ class CanvasSpec:
 
     @property
     def intro_tagline_size(self) -> int:
-        return int(self.width * 0.0978)
+        return int(self.width * self.intro_tagline_ratio)
 
     @property
     def intro_tagline_top(self) -> int:
-        return int(self.height * 0.74)
+        return int(self.height * self.intro_tagline_top_ratio)
 
     @property
     def intro_tagline_line_height(self) -> int:
@@ -133,6 +145,24 @@ class CanvasSpec:
 
 PLAY_SPEC = CanvasSpec(name="play", width=1080, height=1920)
 IOS_SPEC = CanvasSpec(name="ios", width=1290, height=2796)
+
+# iPad 12.9" / 13" Pro portrait (3:4). Currently the accepted iPad screenshot
+# size for App Store Connect. The 3:4 canvas is much wider than a phone, so
+# the layout ratios are smaller to keep the headline and phone mockup at a
+# similar visual size to the iPhone set.
+IPAD_SPEC = CanvasSpec(
+    name="ipad",
+    width=2048,
+    height=2732,
+    headline_ratio=0.058,
+    headline_top_ratio=0.085,
+    phone_width_ratio=0.42,
+    phone_top_ratio=0.28,
+    intro_headline_ratio=0.078,
+    intro_headline_top_ratio=0.13,
+    intro_tagline_ratio=0.072,
+    intro_tagline_top_ratio=0.74,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -407,7 +437,7 @@ def build_set(spec: CanvasSpec) -> None:
 
 
 def main() -> None:
-    for spec in (PLAY_SPEC, IOS_SPEC):
+    for spec in (PLAY_SPEC, IOS_SPEC, IPAD_SPEC):
         build_set(spec)
 
     print("Wrote:")
