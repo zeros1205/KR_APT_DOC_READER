@@ -8,7 +8,7 @@ NotebookLM의 Play Store 프로모 카드 스타일을 차용한, 정과장의 �
 |-------|--------|---------|
 | Google Play Store | 1080 × 1920 (9:16) | `out/play/` |
 | Apple App Store — iPhone 6.7" (필수) | 1290 × 2796 | `out/ios/` |
-| Apple App Store — iPad 12.9"/13" Pro | 2048 × 2732 (3:4) | `out/ipad/` |
+| Apple App Store — iPad 13" Pro (M4) | 2064 × 2752 (3:4) | `out/ipad/` |
 
 각 세트는 동일한 5장으로 구성됩니다.
 
@@ -33,7 +33,12 @@ NotebookLM의 Play Store 프로모 카드 스타일을 차용한, 정과장의 �
 python3 scripts/build_promo_images.py
 ```
 
-원본 스크린샷은 `docs/promo/screenshots/` 에 있으며, 새 스크린샷으로 교체한 뒤 위 명령을 다시 실행하면 두 세트가 동시에 갱신됩니다.
+원본 스크린샷은 `docs/promo/screenshots/` 에 있으며, 새 스크린샷으로 교체한 뒤 위 명령을 다시 실행하면 세 세트가 동시에 갱신됩니다.
+
+- 폰용: `01_home.png` / `02_regions.png` / `03_notify.png` / `05_favorites.png`
+- 태블릿용: `tablet_home.png` / `tablet_region.png` / `tablet_notification.png` / `tablet_favorites.png`
+
+iPad 세트는 13" Pro M4 의 2064×2752 규격을 사용하며, App Store Connect 가 허용하는 다른 사이즈(2048×2732 등)로 바꾸려면 `scripts/build_promo_images.py` 의 `IPAD_SPEC` 의 `width`/`height` 만 수정하면 됩니다.
 
 ## 카피 톤
 
