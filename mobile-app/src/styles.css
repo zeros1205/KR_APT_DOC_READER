@@ -76,71 +76,64 @@ button {
   inset: 0;
   z-index: 1000;
   display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: #f46745;
-  color: #fff;
-}
-
-.intro-background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  grid-template-rows: 1fr auto;
+  background: var(--c-bg);
+  color: var(--c-dark);
+  padding: 0 32px;
 }
 
 .intro-copy {
-  position: relative;
-  z-index: 2;
+  align-self: center;
+  justify-self: center;
   display: grid;
-  gap: 44px;
-  width: min(100%, 430px);
-  margin-top: 4vh;
-  padding: 0 32px;
+  justify-items: center;
+  gap: 28px;
+  width: min(100%, 360px);
   text-align: center;
-  transform: translateY(-4vh);
+  transform: translateY(-6%);
+}
+
+.intro-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(184, 92, 56, 0.18);
+  display: block;
 }
 
 .intro-copy h1 {
-  margin-top: 180px;
-  font-size: clamp(35px, 9vw, 54px);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  text-shadow: 0 4px 16px rgba(135, 39, 20, 0.18);
+  font-size: clamp(28px, 7.5vw, 34px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  color: var(--c-dark);
   word-break: keep-all;
 }
 
 .intro-copy p {
-  font-size: clamp(21px, 5.2vw, 31px);
+  font-size: 1rem;
   font-weight: 400;
-  letter-spacing: -0.04em;
-  line-height: 1.55;
-  text-shadow: 0 3px 12px rgba(135, 39, 20, 0.16);
+  line-height: 1.25;
+  color: var(--c-mid);
   word-break: keep-all;
 }
 
 .intro-loading {
-  position: absolute;
-  right: 24px;
-  bottom: calc(70px + env(safe-area-inset-bottom));
-  left: 24px;
-  z-index: 3;
+  align-self: end;
+  justify-self: stretch;
   display: grid;
   justify-items: center;
-  gap: 24px;
-  color: #fff;
-  font-size: 1.375rem;
-  letter-spacing: -0.03em;
+  gap: 14px;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
 }
 
 .intro-progress {
-  width: min(100%, 438px);
-  height: 11px;
+  width: 100%;
+  max-width: 280px;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--c-light-gray);
 }
 
 .intro-progress span {
@@ -148,17 +141,30 @@ button {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  background: #fff;
-  animation: intro-progress 1.5s linear both;
+  background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
   transform-origin: left center;
+  animation: intro-progress 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.intro-loading p {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--c-mid);
 }
 
 @keyframes intro-progress {
-  from {
-    transform: scaleX(0.08);
+  0% {
+    transform: scaleX(0.05);
+    opacity: 0.85;
   }
-  to {
+  60% {
+    transform: scaleX(0.95);
+    opacity: 1;
+  }
+  100% {
     transform: scaleX(1);
+    opacity: 0.85;
   }
 }
 
@@ -1588,30 +1594,6 @@ button {
     radial-gradient(circle at 34% 22%, rgba(255, 255, 255, 0.34) 0 18%, transparent 19%),
     linear-gradient(145deg, #4f5650 0%, #2c2925 100%);
   box-shadow: 0 18px 36px rgba(44, 41, 37, 0.3);
-}
-
-/* 태블릿·폰 가로모드: 세로 배경 이미지가 중앙 크롭되어 상단 아이콘이 잘리는 문제 수정 */
-@media (orientation: landscape) {
-  .intro-background {
-    object-position: top center;
-  }
-
-  .intro-copy {
-    align-self: end;
-    margin-top: 0;
-    margin-bottom: calc(160px + env(safe-area-inset-bottom));
-    transform: none;
-    gap: 12px;
-  }
-
-  .intro-copy h1 {
-    margin-top: 0;
-    font-size: clamp(24px, 4.5vh, 40px);
-  }
-
-  .intro-copy p {
-    font-size: clamp(14px, 2.5vh, 22px);
-  }
 }
 
 @media (max-width: 580px) {

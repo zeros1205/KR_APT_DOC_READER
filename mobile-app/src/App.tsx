@@ -21,7 +21,6 @@ import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
-import introBackground from "./assets/intro_without_text.png";
 import {
   defaultSettings,
   loadFavorites,
@@ -888,8 +887,8 @@ function App() {
 function IntroScreen() {
   return (
     <section className="intro-screen" aria-label="앱 시작 화면">
-      <img className="intro-background" src={introBackground} alt="" />
       <div className="intro-copy" aria-hidden="true">
+        <img className="intro-logo" src="/app_logo_80x80_rounded.png" alt="" />
         <h1>정과장의 청약노트</h1>
         <p>
           복잡한 아파트 공고문,

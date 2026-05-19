@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>로딩 화면 샘플 — 정과장의 청약노트</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    />
+    <style>
+      :root {
+        --c-bg: #fffaf3;
+        --c-surface: #ffffff;
+        --c-dark: #2c2925;
+        --c-mid: #767370;
+        --c-soft: #e8e6dc;
+        --c-coral: #d97757;
+        --c-coral-dark: #b85c38;
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+          "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background: #efeae1;
+        display: grid;
+        place-items: center;
+        padding: 32px 16px;
+        color: var(--c-dark);
+      }
+
+      .preview-wrap {
+        display: grid;
+        gap: 18px;
+        justify-items: center;
+      }
+
+      .preview-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--c-mid);
+        letter-spacing: 0.04em;
+      }
+
+      /* iPhone 14-ish frame to preview the loading screen at phone proportions */
+      .phone-frame {
+        position: relative;
+        width: min(390px, 92vw);
+        aspect-ratio: 390 / 844;
+        border-radius: 44px;
+        background: #1c1b18;
+        padding: 12px;
+        box-shadow: 0 28px 80px rgba(28, 27, 24, 0.28), 0 4px 12px rgba(28, 27, 24, 0.18);
+      }
+
+      .phone-screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 34px;
+        overflow: hidden;
+        background: var(--c-bg);
+      }
+
+      /* ---- Loading screen itself ---- */
+      .intro-screen {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        background: var(--c-bg);
+        color: var(--c-dark);
+        padding: 0 32px;
+      }
+
+      .intro-copy {
+        align-self: center;
+        justify-self: center;
+        display: grid;
+        justify-items: center;
+        gap: 28px;
+        text-align: center;
+        max-width: 320px;
+        transform: translateY(-6%);
+      }
+
+      .intro-logo {
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+        box-shadow: 0 8px 24px rgba(184, 92, 56, 0.18);
+        display: block;
+      }
+
+      .intro-copy h1 {
+        font-size: clamp(28px, 7.5vw, 34px);
+        font-weight: 700;
+        letter-spacing: -1.5px;
+        line-height: 1.05;
+        color: var(--c-dark);
+        word-break: keep-all;
+      }
+
+      .intro-copy p {
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.25;
+        color: var(--c-mid);
+        word-break: keep-all;
+      }
+
+      .intro-loading {
+        align-self: end;
+        justify-self: stretch;
+        display: grid;
+        justify-items: center;
+        gap: 14px;
+        padding-bottom: calc(56px + env(safe-area-inset-bottom));
+      }
+
+      .intro-progress {
+        width: 100%;
+        max-width: 280px;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: var(--c-soft);
+      }
+
+      .intro-progress span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--c-coral) 0%, var(--c-coral-dark) 100%);
+        transform-origin: left center;
+        animation: intro-progress 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+
+      .intro-loading p {
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        color: var(--c-mid);
+      }
+
+      @keyframes intro-progress {
+        0% {
+          transform: scaleX(0.05);
+          opacity: 0.85;
+        }
+        60% {
+          transform: scaleX(0.95);
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(1);
+          opacity: 0.85;
+        }
+      }
+
+      /* Helper caption */
+      .caption {
+        max-width: 380px;
+        text-align: center;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--c-mid);
+      }
+
+      .caption strong {
+        color: var(--c-dark);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="preview-wrap">
+      <div class="preview-label">로딩 화면 시안 — 크림 배경 + 코랄 프로그레스</div>
+
+      <div class="phone-frame" role="img" aria-label="앱 시작 로딩 화면 미리보기">
+        <div class="phone-screen">
+          <section class="intro-screen" aria-label="앱 시작 화면">
+            <div class="intro-copy">
+              <img
+                class="intro-logo"
+                src="../mobile-app/src/assets/app_logo_80x80_rounded.png"
+                alt="정과장의 청약노트 로고"
+              />
+              <h1>정과장의 청약노트</h1>
+              <p>
+                복잡한 아파트 공고문,<br />
+                쉽게 정리해드려요.
+              </p>
+            </div>
+
+            <div class="intro-loading" aria-live="polite">
+              <div class="intro-progress" aria-hidden="true">
+                <span></span>
+              </div>
+              <p>로딩 중...</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <p class="caption">
+        배경: <strong>#fffaf3</strong> (크림) · 본문: <strong>#2c2925</strong> /
+        <strong>#767370</strong> (다크/미드 그레이) · 프로그레스:
+        <strong>#d97757 → #b85c38</strong> (홈 카드 NEW 그라데이션과 동일)
+        <br />
+        구버전 빌딩 아이콘과 스카이라인 패턴은 제거했고, 브랜드 로고만 남겼습니다.
+      </p>
+    </div>
+  </body>
+</html>
