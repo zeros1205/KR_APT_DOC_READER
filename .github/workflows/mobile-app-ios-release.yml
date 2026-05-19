@@ -322,24 +322,44 @@ jobs:
 
       - name: Publish app-version.json to site
         if: ${{ inputs.upload_to_testflight }}
+        env:
+          IOS_VERSION_NAME: ${{ inputs.version_name }}
         run: |
           set -euo pipefail
-          mkdir -p output
-          if [ ! -s output/app-version.json ]; then
-            echo '{}' > output/app-version.json
-          fi
-          # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
-          tmp="$(mktemp)"
-          jq --arg v "${{ inputs.version_name }}" '.ios = $v' output/app-version.json > "$tmp"
-          mv "$tmp" output/app-version.json
-
-          if git diff --quiet -- output/app-version.json; then
-            echo "app-version.json unchanged; skipping commit."
-            exit 0
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/app-version.json
-          git commit -m "chore(mobile): publish app-version.json ios=${{ inputs.version_name }}"
-          git push origin HEAD:main
+
+          # 빌드 도중 main 이 다른 워크플로우(Android 릴리스 등)에 의해 갱신될 수 있으므로
+          # fetch → reset → jq 재패치 → push 를 최대 5회 재시도한다.
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            mkdir -p output
+            if [ ! -s output/app-version.json ]; then
+              echo '{}' > output/app-version.json
+            fi
+            # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
+            tmp="$(mktemp)"
+            jq --arg v "$IOS_VERSION_NAME" '.ios = $v' output/app-version.json > "$tmp"
+            mv "$tmp" output/app-version.json
+
+            if git diff --quiet -- output/app-version.json; then
+              echo "app-version.json already has ios=$IOS_VERSION_NAME; nothing to publish."
+              exit 0
+            fi
+
+            git add output/app-version.json
+            git commit -m "chore(mobile): publish app-version.json ios=$IOS_VERSION_NAME"
+
+            if git push origin HEAD:main; then
+              echo "Published app-version.json on attempt $attempt."
+              exit 0
+            fi
+
+            echo "::warning::Push rejected on attempt $attempt; refetching main and retrying..."
+            sleep $((attempt * 2))
+          done
+
+          echo "::error::Failed to publish app-version.json after 5 attempts."
+          exit 1
