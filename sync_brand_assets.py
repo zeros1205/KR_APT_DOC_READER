@@ -23,9 +23,6 @@ ASSET_MAP = [
     ("app_logo_1024x1024_rounded.png", "app_logo_1024x1024_rounded.png"),
 ]
 
-# Backward-compatible output name used by older generated pages.
-LEGACY_LOGO_TARGET = "jung_reader_logo.png"
-
 
 def main() -> None:
     if not SOURCE_DIR.exists():
@@ -38,11 +35,6 @@ def main() -> None:
         if not source.exists():
             continue
         shutil.copy2(source, OUTPUT_DIR / target_name)
-        copied += 1
-
-    logo = SOURCE_DIR / "app_logo_80x80_rounded.png"
-    if logo.exists():
-        shutil.copy2(logo, OUTPUT_DIR / LEGACY_LOGO_TARGET)
         copied += 1
 
     print(f"[brand-assets] copied={copied} output={OUTPUT_DIR}")
