@@ -37,8 +37,12 @@ FONT_DIR = ROOT / "docs" / "promo" / "assets" / "fonts"
 PRETENDARD_BLACK = str(FONT_DIR / "Pretendard-Black.otf")
 PRETENDARD_EXTRABOLD = str(FONT_DIR / "Pretendard-ExtraBold.otf")
 PRETENDARD_BOLD = str(FONT_DIR / "Pretendard-Bold.otf")
+PRETENDARD_SEMIBOLD = str(FONT_DIR / "Pretendard-SemiBold.otf")
 PRETENDARD_MEDIUM = str(FONT_DIR / "Pretendard-Medium.otf")
 PRETENDARD_REGULAR = str(FONT_DIR / "Pretendard-Regular.otf")
+
+# Active headline weight — Pretendard SemiBold (600)
+HEADLINE_FACE = PRETENDARD_SEMIBOLD
 EMOJI_FONT = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
 
 # ---------------------------------------------------------------------------
@@ -288,8 +292,8 @@ def new_canvas(spec: CanvasSpec) -> Image.Image:
 
 def build_promo_intro(spec: CanvasSpec, out_path: Path) -> None:
     canvas = new_canvas(spec)
-    headline_font = kfont(PRETENDARD_BLACK, spec.intro_headline_size)
-    tagline_font = kfont(PRETENDARD_BLACK, spec.intro_tagline_size)
+    headline_font = kfont(HEADLINE_FACE, spec.intro_headline_size)
+    tagline_font = kfont(HEADLINE_FACE, spec.intro_tagline_size)
     emoji = emoji_font(spec.intro_headline_size - 8)
 
     lines = [
@@ -322,7 +326,7 @@ def build_promo_with_phone(
     screenshot: Path,
 ) -> None:
     canvas = new_canvas(spec)
-    body = kfont(PRETENDARD_BLACK, spec.headline_size)
+    body = kfont(HEADLINE_FACE, spec.headline_size)
     emoji = emoji_font(spec.headline_size - 8)
     draw_headline(canvas, headline_lines, body, emoji,
                   top=spec.headline_top, line_height=spec.line_height)
