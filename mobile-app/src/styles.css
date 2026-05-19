@@ -1590,6 +1590,30 @@ button {
   box-shadow: 0 18px 36px rgba(44, 41, 37, 0.3);
 }
 
+/* 태블릿·폰 가로모드: 세로 배경 이미지가 중앙 크롭되어 상단 아이콘이 잘리는 문제 수정 */
+@media (orientation: landscape) {
+  .intro-background {
+    object-position: top center;
+  }
+
+  .intro-copy {
+    align-self: end;
+    margin-top: 0;
+    margin-bottom: calc(160px + env(safe-area-inset-bottom));
+    transform: none;
+    gap: 12px;
+  }
+
+  .intro-copy h1 {
+    margin-top: 0;
+    font-size: clamp(24px, 4.5vh, 40px);
+  }
+
+  .intro-copy p {
+    font-size: clamp(14px, 2.5vh, 22px);
+  }
+}
+
 @media (max-width: 580px) {
   :root {
     --front-header-height: 56px;
