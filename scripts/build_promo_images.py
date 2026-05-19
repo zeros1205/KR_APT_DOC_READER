@@ -74,7 +74,7 @@ class CanvasSpec:
     # Headline metrics — sized off width so long Korean lines never overflow
     @property
     def headline_size(self) -> int:
-        return int(self.width * 0.10)
+        return int(self.width * 0.085)
 
     @property
     def headline_top(self) -> int:
@@ -104,7 +104,7 @@ class CanvasSpec:
     # Text-only intro layout — width-bound for headline width safety
     @property
     def intro_headline_size(self) -> int:
-        return int(self.width * 0.128)
+        return int(self.width * 0.1088)
 
     @property
     def intro_headline_top(self) -> int:
@@ -116,7 +116,7 @@ class CanvasSpec:
 
     @property
     def intro_tagline_size(self) -> int:
-        return int(self.width * 0.115)
+        return int(self.width * 0.0978)
 
     @property
     def intro_tagline_top(self) -> int:
