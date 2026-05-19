@@ -81,6 +81,10 @@ class CanvasSpec:
     intro_tagline_ratio: float = 0.0978
     intro_tagline_top_ratio: float = 0.74
 
+    # Device mockup style — phones get a chunky iPhone-like frame, tablets get
+    # a thinner bezel with a tighter corner radius (closer to iPad geometry).
+    tablet_mockup: bool = False
+
     @property
     def out_dir(self) -> Path:
         d = OUT_DIR / self.name
@@ -111,11 +115,15 @@ class CanvasSpec:
 
     @property
     def frame_radius(self) -> int:
-        return int(self.phone_width * 0.095)
+        # Tablets have a tighter corner radius than phones
+        ratio = 0.045 if self.tablet_mockup else 0.095
+        return int(self.phone_width * ratio)
 
     @property
     def frame_thickness(self) -> int:
-        return int(self.phone_width * 0.024)
+        # iPad-style devices have noticeably thinner bezels
+        ratio = 0.014 if self.tablet_mockup else 0.024
+        return int(self.phone_width * ratio)
 
     # Text-only intro layout
     @property
@@ -146,23 +154,45 @@ class CanvasSpec:
 PLAY_SPEC = CanvasSpec(name="play", width=1080, height=1920)
 IOS_SPEC = CanvasSpec(name="ios", width=1290, height=2796)
 
-# iPad 12.9" / 13" Pro portrait (3:4). Currently the accepted iPad screenshot
-# size for App Store Connect. The 3:4 canvas is much wider than a phone, so
-# the layout ratios are smaller to keep the headline and phone mockup at a
-# similar visual size to the iPhone set.
+# iPad 13" Pro (M4) portrait — current App Store Connect required spec.
+# App Store accepts 2064×2752, 2752×2064, 2048×2732 or 2732×2048; this uses
+# the newest 13" recommended size. Tablet screenshots (2:3 aspect) sit in a
+# thinner iPad-style bezel.
 IPAD_SPEC = CanvasSpec(
     name="ipad",
-    width=2048,
-    height=2732,
+    width=2064,
+    height=2752,
     headline_ratio=0.058,
-    headline_top_ratio=0.085,
-    phone_width_ratio=0.42,
-    phone_top_ratio=0.28,
+    headline_top_ratio=0.075,
+    phone_width_ratio=0.55,
+    phone_top_ratio=0.26,
     intro_headline_ratio=0.078,
     intro_headline_top_ratio=0.13,
     intro_tagline_ratio=0.072,
     intro_tagline_top_ratio=0.74,
+    tablet_mockup=True,
 )
+
+
+# Screenshot lookup. Phone and tablet screenshots have different filenames
+# in docs/promo/screenshots/, so each device family has its own mapping.
+PHONE_SCREENS = {
+    "regions": "02_regions.png",
+    "home": "01_home.png",
+    "notify": "03_notify.png",
+    "favorites": "05_favorites.png",
+}
+TABLET_SCREENS = {
+    "regions": "tablet_region.png",
+    "home": "tablet_home.png",
+    "notify": "tablet_notification.png",
+    "favorites": "tablet_favorites.png",
+}
+
+
+def screenshot_for(spec: CanvasSpec, key: str) -> Path:
+    table = TABLET_SCREENS if spec.tablet_mockup else PHONE_SCREENS
+    return SCREENS_DIR / table[key]
 
 
 # ---------------------------------------------------------------------------
@@ -384,7 +414,7 @@ def build_set(spec: CanvasSpec) -> None:
                 Segment("📍", is_emoji=True),
             ]),
         ],
-        screenshot=SCREENS_DIR / "02_regions.png",
+        screenshot=screenshot_for(spec, "regions"),
     )
 
     build_promo_with_phone(
@@ -400,7 +430,7 @@ def build_set(spec: CanvasSpec) -> None:
                 Segment("📑", is_emoji=True),
             ]),
         ],
-        screenshot=SCREENS_DIR / "01_home.png",
+        screenshot=screenshot_for(spec, "home"),
     )
 
     build_promo_with_phone(
@@ -416,7 +446,7 @@ def build_set(spec: CanvasSpec) -> None:
                 Segment("🔔", is_emoji=True),
             ]),
         ],
-        screenshot=SCREENS_DIR / "03_notify.png",
+        screenshot=screenshot_for(spec, "notify"),
     )
 
     build_promo_with_phone(
@@ -432,7 +462,7 @@ def build_set(spec: CanvasSpec) -> None:
                 Segment("⭐", is_emoji=True),
             ]),
         ],
-        screenshot=SCREENS_DIR / "05_favorites.png",
+        screenshot=screenshot_for(spec, "favorites"),
     )
 
 
