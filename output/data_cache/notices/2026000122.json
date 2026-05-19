@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n042.9802A타입 | 전용 60.7276㎡ | 일반 1세대 | 특별 2세대 | 분양가 39100만원\n042.9802B타입 | 전용 60.7276㎡ | 일반 4세대 | 특별 3세대 | 분양가 39100만원\n042.9802C타입 | 전용 60.7276㎡ | 일반 1세대 | 특별 1세대 | 분양가 39100만원\n059.9026 타입 | 전용 84.5339㎡ | 일반 16세대 | 특별 16세대 | 분양가 57210만원\n071.9700 타입 | 전용 101.1839㎡ | 일반 2세대 | 특별 2세대 | 분양가 67140만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-19T23:26:06.873745"
+    "collected_at": "2026-05-19T23:26:06.873745",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "오정613가로주택정비사업조합",
@@ -205,5 +210,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "1년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-20T08:37:00+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-20T08:37:00+09:00"
+  }
 }
