@@ -39,6 +39,16 @@ TARGETS: list[tuple[str, int, int]] = [
     # ── 모바일 앱 내부 자산 ────────────────────────────────────
     ("mobile-app/src/assets/app_logo_80x80_rounded.png", 80, 80),
 
+    # ── Android Adaptive Icon foreground (108dp base, dpi 별 px) ──
+    # Android 8+ 에서 시스템이 자동 마스크를 적용. 외곽 ~17% 가 잘리므로
+    # source 의 텍스트가 중앙 66% 안에 있어야 함. 본 소스 PNG 는 텍스트가
+    # 안전 영역 안에 위치하므로 그대로 리사이즈 사용.
+    ("mobile-app/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png", 108, 108),
+    ("mobile-app/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png", 162, 162),
+    ("mobile-app/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png", 216, 216),
+    ("mobile-app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png", 324, 324),
+    ("mobile-app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png", 432, 432),
+
     # ── iOS AppIcon.appiconset (Universal 1장 + 명시 사이즈) ──
     ("mobile-app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png", 1024, 1024),
     ("mobile-app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-20@2x.png", 40, 40),
