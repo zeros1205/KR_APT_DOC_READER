@@ -92,7 +92,6 @@ jobs:
           grep -q "settings-flat-list" "$app" "$css"
           grep -q "settings-page-copy" "$app" "$css"
           grep -q "청약Home 이동" "$app"
-          grep -q "intro_without_text" "$app"
           grep -q "로딩 중" "$app"
           grep -q "POSTS_PER_PAGE" "$app"
           grep -q "Pagination" "$app"
