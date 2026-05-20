@@ -65,10 +65,14 @@ cd android
 `src/admob.ts` 가 `@capacitor-community/admob` 을 동적 import 로 감싸 iOS/Android 공통으로 배너를 띄웁니다.
 
 - 배너 표시 시점: 인트로/온보딩/상세/종료 다이얼로그를 제외한 home / favorites / settings 뷰
-- 종료 다이얼로그: home 뷰에서 시스템 백버튼 누르면 표시. 화면 중앙에 Medium Rectangle (300x250) 광고 노출 + "돌아가기" / "앱 종료하기" 버튼
+- 종료 다이얼로그 (Android 백버튼 전용): home 뷰에서 시스템 백버튼 누르면 표시. 화면 중앙에 Medium Rectangle (300x250) 광고 노출 + "돌아가기" / "앱 종료하기" 버튼. iOS 는 시스템 백버튼이 없어 트리거되지 않음.
+- 앱 오프닝 광고: 콜드 스타트 직후 (인트로 사라진 뒤 800ms) + foreground 복귀 시. 직전 표시로부터 4 시간 룰
+- 전면 광고: 상세 페이지 진입 카운터가 10 의 배수 + 직전 광고로부터 30 분 경과 시 1 회. 청약Home 외부 링크 카드는 카운터 미증가
 - 광고 단위 ID 우선순위: `.env` 의 `VITE_ADMOB_*_ID_*` → `src/admob.ts` 상단의 `PRODUCTION_*` 상수 → Google 공개 테스트 ID
   - iOS 하단 배너: `ca-app-pub-8234120897033274/2306903637`
-  - iOS Medium Rectangle (종료 다이얼로그): `ca-app-pub-8234120897033274/1061800806`
+  - iOS Medium Rectangle (종료 다이얼로그): `ca-app-pub-8234120897033274/1061800806` (네이티브 광고 고급형)
+  - iOS 전면 광고: `ca-app-pub-8234120897033274/3304820769`
+  - iOS 앱 오프닝: `ca-app-pub-8234120897033274/6142737093`
 - iOS 앱 ID: `ios/App/App/Info.plist` 의 `GADApplicationIdentifier` 키에 직접 명시 (`ca-app-pub-8234120897033274~4486344416`)
 - ATT(App Tracking Transparency): iOS 14.5+ 에서 마운트 시 1 회 요청, 거부 시 비추적 광고로 자동 폴백
 - `VITE_ADMOB_USE_TEST=true` 또는 dev 빌드면 강제로 Google 공개 테스트 광고 사용

@@ -26,10 +26,15 @@ import {
   hideMediumRectangle,
   initializeAdMob,
   isAdMobSupported,
+  prepareAppOpen,
+  prepareInterstitial,
   requestTrackingConsent,
+  showAppOpen,
   showBanner,
+  showInterstitial,
   showMediumRectangle
 } from "./admob";
+import { Preferences } from "@capacitor/preferences";
 import {
   defaultSettings,
   loadFavorites,
@@ -83,6 +88,57 @@ async function openStorePage(): Promise<void> {
 }
 const POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
+
+// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰, Interstitial 은 상세 10 회 + 30 분 룰.
+const APP_OPEN_LAST_KEY = "apt-note:last_app_open_at";
+const APP_OPEN_MIN_GAP_MS = 4 * 60 * 60 * 1000;
+const INTERSTITIAL_COUNTER_KEY = "apt-note:detail_view_count";
+const INTERSTITIAL_LAST_KEY = "apt-note:last_interstitial_at";
+const INTERSTITIAL_INTERVAL = 10;
+const INTERSTITIAL_MIN_GAP_MS = 30 * 60 * 1000;
+
+async function readNumberPref(key: string): Promise<number> {
+  try {
+    const raw = (await Preferences.get({ key })).value;
+    if (!raw) return 0;
+    const num = Number(raw);
+    return Number.isFinite(num) ? num : 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function writeNumberPref(key: string, value: number): Promise<void> {
+  try {
+    await Preferences.set({ key, value: String(value) });
+  } catch {
+    // ignore
+  }
+}
+
+async function maybeShowAppOpenAd(): Promise<void> {
+  if (!isAdMobSupported()) return;
+  const lastTs = await readNumberPref(APP_OPEN_LAST_KEY);
+  const now = Date.now();
+  if (now - lastTs < APP_OPEN_MIN_GAP_MS) return;
+  const shown = await showAppOpen();
+  if (shown) await writeNumberPref(APP_OPEN_LAST_KEY, now);
+}
+
+async function maybeShowInterstitial(): Promise<void> {
+  if (!isAdMobSupported()) return;
+  const nextCount = (await readNumberPref(INTERSTITIAL_COUNTER_KEY)) + 1;
+  await writeNumberPref(INTERSTITIAL_COUNTER_KEY, nextCount);
+  if (nextCount < INTERSTITIAL_INTERVAL) return;
+  const lastTs = await readNumberPref(INTERSTITIAL_LAST_KEY);
+  const now = Date.now();
+  if (now - lastTs < INTERSTITIAL_MIN_GAP_MS) return;
+  const shown = await showInterstitial();
+  if (shown) {
+    await writeNumberPref(INTERSTITIAL_LAST_KEY, now);
+    await writeNumberPref(INTERSTITIAL_COUNTER_KEY, 0);
+  }
+}
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -238,8 +294,25 @@ function App() {
     void (async () => {
       await requestTrackingConsent();
       await initializeAdMob();
+      // 전면/앱 오프닝 광고는 미리 로드해두면 첫 호출 시 광고가 즉시 표시됨.
+      void prepareInterstitial();
+      void prepareAppOpen();
     })();
   }, []);
+
+  // 콜드 스타트 시 App Open 광고 트리거. 인트로 사라진 후, 온보딩이 떠있지 않을 때 1 회만.
+  const appOpenColdStartTriggeredRef = useRef(false);
+  useEffect(() => {
+    if (appOpenColdStartTriggeredRef.current) return;
+    if (!isAdMobSupported()) return;
+    if (loading || introVisible) return;
+    if (!settingsLoadedRef.current) return;
+    if (shouldShowOnboarding(settings)) return;
+    appOpenColdStartTriggeredRef.current = true;
+    // 광고 로드 시간 확보 위해 약간 지연.
+    const timer = window.setTimeout(() => void maybeShowAppOpenAd(), 800);
+    return () => window.clearTimeout(timer);
+  }, [loading, introVisible, settings]);
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
@@ -308,7 +381,11 @@ function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     const handle = CapacitorApp.addListener("appStateChange", ({ isActive }) => {
-      if (isActive) void refreshPosts();
+      if (isActive) {
+        void refreshPosts();
+        // foreground 복귀 시 App Open 광고. 4 시간 룰 충족 시에만 표시.
+        void maybeShowAppOpenAd();
+      }
     });
     return () => {
       void handle.then((h) => h.remove());
@@ -736,6 +813,8 @@ function App() {
       await Browser.open({ url: absolutePostUrl(targetUrl) });
       return;
     }
+    // 상세 진입 빈도(10 회) + 직전 광고로부터 30 분 경과 시 Interstitial 노출.
+    await maybeShowInterstitial();
     setDetailPage({ url: absolutePostUrl(url), title, card, returnView: view === "detail" ? "home" : view });
     setView("detail");
   }
