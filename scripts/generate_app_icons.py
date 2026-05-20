@@ -31,22 +31,13 @@ DEFAULT_ANDROID_SRC = ROOT / "mobile-app/assets/icon-only.png"
 DEFAULT_IOS_SRC = ROOT / "input/logo_img/ios_icon_1024.png"
 
 # (출력 경로, 가로, 세로)
+#
+# NOTE: 웹 파비콘/PWA/헤더 로고(output/) 와 mobile-app/src/assets/ 의 헤더 로고는
+# 더 이상 이 스크립트로 생성하지 않는다. Pillow 버전/환경에 따라 같은 소스에서도
+# 다른 PNG 가 나오는 회귀가 있었고(2026-05-19 `77bdcfb`), 디자이너가 직접 제작한
+# 자산이 output/ 에 commit 되어 있으므로 스크립트 출력으로 덮어쓰면 안 된다.
+# 이 스크립트는 Android Adaptive Icon foreground (네이티브 빌드 필수) 에만 사용.
 ANDROID_TARGETS: list[tuple[str, int, int]] = [
-    # ── 웹 파비콘 / PWA ────────────────────────────────────────
-    ("output/favicon-16x16.png", 16, 16),
-    ("output/favicon-32x32.png", 32, 32),
-    ("output/apple-touch-icon.png", 180, 180),
-    ("output/android-chrome-192x192.png", 192, 192),
-    ("output/android-chrome-512x512.png", 512, 512),
-
-    # ── 웹 헤더 로고 ───────────────────────────────────────────
-    ("output/app_logo_80x80_rounded.png", 80, 80),
-    ("output/app_logo_1024x1024_rounded.png", 1024, 1024),
-    ("output/jung_reader_logo.png", 256, 256),
-
-    # ── 모바일 앱 내부 자산 ────────────────────────────────────
-    ("mobile-app/src/assets/app_logo_80x80_rounded.png", 80, 80),
-
     # ── Android Adaptive Icon foreground (108dp base, dpi 별 px) ──
     # Android 8+ 에서 시스템이 자동 마스크를 적용. 외곽 ~17% 가 잘리므로
     # source 의 텍스트가 중앙 66% 안에 있어야 함.
