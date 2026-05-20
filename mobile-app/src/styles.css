@@ -669,6 +669,66 @@ button {
   pointer-events: none;
 }
 
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: min(280px, 88vw);
+  background: var(--c-surface);
+  border: 1px solid var(--c-light-gray);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(36, 32, 28, 0.14);
+  z-index: 90;
+  max-height: 260px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.search-suggestion {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 12px 14px 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: inherit;
+  min-height: 52px;
+}
+
+.search-suggestion-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.search-suggestion + .search-suggestion {
+  border-top: 1px solid var(--c-light-gray);
+}
+
+.search-suggestion:active {
+  background: var(--c-primary-light);
+}
+
+.search-suggestion-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--c-dark);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-suggestion-meta {
+  font-size: 0.6875rem;
+  color: var(--c-mid);
+  line-height: 1.35;
+}
+
 .web-hero {
   position: relative;
   overflow: hidden;
@@ -795,7 +855,7 @@ button {
 }
 
 .section-search {
-  z-index: 45;
+  z-index: 90;
   flex: 0 1 280px;
 }
 

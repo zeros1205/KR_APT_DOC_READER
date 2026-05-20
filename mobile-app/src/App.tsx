@@ -201,6 +201,8 @@ function App() {
   const [onboardingPage, setOnboardingPage] = useState<1 | 2>(1);
   const cardsRef = useRef<NoticeCard[]>([]);
   const settingsRef = useRef<UserSettings>(defaultSettings);
+  const regionInitializedRef = useRef(false);
+  const homeScrollRef = useRef(0);
 
   useEffect(() => {
     void Promise.all([loadFavorites(), loadSettings()]).then(([savedFavorites, savedSettings]) => {
@@ -220,9 +222,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (view !== "home") return;
+    if (regionInitializedRef.current) return;
+    if (!settingsLoadedRef.current) return;
+    regionInitializedRef.current = true;
     setActiveRegion(settings.regions.length > 0 ? PREFERRED_REGION_KEY : "전체");
-  }, [view, settings.regions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.regions]);
 
   useEffect(() => {
     cardsRef.current = cards;
@@ -692,13 +697,18 @@ function App() {
       await Browser.open({ url: absolutePostUrl(targetUrl) });
       return;
     }
+    homeScrollRef.current = window.scrollY;
     setDetailPage({ url: absolutePostUrl(url), title, card, returnView: view === "detail" ? "home" : view });
     setView("detail");
   }
 
   function goBackFromDetail() {
+    const savedScroll = homeScrollRef.current;
     setView(detailPage?.returnView || "home");
     setDetailPage(null);
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: savedScroll });
+    });
   }
 
   function showToast(message: string) {
@@ -806,15 +816,17 @@ function App() {
         <SiteNav view={view} onMenu={toggleMenu} />
       ) : null}
 
-      {!onboardingVisible && view === "home" && (
+      <div hidden={onboardingVisible || view !== "home"}>
         <HomeView
           activeRegion={activeRegion}
+          allCards={cards}
           cards={filteredCards}
           error={error}
           favoriteIds={favoriteIds}
           loading={loading}
           query={query}
           regions={regionTabs}
+          visible={!onboardingVisible && view === "home"}
           onOpen={openUrl}
           onQuery={setQuery}
           onRefresh={refreshPosts}
@@ -822,7 +834,7 @@ function App() {
           onShare={shareCard}
           onToggleFavorite={toggleFavorite}
         />
-      )}
+      </div>
 
       {!onboardingVisible && view === "favorites" && (
         <FavoritesView
@@ -1223,12 +1235,14 @@ function toAppPostContent(html: string): string {
 
 type HomeProps = {
   activeRegion: string;
+  allCards: NoticeCard[];
   cards: NoticeCard[];
   error: string;
   favoriteIds: Set<string>;
   loading: boolean;
   query: string;
   regions: string[];
+  visible: boolean;
   onOpen: (url: string, title?: string, card?: NoticeCard) => Promise<void>;
   onQuery: (value: string) => void;
   onRefresh: () => Promise<void>;
@@ -1239,14 +1253,27 @@ type HomeProps = {
 
 function HomeView(props: HomeProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [inputFocused, setInputFocused] = useState(false);
   const filterDockRef = useRef<HTMLDivElement | null>(null);
   const totalPages = Math.max(1, Math.ceil(props.cards.length / POSTS_PER_PAGE));
   const visibleCards = props.cards.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
 
-  // 풀투리프레시 — 카드 목록 화면에서만 활성. 이미 로딩 중이면 비활성.
+  const suggestions = useMemo(() => {
+    const q = props.query.trim().toLowerCase();
+    if (!q) return [] as NoticeCard[];
+    const seen = new Set<string>();
+    return props.allCards.filter((card) => {
+      if (seen.has(card.notice_id)) return false;
+      const matches = card.apt_name.toLowerCase().includes(q) || card.region.toLowerCase().includes(q);
+      if (matches) seen.add(card.notice_id);
+      return matches;
+    }).slice(0, 10);
+  }, [props.query, props.allCards]);
+
+  // 풀투리프레시 — 카드 목록 화면에서만 활성. 이미 로딩 중이거나 화면이 숨겨진 경우 비활성.
   const { distance: pullDistance, refreshing: pullRefreshing, armed: pullArmed } = usePullToRefresh({
     onRefresh: props.onRefresh,
-    disabled: props.loading,
+    disabled: props.loading || !props.visible,
   });
 
   useEffect(() => {
@@ -1332,9 +1359,34 @@ function HomeView(props: HomeProps) {
                 className="search-input"
                 value={props.query}
                 onChange={(event) => props.onQuery(event.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setTimeout(() => setInputFocused(false), 150)}
                 placeholder="단지명 검색"
                 autoComplete="off"
               />
+              {inputFocused && suggestions.length > 0 && (
+                <div className="search-suggestions">
+                  {suggestions.map((card) => (
+                    <button
+                      key={card.notice_id}
+                      type="button"
+                      className="search-suggestion"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        props.onQuery("");
+                        void props.onOpen(card.post_url, card.apt_name, card);
+                      }}
+                    >
+                      <span className="search-suggestion-copy">
+                        <span className="search-suggestion-title">{card.apt_name}</span>
+                        <span className="search-suggestion-meta">
+                          {card.region}{card.notice_date ? ` · ${card.notice_date}` : ""}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </label>
           </div>
         </div>
