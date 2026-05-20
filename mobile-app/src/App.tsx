@@ -21,7 +21,15 @@ import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
-import { hideBanner, initializeAdMob, isAdMobSupported, requestTrackingConsent, showBanner } from "./admob";
+import {
+  hideBanner,
+  hideMediumRectangle,
+  initializeAdMob,
+  isAdMobSupported,
+  requestTrackingConsent,
+  showBanner,
+  showMediumRectangle
+} from "./admob";
 import {
   defaultSettings,
   loadFavorites,
@@ -191,7 +199,7 @@ function App() {
   const [installedVersion, setInstalledVersion] = useState(APP_VERSION);
   const [toastMessage, setToastMessage] = useState("");
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
-  const lastHomeBackAtRef = useRef(0);
+  const [exitDialogVisible, setExitDialogVisible] = useState(false);
   const toastTimerRef = useRef<number | null>(null);
   const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
   const pushPromptShownRef = useRef(false);
@@ -235,14 +243,22 @@ function App() {
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
-    // 몰입을 방해하지 않도록 인트로/온보딩/상세 화면에서는 배너를 숨김.
-    const shouldShow = !introVisible && !onboardingVisible && view !== "detail";
-    if (shouldShow) {
-      void showBanner();
-    } else {
-      void hideBanner();
-    }
-  }, [introVisible, onboardingVisible, view]);
+    // 일반 배너와 종료 다이얼로그용 MREC 는 SDK 측 banner view 가 1 개 뿐이므로,
+    // 한 곳에서 순차 처리해 두 view 가 동시에 등록되는 race 를 막는다.
+    void (async () => {
+      if (exitDialogVisible) {
+        await showMediumRectangle();
+        return;
+      }
+      await hideMediumRectangle();
+      const shouldShowBanner = !introVisible && !onboardingVisible && view !== "detail";
+      if (shouldShowBanner) {
+        await showBanner();
+      } else {
+        await hideBanner();
+      }
+    })();
+  }, [introVisible, onboardingVisible, exitDialogVisible, view]);
 
   useEffect(() => {
     cardsRef.current = cards;
@@ -321,6 +337,10 @@ function App() {
       if (onboardingVisible) {
         return;
       }
+      if (exitDialogVisible) {
+        setExitDialogVisible(false);
+        return;
+      }
       if (menuOpen) {
         setMenuOpen(false);
         return;
@@ -366,6 +386,10 @@ function App() {
         window.history.pushState({ navKey: "onboarding-block" }, "");
         return;
       }
+      if (exitDialogVisible) {
+        setExitDialogVisible(false);
+        return;
+      }
       if (menuOpen) {
         setMenuOpen(false);
         return;
@@ -394,7 +418,7 @@ function App() {
       void actionListener.then((handle) => handle.remove());
       window.removeEventListener("popstate", popstateHandler);
     };
-  }, [detailPage, menuOpen, onboardingVisible, settingsPage, view]);
+  }, [detailPage, exitDialogVisible, menuOpen, onboardingVisible, settingsPage, view]);
 
   async function refreshPosts() {
     setLoading(true);
@@ -728,15 +752,13 @@ function App() {
   }
 
   function handleHomeBack() {
-    const now = Date.now();
-    if (now - lastHomeBackAtRef.current < 1800) {
-      lastHomeBackAtRef.current = 0;
-      setToastMessage("");
-      CapacitorApp.exitApp();
-      return;
-    }
-    lastHomeBackAtRef.current = now;
-    showToast("한 번 더 누르면 앱이 종료됩니다.");
+    setToastMessage("");
+    setExitDialogVisible(true);
+  }
+
+  function confirmExitApp() {
+    setExitDialogVisible(false);
+    CapacitorApp.exitApp();
   }
 
   async function shareCard(card: NoticeCard) {
@@ -896,6 +918,13 @@ function App() {
           title={confirmDialog.title}
           onCancel={() => closeConfirmDialog(false)}
           onConfirm={() => closeConfirmDialog(true)}
+        />
+      )}
+
+      {exitDialogVisible && (
+        <ExitDialog
+          onCancel={() => setExitDialogVisible(false)}
+          onConfirm={confirmExitApp}
         />
       )}
 
@@ -1107,6 +1136,37 @@ function ConfirmDialog({
           </button>
           <button className="app-dialog-confirm" onClick={onConfirm}>
             {confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+  // 본 다이얼로그의 중앙 광고 슬롯은 시각적 placeholder.
+  // 실제 광고는 @capacitor-community/admob 의 Medium Rectangle 배너가
+  // 화면 정중앙 native overlay 로 표시되어 이 자리에 겹친다.
+  return (
+    <div className="exit-dialog-backdrop" role="presentation">
+      <section
+        className="exit-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exit-dialog-title"
+      >
+        <header className="exit-dialog-header">
+          <img className="exit-dialog-logo" src="/app_logo_80x80_rounded.png" alt="" />
+          <h2 id="exit-dialog-title">앱을 종료하시겠어요?</h2>
+          <p>분양공고는 매일 새로 업데이트해 둘게요.</p>
+        </header>
+        <div className="exit-dialog-ad-slot" aria-hidden="true" />
+        <div className="exit-dialog-actions">
+          <button className="exit-dialog-cancel" type="button" onClick={onCancel}>
+            돌아가기
+          </button>
+          <button className="exit-dialog-confirm" type="button" onClick={onConfirm}>
+            앱 종료하기
           </button>
         </div>
       </section>
