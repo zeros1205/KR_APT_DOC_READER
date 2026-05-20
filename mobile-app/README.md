@@ -69,18 +69,17 @@ cd android
 권장 흐름:
 1. 빌드 워크플로로 AAB / IPA 산출 → 스토어 업로드
 2. Play 콘솔 / App Store Connect에서 출시 절차 진행
-3. `mobile-app-publish-version.yml` 을 **수동 실행**:
-   - `platform`: ios / android / both
-   - `*_version_name`: 출시한 versionName (예: 1.0.5)
-   - `mode=poll` (기본): 워크플로가 스토어 API를 폴링해 **실제로 라이브**일 때만 commit
-   - `mode=manual`: API 우회. 긴급용 escape hatch
-   - `wait_minutes`: poll 모드에서 라이브 확인까지 최대 대기 분 (기본 30)
+3. 스토어 승인이 떨어지면(앱이 실제 설치 가능 상태일 때) `mobile-app-publish-version.yml` 을 **수동 실행**:
+   - `platform`: ios / android / both (각 스토어 심사 속도가 다르므로 보통 따로 실행)
+   - `mode=auto` (기본): 스토어 API에서 **현재 라이브 버전을 자동 감지** — 버전 입력 불필요
+   - `mode=manual`: API 우회. 긴급용 escape hatch. 이때만 `*_version_name` 입력 필요
 
-판정 기준 (poll 모드):
-- iOS: App Store Connect `appStoreState == READY_FOR_SALE`
-- Android: Play `production` 트랙의 해당 release `status == "completed"` (단계적 출시 도중인 `inProgress`는 라이브로 보지 않음)
+판정 기준 (auto 모드):
+- iOS: App Store Connect 에서 `appStoreState == READY_FOR_SALE` 인 가장 최신 iOS appStoreVersion
+- Android: Play `production` 트랙에서 `status == "completed"` 인 가장 최신 release (단계적 출시 도중인 `inProgress` 는 라이브로 보지 않음)
+- 라이브 버전이 아직 없으면 워크플로가 exit 2 로 실패 → 출시가 끝나면 다시 실행
 
-App.tsx의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 형식·동일·다운그레이드는 모두 "업데이트 없음"으로 안전하게 떨어집니다.
+App.tsx 의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 형식·동일·다운그레이드는 모두 "업데이트 없음"으로 안전하게 떨어집니다.
 
 ### 필요한 GitHub 시크릿
 - iOS: `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_KEY_BASE64` (TestFlight 업로드와 공유)
