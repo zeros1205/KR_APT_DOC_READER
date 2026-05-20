@@ -60,6 +60,27 @@ cd android
 - 커밋 대상: 앱 소스와 네이티브 프로젝트 설정
 - 제외 대상: `node_modules/`, `dist/`, Android build/cache, Capacitor generated assets
 
+## AdMob
+
+`src/admob.ts` 가 `@capacitor-community/admob` 을 동적 import 로 감싸 iOS/Android 공통으로 배너를 띄웁니다.
+
+- 배너 표시 시점: 인트로/온보딩/상세 화면을 제외한 home / favorites / settings 뷰
+- 광고 단위 ID: `.env` 의 `VITE_ADMOB_BANNER_ID_IOS` / `VITE_ADMOB_BANNER_ID_ANDROID` (미설정 시 Google 공개 테스트 ID)
+- iOS 앱 ID: `ios/App/App/Info.plist` 의 `GADApplicationIdentifier` 키에 직접 명시 (`ca-app-pub-8234120897033274~4486344416`)
+- ATT(App Tracking Transparency): iOS 14.5+ 에서 마운트 시 1 회 요청, 거부 시 비추적 광고로 자동 폴백
+- `VITE_ADMOB_USE_TEST=true` 또는 dev 빌드면 강제로 Google 공개 테스트 광고 사용
+
+iOS 빌드 흐름:
+
+```bash
+cd mobile-app
+npm ci
+npm run build
+npx cap sync ios        # Podfile 갱신 + Google Mobile Ads SDK 설치
+cd ios/App && pod install
+npx cap open ios        # Xcode 에서 archive
+```
+
 ## 다음 구현 지점
 
 - Firebase 프로젝트 연결 및 FCM/APNs 토큰 등록

@@ -21,6 +21,7 @@ import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
+import { hideBanner, initializeAdMob, isAdMobSupported, requestTrackingConsent, showBanner } from "./admob";
 import {
   defaultSettings,
   loadFavorites,
@@ -223,6 +224,25 @@ function App() {
     if (view !== "home") return;
     setActiveRegion(settings.regions.length > 0 ? PREFERRED_REGION_KEY : "전체");
   }, [view, settings.regions]);
+
+  useEffect(() => {
+    if (!isAdMobSupported()) return;
+    void (async () => {
+      await requestTrackingConsent();
+      await initializeAdMob();
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!isAdMobSupported()) return;
+    // 몰입을 방해하지 않도록 인트로/온보딩/상세 화면에서는 배너를 숨김.
+    const shouldShow = !introVisible && !onboardingVisible && view !== "detail";
+    if (shouldShow) {
+      void showBanner();
+    } else {
+      void hideBanner();
+    }
+  }, [introVisible, onboardingVisible, view]);
 
   useEffect(() => {
     cardsRef.current = cards;
