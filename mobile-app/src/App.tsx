@@ -320,7 +320,11 @@ function App() {
   useEffect(() => {
     if (!isAdMobSupported()) return;
     // SDK banner view 가 1 개 뿐이므로 모든 모드 결정을 한 곳에서 순차 처리.
-    // 정책(2026-05): 메인(home)/상세/인트로/온보딩은 광고 없음. 즐겨찾기·설정에서만 노출.
+    // 정책(2026-05):
+    //   - 메인(home)/상세/인트로/온보딩: 광고 없음 (초기 retention 보호)
+    //   - 즐겨찾기 빈 화면(메뉴 진입): mrec-bottom (콘텐츠 적은 자리 채움)
+    //   - 즐겨찾기 항목 있음, 설정 메인+모든 서브페이지(알림/관심지역/즐겨찾기 관리),
+    //     설정→즐겨찾기 관리: adaptive (작은 가로 배너 — 설정 영역 큰 광고 부담 완화)
     void (async () => {
       if (introVisible || onboardingVisible) {
         await setBannerMode("none");
@@ -334,14 +338,15 @@ function App() {
         await setBannerMode("none");
         return;
       }
-      if ((view === "favorites" && favorites.length === 0) || view === "settings") {
+      // 메뉴에서 들어간 즐겨찾기에 항목이 0개인 경우만 큰 광고로 빈 공간 채움.
+      // 그 외(설정 영역 전체, 즐겨찾기 항목 있음)는 작은 가로 배너로 통일.
+      if (view === "favorites" && favorites.length === 0) {
         await setBannerMode("mrec-bottom");
         return;
       }
-      // 여기 도달: 즐겨찾기에 항목이 있는 경우.
       await setBannerMode("adaptive");
     })();
-  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length]);
+  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length, settingsPage]);
 
   useEffect(() => {
     cardsRef.current = cards;
@@ -910,8 +915,9 @@ function App() {
       className={[
         "app-shell",
         view === "detail" ? "detail-mode" : "",
-        // 즐겨찾기 빈 페이지/설정 페이지는 하단 광고가 MREC(250px) 으로 커지므로 padding 보정.
-        (view === "settings" || (view === "favorites" && favorites.length === 0)) ? "with-mrec-bottom" : ""
+        // 즐겨찾기 빈 페이지(메뉴 진입) 만 MREC(250px) 로 표시 — padding 추가 보정 대상.
+        // 설정 영역은 작은 가로 배너이므로 기본 padding 으로 충분.
+        (view === "favorites" && favorites.length === 0) ? "with-mrec-bottom" : ""
       ]
         .filter(Boolean)
         .join(" ")}
