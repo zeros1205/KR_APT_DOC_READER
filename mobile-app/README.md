@@ -60,6 +60,32 @@ cd android
 - 커밋 대상: 앱 소스와 네이티브 프로젝트 설정
 - 제외 대상: `node_modules/`, `dist/`, Android build/cache, Capacitor generated assets
 
+## 출시 버전 게시 흐름 (app-version.json)
+
+설정 화면의 "현재 X · 최신 Y · 업데이트" 표기에서 **최신 Y**는 `https://apt-note.com/app-version.json` 한 파일이 결정합니다. 이 파일은 **사용자가 실제로 스토어에서 받을 수 있는 버전**만 가리켜야 합니다. 빌드만 끝났거나 심사 중인 버전을 가리키면 사용자에게 "받을 수 없는 업데이트" 가 보이고, 다운그레이드 광고로도 이어집니다.
+
+규칙은 한 가지: `output/app-version.json`은 **`mobile-app-publish-version.yml` 워크플로만** 변경합니다. 빌드 워크플로(`mobile-app-play-release.yml`, `mobile-app-ios-release.yml`)는 더 이상 이 파일을 건드리지 않습니다.
+
+권장 흐름:
+1. 빌드 워크플로로 AAB / IPA 산출 → 스토어 업로드
+2. Play 콘솔 / App Store Connect에서 출시 절차 진행
+3. `mobile-app-publish-version.yml` 을 **수동 실행**:
+   - `platform`: ios / android / both
+   - `*_version_name`: 출시한 versionName (예: 1.0.5)
+   - `mode=poll` (기본): 워크플로가 스토어 API를 폴링해 **실제로 라이브**일 때만 commit
+   - `mode=manual`: API 우회. 긴급용 escape hatch
+   - `wait_minutes`: poll 모드에서 라이브 확인까지 최대 대기 분 (기본 30)
+
+판정 기준 (poll 모드):
+- iOS: App Store Connect `appStoreState == READY_FOR_SALE`
+- Android: Play `production` 트랙의 해당 release `status == "completed"` (단계적 출시 도중인 `inProgress`는 라이브로 보지 않음)
+
+App.tsx의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 형식·동일·다운그레이드는 모두 "업데이트 없음"으로 안전하게 떨어집니다.
+
+### 필요한 GitHub 시크릿
+- iOS: `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_KEY_BASE64` (TestFlight 업로드와 공유)
+- Android: `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (Play Developer API 전용. Google Cloud에서 서비스 계정 → JSON 키 생성 후, Play Console "사용자 및 권한"에서 해당 서비스 계정 이메일을 초대해 "앱 정보 및 보고서 보기" 권한 부여. read-only)
+
 ## 다음 구현 지점
 
 - Firebase 프로젝트 연결 및 FCM/APNs 토큰 등록

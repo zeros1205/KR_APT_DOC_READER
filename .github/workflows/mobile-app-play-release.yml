@@ -282,29 +282,13 @@ jobs:
           path: mobile-app/android/app/build/outputs/apk/release/app-release-${{ env.RELEASE_VERSION_NAME }}.apk
           retention-days: 30
 
-      - name: Publish app-version.json to site (workflow_dispatch only)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          set -euo pipefail
-          mkdir -p output
-          if [ ! -s output/app-version.json ]; then
-            echo '{}' > output/app-version.json
-          fi
-          # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
-          tmp="$(mktemp)"
-          jq --arg v "$RELEASE_VERSION_NAME" '.android = $v' output/app-version.json > "$tmp"
-          mv "$tmp" output/app-version.json
-
-          if git diff --quiet -- output/app-version.json; then
-            echo "app-version.json unchanged; skipping commit."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/app-version.json
-          git commit -m "chore(mobile): publish app-version.json android=$RELEASE_VERSION_NAME"
-          git push origin HEAD:main
+      # NOTE: app-version.json publish is intentionally NOT done here.
+      # Building an AAB only means we have an artifact, not that users can
+      # install it — Play review can take days, and a build that gets
+      # rejected/withdrawn should never be advertised as "latest". The
+      # `mobile-app-publish-version.yml` workflow polls the Play Developer
+      # API and only updates output/app-version.json once the release is
+      # actually live (status=completed) in the production track.
 
       - name: Upload release verification logs
         uses: actions/upload-artifact@v4
