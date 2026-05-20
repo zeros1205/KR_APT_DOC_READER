@@ -26,11 +26,9 @@ import {
   initializeAdMob,
   isAdMobSupported,
   prepareAppOpen,
-  prepareInterstitial,
   requestTrackingConsent,
   setBannerMode,
-  showAppOpen,
-  showInterstitial
+  showAppOpen
 } from "./admob";
 import { Preferences } from "@capacitor/preferences";
 import {
@@ -87,13 +85,9 @@ async function openStorePage(): Promise<void> {
 const POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
 
-// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰, Interstitial 은 상세 10 회 + 30 분 룰.
+// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰.
 const APP_OPEN_LAST_KEY = "apt-note:last_app_open_at";
 const APP_OPEN_MIN_GAP_MS = 4 * 60 * 60 * 1000;
-const INTERSTITIAL_COUNTER_KEY = "apt-note:detail_view_count";
-const INTERSTITIAL_LAST_KEY = "apt-note:last_interstitial_at";
-const INTERSTITIAL_INTERVAL = 10;
-const INTERSTITIAL_MIN_GAP_MS = 30 * 60 * 1000;
 
 async function readNumberPref(key: string): Promise<number> {
   try {
@@ -121,21 +115,6 @@ async function maybeShowAppOpenAd(): Promise<void> {
   if (now - lastTs < APP_OPEN_MIN_GAP_MS) return;
   const shown = await showAppOpen();
   if (shown) await writeNumberPref(APP_OPEN_LAST_KEY, now);
-}
-
-async function maybeShowInterstitial(): Promise<void> {
-  if (!isAdMobSupported()) return;
-  const nextCount = (await readNumberPref(INTERSTITIAL_COUNTER_KEY)) + 1;
-  await writeNumberPref(INTERSTITIAL_COUNTER_KEY, nextCount);
-  if (nextCount < INTERSTITIAL_INTERVAL) return;
-  const lastTs = await readNumberPref(INTERSTITIAL_LAST_KEY);
-  const now = Date.now();
-  if (now - lastTs < INTERSTITIAL_MIN_GAP_MS) return;
-  const shown = await showInterstitial();
-  if (shown) {
-    await writeNumberPref(INTERSTITIAL_LAST_KEY, now);
-    await writeNumberPref(INTERSTITIAL_COUNTER_KEY, 0);
-  }
 }
 
 type View = "home" | "favorites" | "settings" | "detail";
@@ -297,8 +276,8 @@ function App() {
     void (async () => {
       await requestTrackingConsent();
       await initializeAdMob();
-      // 전면/앱 오프닝 광고는 미리 로드해두면 첫 호출 시 광고가 즉시 표시됨.
-      void prepareInterstitial();
+      // Interstitial 은 정책상 비활성화(상세 진입 시 출력 안 함). prepare 도 호출하지 않아
+      // SDK 가 광고를 미리 로드하지도 않게 둠. 재활성화 시 prepareInterstitial() 추가.
       void prepareAppOpen();
     })();
   }, []);
@@ -321,15 +300,17 @@ function App() {
   // 정책(2026-05):
   //   - 메인(home)/상세/인트로/온보딩: 광고 없음 (초기 retention 보호)
   //   - 즐겨찾기 빈 화면(메뉴 진입): mrec-bottom (콘텐츠 적은 자리 채움)
-  //   - 즐겨찾기 항목 있음, 설정 메인+모든 서브페이지(알림/관심지역/즐겨찾기 관리):
-  //     adaptive (작은 가로 배너 — 설정 영역 큰 광고 부담 완화)
-  const bannerMode: "none" | "adaptive" | "mrec-bottom" | "mrec-center" = useMemo(() => {
+  //   - 설정 메인: large-bottom (LARGE_BANNER 320x100, 중간 크기)
+  //   - 설정 서브페이지(알림/관심지역/즐겨찾기 관리) + 즐겨찾기 항목 있음:
+  //     adaptive (작은 가로 배너)
+  const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
     if (introVisible || onboardingVisible) return "none";
     if (exitDialogVisible) return "mrec-center";
     if (view === "detail" || view === "home") return "none";
     if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
+    if (view === "settings" && settingsPage === "main") return "large-bottom";
     return "adaptive";
-  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length]);
+  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length, settingsPage]);
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
@@ -811,10 +792,9 @@ function App() {
       await Browser.open({ url: absolutePostUrl(targetUrl) });
       return;
     }
-    // 사용자가 카드를 탭한 순간의 스크롤 위치를 기억해두고(상세에서 돌아왔을 때 복원),
-    // 상세 진입 빈도(10 회) + 직전 광고로부터 30 분 경과 시 Interstitial 노출.
+    // 사용자가 카드를 탭한 순간의 스크롤 위치를 기억(상세에서 돌아왔을 때 복원).
+    // 정책상 상세 진입 시 Interstitial 은 띄우지 않음.
     homeScrollRef.current = window.scrollY;
-    await maybeShowInterstitial();
     setDetailPage({ url: absolutePostUrl(url), title, card, returnView: view === "detail" ? "home" : view });
     setView("detail");
   }
@@ -900,6 +880,7 @@ function App() {
         view === "detail" ? "detail-mode" : "",
         // 광고 모드별 클래스 — padding 보정 + 광고 영역 배경 ::after 두 가지 모두 활용.
         bannerMode === "mrec-bottom" ? "with-ad-mrec-bottom" :
+        bannerMode === "large-bottom" ? "with-ad-large-bottom" :
         bannerMode === "adaptive" ? "with-ad-adaptive" : ""
       ]
         .filter(Boolean)
