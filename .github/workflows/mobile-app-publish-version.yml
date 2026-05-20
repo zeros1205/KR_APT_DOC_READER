@@ -1,12 +1,14 @@
 name: Publish Mobile App Version
 
 # Updates output/app-version.json so the running app's "최신 버전" reflects
-# what users can actually install. Two modes:
-#   - poll (default): query Play / App Store Connect APIs and only commit
-#     when the version is live (READY_FOR_SALE for iOS, status=completed on
-#     production track for Android). Optionally loops until a deadline.
+# what users can actually install.
+#
+#   - auto (default): query Play / App Store Connect, take whatever version
+#     is currently live, write that into app-version.json. No manual input
+#     of version numbers — the store is the source of truth.
 #   - manual: skip API checks and commit the supplied version immediately,
-#     an escape hatch for edge cases (e.g. delisted version, API outage).
+#     an escape hatch for edge cases (e.g. API outage, intentional rollback
+#     to a previously-pulled version).
 #
 # This workflow is the ONLY thing that should update output/app-version.json.
 
@@ -21,26 +23,22 @@ on:
           - ios
           - android
           - both
+      mode:
+        description: "auto = read the currently live version from the store. manual = use the explicit version inputs below."
+        required: true
+        type: choice
+        default: auto
+        options:
+          - auto
+          - manual
       ios_version_name:
-        description: "iOS versionName (required when platform=ios|both)."
+        description: "Manual mode only — iOS versionName to publish (e.g. 1.0.5)."
         required: false
         default: ""
       android_version_name:
-        description: "Android versionName (required when platform=android|both)."
+        description: "Manual mode only — Android versionName to publish (e.g. 0.2.1)."
         required: false
         default: ""
-      mode:
-        description: "poll = wait until the store reports it live. manual = commit immediately without checking."
-        required: true
-        type: choice
-        default: poll
-        options:
-          - poll
-          - manual
-      wait_minutes:
-        description: "poll mode only: max minutes to keep retrying before giving up. 0 = single check."
-        required: false
-        default: "30"
 
 concurrency:
   group: mobile-app-publish-version
@@ -50,7 +48,7 @@ jobs:
   publish:
     name: Publish app-version.json
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 15
     permissions:
       contents: write
     env:
@@ -65,26 +63,27 @@ jobs:
         with:
           ref: main
 
-      - name: Validate inputs
+      - name: Validate manual inputs
+        if: ${{ inputs.mode == 'manual' }}
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          IOS_VERSION: ${{ inputs.ios_version_name }}
+          ANDROID_VERSION: ${{ inputs.android_version_name }}
         run: |
           set -euo pipefail
-          plat="${{ inputs.platform }}"
-          ios_v="${{ inputs.ios_version_name }}"
-          and_v="${{ inputs.android_version_name }}"
-          if [ "$plat" = "ios" ] || [ "$plat" = "both" ]; then
-            if [ -z "$ios_v" ]; then
-              echo "ios_version_name required when platform=$plat" >&2
+          if [ "$PLATFORM" = "ios" ] || [ "$PLATFORM" = "both" ]; then
+            if [ -z "$IOS_VERSION" ]; then
+              echo "manual mode: ios_version_name required when platform=$PLATFORM" >&2
               exit 1
             fi
           fi
-          if [ "$plat" = "android" ] || [ "$plat" = "both" ]; then
-            if [ -z "$and_v" ]; then
-              echo "android_version_name required when platform=$plat" >&2
+          if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
+            if [ -z "$ANDROID_VERSION" ]; then
+              echo "manual mode: android_version_name required when platform=$PLATFORM" >&2
               exit 1
             fi
           fi
-          # Reject prerelease / build metadata — we only publish "final" versions.
-          for v in "$ios_v" "$and_v"; do
+          for v in "$IOS_VERSION" "$ANDROID_VERSION"; do
             if [ -n "$v" ] && ! printf '%s' "$v" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
               echo "version '$v' must match MAJOR.MINOR.PATCH (e.g. 1.0.5)" >&2
               exit 1
@@ -92,80 +91,62 @@ jobs:
           done
 
       - name: Set up Python
-        if: ${{ inputs.mode == 'poll' }}
+        if: ${{ inputs.mode == 'auto' }}
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install Python deps
-        if: ${{ inputs.mode == 'poll' }}
+        if: ${{ inputs.mode == 'auto' }}
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          # iOS path needs PyJWT[crypto]; Android path needs the Google client libs.
           pip install "pyjwt[crypto]==2.9.0" google-api-python-client==2.151.0 google-auth==2.35.0
 
-      - name: Poll store(s) until live or deadline
-        if: ${{ inputs.mode == 'poll' }}
+      - name: Detect live versions
+        if: ${{ inputs.mode == 'auto' }}
+        id: detect
         env:
           PLATFORM: ${{ inputs.platform }}
-          IOS_VERSION: ${{ inputs.ios_version_name }}
-          ANDROID_VERSION: ${{ inputs.android_version_name }}
-          WAIT_MINUTES: ${{ inputs.wait_minutes }}
         run: |
           set -euo pipefail
-          deadline=$(( $(date +%s) + WAIT_MINUTES * 60 ))
-          interval=120  # 2 min between attempts; Play/ASC have plenty of headroom.
+          ios_version=""
+          android_version=""
 
-          need_ios=0
-          need_android=0
-          case "$PLATFORM" in
-            ios)     need_ios=1 ;;
-            android) need_android=1 ;;
-            both)    need_ios=1; need_android=1 ;;
-          esac
-
-          attempt=0
-          while :; do
-            attempt=$(( attempt + 1 ))
-            echo "::group::Attempt $attempt"
-            all_live=1
-            if [ "$need_ios" = "1" ]; then
-              if python scripts/check_store_version.py --platform ios --version "$IOS_VERSION"; then
-                echo "ios=$IOS_VERSION is live"
-              else
-                rc=$?
-                if [ "$rc" = "1" ]; then echo "::endgroup::"; exit 1; fi
-                all_live=0
-              fi
-            fi
-            if [ "$need_android" = "1" ]; then
-              if python scripts/check_store_version.py --platform android --version "$ANDROID_VERSION"; then
-                echo "android=$ANDROID_VERSION is live"
-              else
-                rc=$?
-                if [ "$rc" = "1" ]; then echo "::endgroup::"; exit 1; fi
-                all_live=0
-              fi
-            fi
-            echo "::endgroup::"
-            if [ "$all_live" = "1" ]; then
-              echo "All requested platforms are live."
-              break
-            fi
-            now=$(date +%s)
-            if [ "$now" -ge "$deadline" ]; then
-              echo "Deadline reached without all platforms going live. Re-run later." >&2
+          if [ "$PLATFORM" = "ios" ] || [ "$PLATFORM" = "both" ]; then
+            echo "::group::iOS — App Store Connect"
+            out="$(python scripts/check_store_version.py --platform ios)"
+            echo "$out"
+            ios_version="$(printf '%s' "$out" | jq -r '.version // ""')"
+            if [ -z "$ios_version" ]; then
+              echo "no live iOS version available (still in review / no release)" >&2
+              echo "::endgroup::"
               exit 2
             fi
-            sleep "$interval"
-          done
+            echo "::endgroup::"
+          fi
+
+          if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
+            echo "::group::Android — Play Developer API"
+            out="$(python scripts/check_store_version.py --platform android)"
+            echo "$out"
+            android_version="$(printf '%s' "$out" | jq -r '.version // ""')"
+            if [ -z "$android_version" ]; then
+              echo "no live Android version available (still in review / staged rollout)" >&2
+              echo "::endgroup::"
+              exit 2
+            fi
+            echo "::endgroup::"
+          fi
+
+          echo "ios_version=$ios_version" >> "$GITHUB_OUTPUT"
+          echo "android_version=$android_version" >> "$GITHUB_OUTPUT"
 
       - name: Patch output/app-version.json
         env:
           PLATFORM: ${{ inputs.platform }}
-          IOS_VERSION: ${{ inputs.ios_version_name }}
-          ANDROID_VERSION: ${{ inputs.android_version_name }}
+          IOS_VERSION: ${{ inputs.mode == 'auto' && steps.detect.outputs.ios_version || inputs.ios_version_name }}
+          ANDROID_VERSION: ${{ inputs.mode == 'auto' && steps.detect.outputs.android_version || inputs.android_version_name }}
         run: |
           set -euo pipefail
           mkdir -p output
@@ -181,31 +162,35 @@ jobs:
              | if $plat == "android" or $plat == "both" then .android = $and else . end' \
             output/app-version.json > "$tmp"
           mv "$tmp" output/app-version.json
+          echo "--- output/app-version.json ---"
           cat output/app-version.json
 
       - name: Commit and push
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          MODE: ${{ inputs.mode }}
+          IOS_VERSION: ${{ inputs.mode == 'auto' && steps.detect.outputs.ios_version || inputs.ios_version_name }}
+          ANDROID_VERSION: ${{ inputs.mode == 'auto' && steps.detect.outputs.android_version || inputs.android_version_name }}
         run: |
           set -euo pipefail
           if git diff --quiet -- output/app-version.json; then
-            echo "app-version.json unchanged; skipping commit."
+            echo "app-version.json already matches store; no commit needed."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add output/app-version.json
 
-          # Compose a message describing what changed.
           msg="chore(mobile): publish app-version.json"
-          case "${{ inputs.platform }}" in
-            ios)     msg="$msg ios=${{ inputs.ios_version_name }}" ;;
-            android) msg="$msg android=${{ inputs.android_version_name }}" ;;
-            both)    msg="$msg ios=${{ inputs.ios_version_name }} android=${{ inputs.android_version_name }}" ;;
+          case "$PLATFORM" in
+            ios)     msg="$msg ios=$IOS_VERSION" ;;
+            android) msg="$msg android=$ANDROID_VERSION" ;;
+            both)    msg="$msg ios=$IOS_VERSION android=$ANDROID_VERSION" ;;
           esac
-          if [ "${{ inputs.mode }}" = "manual" ]; then
+          if [ "$MODE" = "manual" ]; then
             msg="$msg [manual]"
           fi
           git commit -m "$msg"
-          # Push with limited retry on transient network errors.
           n=0
           until [ "$n" -ge 4 ]; do
             if git push origin HEAD:main; then exit 0; fi
