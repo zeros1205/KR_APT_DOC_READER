@@ -181,10 +181,13 @@ jobs:
           git pull --rebase origin main
           git stash pop
 
+          # NOTE: 아이콘/파비콘 자산(favicon, apple-touch-icon, android-chrome,
+          # app_logo_*, jung_reader_logo)은 generate_app_icons.py 의 Pillow 출력이
+          # 환경/버전에 따라 흔들려 자동 회귀를 일으킨 이력이 있어 자동 commit 대상에서
+          # 제외. 디자인 갱신은 디자이너가 직접 output/ 에 업로드하고 별도 PR 로 머지.
+          # manifest.json / site.webmanifest 는 JSON 텍스트라 안정적이므로 유지.
           git add -f output/posts output/posts_index.json output/posts_index.js output/sitemap.xml output/robots.txt output/processed_notices.json \
-            output/favicon.ico output/favicon-16x16.png output/favicon-32x32.png output/apple-touch-icon.png \
-            output/android-chrome-192x192.png output/android-chrome-512x512.png output/manifest.json output/site.webmanifest \
-            output/app_logo_80x80_rounded.png output/app_logo_1024x1024_rounded.png output/jung_reader_logo.png
+            output/manifest.json output/site.webmanifest
 
           if ! git diff --cached --quiet; then
             git commit -m "chore: generate pages [$(date +%Y-%m-%d)]"
