@@ -71,10 +71,33 @@ button {
   padding-bottom: 0;
 }
 
-/* 즐겨찾기 빈 페이지 / 설정 페이지는 하단 광고가 ADAPTIVE_BANNER(~60px) 가 아닌
-   MEDIUM_RECTANGLE(250px) 로 표시되므로 콘텐츠 하단 padding 을 추가 확보. */
-.app-shell.with-mrec-bottom {
+/* 즐겨찾기 빈 페이지 — MREC(250px) 광고가 콘텐츠를 가리지 않도록 padding 보정 */
+.app-shell.with-ad-mrec-bottom {
   padding-bottom: max(290px, calc(270px + env(safe-area-inset-bottom)));
+}
+
+/* 광고 영역 뒤에 크림색 배경 띠를 두어 native overlay 광고가 콘텐츠 위에
+   바로 떠 보이는 느낌을 줄임. 광고 native view 는 z-index 매우 높아 우리 ::after
+   위에 정상 표시되고, 콘텐츠가 광고 영역까지 스크롤돼도 ::after 가 가려준다. */
+.app-shell.with-ad-adaptive::after,
+.app-shell.with-ad-mrec-bottom::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--c-bg);
+  /* 헤더(z-index 100) 보다 낮고, 일반 콘텐츠 보다 위 */
+  z-index: 80;
+  pointer-events: none;
+}
+
+.app-shell.with-ad-adaptive::after {
+  height: calc(60px + env(safe-area-inset-bottom));
+}
+
+.app-shell.with-ad-mrec-bottom::after {
+  height: calc(250px + env(safe-area-inset-bottom));
 }
 
 .intro-screen {
