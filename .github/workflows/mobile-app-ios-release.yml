@@ -320,26 +320,10 @@ jobs:
           path: ${{ runner.temp }}/ios-checksums.txt
           retention-days: 30
 
-      - name: Publish app-version.json to site
-        if: ${{ inputs.upload_to_testflight }}
-        run: |
-          set -euo pipefail
-          mkdir -p output
-          if [ ! -s output/app-version.json ]; then
-            echo '{}' > output/app-version.json
-          fi
-          # OS별 필드만 patch — 다른 플랫폼 버전을 덮어쓰지 않는다.
-          tmp="$(mktemp)"
-          jq --arg v "${{ inputs.version_name }}" '.ios = $v' output/app-version.json > "$tmp"
-          mv "$tmp" output/app-version.json
-
-          if git diff --quiet -- output/app-version.json; then
-            echo "app-version.json unchanged; skipping commit."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/app-version.json
-          git commit -m "chore(mobile): publish app-version.json ios=${{ inputs.version_name }}"
-          git push origin HEAD:main
+      # NOTE: app-version.json publish is intentionally NOT done here.
+      # Uploading to TestFlight does not mean the version is available to
+      # production users — App Store review can take days, and a rejected
+      # version should never appear as "latest". The
+      # `mobile-app-publish-version.yml` workflow polls App Store Connect
+      # and only updates output/app-version.json once the version reaches
+      # READY_FOR_SALE.

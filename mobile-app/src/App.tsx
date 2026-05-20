@@ -21,6 +21,7 @@ import { Browser } from "@capacitor/browser";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
+import { isUpdateAvailable } from "./version";
 import {
   defaultSettings,
   loadFavorites,
@@ -1617,7 +1618,7 @@ function SettingsView({
     }
     return next.sort((a, b) => new Date(b.saved_at).getTime() - new Date(a.saved_at).getTime());
   }, [favoriteSort, favorites]);
-  const hasUpdate = installedVersion !== latestVersion;
+  const hasUpdate = isUpdateAvailable(installedVersion, latestVersion);
 
   if (page === "notifications") {
     return (
