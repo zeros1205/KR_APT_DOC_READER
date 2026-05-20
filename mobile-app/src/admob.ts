@@ -131,12 +131,14 @@ export async function requestTrackingConsent(): Promise<void> {
   const mod = await loadAdMob();
   if (!mod) return;
   try {
-    const status = await mod.AdMob.trackingAuthorizationStatus();
-    if (status.status === "notDetermined") {
-      const result = await mod.AdMob.requestTrackingAuthorization();
-      nonPersonalizedOnly = result.status !== "authorized";
+    const initial = await mod.AdMob.trackingAuthorizationStatus();
+    if (initial.status === "notDetermined") {
+      // v7: requestTrackingAuthorization 은 void 반환. 권한 결과는 다시 status 조회로 확인.
+      await mod.AdMob.requestTrackingAuthorization();
+      const after = await mod.AdMob.trackingAuthorizationStatus();
+      nonPersonalizedOnly = after.status !== "authorized";
     } else {
-      nonPersonalizedOnly = status.status !== "authorized";
+      nonPersonalizedOnly = initial.status !== "authorized";
     }
   } catch (error) {
     console.warn("[admob] tracking consent failed", error);
