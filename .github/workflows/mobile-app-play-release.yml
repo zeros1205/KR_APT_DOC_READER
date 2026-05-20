@@ -20,6 +20,20 @@ on:
         description: "App versionName (e.g. 0.1.0). Shown to users; appears on Play Store and in app settings."
         required: true
         default: "0.1.0"
+      upload_to_play:
+        description: "Upload the signed AAB to Play Console after build."
+        required: true
+        type: boolean
+        default: false
+      play_track:
+        description: "Which Play test track to upload to (only used when upload_to_play=true). Production rollout is intentionally not available here."
+        required: true
+        type: choice
+        default: internal
+        options:
+          - internal
+          - alpha
+          - beta
   pull_request:
     paths:
       - "mobile-app/**"
@@ -281,6 +295,33 @@ jobs:
           name: aptnote-play-release-${{ env.RELEASE_VERSION_NAME }}-${{ github.run_number }}.apk
           path: mobile-app/android/app/build/outputs/apk/release/app-release-${{ env.RELEASE_VERSION_NAME }}.apk
           retention-days: 30
+
+      - name: Set up Python (Play upload)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_play }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Play API client (Play upload)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_play }}
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install google-api-python-client==2.151.0 google-auth==2.35.0
+
+      - name: Upload AAB to Play test track
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_play }}
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          AAB="mobile-app/android/app/build/outputs/bundle/release/app-release-${RELEASE_VERSION_NAME}.aab"
+          test -s "$AAB"
+          python scripts/upload_play_aab.py \
+            --aab "$AAB" \
+            --track "${{ inputs.play_track }}" \
+            --version-name "$RELEASE_VERSION_NAME" \
+            --version-code "$RELEASE_VERSION_CODE"
 
       # NOTE: app-version.json publish is intentionally NOT done here.
       # Building an AAB only means we have an artifact, not that users can

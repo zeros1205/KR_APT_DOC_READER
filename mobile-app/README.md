@@ -115,7 +115,15 @@ App.tsx 의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 �
 
 ### 필요한 GitHub 시크릿
 - iOS: `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_KEY_BASE64` (TestFlight 업로드와 공유)
-- Android: `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (Play Developer API 전용. Google Cloud에서 서비스 계정 → JSON 키 생성 후, Play Console "사용자 및 권한"에서 해당 서비스 계정 이메일을 초대해 "앱 정보 및 보고서 보기" 권한 부여. read-only)
+- Android: `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (Play Developer API 전용. Google Cloud에서 서비스 계정 → JSON 키 생성 후, Play Console "사용자 및 권한"에서 해당 서비스 계정 이메일 초대)
+
+### Play 자동 업로드 (선택)
+
+`mobile-app-play-release.yml` 의 `upload_to_play=true` 입력으로 빌드한 AAB를 Play Console 테스트 트랙에 자동 업로드합니다 (iOS의 `upload_to_testflight` 와 대칭).
+
+- `play_track`: `internal` (기본) / `alpha` / `beta` 중 선택. 프로덕션 자동 출시는 의도적으로 제외 — 프로덕션은 Play Console 에서 직접 promote.
+- 자동 업로드를 쓰려면 위 서비스 계정의 Play Console 앱 권한에 **"테스트 트랙으로 출시 (Release to testing tracks)"** 가 추가로 체크되어 있어야 합니다. 조회만 할거면 "앱 정보 및 보고서 보기" 만으로 충분.
+- versionCode 가 직전 트랙 빌드보다 커야 함 (워크플로 입력 `version_code` 그대로 사용).
 
 ## 다음 구현 지점
 
