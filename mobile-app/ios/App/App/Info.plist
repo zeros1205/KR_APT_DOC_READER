@@ -52,7 +52,7 @@
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8234120897033274~4486344416</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>관련성 높은 광고를 보여드리기 위해 기기의 광고 식별자를 사용해도 될지 여쭤봐요. 거부하셔도 앱은 그대로 사용할 수 있어요.</string>
+	<string>맞춤형 광고를 보여드리기 위해 광고 식별자가 사용됩니다.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
