@@ -30,8 +30,8 @@ type AdMobModule = typeof import("@capacitor-community/admob");
 
 let adMobModulePromise: Promise<AdMobModule | null> | null = null;
 let initialized = false;
-let bannerVisible = false;
-let mrecVisible = false;
+type ActiveBanner = "none" | "adaptive" | "mrec-center" | "mrec-bottom";
+let activeBanner: ActiveBanner = "none";
 let nonPersonalizedOnly = false;
 let interstitialReady = false;
 let interstitialLoading = false;
@@ -144,8 +144,13 @@ export async function requestTrackingConsent(): Promise<void> {
   }
 }
 
-export async function showBanner(): Promise<void> {
-  if (bannerVisible) return;
+// SDK 는 한 번에 banner view 한 개만 다루므로, 모든 banner/MREC 전환을 한 함수에서 처리.
+// mode 별 광고 단위 / 사이즈 / 위치:
+//   "adaptive"      : 일반 하단 sticky banner    — 배너 단위 ID, ADAPTIVE_BANNER, BOTTOM_CENTER
+//   "mrec-center"   : 종료 다이얼로그 중앙 광고   — MREC 단위 ID, MEDIUM_RECTANGLE, CENTER
+//   "mrec-bottom"   : 즐겨찾기 빈/설정 페이지 하단 — 배너 단위 ID, MEDIUM_RECTANGLE, BOTTOM_CENTER
+export async function setBannerMode(target: ActiveBanner): Promise<void> {
+  if (activeBanner === target) return;
   const mod = await loadAdMob();
   if (!mod) return;
   if (!initialized) {
@@ -153,81 +158,42 @@ export async function showBanner(): Promise<void> {
     if (!initialized) return;
   }
   try {
+    if (activeBanner !== "none") {
+      await mod.AdMob.removeBanner().catch(() => undefined);
+      activeBanner = "none";
+    }
+    if (target === "none") return;
+    const adId = target === "mrec-center" ? resolveMrecAdId() : resolveBannerAdId();
+    const adSize =
+      target === "adaptive" ? mod.BannerAdSize.ADAPTIVE_BANNER : mod.BannerAdSize.MEDIUM_RECTANGLE;
+    const position =
+      target === "mrec-center" ? mod.BannerAdPosition.CENTER : mod.BannerAdPosition.BOTTOM_CENTER;
     await mod.AdMob.showBanner({
-      adId: resolveBannerAdId(),
-      adSize: mod.BannerAdSize.ADAPTIVE_BANNER,
-      position: mod.BannerAdPosition.BOTTOM_CENTER,
+      adId,
+      adSize,
+      position,
       margin: 0,
       isTesting: USE_TEST_ADS,
       npa: nonPersonalizedOnly
     });
-    bannerVisible = true;
+    activeBanner = target;
   } catch (error) {
-    console.warn("[admob] showBanner failed", error);
+    console.warn("[admob] setBannerMode failed", target, error);
   }
 }
 
-export async function hideBanner(): Promise<void> {
-  if (!bannerVisible) return;
-  const mod = await loadAdMob();
-  if (!mod) return;
-  try {
-    await mod.AdMob.hideBanner();
-    bannerVisible = false;
-  } catch (error) {
-    console.warn("[admob] hideBanner failed", error);
-  }
+// 하위 호환 헬퍼들. App.tsx 의 토글 useEffect 는 setBannerMode 를 직접 사용 권장.
+export function showBanner(): Promise<void> {
+  return setBannerMode("adaptive");
 }
-
-export async function removeBanner(): Promise<void> {
-  const mod = await loadAdMob();
-  if (!mod) return;
-  try {
-    await mod.AdMob.removeBanner();
-    bannerVisible = false;
-  } catch (error) {
-    console.warn("[admob] removeBanner failed", error);
-  }
+export function hideBanner(): Promise<void> {
+  return activeBanner === "adaptive" ? setBannerMode("none") : Promise.resolve();
 }
-
-// 종료 다이얼로그용 Medium Rectangle (300x250). 일반 배너와 별도 광고 단위.
-// SDK 는 한 번에 banner 한 개만 다루므로, 기존 banner view 를 먼저 정리하고 새로 등록한다.
-export async function showMediumRectangle(): Promise<void> {
-  if (mrecVisible) return;
-  const mod = await loadAdMob();
-  if (!mod) return;
-  if (!initialized) {
-    await initializeAdMob();
-    if (!initialized) return;
-  }
-  try {
-    await mod.AdMob.removeBanner().catch(() => undefined);
-    bannerVisible = false;
-    await mod.AdMob.showBanner({
-      adId: resolveMrecAdId(),
-      adSize: mod.BannerAdSize.MEDIUM_RECTANGLE,
-      position: mod.BannerAdPosition.CENTER,
-      margin: 0,
-      isTesting: USE_TEST_ADS,
-      npa: nonPersonalizedOnly
-    });
-    mrecVisible = true;
-  } catch (error) {
-    console.warn("[admob] showMediumRectangle failed", error);
-  }
+export function showMediumRectangle(): Promise<void> {
+  return setBannerMode("mrec-center");
 }
-
-export async function hideMediumRectangle(): Promise<void> {
-  if (!mrecVisible) return;
-  const mod = await loadAdMob();
-  if (!mod) return;
-  try {
-    await mod.AdMob.removeBanner();
-    mrecVisible = false;
-    bannerVisible = false;
-  } catch (error) {
-    console.warn("[admob] hideMediumRectangle failed", error);
-  }
+export function hideMediumRectangle(): Promise<void> {
+  return activeBanner === "mrec-center" ? setBannerMode("none") : Promise.resolve();
 }
 
 // Interstitial — 상세 페이지 10회 진입 + 직전 표시로부터 30분 이상 경과한 경우에만 노출.

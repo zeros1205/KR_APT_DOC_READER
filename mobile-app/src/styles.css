@@ -71,6 +71,12 @@ button {
   padding-bottom: 0;
 }
 
+/* 즐겨찾기 빈 페이지 / 설정 페이지는 하단 광고가 ADAPTIVE_BANNER(~60px) 가 아닌
+   MEDIUM_RECTANGLE(250px) 로 표시되므로 콘텐츠 하단 padding 을 추가 확보. */
+.app-shell.with-mrec-bottom {
+  padding-bottom: max(290px, calc(270px + env(safe-area-inset-bottom)));
+}
+
 .intro-screen {
   position: fixed;
   inset: 0;

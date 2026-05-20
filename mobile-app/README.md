@@ -64,7 +64,11 @@ cd android
 
 `src/admob.ts` 가 `@capacitor-community/admob` 을 동적 import 로 감싸 iOS/Android 공통으로 배너를 띄웁니다.
 
-- 배너 표시 시점: 인트로/온보딩/상세/종료 다이얼로그를 제외한 home / favorites / settings 뷰
+- 배너 표시 시점:
+  - 일반(home 등): ADAPTIVE_BANNER 하단 sticky
+  - 즐겨찾기 빈 페이지 / 설정 페이지: 사용자 콘텐츠가 적은 자리에서 MEDIUM_RECTANGLE(300x250)로 자동 교체 (광고 크기 ↑)
+  - 인트로/온보딩/상세 화면: 광고 없음
+- SDK banner view 는 1 개만 다루므로 모든 전환은 `setBannerMode("adaptive"|"mrec-center"|"mrec-bottom"|"none")` 단일 API 로 순차 처리
 - 종료 다이얼로그 (Android 백버튼 전용): home 뷰에서 시스템 백버튼 누르면 표시. 화면 중앙에 Medium Rectangle (300x250) 광고 노출 + "돌아가기" / "앱 종료하기" 버튼. iOS 는 시스템 백버튼이 없어 트리거되지 않음.
 - 앱 오프닝 광고: 콜드 스타트 직후 (인트로 사라진 뒤 800ms) + foreground 복귀 시. 직전 표시로부터 4 시간 룰
 - 전면 광고: 상세 페이지 진입 카운터가 10 의 배수 + 직전 광고로부터 30 분 경과 시 1 회. 청약Home 외부 링크 카드는 카운터 미증가

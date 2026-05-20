@@ -22,17 +22,14 @@ import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import {
-  hideBanner,
-  hideMediumRectangle,
   initializeAdMob,
   isAdMobSupported,
   prepareAppOpen,
   prepareInterstitial,
   requestTrackingConsent,
+  setBannerMode,
   showAppOpen,
-  showBanner,
-  showInterstitial,
-  showMediumRectangle
+  showInterstitial
 } from "./admob";
 import { Preferences } from "@capacitor/preferences";
 import {
@@ -316,22 +313,29 @@ function App() {
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
-    // 일반 배너와 종료 다이얼로그용 MREC 는 SDK 측 banner view 가 1 개 뿐이므로,
-    // 한 곳에서 순차 처리해 두 view 가 동시에 등록되는 race 를 막는다.
+    // SDK banner view 가 1 개 뿐이므로 모든 모드 결정을 한 곳에서 순차 처리.
+    // 우선순위: 인트로/온보딩 → none, 종료 다이얼로그 → mrec-center, detail → none,
+    //          즐겨찾기 빈 화면/설정 → mrec-bottom (큰 광고로 교체), 그 외 → 일반 adaptive 배너.
     void (async () => {
-      if (exitDialogVisible) {
-        await showMediumRectangle();
+      if (introVisible || onboardingVisible) {
+        await setBannerMode("none");
         return;
       }
-      await hideMediumRectangle();
-      const shouldShowBanner = !introVisible && !onboardingVisible && view !== "detail";
-      if (shouldShowBanner) {
-        await showBanner();
-      } else {
-        await hideBanner();
+      if (exitDialogVisible) {
+        await setBannerMode("mrec-center");
+        return;
       }
+      if (view === "detail") {
+        await setBannerMode("none");
+        return;
+      }
+      if ((view === "favorites" && favorites.length === 0) || view === "settings") {
+        await setBannerMode("mrec-bottom");
+        return;
+      }
+      await setBannerMode("adaptive");
     })();
-  }, [introVisible, onboardingVisible, exitDialogVisible, view]);
+  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length]);
 
   useEffect(() => {
     cardsRef.current = cards;
@@ -890,7 +894,16 @@ function App() {
   }
 
   return (
-    <main className={`app-shell ${view === "detail" ? "detail-mode" : ""}`}>
+    <main
+      className={[
+        "app-shell",
+        view === "detail" ? "detail-mode" : "",
+        // 즐겨찾기 빈 페이지/설정 페이지는 하단 광고가 MREC(250px) 으로 커지므로 padding 보정.
+        (view === "settings" || (view === "favorites" && favorites.length === 0)) ? "with-mrec-bottom" : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {introVisible && <IntroScreen />}
       {onboardingVisible && (
         <OnboardingTutorial
