@@ -65,7 +65,8 @@ cd android
 `src/admob.ts` 가 `@capacitor-community/admob` 을 동적 import 로 감싸 iOS/Android 공통으로 배너를 띄웁니다.
 
 - 배너 표시 시점: 인트로/온보딩/상세 화면을 제외한 home / favorites / settings 뷰
-- 광고 단위 ID: `.env` 의 `VITE_ADMOB_BANNER_ID_IOS` / `VITE_ADMOB_BANNER_ID_ANDROID` (미설정 시 Google 공개 테스트 ID)
+- 광고 단위 ID 우선순위: `.env` 의 `VITE_ADMOB_BANNER_ID_*` → `src/admob.ts` 상단의 `PRODUCTION_BANNER_*` 상수 → Google 공개 테스트 ID
+  - iOS production: `ca-app-pub-8234120897033274/2306903637`
 - iOS 앱 ID: `ios/App/App/Info.plist` 의 `GADApplicationIdentifier` 키에 직접 명시 (`ca-app-pub-8234120897033274~4486344416`)
 - ATT(App Tracking Transparency): iOS 14.5+ 에서 마운트 시 1 회 요청, 거부 시 비추적 광고로 자동 폴백
 - `VITE_ADMOB_USE_TEST=true` 또는 dev 빌드면 강제로 Google 공개 테스트 광고 사용

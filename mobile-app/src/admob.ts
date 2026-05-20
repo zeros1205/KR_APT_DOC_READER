@@ -3,6 +3,11 @@ import { Capacitor } from "@capacitor/core";
 const GOOGLE_TEST_BANNER_ANDROID = "ca-app-pub-3940256099942544/6300978111";
 const GOOGLE_TEST_BANNER_IOS = "ca-app-pub-3940256099942544/2934735716";
 
+// 프로덕션 배너 광고 단위 ID. 환경변수 미설정 시 폴백으로 사용.
+// 변경 필요 시 AdMob 콘솔에서 발급받은 ID 로 교체.
+const PRODUCTION_BANNER_IOS = "ca-app-pub-8234120897033274/2306903637";
+const PRODUCTION_BANNER_ANDROID = "";
+
 const USE_TEST_ADS =
   String(import.meta.env.VITE_ADMOB_USE_TEST || "").toLowerCase() === "true" || !import.meta.env.PROD;
 
@@ -31,15 +36,17 @@ function loadAdMob(): Promise<AdMobModule | null> {
 }
 
 function resolveBannerAdId(): string {
+  const isIos = Capacitor.getPlatform() === "ios";
   if (USE_TEST_ADS) {
-    return Capacitor.getPlatform() === "ios" ? GOOGLE_TEST_BANNER_IOS : GOOGLE_TEST_BANNER_ANDROID;
+    return isIos ? GOOGLE_TEST_BANNER_IOS : GOOGLE_TEST_BANNER_ANDROID;
   }
-  const configured =
-    Capacitor.getPlatform() === "ios"
-      ? import.meta.env.VITE_ADMOB_BANNER_ID_IOS
-      : import.meta.env.VITE_ADMOB_BANNER_ID_ANDROID;
+  const configured = isIos
+    ? import.meta.env.VITE_ADMOB_BANNER_ID_IOS
+    : import.meta.env.VITE_ADMOB_BANNER_ID_ANDROID;
   if (configured && String(configured).startsWith("ca-app-pub-")) return String(configured);
-  return Capacitor.getPlatform() === "ios" ? GOOGLE_TEST_BANNER_IOS : GOOGLE_TEST_BANNER_ANDROID;
+  const production = isIos ? PRODUCTION_BANNER_IOS : PRODUCTION_BANNER_ANDROID;
+  if (production && production.startsWith("ca-app-pub-")) return production;
+  return isIos ? GOOGLE_TEST_BANNER_IOS : GOOGLE_TEST_BANNER_ANDROID;
 }
 
 export async function initializeAdMob(): Promise<void> {
