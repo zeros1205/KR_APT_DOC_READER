@@ -60,6 +60,38 @@ cd android
 - 커밋 대상: 앱 소스와 네이티브 프로젝트 설정
 - 제외 대상: `node_modules/`, `dist/`, Android build/cache, Capacitor generated assets
 
+## AdMob
+
+`src/admob.ts` 가 `@capacitor-community/admob` 을 동적 import 로 감싸 iOS/Android 공통으로 배너를 띄웁니다.
+
+- 배너 표시 시점 (2026-05 정책):
+  - **메인(home) / 상세(detail) / 인트로 / 온보딩**: 광고 없음 (초기 retention 보호)
+  - 즐겨찾기 — 항목 있음: ADAPTIVE_BANNER 하단 sticky
+  - 즐겨찾기 — 빈 화면 / 설정: MEDIUM_RECTANGLE(300x250) 하단 큰 광고로 교체
+- SDK banner view 는 1 개만 다루므로 모든 전환은 `setBannerMode("adaptive"|"mrec-center"|"mrec-bottom"|"none")` 단일 API 로 순차 처리
+- 종료 다이얼로그 (Android 백버튼 전용): home 뷰에서 시스템 백버튼 누르면 표시. 화면 중앙에 Medium Rectangle (300x250) 광고 노출 + "돌아가기" / "앱 종료하기" 버튼. iOS 는 시스템 백버튼이 없어 트리거되지 않음.
+- 앱 오프닝 광고: 콜드 스타트 직후 (인트로 사라진 뒤 800ms) + foreground 복귀 시. 직전 표시로부터 4 시간 룰
+- 전면 광고: 상세 페이지 진입 카운터가 10 의 배수 + 직전 광고로부터 30 분 경과 시 1 회. 청약Home 외부 링크 카드는 카운터 미증가
+- 광고 단위 ID 우선순위: `.env` 의 `VITE_ADMOB_*_ID_*` → `src/admob.ts` 상단의 `PRODUCTION_*` 상수 → Google 공개 테스트 ID
+  - iOS 하단 배너: `ca-app-pub-8234120897033274/2306903637`
+  - iOS Medium Rectangle (종료 다이얼로그): `ca-app-pub-8234120897033274/1061800806` (네이티브 광고 고급형)
+  - iOS 전면 광고: `ca-app-pub-8234120897033274/3304820769`
+  - iOS 앱 오프닝: `ca-app-pub-8234120897033274/6142737093`
+- iOS 앱 ID: `ios/App/App/Info.plist` 의 `GADApplicationIdentifier` 키에 직접 명시 (`ca-app-pub-8234120897033274~4486344416`)
+- ATT(App Tracking Transparency): iOS 14.5+ 에서 마운트 시 1 회 요청, 거부 시 비추적 광고로 자동 폴백
+- `VITE_ADMOB_USE_TEST=true` 또는 dev 빌드면 강제로 Google 공개 테스트 광고 사용
+
+iOS 빌드 흐름:
+
+```bash
+cd mobile-app
+npm ci
+npm run build
+npx cap sync ios        # Podfile 갱신 + Google Mobile Ads SDK 설치
+cd ios/App && pod install
+npx cap open ios        # Xcode 에서 archive
+```
+
 ## 출시 버전 게시 흐름 (app-version.json)
 
 설정 화면의 "현재 X · 최신 Y · 업데이트" 표기에서 **최신 Y**는 `https://apt-note.com/app-version.json` 한 파일이 결정합니다. 이 파일은 **사용자가 실제로 스토어에서 받을 수 있는 버전**만 가리켜야 합니다. 빌드만 끝났거나 심사 중인 버전을 가리키면 사용자에게 "받을 수 없는 업데이트" 가 보이고, 다운그레이드 광고로도 이어집니다.

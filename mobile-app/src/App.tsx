@@ -23,6 +23,17 @@ import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import { isUpdateAvailable } from "./version";
 import {
+  initializeAdMob,
+  isAdMobSupported,
+  prepareAppOpen,
+  prepareInterstitial,
+  requestTrackingConsent,
+  setBannerMode,
+  showAppOpen,
+  showInterstitial
+} from "./admob";
+import { Preferences } from "@capacitor/preferences";
+import {
   defaultSettings,
   loadFavorites,
   loadSettings,
@@ -75,6 +86,57 @@ async function openStorePage(): Promise<void> {
 }
 const POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
+
+// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰, Interstitial 은 상세 10 회 + 30 분 룰.
+const APP_OPEN_LAST_KEY = "apt-note:last_app_open_at";
+const APP_OPEN_MIN_GAP_MS = 4 * 60 * 60 * 1000;
+const INTERSTITIAL_COUNTER_KEY = "apt-note:detail_view_count";
+const INTERSTITIAL_LAST_KEY = "apt-note:last_interstitial_at";
+const INTERSTITIAL_INTERVAL = 10;
+const INTERSTITIAL_MIN_GAP_MS = 30 * 60 * 1000;
+
+async function readNumberPref(key: string): Promise<number> {
+  try {
+    const raw = (await Preferences.get({ key })).value;
+    if (!raw) return 0;
+    const num = Number(raw);
+    return Number.isFinite(num) ? num : 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function writeNumberPref(key: string, value: number): Promise<void> {
+  try {
+    await Preferences.set({ key, value: String(value) });
+  } catch {
+    // ignore
+  }
+}
+
+async function maybeShowAppOpenAd(): Promise<void> {
+  if (!isAdMobSupported()) return;
+  const lastTs = await readNumberPref(APP_OPEN_LAST_KEY);
+  const now = Date.now();
+  if (now - lastTs < APP_OPEN_MIN_GAP_MS) return;
+  const shown = await showAppOpen();
+  if (shown) await writeNumberPref(APP_OPEN_LAST_KEY, now);
+}
+
+async function maybeShowInterstitial(): Promise<void> {
+  if (!isAdMobSupported()) return;
+  const nextCount = (await readNumberPref(INTERSTITIAL_COUNTER_KEY)) + 1;
+  await writeNumberPref(INTERSTITIAL_COUNTER_KEY, nextCount);
+  if (nextCount < INTERSTITIAL_INTERVAL) return;
+  const lastTs = await readNumberPref(INTERSTITIAL_LAST_KEY);
+  const now = Date.now();
+  if (now - lastTs < INTERSTITIAL_MIN_GAP_MS) return;
+  const shown = await showInterstitial();
+  if (shown) {
+    await writeNumberPref(INTERSTITIAL_LAST_KEY, now);
+    await writeNumberPref(INTERSTITIAL_COUNTER_KEY, 0);
+  }
+}
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -191,7 +253,7 @@ function App() {
   const [installedVersion, setInstalledVersion] = useState(APP_VERSION);
   const [toastMessage, setToastMessage] = useState("");
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
-  const lastHomeBackAtRef = useRef(0);
+  const [exitDialogVisible, setExitDialogVisible] = useState(false);
   const toastTimerRef = useRef<number | null>(null);
   const pendingPushPayloadRef = useRef<PushDataPayload | null>(null);
   const pushPromptShownRef = useRef(false);
@@ -229,6 +291,57 @@ function App() {
     setActiveRegion(settings.regions.length > 0 ? PREFERRED_REGION_KEY : "전체");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.regions]);
+
+  useEffect(() => {
+    if (!isAdMobSupported()) return;
+    void (async () => {
+      await requestTrackingConsent();
+      await initializeAdMob();
+      // 전면/앱 오프닝 광고는 미리 로드해두면 첫 호출 시 광고가 즉시 표시됨.
+      void prepareInterstitial();
+      void prepareAppOpen();
+    })();
+  }, []);
+
+  // 콜드 스타트 시 App Open 광고 트리거. 인트로 사라진 후, 온보딩이 떠있지 않을 때 1 회만.
+  const appOpenColdStartTriggeredRef = useRef(false);
+  useEffect(() => {
+    if (appOpenColdStartTriggeredRef.current) return;
+    if (!isAdMobSupported()) return;
+    if (loading || introVisible) return;
+    if (!settingsLoadedRef.current) return;
+    if (shouldShowOnboarding(settings)) return;
+    appOpenColdStartTriggeredRef.current = true;
+    // 광고 로드 시간 확보 위해 약간 지연.
+    const timer = window.setTimeout(() => void maybeShowAppOpenAd(), 800);
+    return () => window.clearTimeout(timer);
+  }, [loading, introVisible, settings]);
+
+  useEffect(() => {
+    if (!isAdMobSupported()) return;
+    // SDK banner view 가 1 개 뿐이므로 모든 모드 결정을 한 곳에서 순차 처리.
+    // 정책(2026-05): 메인(home)/상세/인트로/온보딩은 광고 없음. 즐겨찾기·설정에서만 노출.
+    void (async () => {
+      if (introVisible || onboardingVisible) {
+        await setBannerMode("none");
+        return;
+      }
+      if (exitDialogVisible) {
+        await setBannerMode("mrec-center");
+        return;
+      }
+      if (view === "detail" || view === "home") {
+        await setBannerMode("none");
+        return;
+      }
+      if ((view === "favorites" && favorites.length === 0) || view === "settings") {
+        await setBannerMode("mrec-bottom");
+        return;
+      }
+      // 여기 도달: 즐겨찾기에 항목이 있는 경우.
+      await setBannerMode("adaptive");
+    })();
+  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length]);
 
   useEffect(() => {
     cardsRef.current = cards;
@@ -278,7 +391,11 @@ function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     const handle = CapacitorApp.addListener("appStateChange", ({ isActive }) => {
-      if (isActive) void refreshPosts();
+      if (isActive) {
+        void refreshPosts();
+        // foreground 복귀 시 App Open 광고. 4 시간 룰 충족 시에만 표시.
+        void maybeShowAppOpenAd();
+      }
     });
     return () => {
       void handle.then((h) => h.remove());
@@ -305,6 +422,10 @@ function App() {
     const registration = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
       // 온보딩 튜토리얼이 표시 중이면 뒤로가기로 우회할 수 없게 차단.
       if (onboardingVisible) {
+        return;
+      }
+      if (exitDialogVisible) {
+        setExitDialogVisible(false);
         return;
       }
       if (menuOpen) {
@@ -352,6 +473,10 @@ function App() {
         window.history.pushState({ navKey: "onboarding-block" }, "");
         return;
       }
+      if (exitDialogVisible) {
+        setExitDialogVisible(false);
+        return;
+      }
       if (menuOpen) {
         setMenuOpen(false);
         return;
@@ -380,7 +505,7 @@ function App() {
       void actionListener.then((handle) => handle.remove());
       window.removeEventListener("popstate", popstateHandler);
     };
-  }, [detailPage, menuOpen, onboardingVisible, settingsPage, view]);
+  }, [detailPage, exitDialogVisible, menuOpen, onboardingVisible, settingsPage, view]);
 
   async function refreshPosts() {
     setLoading(true);
@@ -698,7 +823,10 @@ function App() {
       await Browser.open({ url: absolutePostUrl(targetUrl) });
       return;
     }
+    // 사용자가 카드를 탭한 순간의 스크롤 위치를 기억해두고(상세에서 돌아왔을 때 복원),
+    // 상세 진입 빈도(10 회) + 직전 광고로부터 30 분 경과 시 Interstitial 노출.
     homeScrollRef.current = window.scrollY;
+    await maybeShowInterstitial();
     setDetailPage({ url: absolutePostUrl(url), title, card, returnView: view === "detail" ? "home" : view });
     setView("detail");
   }
@@ -719,15 +847,13 @@ function App() {
   }
 
   function handleHomeBack() {
-    const now = Date.now();
-    if (now - lastHomeBackAtRef.current < 1800) {
-      lastHomeBackAtRef.current = 0;
-      setToastMessage("");
-      CapacitorApp.exitApp();
-      return;
-    }
-    lastHomeBackAtRef.current = now;
-    showToast("한 번 더 누르면 앱이 종료됩니다.");
+    setToastMessage("");
+    setExitDialogVisible(true);
+  }
+
+  function confirmExitApp() {
+    setExitDialogVisible(false);
+    CapacitorApp.exitApp();
   }
 
   async function shareCard(card: NoticeCard) {
@@ -780,7 +906,16 @@ function App() {
   }
 
   return (
-    <main className={`app-shell ${view === "detail" ? "detail-mode" : ""}`}>
+    <main
+      className={[
+        "app-shell",
+        view === "detail" ? "detail-mode" : "",
+        // 즐겨찾기 빈 페이지/설정 페이지는 하단 광고가 MREC(250px) 으로 커지므로 padding 보정.
+        (view === "settings" || (view === "favorites" && favorites.length === 0)) ? "with-mrec-bottom" : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {introVisible && <IntroScreen />}
       {onboardingVisible && (
         <OnboardingTutorial
@@ -889,6 +1024,13 @@ function App() {
           title={confirmDialog.title}
           onCancel={() => closeConfirmDialog(false)}
           onConfirm={() => closeConfirmDialog(true)}
+        />
+      )}
+
+      {exitDialogVisible && (
+        <ExitDialog
+          onCancel={() => setExitDialogVisible(false)}
+          onConfirm={confirmExitApp}
         />
       )}
 
@@ -1100,6 +1242,37 @@ function ConfirmDialog({
           </button>
           <button className="app-dialog-confirm" onClick={onConfirm}>
             {confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+  // 본 다이얼로그의 중앙 광고 슬롯은 시각적 placeholder.
+  // 실제 광고는 @capacitor-community/admob 의 Medium Rectangle 배너가
+  // 화면 정중앙 native overlay 로 표시되어 이 자리에 겹친다.
+  return (
+    <div className="exit-dialog-backdrop" role="presentation">
+      <section
+        className="exit-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exit-dialog-title"
+      >
+        <header className="exit-dialog-header">
+          <img className="exit-dialog-logo" src="/app_logo_80x80_rounded.png" alt="" />
+          <h2 id="exit-dialog-title">앱을 종료하시겠어요?</h2>
+          <p>분양공고는 매일 새로 업데이트해 둘게요.</p>
+        </header>
+        <div className="exit-dialog-ad-slot" aria-hidden="true" />
+        <div className="exit-dialog-actions">
+          <button className="exit-dialog-cancel" type="button" onClick={onCancel}>
+            돌아가기
+          </button>
+          <button className="exit-dialog-confirm" type="button" onClick={onConfirm}>
+            앱 종료하기
           </button>
         </div>
       </section>
