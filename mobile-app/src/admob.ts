@@ -30,7 +30,7 @@ type AdMobModule = typeof import("@capacitor-community/admob");
 
 let adMobModulePromise: Promise<AdMobModule | null> | null = null;
 let initialized = false;
-type ActiveBanner = "none" | "adaptive" | "mrec-center" | "mrec-bottom";
+type ActiveBanner = "none" | "adaptive" | "large-bottom" | "mrec-center" | "mrec-bottom";
 let activeBanner: ActiveBanner = "none";
 let nonPersonalizedOnly = false;
 let interstitialReady = false;
@@ -148,9 +148,10 @@ export async function requestTrackingConsent(): Promise<void> {
 
 // SDK 는 한 번에 banner view 한 개만 다루므로, 모든 banner/MREC 전환을 한 함수에서 처리.
 // mode 별 광고 단위 / 사이즈 / 위치:
-//   "adaptive"      : 일반 하단 sticky banner    — 배너 단위 ID, ADAPTIVE_BANNER, BOTTOM_CENTER
-//   "mrec-center"   : 종료 다이얼로그 중앙 광고   — MREC 단위 ID, MEDIUM_RECTANGLE, CENTER
-//   "mrec-bottom"   : 즐겨찾기 빈/설정 페이지 하단 — 배너 단위 ID, MEDIUM_RECTANGLE, BOTTOM_CENTER
+//   "adaptive"      : 일반 하단 sticky banner   — 배너 단위 ID, ADAPTIVE_BANNER (~60px), BOTTOM_CENTER
+//   "large-bottom"  : 설정 메인 페이지 하단      — 배너 단위 ID, LARGE_BANNER (320x100), BOTTOM_CENTER
+//   "mrec-center"   : 종료 다이얼로그 중앙 광고   — MREC 단위 ID, MEDIUM_RECTANGLE (300x250), CENTER
+//   "mrec-bottom"   : 즐겨찾기 빈 화면 하단      — 배너 단위 ID, MEDIUM_RECTANGLE (300x250), BOTTOM_CENTER
 export async function setBannerMode(target: ActiveBanner): Promise<void> {
   if (activeBanner === target) return;
   const mod = await loadAdMob();
@@ -167,7 +168,9 @@ export async function setBannerMode(target: ActiveBanner): Promise<void> {
     if (target === "none") return;
     const adId = target === "mrec-center" ? resolveMrecAdId() : resolveBannerAdId();
     const adSize =
-      target === "adaptive" ? mod.BannerAdSize.ADAPTIVE_BANNER : mod.BannerAdSize.MEDIUM_RECTANGLE;
+      target === "adaptive" ? mod.BannerAdSize.ADAPTIVE_BANNER :
+      target === "large-bottom" ? mod.BannerAdSize.LARGE_BANNER :
+      mod.BannerAdSize.MEDIUM_RECTANGLE;
     const position =
       target === "mrec-center" ? mod.BannerAdPosition.CENTER : mod.BannerAdPosition.BOTTOM_CENTER;
     await mod.AdMob.showBanner({

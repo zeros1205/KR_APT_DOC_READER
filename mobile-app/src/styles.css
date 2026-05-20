@@ -71,6 +71,11 @@ button {
   padding-bottom: 0;
 }
 
+/* 설정 메인 페이지 — LARGE_BANNER(100px) 광고. 작은 가로 배너와 MREC 사이 중간 크기 */
+.app-shell.with-ad-large-bottom {
+  padding-bottom: max(140px, calc(120px + env(safe-area-inset-bottom)));
+}
+
 /* 즐겨찾기 빈 페이지 — MREC(250px) 광고가 콘텐츠를 가리지 않도록 padding 보정 */
 .app-shell.with-ad-mrec-bottom {
   padding-bottom: max(290px, calc(270px + env(safe-area-inset-bottom)));
@@ -80,6 +85,7 @@ button {
    바로 떠 보이는 느낌을 줄임. 광고 native view 는 z-index 매우 높아 우리 ::after
    위에 정상 표시되고, 콘텐츠가 광고 영역까지 스크롤돼도 ::after 가 가려준다. */
 .app-shell.with-ad-adaptive::after,
+.app-shell.with-ad-large-bottom::after,
 .app-shell.with-ad-mrec-bottom::after {
   content: '';
   position: fixed;
@@ -94,6 +100,10 @@ button {
 
 .app-shell.with-ad-adaptive::after {
   height: calc(60px + env(safe-area-inset-bottom));
+}
+
+.app-shell.with-ad-large-bottom::after {
+  height: calc(100px + env(safe-area-inset-bottom));
 }
 
 .app-shell.with-ad-mrec-bottom::after {
