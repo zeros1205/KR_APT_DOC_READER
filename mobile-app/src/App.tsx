@@ -534,24 +534,19 @@ function App() {
     return [...tabs, ...ordered];
   }, [cards, settings.regions]);
 
+  // 메인 카드 목록은 지역 탭만으로 필터. 검색어(query) 는 자동완성 dropdown 전용 —
+  // 사용자가 dropdown 항목을 선택해야 상세로 이동하고, 글자 입력만으로 카드 목록을
+  // 즉시 바꾸지 않는다.
   const filteredCards = useMemo(() => {
-    const keyword = query.trim().toLowerCase();
     return cards.filter((card) => {
       const cardRegion = normalizeRegion(card.region);
-      const matchesRegion =
-        activeRegion === "전체"
-          ? true
-          : activeRegion === PREFERRED_REGION_KEY
-            ? settings.regions.some((r) => cardRegion.includes(normalizeRegion(r)))
-            : cardRegion.includes(normalizeRegion(activeRegion));
-      const matchesQuery =
-        !keyword ||
-        card.apt_name.toLowerCase().includes(keyword) ||
-        card.region.toLowerCase().includes(keyword) ||
-        card.notice_id.includes(keyword);
-      return matchesRegion && matchesQuery;
+      if (activeRegion === "전체") return true;
+      if (activeRegion === PREFERRED_REGION_KEY) {
+        return settings.regions.some((r) => cardRegion.includes(normalizeRegion(r)));
+      }
+      return cardRegion.includes(normalizeRegion(activeRegion));
     });
-  }, [activeRegion, cards, query, settings.regions]);
+  }, [activeRegion, cards, settings.regions]);
 
   const favoriteIds = useMemo(() => new Set(favorites.map((favorite) => favorite.notice_id)), [favorites]);
 
