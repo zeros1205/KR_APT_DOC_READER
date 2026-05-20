@@ -314,8 +314,7 @@ function App() {
   useEffect(() => {
     if (!isAdMobSupported()) return;
     // SDK banner view 가 1 개 뿐이므로 모든 모드 결정을 한 곳에서 순차 처리.
-    // 우선순위: 인트로/온보딩 → none, 종료 다이얼로그 → mrec-center, detail → none,
-    //          즐겨찾기 빈 화면/설정 → mrec-bottom (큰 광고로 교체), 그 외 → 일반 adaptive 배너.
+    // 정책(2026-05): 메인(home)/상세/인트로/온보딩은 광고 없음. 즐겨찾기·설정에서만 노출.
     void (async () => {
       if (introVisible || onboardingVisible) {
         await setBannerMode("none");
@@ -325,7 +324,7 @@ function App() {
         await setBannerMode("mrec-center");
         return;
       }
-      if (view === "detail") {
+      if (view === "detail" || view === "home") {
         await setBannerMode("none");
         return;
       }
@@ -333,6 +332,7 @@ function App() {
         await setBannerMode("mrec-bottom");
         return;
       }
+      // 여기 도달: 즐겨찾기에 항목이 있는 경우.
       await setBannerMode("adaptive");
     })();
   }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length]);
