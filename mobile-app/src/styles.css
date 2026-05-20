@@ -734,7 +734,9 @@ button {
   outline: none;
   background: rgba(255, 255, 255, 0.96);
   color: var(--c-dark);
-  font-size: 0.8125rem;
+  /* iOS Safari/WKWebView 는 font-size < 16px 인 input 에 focus 시 자동 줌인 후
+     원복하지 않는다. 줌 자체를 막기 위해 16px 유지. */
+  font-size: 16px;
   transition: border-color 150ms, width 200ms, box-shadow 150ms;
 }
 
