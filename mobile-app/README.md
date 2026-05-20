@@ -92,6 +92,31 @@ cd ios/App && pod install
 npx cap open ios        # Xcode 에서 archive
 ```
 
+## 출시 버전 게시 흐름 (app-version.json)
+
+설정 화면의 "현재 X · 최신 Y · 업데이트" 표기에서 **최신 Y**는 `https://apt-note.com/app-version.json` 한 파일이 결정합니다. 이 파일은 **사용자가 실제로 스토어에서 받을 수 있는 버전**만 가리켜야 합니다. 빌드만 끝났거나 심사 중인 버전을 가리키면 사용자에게 "받을 수 없는 업데이트" 가 보이고, 다운그레이드 광고로도 이어집니다.
+
+규칙은 한 가지: `output/app-version.json`은 **`mobile-app-publish-version.yml` 워크플로만** 변경합니다. 빌드 워크플로(`mobile-app-play-release.yml`, `mobile-app-ios-release.yml`)는 더 이상 이 파일을 건드리지 않습니다.
+
+권장 흐름:
+1. 빌드 워크플로로 AAB / IPA 산출 → 스토어 업로드
+2. Play 콘솔 / App Store Connect에서 출시 절차 진행
+3. 스토어 승인이 떨어지면(앱이 실제 설치 가능 상태일 때) `mobile-app-publish-version.yml` 을 **수동 실행**:
+   - `platform`: ios / android / both (각 스토어 심사 속도가 다르므로 보통 따로 실행)
+   - `mode=auto` (기본): 스토어 API에서 **현재 라이브 버전을 자동 감지** — 버전 입력 불필요
+   - `mode=manual`: API 우회. 긴급용 escape hatch. 이때만 `*_version_name` 입력 필요
+
+판정 기준 (auto 모드):
+- iOS: App Store Connect 에서 `appStoreState == READY_FOR_SALE` 인 가장 최신 iOS appStoreVersion
+- Android: Play `production` 트랙에서 `status == "completed"` 인 가장 최신 release (단계적 출시 도중인 `inProgress` 는 라이브로 보지 않음)
+- 라이브 버전이 아직 없으면 워크플로가 exit 2 로 실패 → 출시가 끝나면 다시 실행
+
+App.tsx 의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 형식·동일·다운그레이드는 모두 "업데이트 없음"으로 안전하게 떨어집니다.
+
+### 필요한 GitHub 시크릿
+- iOS: `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_KEY_BASE64` (TestFlight 업로드와 공유)
+- Android: `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (Play Developer API 전용. Google Cloud에서 서비스 계정 → JSON 키 생성 후, Play Console "사용자 및 권한"에서 해당 서비스 계정 이메일을 초대해 "앱 정보 및 보고서 보기" 권한 부여. read-only)
+
 ## 다음 구현 지점
 
 - Firebase 프로젝트 연결 및 FCM/APNs 토큰 등록
