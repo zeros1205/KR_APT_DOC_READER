@@ -333,7 +333,9 @@ button {
 .site-header-v3 {
   position: sticky;
   top: 0;
-  z-index: 90;
+  /* 검색창 컨테이너(.section-search) 의 z-index 90 보다 항상 위에 위치하도록.
+     같은 z-index 면 DOM 순서상 검색창이 후행이라 헤더 위에 떠 보이는 회귀가 있었음. */
+  z-index: 100;
   padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid rgba(44, 41, 37, 0.08);
   background: #fffaf3;
