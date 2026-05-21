@@ -1291,14 +1291,14 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
 <meta property="og:title" content="{data.post_title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{post_canonical}">
-<meta property="og:image" content="{SITE_URL}/og-image.jpg">
+<meta property="og:image" content="{SITE_URL}/og-image-v2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/jpeg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{data.post_title}">
 <meta name="twitter:description" content="{desc}">
-<meta name="twitter:image" content="{SITE_URL}/og-image.jpg">
+<meta name="twitter:image" content="{SITE_URL}/og-image-v2.jpg">
 <meta name="robots" content="{robots_directive}">
 <script type="application/ld+json">
 {{
@@ -1312,7 +1312,7 @@ def save_post(data: PostData, html: str, output_root: Path) -> Path:
   "dateModified": "{data.notice_date}",
   "image": {{
     "@type": "ImageObject",
-    "url": "{SITE_URL}/og-image.jpg",
+    "url": "{SITE_URL}/og-image-v2.jpg",
     "width": 1200,
     "height": 630
   }},
