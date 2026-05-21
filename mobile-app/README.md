@@ -78,6 +78,7 @@ cd android
   - iOS 전면 광고: `ca-app-pub-8234120897033274/3304820769`
   - iOS 앱 오프닝: `ca-app-pub-8234120897033274/6142737093`
 - iOS 앱 ID: `ios/App/App/Info.plist` 의 `GADApplicationIdentifier` 키에 직접 명시 (`ca-app-pub-8234120897033274~4486344416`)
+- Android 앱 ID: `android/app/src/main/AndroidManifest.xml` 의 `com.google.android.gms.ads.APPLICATION_ID` meta-data 에 직접 명시 (`ca-app-pub-8234120897033274~3125849648`). **이 meta-data 가 없으면 Google Mobile Ads SDK 의 ContentProvider 가 앱 시작 시점에 IllegalStateException 으로 즉시 크래시함.**
 - ATT(App Tracking Transparency): iOS 14.5+ 에서 마운트 시 1 회 요청, 거부 시 비추적 광고로 자동 폴백
 - `VITE_ADMOB_USE_TEST=true` 또는 dev 빌드면 강제로 Google 공개 테스트 광고 사용
 

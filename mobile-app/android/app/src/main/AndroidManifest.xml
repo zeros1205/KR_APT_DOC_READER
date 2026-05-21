@@ -27,6 +27,12 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Google Mobile Ads SDK 는 ContentProvider 로 자동 초기화되며,
+             이 meta-data 가 없으면 앱 시작 시점에 IllegalStateException 으로 즉시 크래시. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8234120897033274~3125849648" />
     </application>
 
     <!-- Permissions -->
