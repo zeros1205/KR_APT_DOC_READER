@@ -25,12 +25,9 @@ import { isUpdateAvailable } from "./version";
 import {
   initializeAdMob,
   isAdMobSupported,
-  prepareAppOpen,
   requestTrackingConsent,
-  setBannerMode,
-  showAppOpen
+  setBannerMode
 } from "./admob";
-import { Preferences } from "@capacitor/preferences";
 import {
   defaultSettings,
   loadFavorites,
@@ -84,38 +81,6 @@ async function openStorePage(): Promise<void> {
 }
 const POSTS_PER_PAGE = 12;
 const PREFERRED_REGION_KEY = "__preferred__";
-
-// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰.
-const APP_OPEN_LAST_KEY = "apt-note:last_app_open_at";
-const APP_OPEN_MIN_GAP_MS = 4 * 60 * 60 * 1000;
-
-async function readNumberPref(key: string): Promise<number> {
-  try {
-    const raw = (await Preferences.get({ key })).value;
-    if (!raw) return 0;
-    const num = Number(raw);
-    return Number.isFinite(num) ? num : 0;
-  } catch {
-    return 0;
-  }
-}
-
-async function writeNumberPref(key: string, value: number): Promise<void> {
-  try {
-    await Preferences.set({ key, value: String(value) });
-  } catch {
-    // ignore
-  }
-}
-
-async function maybeShowAppOpenAd(): Promise<void> {
-  if (!isAdMobSupported()) return;
-  const lastTs = await readNumberPref(APP_OPEN_LAST_KEY);
-  const now = Date.now();
-  if (now - lastTs < APP_OPEN_MIN_GAP_MS) return;
-  const shown = await showAppOpen();
-  if (shown) await writeNumberPref(APP_OPEN_LAST_KEY, now);
-}
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -276,25 +241,10 @@ function App() {
     void (async () => {
       await requestTrackingConsent();
       await initializeAdMob();
-      // Interstitial 은 정책상 비활성화(상세 진입 시 출력 안 함). prepare 도 호출하지 않아
-      // SDK 가 광고를 미리 로드하지도 않게 둠. 재활성화 시 prepareInterstitial() 추가.
-      void prepareAppOpen();
+      // Interstitial / App Open 광고는 정책상 비활성화. 재활성화 시 admob.ts 의
+      // prepareInterstitial() / prepareAppOpen() 호출과 트리거 useEffect 복원 필요.
     })();
   }, []);
-
-  // 콜드 스타트 시 App Open 광고 트리거. 인트로 사라진 후, 온보딩이 떠있지 않을 때 1 회만.
-  const appOpenColdStartTriggeredRef = useRef(false);
-  useEffect(() => {
-    if (appOpenColdStartTriggeredRef.current) return;
-    if (!isAdMobSupported()) return;
-    if (loading || introVisible) return;
-    if (!settingsLoadedRef.current) return;
-    if (shouldShowOnboarding(settings)) return;
-    appOpenColdStartTriggeredRef.current = true;
-    // 광고 로드 시간 확보 위해 약간 지연.
-    const timer = window.setTimeout(() => void maybeShowAppOpenAd(), 800);
-    return () => window.clearTimeout(timer);
-  }, [loading, introVisible, settings]);
 
   // 광고 모드를 한 곳에서 계산. native SDK 호출 + main 컨테이너 className 양쪽에서 활용.
   // 정책(2026-05):
@@ -303,14 +253,18 @@ function App() {
   //   - 설정 메인: large-bottom (LARGE_BANNER 320x100, 중간 크기)
   //   - 설정 서브페이지(알림/관심지역/즐겨찾기 관리) + 즐겨찾기 항목 있음:
   //     adaptive (작은 가로 배너)
-  const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
+  const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-center" = useMemo(() => {
+    // 정책(2026-05 v4): 설정 페이지에만 시범 노출. 그 외 모든 화면 광고 없음.
+    //   - 메인/상세/인트로/온보딩/즐겨찾기: none
+    //   - 설정 메인: large-bottom (LARGE_BANNER 320x100)
+    //   - 설정 서브페이지(알림/관심지역/즐겨찾기 관리): adaptive
+    //   - Android 종료 다이얼로그: mrec-center (iOS 는 트리거 없음)
     if (introVisible || onboardingVisible) return "none";
     if (exitDialogVisible) return "mrec-center";
-    if (view === "detail" || view === "home") return "none";
-    if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
     if (view === "settings" && settingsPage === "main") return "large-bottom";
-    return "adaptive";
-  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length, settingsPage]);
+    if (view === "settings") return "adaptive";
+    return "none";
+  }, [introVisible, onboardingVisible, exitDialogVisible, view, settingsPage]);
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
@@ -365,11 +319,7 @@ function App() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     const handle = CapacitorApp.addListener("appStateChange", ({ isActive }) => {
-      if (isActive) {
-        void refreshPosts();
-        // foreground 복귀 시 App Open 광고. 4 시간 룰 충족 시에만 표시.
-        void maybeShowAppOpenAd();
-      }
+      if (isActive) void refreshPosts();
     });
     return () => {
       void handle.then((h) => h.remove());
@@ -879,7 +829,6 @@ function App() {
         "app-shell",
         view === "detail" ? "detail-mode" : "",
         // 광고 모드별 클래스 — padding 보정 + 광고 영역 배경 ::after 두 가지 모두 활용.
-        bannerMode === "mrec-bottom" ? "with-ad-mrec-bottom" :
         bannerMode === "large-bottom" ? "with-ad-large-bottom" :
         bannerMode === "adaptive" ? "with-ad-adaptive" : ""
       ]
