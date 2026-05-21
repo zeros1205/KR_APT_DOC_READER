@@ -1,7 +1,12 @@
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 
 platform :ios, '14.0'
-use_frameworks!
+
+# Static linking + modular frameworks.
+# AdMob/Firebase 같은 대형 SDK 에서 dead-code stripping 이 dynamic framework 경계를
+# 넘어 동작하지 않는 문제를 피하려고 :linkage => :static 를 사용.
+# Capacitor 6+ / Firebase 10+ 모두 정적 링크 공식 지원.
+use_frameworks! :linkage => :static
 
 # workaround to avoid Xcode caching of Pods that requires
 # Product -> Clean Build Folder after new Cordova plugins installed
@@ -10,7 +15,6 @@ install! 'cocoapods', :disable_input_output_paths => true
 
 def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
   pod 'CapacitorBrowser', :path => '../../node_modules/@capacitor/browser'
   pod 'CapacitorPreferences', :path => '../../node_modules/@capacitor/preferences'
@@ -20,18 +24,35 @@ end
 
 target 'App' do
   capacitor_pods
-  # Firebase Cloud Messaging (FCM) — APNs 토큰을 Firebase 토큰으로 교환
-  pod 'Firebase/Messaging'
+  # Firebase Cloud Messaging (FCM) — APNs 토큰을 Firebase 토큰으로 교환.
+  # 'Firebase/Messaging' umbrella subspec 대신 modular pod 을 사용해 잠재적인
+  # Analytics 등 부수 모듈 끌어오기를 차단하고, 정적 링크 시 사이즈 절감을 극대화.
+  pod 'FirebaseMessaging'
 end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
+      # 기존 서명 워크어라운드 유지 (Xcode 가 자동 서명을 적용하도록 위임)
       config.build_settings.delete('PROVISIONING_PROFILE_SPECIFIER')
       config.build_settings.delete('PROVISIONING_PROFILE')
       config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
       config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+
+      # Release 빌드에 한해서 사이즈 최적화 플래그 부여.
+      # Debug 에 적용하면 디버거 / 증분 빌드 가 느려지므로 분기.
+      if config.name == 'Release'
+        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
+        config.build_settings['SWIFT_COMPILATION_MODE'] = 'wholemodule'
+        config.build_settings['GCC_OPTIMIZATION_LEVEL'] = 's'
+        config.build_settings['LLVM_LTO'] = 'YES_THIN'
+        config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
+        config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'YES'
+        config.build_settings['STRIP_STYLE'] = 'all'
+        config.build_settings['DEPLOYMENT_POSTPROCESSING'] = 'YES'
+        config.build_settings['ENABLE_BITCODE'] = 'NO'
+      end
     end
   end
 end
