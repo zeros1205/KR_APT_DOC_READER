@@ -109,34 +109,34 @@ jobs:
         env:
           PLATFORM: ${{ inputs.platform }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           ios_version=""
           android_version=""
 
-          if [ "$PLATFORM" = "ios" ] || [ "$PLATFORM" = "both" ]; then
-            echo "::group::iOS — App Store Connect"
-            out="$(python scripts/check_store_version.py --platform ios)"
+          # Run the check, ALWAYS print stdout, then branch on exit code.
+          # With `set -e` + `out=$(...)`, a non-zero exit would abort the
+          # script before we could echo the reason — exactly what hid the
+          # last failure. Using `&& rc=0 || rc=$?` keeps -e happy and
+          # captures the real code.
+          check() {
+            local platform="$1" varname="$2"
+            local out rc
+            out="$(python scripts/check_store_version.py --platform "$platform")" && rc=0 || rc=$?
+            echo "::group::$platform"
             echo "$out"
-            ios_version="$(printf '%s' "$out" | jq -r '.version // ""')"
-            if [ -z "$ios_version" ]; then
-              echo "no live iOS version available (still in review / no release)" >&2
-              echo "::endgroup::"
-              exit 2
-            fi
             echo "::endgroup::"
-          fi
+            case "$rc" in
+              0)  printf -v "$varname" '%s' "$(printf '%s' "$out" | jq -r '.version // ""')" ;;
+              2)  echo "no live $platform version (still in review / staged rollout / no release)" >&2; exit 2 ;;
+              *)  echo "$platform check failed (exit $rc) — see reason above" >&2; exit 1 ;;
+            esac
+          }
 
+          if [ "$PLATFORM" = "ios" ] || [ "$PLATFORM" = "both" ]; then
+            check ios ios_version
+          fi
           if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
-            echo "::group::Android — Play Developer API"
-            out="$(python scripts/check_store_version.py --platform android)"
-            echo "$out"
-            android_version="$(printf '%s' "$out" | jq -r '.version // ""')"
-            if [ -z "$android_version" ]; then
-              echo "no live Android version available (still in review / staged rollout)" >&2
-              echo "::endgroup::"
-              exit 2
-            fi
-            echo "::endgroup::"
+            check android android_version
           fi
 
           echo "ios_version=$ios_version" >> "$GITHUB_OUTPUT"
