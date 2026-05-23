@@ -53,7 +53,7 @@
     "pdf_path": null,
     "collected_at": "2026-05-23T00:07:30.398879",
     "readmission_limit": "3년",
-    "resale_restriction": "10",
+    "resale_restriction": "10년",
     "live_requirement": "없음",
     "price_cap": "적용",
     "regulated_zone": "비규제지역"
@@ -273,7 +273,7 @@
     "is_hot_zone": "N",
     "is_regulated_zone": "N",
     "readmission_limit": "3년",
-    "resale_restriction": "10",
+    "resale_restriction": "10년",
     "live_requirement": "없음",
     "price_cap": "적용",
     "is_price_cap": "Y",
@@ -281,7 +281,7 @@
     "query": "auto-applied from notice_urls.md",
     "evidence_urls": [],
     "evidence_notes": [],
-    "checked_at": "2026-05-23T15:16:09+09:00"
+    "checked_at": "2026-05-23T15:18:32+09:00"
   },
   "manual_finance": {
     "contract_ratio": "10",
