@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9988A타입 | 전용 86.3427㎡ | 일반 42세대 | 특별 71세대 | 분양가 57810만원\n084.9967A타입 | 전용 120.8096㎡ | 일반 93세대 | 특별 167세대 | 분양가 74630만원\n084.9688B타입 | 전용 120.8784㎡ | 일반 55세대 | 특별 92세대 | 분양가 73410만원\n084.9863C타입 | 전용 120.7919㎡ | 일반 93세대 | 특별 164세대 | 분양가 72030만원\n113.9765A타입 | 전용 160.3304㎡ | 일반 157세대 | 특별 23세대 | 분양가 88840만원\n182.8889A타입 | 전용 261.8843㎡ | 일반 2세대 | 특별 0세대 | 분양가 178890만원\n182.0759B타입 | 전용 262.0506㎡ | 일반 1세대 | 특별 0세대 | 분양가 179000만원\n182.1642C타입 | 전용 258.5969㎡ | 일반 1세대 | 특별 0세대 | 분양가 178950만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-23T00:07:30.398879"
+    "collected_at": "2026-05-23T00:07:30.398879",
+    "readmission_limit": "3년",
+    "resale_restriction": "10",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)호반건설",
@@ -262,5 +267,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "3년",
+    "resale_restriction": "10",
+    "live_requirement": "없음",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-23T14:46:53+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-23T14:46:53+09:00"
+  }
 }
