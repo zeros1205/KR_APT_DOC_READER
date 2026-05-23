@@ -59,24 +59,12 @@ jobs:
 
           KST_TIME="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           JOB_STATUS="${{ job.status }}"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          SHORT_MSG="$(echo "$COMMIT_MSG" | head -1 | cut -c1-60)"
-
-          if [ "$JOB_STATUS" = "success" ]; then
-            ICON="🚀"
-          else
-            ICON="❌"
-          fi
-
-          MESSAGE="${ICON} Cloudflare Pages 자동 배포 ${JOB_STATUS} (${KST_TIME})
-
-커밋: ${SHORT_MSG}
-실행 로그: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
+          SHORT_MSG="$(echo '${{ github.event.head_commit.message }}' | head -1 | cut -c1-60)"
+          if [ "$JOB_STATUS" = "success" ]; then ICON="🚀"; else ICON="❌"; fi
+          MSG="${ICON} Cloudflare Pages ${JOB_STATUS} (${KST_TIME}) | ${SHORT_MSG} | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=${MESSAGE}" \
-            > /dev/null
+            --data-urlencode "text=${MSG}" > /dev/null
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
