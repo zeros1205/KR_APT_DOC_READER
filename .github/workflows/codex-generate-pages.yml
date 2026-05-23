@@ -126,11 +126,13 @@ jobs:
 
       - name: Patch newly created posts with v3 location analysis
         # generate_posts_from_cache.py 가 만든 SECTION 2 는 v1 본문 (3섹션, 이모지 없음).
-        # 신규 단지의 location_v3.json 이 없는 상태이므로, 같은 단지를
-        # patch_posts_location_v3.py --targets 로 곧바로 v3 본문(5섹션·이모지·가드레일)
-        # 으로 덮어쓰기. 이미 v3 패치된 단지는 자동 skip.
+        # 두 가지 케이스를 처리:
+        #   A) NEW_IDS   — location_v3.json 없는 신규 단지 → Gemini LLM 호출 + v3 패치
+        #   B) REPATCH_IDS — --include-processed 재생성으로 v3 퇴행한 단지
+        #                    (location_v3.json은 있지만 post.html 에 v3-readable 없음)
+        #                    → LLM 재호출 없이 캐시로 SECTION 2 만 재생성 (비용 0)
         run: |
-          # location_v3.json 없는 모든 단지(active + past) 자동 추출.
+          # A. location_v3.json 없는 신규 단지
           NEW_IDS=$(python - <<'PY'
           import sys
           sys.path.insert(0, "tools")
@@ -143,16 +145,42 @@ jobs:
           PY
           )
 
-          if [ -z "$NEW_IDS" ]; then
-            echo "[v3-auto-patch] 신규 단지 없음 — skip"
+          # B. --include-processed 재생성으로 v3 → v1 퇴행한 단지
+          #    location_v3.json 존재 + post.html 에 "v3-readable" 없으면 퇴행 판정.
+          REPATCH_IDS=$(python - <<'PY'
+          from pathlib import Path
+          posts_dir = Path("output/posts")
+          regressed = []
+          for post_dir in sorted(posts_dir.iterdir()):
+              if not post_dir.is_dir():
+                  continue
+              v3_json = post_dir / "location_v3.json"
+              post_html = post_dir / "post.html"
+              if v3_json.exists() and post_html.exists():
+                  if "v3-readable" not in post_html.read_text(encoding="utf-8"):
+                      regressed.append(post_dir.name)
+          print(" ".join(regressed))
+          PY
+          )
+
+          if [ -z "$NEW_IDS" ] && [ -z "$REPATCH_IDS" ]; then
+            echo "[v3-auto-patch] 신규·퇴행 단지 없음 — skip"
             exit 0
           fi
-          echo "[v3-auto-patch] 대상: $NEW_IDS"
 
-          # checkpoint=5 — 신규 단지는 보통 소수라 자주 push 해도 부담 없음.
           export PATCH_CHECKPOINT_EVERY=5
           set +e
-          python tools/patch_posts_location_v3.py --targets $NEW_IDS --checkpoint-every 5 2>&1 | tee -a /tmp/generate_log.txt
+
+          if [ -n "$NEW_IDS" ]; then
+            echo "[v3-auto-patch] 신규(LLM) 대상: $NEW_IDS"
+            python tools/patch_posts_location_v3.py --targets $NEW_IDS --checkpoint-every 5 2>&1 | tee -a /tmp/generate_log.txt
+          fi
+
+          if [ -n "$REPATCH_IDS" ]; then
+            echo "[v3-repatch] 퇴행 단지(캐시 재사용) 대상: $REPATCH_IDS"
+            python tools/patch_posts_location_v3.py --targets $REPATCH_IDS --repatch-only 2>&1 | tee -a /tmp/generate_log.txt
+          fi
+
           set -e
 
       - name: Verify frozen UI files after generation
