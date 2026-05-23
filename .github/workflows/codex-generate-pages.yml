@@ -237,16 +237,12 @@ jobs:
         #     wrangler-action@v3 가 강제로 Node.js 24 로 실행됨
         #   - 매 실행마다 wrangler@4.x 감지 실패 → 3.90.0 재설치 (6s 낭비)
         #   - wrangler@3.90.0 은 최신(4.94.0) 대비 API 호환성 위험
-        # [해결] npm 으로 최신 wrangler 를 shell 에서 직접 설치·실행:
-        #   - Node.js 버전 강제(FORCE_JAVASCRIPT_ACTIONS_TO_NODE24) 영향 없음
-        #   - 항상 wrangler@latest(4.x) 사용
-        #   - --branch main: production 배포 명시
-        #   - --commit-dirty=true: git 워킹 트리 uncommitted 경고 억제
+        # [해결] npx 로 wrangler@3.90.0 직접 실행 — GitHub Actions 에서 검증된 방식.
+        # (npm install -g 는 ubuntu 러너에서 PATH 미반영 문제가 있고,
+        #  wrangler@4.x 는 v3 대비 동작 변경으로 실패 가능성 있어 v3.90.0 고정)
         run: |
-          npm install -g wrangler
-          wrangler pages deploy output \
+          npx --yes wrangler@3.90.0 pages deploy output \
             --project-name kr-apt-doc-reader \
-            --branch main \
             --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
