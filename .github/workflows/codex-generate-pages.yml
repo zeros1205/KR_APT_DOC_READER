@@ -44,6 +44,13 @@ env:
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
+concurrency:
+  # cloudflare-pages-auto-deploy.yml 과 같은 그룹 — 동시 배포 충돌 방지.
+  # 수동 generate-pages 실행이 가장 최신이므로 cancel-in-progress: true 로
+  # 자동 배포 워크플로우의 진행 중 배포를 취소하고 이 실행이 이어받음.
+  group: cloudflare-pages-deploy
+  cancel-in-progress: true
+
 jobs:
   generate-pages:
     runs-on: ubuntu-latest
@@ -225,14 +232,25 @@ jobs:
           fi
 
       - name: Deploy to Cloudflare Pages
-        # git push 만으로는 Cloudflare Pages 자동 배포가 보장되지 않으므로
-        # wrangler로 명시적으로 배포. CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
-        # 시크릿은 cloudflare-worker-deploy.yml 과 공유.
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy output --project-name kr-apt-doc-reader
+        # [수정] wrangler-action@v3 폐기 이유:
+        #   - FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true 환경에서 Node.js 20 빌드인
+        #     wrangler-action@v3 가 강제로 Node.js 24 로 실행됨
+        #   - 매 실행마다 wrangler@4.x 감지 실패 → 3.90.0 재설치 (6s 낭비)
+        #   - wrangler@3.90.0 은 최신(4.94.0) 대비 API 호환성 위험
+        # [해결] npm 으로 최신 wrangler 를 shell 에서 직접 설치·실행:
+        #   - Node.js 버전 강제(FORCE_JAVASCRIPT_ACTIONS_TO_NODE24) 영향 없음
+        #   - 항상 wrangler@latest(4.x) 사용
+        #   - --branch main: production 배포 명시
+        #   - --commit-dirty=true: git 워킹 트리 uncommitted 경고 억제
+        run: |
+          npm install -g wrangler
+          wrangler pages deploy output \
+            --project-name kr-apt-doc-reader \
+            --branch main \
+            --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Notify Telegram when page generation is complete
         if: always()
