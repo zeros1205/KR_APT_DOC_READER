@@ -102,6 +102,44 @@ jobs:
             echo "No cache changes."
           fi
 
+      - name: Refresh posts index (grey-status daily sync)
+        # 당첨자 발표일이 지난 공고 카드의 그레이 헤더를 실시간 반영.
+        # codex-generate-pages.yml 이 수동 실행되지 않더라도 하루 3회 자동으로
+        # posts_index.json / posts_index.js 를 오늘 날짜 기준으로 재빌드.
+        # render_shell=False → index.html 은 건드리지 않고 동적 데이터만 갱신.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          python - <<'PY'
+          from pipeline.index_renderer import build_front_index
+          build_front_index(render_shell=False)
+          PY
+
+          # 변경된 파일이 있을 때만 커밋
+          if git diff --quiet output/posts_index.json output/posts_index.js output/sitemap.xml output/robots.txt \
+             && [ -z "$(git ls-files --others --exclude-standard \
+                          output/posts_index.json output/posts_index.js \
+                          output/sitemap.xml output/robots.txt)" ]; then
+            echo "[index-refresh] posts_index unchanged — skip commit"
+            exit 0
+          fi
+
+          # 병렬 push 충돌 방지: stash → rebase → pop 패턴
+          git stash push -u -m "index-refresh-before-rebase"
+          git pull --rebase origin main
+          git stash pop
+
+          git add -f output/posts_index.json output/posts_index.js \
+                     output/sitemap.xml output/robots.txt
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh posts index [$(TZ=Asia/Seoul date '+%Y-%m-%d')]"
+            git push
+          else
+            echo "[index-refresh] No diff after rebase — skip commit"
+          fi
+
       - name: Notify Telegram when notice collection is complete
         if: always()
         run: |
