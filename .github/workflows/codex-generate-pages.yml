@@ -196,6 +196,16 @@ jobs:
             echo "No generated page changes."
           fi
 
+      - name: Deploy to Cloudflare Pages
+        # git push 만으로는 Cloudflare Pages 자동 배포가 보장되지 않으므로
+        # wrangler로 명시적으로 배포. CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
+        # 시크릿은 cloudflare-worker-deploy.yml 과 공유.
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy output --project-name kr-apt-doc-reader
+
       - name: Notify Telegram when page generation is complete
         if: always()
         run: |
