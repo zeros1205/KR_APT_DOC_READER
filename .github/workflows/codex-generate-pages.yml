@@ -222,7 +222,10 @@ jobs:
           # 제외. 디자인 갱신은 디자이너가 직접 output/ 에 업로드하고 별도 PR 로 머지.
           # manifest.json / site.webmanifest 는 JSON 텍스트라 안정적이므로 유지.
           git add -f output/posts output/posts_index.json output/posts_index.js output/sitemap.xml output/robots.txt output/processed_notices.json \
-            output/manifest.json output/site.webmanifest
+            output/manifest.json output/site.webmanifest \
+            output/ads.txt output/app-ads.txt output/_headers output/_redirects \
+            output/index.html output/404.html output/about.html output/privacy.html \
+            output/terms.html output/support.html output/editorial-policy.html
 
           if ! git diff --cached --quiet; then
             git commit -m "chore: generate pages [$(date +%Y-%m-%d)]"
