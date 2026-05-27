@@ -257,6 +257,22 @@ jobs:
         working-directory: mobile-app/android
         run: ./gradlew clean bundleRelease assembleRelease -PandroidVersionCode="$RELEASE_VERSION_CODE" -PandroidVersionName="$RELEASE_VERSION_NAME" --no-daemon --stacktrace
 
+      - name: Verify AD_ID permission in merged manifest
+        run: |
+          set -euo pipefail
+          MERGED="mobile-app/android/app/build/intermediates/merged_manifests/release/AndroidManifest.xml"
+          if [ ! -f "$MERGED" ]; then
+            MERGED="mobile-app/android/app/build/intermediates/merged_manifest/release/AndroidManifest.xml"
+          fi
+          echo "--- Merged manifest: $MERGED ---"
+          cat "$MERGED"
+          echo "---"
+          if ! grep -q "com.google.android.gms.permission.AD_ID" "$MERGED"; then
+            echo "::error::AD_ID permission missing from merged manifest. Play Console will reject this build."
+            exit 1
+          fi
+          echo "AD_ID permission verified in merged manifest."
+
       - name: Verify signed outputs
         run: |
           set -euo pipefail
