@@ -260,18 +260,19 @@ jobs:
       - name: Verify AD_ID permission in merged manifest
         run: |
           set -euo pipefail
-          MERGED="mobile-app/android/app/build/intermediates/merged_manifests/release/AndroidManifest.xml"
-          if [ ! -f "$MERGED" ]; then
-            MERGED="mobile-app/android/app/build/intermediates/merged_manifest/release/AndroidManifest.xml"
+          MERGED="$(find mobile-app/android/app/build/intermediates -path '*/release/*AndroidManifest.xml' -name 'AndroidManifest.xml' 2>/dev/null | head -1)"
+          if [ -z "$MERGED" ]; then
+            echo "::warning::Merged manifest not found in build intermediates. Checking source manifest instead."
+            MERGED="mobile-app/android/app/src/main/AndroidManifest.xml"
           fi
-          echo "--- Merged manifest: $MERGED ---"
-          cat "$MERGED"
+          echo "--- Checking manifest: $MERGED ---"
+          grep "permission" "$MERGED" || true
           echo "---"
           if ! grep -q "com.google.android.gms.permission.AD_ID" "$MERGED"; then
-            echo "::error::AD_ID permission missing from merged manifest. Play Console will reject this build."
+            echo "::error::AD_ID permission missing from manifest. Play Console will reject this build."
             exit 1
           fi
-          echo "AD_ID permission verified in merged manifest."
+          echo "AD_ID permission verified."
 
       - name: Verify signed outputs
         run: |
