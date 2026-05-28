@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-23T09:07:34+09:00",
-  "count": 223,
-  "ready_count": 223,
+  "generated_at": "2026-05-28T09:00:42+09:00",
+  "count": 224,
+  "ready_count": 224,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1151,6 +1151,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000096.json"
+    },
+    {
+      "notice_id": "2026000097",
+      "apt_name": "강릉 성보필리오 더센트럴힐즈",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000097.json"
     },
     {
       "notice_id": "2026000098",
