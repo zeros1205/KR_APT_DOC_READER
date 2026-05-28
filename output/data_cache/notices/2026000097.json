@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.6730A타입 | 전용 79.3355㎡ | 일반 7세대 | 특별 6세대 | 분양가 42430만원\n059.9798B타입 | 전용 85.8544㎡ | 일반 23세대 | 특별 29세대 | 분양가 46559만원\n074.9678 타입 | 전용 100.7908㎡ | 일반 23세대 | 특별 26세대 | 분양가 54175만원\n084.5203 타입 | 전용 111.0629㎡ | 일반 16세대 | 특별 18세대 | 분양가 60248만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-28T00:00:37.927163"
+    "collected_at": "2026-05-28T00:00:37.927163",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "홍제지역주택조합",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-28T09:08:54+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-28T09:08:54+09:00"
+  }
 }
