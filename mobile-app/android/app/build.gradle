@@ -65,6 +65,11 @@ android {
             }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 네이티브 디버그 심볼을 AAB에 포함시켜 Play Console의 크래시/ANR 분석을 개선.
+            // (Play Console 경고: "아직 디버그 기호가 업로드되지 않았습니다")
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
         }
     }
 }
@@ -78,6 +83,8 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.activity:activity:$androidxActivityVersion"
+    implementation "androidx.core:core:$androidxCoreVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation platform("com.google.firebase:firebase-bom:34.12.0")
