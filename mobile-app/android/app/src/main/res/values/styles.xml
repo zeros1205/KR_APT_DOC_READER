@@ -18,5 +18,8 @@
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <!-- 스플래시 종료 후 적용할 런타임 테마. 누락 시 액션바가 있는 테마로 남아
+             앱 라벨("청약노트")+아이콘이 모든 페이지 헤더 위에 상주하는 회귀가 발생. -->
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>
