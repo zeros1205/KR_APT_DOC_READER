@@ -149,7 +149,10 @@ export async function requestTrackingConsent(): Promise<void> {
 // SDK 는 한 번에 banner view 한 개만 다루므로, 모든 banner/MREC 전환을 한 함수에서 처리.
 // mode 별 광고 단위 / 사이즈 / 위치:
 //   "adaptive"      : 일반 하단 sticky banner   — 배너 단위 ID, ADAPTIVE_BANNER (~60px), BOTTOM_CENTER
-//   "large-bottom"  : 설정 메인 페이지 하단      — 배너 단위 ID, LARGE_BANNER (320x100), BOTTOM_CENTER
+//   "large-bottom"  : 설정 메인 페이지 하단      — 배너 단위 ID, ADAPTIVE_BANNER (풀폭), BOTTOM_CENTER
+//       (구) LARGE_BANNER(320x100 고정) 은 plugin 이 (화면폭-광고폭)/2 좌우 여백으로
+//       중앙 정렬하는데, targetSdk 35 edge-to-edge 에서 이 여백 계산이 어긋나 배너가
+//       한쪽으로 쏠리는 회귀가 있었다. 풀폭 ADAPTIVE 는 여백 계산이 필요 없어 항상 균형.
 //   "mrec-center"   : 종료 다이얼로그 중앙 광고   — MREC 단위 ID, MEDIUM_RECTANGLE (300x250), CENTER
 //   "mrec-bottom"   : 즐겨찾기 빈 화면 하단      — 배너 단위 ID, MEDIUM_RECTANGLE (300x250), BOTTOM_CENTER
 export async function setBannerMode(target: ActiveBanner): Promise<void> {
@@ -168,8 +171,7 @@ export async function setBannerMode(target: ActiveBanner): Promise<void> {
     if (target === "none") return;
     const adId = target === "mrec-center" ? resolveMrecAdId() : resolveBannerAdId();
     const adSize =
-      target === "adaptive" ? mod.BannerAdSize.ADAPTIVE_BANNER :
-      target === "large-bottom" ? mod.BannerAdSize.LARGE_BANNER :
+      target === "adaptive" || target === "large-bottom" ? mod.BannerAdSize.ADAPTIVE_BANNER :
       mod.BannerAdSize.MEDIUM_RECTANGLE;
     const position =
       target === "mrec-center" ? mod.BannerAdPosition.CENTER : mod.BannerAdPosition.BOTTOM_CENTER;
