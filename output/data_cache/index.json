@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-28T09:00:42+09:00",
-  "count": 224,
-  "ready_count": 224,
+  "generated_at": "2026-05-30T09:09:52+09:00",
+  "count": 227,
+  "ready_count": 227,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1510,6 +1510,13 @@
       "cache_path": "output/data_cache/notices/2026000178.json"
     },
     {
+      "notice_id": "2026000184",
+      "apt_name": "익산 펠리피아",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000184.json"
+    },
+    {
       "notice_id": "2026000185",
       "apt_name": "덕진 거제의 봄 우선분양전환 후 공가세대",
       "requires_manual_input": false,
@@ -1559,6 +1566,13 @@
       "cache_path": "output/data_cache/notices/2026000219.json"
     },
     {
+      "notice_id": "2026000230",
+      "apt_name": "화성동탄2지구 C-27블록 공공분양주택",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000230.json"
+    },
+    {
       "notice_id": "2026820002",
       "apt_name": "시흥하중지구 A1블록 신혼희망타운(공공분양)(본청약)",
       "requires_manual_input": false,
@@ -1571,6 +1585,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026820003.json"
+    },
+    {
+      "notice_id": "2026820004",
+      "apt_name": "e편한세상 분당 퍼스트빌리지(성남낙생지구 A-1BL) 신혼희망타운(공공분양)(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026820004.json"
     }
   ]
 }
