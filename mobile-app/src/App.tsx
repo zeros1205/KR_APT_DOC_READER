@@ -306,7 +306,10 @@ function App() {
   //     adaptive (작은 가로 배너)
   const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
     if (introVisible || onboardingVisible) return "none";
-    if (exitDialogVisible) return "mrec-center";
+    // 종료 다이얼로그는 하단 시트 디자인. MREC 를 화면 하단(BOTTOM_CENTER)에 앵커해
+    // 시트 맨 아래 슬롯과 겹치게 한다. (구) CENTER 는 edge-to-edge 에서 화면 중앙
+    // 계산이 어긋나 광고가 위로 떠 제목을 덮는 회귀가 있었다.
+    if (exitDialogVisible) return "mrec-bottom";
     if (view === "detail" || view === "home") return "none";
     if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
     if (view === "settings" && settingsPage === "main") return "large-bottom";
@@ -1221,9 +1224,10 @@ function ConfirmDialog({
 }
 
 function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
-  // 본 다이얼로그의 중앙 광고 슬롯은 시각적 placeholder.
-  // 실제 광고는 @capacitor-community/admob 의 Medium Rectangle 배너가
-  // 화면 정중앙 native overlay 로 표시되어 이 자리에 겹친다.
+  // 하단 시트 디자인: 헤더·버튼은 위, 광고 슬롯은 시트 맨 아래.
+  // 슬롯은 시각적 placeholder 이고, 실제 광고는 @capacitor-community/admob 의
+  // Medium Rectangle 배너가 화면 하단(BannerAdPosition.BOTTOM_CENTER) native
+  // overlay 로 표시되어 이 자리에 겹친다.
   return (
     <div className="exit-dialog-backdrop" role="presentation">
       <section
@@ -1237,7 +1241,6 @@ function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: 
           <h2 id="exit-dialog-title">앱을 종료하시겠어요?</h2>
           <p>분양공고는 매일 새로 업데이트해 둘게요.</p>
         </header>
-        <div className="exit-dialog-ad-slot" aria-hidden="true" />
         <div className="exit-dialog-actions">
           <button className="exit-dialog-cancel" type="button" onClick={onCancel}>
             돌아가기
@@ -1246,6 +1249,7 @@ function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: 
             앱 종료하기
           </button>
         </div>
+        <div className="exit-dialog-ad-slot" aria-hidden="true" />
       </section>
     </div>
   );

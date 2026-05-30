@@ -585,27 +585,29 @@ button {
   color: #fff;
 }
 
-/* 종료 다이얼로그: 가운데 광고(Medium Rectangle 300x250) 영역을 비워두고
-   AdMob native overlay 가 그 자리에 겹치도록 한다. */
+/* 종료 다이얼로그: 하단 시트. 헤더·버튼은 위, 광고(Medium Rectangle 300x250)
+   슬롯은 시트 맨 아래에 둔다. AdMob native overlay 가 화면 하단(BOTTOM_CENTER)에
+   표시되어 그 슬롯 자리에 겹친다. (즐겨찾기 빈 화면의 mrec-bottom 과 동일 앵커) */
 .exit-dialog-backdrop {
   position: fixed;
   inset: 0;
   z-index: 240;
   display: grid;
-  place-items: center;
-  padding: 16px;
+  align-items: end;
+  justify-items: center;
   background: rgba(44, 41, 37, 0.45);
 }
 
 .exit-dialog {
   display: grid;
   gap: 16px;
-  width: min(100%, 360px);
-  padding: 24px 20px 20px;
-  border-radius: 22px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 20px calc(8px + env(safe-area-inset-bottom));
+  border-radius: 22px 22px 0 0;
   background: #fff;
   color: var(--c-dark);
-  box-shadow: 0 28px 64px rgba(44, 41, 37, 0.32);
+  box-shadow: 0 -12px 48px rgba(44, 41, 37, 0.28);
 }
 
 .exit-dialog-header {
@@ -635,8 +637,9 @@ button {
   color: var(--c-mid);
 }
 
-/* AdMob Medium Rectangle 가 화면 정중앙(BannerAdPosition.CENTER)에 native overlay 로
-   표시되므로, JSX 측 슬롯은 자리 차지용 placeholder 만 둠. */
+/* AdMob Medium Rectangle 가 화면 하단(BannerAdPosition.BOTTOM_CENTER)에 native
+   overlay 로 표시되므로, 시트 맨 아래의 이 슬롯이 자리 차지용 placeholder 로서
+   그 광고와 겹친다. */
 .exit-dialog-ad-slot {
   width: 100%;
   min-height: 250px;
