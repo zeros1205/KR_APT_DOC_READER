@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Base application theme. 웹뷰(Capacitor) 앱이라 네이티브 액션바를 쓰지 않는다.
+         DarkActionBar 기반이면 앱 라벨("청약노트")+아이콘 액션바가 화면 상단에
+         상주하므로 NoActionBar 기반으로 둔다. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
