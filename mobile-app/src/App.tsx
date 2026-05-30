@@ -306,10 +306,13 @@ function App() {
   //     adaptive (작은 가로 배너)
   const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
     if (introVisible || onboardingVisible) return "none";
-    // 종료 다이얼로그는 하단 시트 디자인. MREC 를 화면 하단(BOTTOM_CENTER)에 앵커해
-    // 시트 맨 아래 슬롯과 겹치게 한다. (구) CENTER 는 edge-to-edge 에서 화면 중앙
-    // 계산이 어긋나 광고가 위로 떠 제목을 덮는 회귀가 있었다.
-    if (exitDialogVisible) return "mrec-bottom";
+    // 종료 다이얼로그는 하단 시트 디자인. 풀폭 ADAPTIVE 배너를 화면 하단
+    // (BOTTOM_CENTER)에 앵커해 시트 맨 아래 광고 띠와 겹치게 한다.
+    // 고정 크기(MREC/LARGE)는 plugin 이 화면폭 기반 좌우 여백으로 중앙정렬하는데
+    // edge-to-edge 에서 그 계산이 어긋나 좌측으로 쏠리는 미해결 버그가 있다
+    // (capacitor-community/admob #44·#54·#270). 풀폭 어댑티브는 여백 계산을
+    // 타지 않아 항상 균형 — 그래서 종료광고도 어댑티브로 통일.
+    if (exitDialogVisible) return "adaptive";
     if (view === "detail" || view === "home") return "none";
     if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
     if (view === "settings" && settingsPage === "main") return "large-bottom";
@@ -1224,9 +1227,9 @@ function ConfirmDialog({
 }
 
 function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
-  // 하단 시트 디자인: 헤더·버튼은 위, 광고 슬롯은 시트 맨 아래.
+  // 하단 시트 디자인: 헤더·버튼은 위, 광고 띠는 시트 맨 아래.
   // 슬롯은 시각적 placeholder 이고, 실제 광고는 @capacitor-community/admob 의
-  // Medium Rectangle 배너가 화면 하단(BannerAdPosition.BOTTOM_CENTER) native
+  // 풀폭 ADAPTIVE 배너가 화면 하단(BannerAdPosition.BOTTOM_CENTER) native
   // overlay 로 표시되어 이 자리에 겹친다.
   return (
     <div className="exit-dialog-backdrop" role="presentation">

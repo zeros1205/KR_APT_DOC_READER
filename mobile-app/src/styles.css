@@ -637,17 +637,12 @@ button {
   color: var(--c-mid);
 }
 
-/* AdMob Medium Rectangle 가 화면 하단(BannerAdPosition.BOTTOM_CENTER)에 native
-   overlay 로 표시되므로, 시트 맨 아래의 이 슬롯이 자리 차지용 placeholder 로서
-   그 광고와 겹친다. */
+/* 풀폭 ADAPTIVE 배너가 화면 하단(BannerAdPosition.BOTTOM_CENTER)에 native overlay
+   로 표시되므로, 시트 맨 아래의 이 풀폭 띠가 자리 차지용 placeholder 로서 그 광고와
+   겹친다. 풀폭이라 좌우 여백 계산을 안 타 항상 균형(좌측 쏠림 없음). */
 .exit-dialog-ad-slot {
-  /* MREC(300x250) 와 동일 크기·가로 중앙. native overlay 가 BOTTOM_CENTER 로
-     300x250 을 화면 하단 가로중앙에 띄우므로, 이 슬롯도 같은 크기로 두면
-     광고가 슬롯에 정확히 겹친다. 폭 100% 면 좌우에 회색이 남아 어긋나 보임. */
-  width: 300px;
-  max-width: 100%;
-  height: 250px;
-  margin-inline: auto;
+  width: 100%;
+  min-height: 64px;
   border-radius: 12px;
   background: rgba(44, 41, 37, 0.04);
 }
