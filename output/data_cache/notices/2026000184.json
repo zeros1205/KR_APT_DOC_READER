@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9949A타입 | 전용 112.3343㎡ | 일반 46세대 | 특별 48세대 | 분양가 41500만원\n084.9973B타입 | 전용 112.1895㎡ | 일반 145세대 | 특별 144세대 | 분양가 41800만원\n084.9964C타입 | 전용 112.5378㎡ | 일반 54세대 | 특별 56세대 | 분양가 41200만원\n104.9996 타입 | 전용 137.9154㎡ | 일반 69세대 | 특별 10세대 | 분양가 52000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-05-30T00:09:51.297285"
+    "collected_at": "2026-05-30T00:09:51.297285",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 창조디앤씨",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-05-30T09:15:47+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-05-30T09:15:47+09:00"
+  }
 }
