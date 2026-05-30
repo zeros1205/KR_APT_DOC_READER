@@ -8,7 +8,9 @@ Prints a single-line JSON status to stdout. Exit codes:
 iOS: App Store Connect, treats `appStoreState == READY_FOR_SALE` as live.
 Android: Google Play Developer API, treats a `production` track release
 with `status == "completed"` as live (staged `inProgress` rollouts do not
-count — not all users can install yet).
+count — not all users can install yet). If production has no completed
+release yet, falls back to the open testing (`beta`) track so an app that
+is still in public beta reports the beta version as its latest.
 """
 
 from __future__ import annotations
@@ -150,13 +152,39 @@ def current_live_android() -> int:
     )
     service = build("androidpublisher", "v3", credentials=creds, cache_discovery=False)
 
+    # production 을 최우선으로 보되, 아직 정식 출시 전(공개테스트 단계)이라
+    # production 에 완료된 릴리스가 없으면 open testing(beta) 트랙으로 폴백한다.
+    # 앱이 공개테스트 베타로만 배포된 상태에서도 "최신 버전" 이 동기화되도록.
+    # production 에 완료 릴리스가 생기면 그쪽이 항상 우선한다.
+    track_priority = ("production", "beta")
+    checked: list[dict[str, Any]] = []
     try:
         edit = service.edits().insert(packageName=BUNDLE_ID, body={}).execute()
         edit_id = edit["id"]
         try:
-            track = service.edits().tracks().get(
-                packageName=BUNDLE_ID, editId=edit_id, track="production",
-            ).execute()
+            for track_name in track_priority:
+                track = service.edits().tracks().get(
+                    packageName=BUNDLE_ID, editId=edit_id, track=track_name,
+                ).execute()
+                releases = track.get("releases") or []
+                # Pick the most recent fully-rolled-out release. Play orders
+                # releases newest first, but we filter explicitly so a
+                # halted/draft entry at the top never wins.
+                for release in releases:
+                    if release.get("status") == "completed":
+                        name = release.get("name")
+                        if name:
+                            _emit({"live": True, "state": "completed",
+                                   "version": name, "track": track_name})
+                            return 0
+                checked.append({
+                    "track": track_name,
+                    "releases": [
+                        {"name": r.get("name"), "status": r.get("status"),
+                         "userFraction": r.get("userFraction")}
+                        for r in releases
+                    ],
+                })
         finally:
             try:
                 service.edits().delete(packageName=BUNDLE_ID, editId=edit_id).execute()
@@ -165,24 +193,11 @@ def current_live_android() -> int:
     except HttpError as exc:
         return _fail(f"Play API HTTP {exc.status_code}: {exc.error_details or exc}")
 
-    releases = track.get("releases") or []
-    # Pick the most recent fully-rolled-out release. Play orders releases
-    # newest first, but we filter explicitly so a halted/draft entry at the
-    # top never wins.
-    for release in releases:
-        if release.get("status") == "completed":
-            name = release.get("name")
-            if name:
-                _emit({"live": True, "state": "completed", "version": name})
-                return 0
     _emit({
         "live": False,
         "state": "NO_LIVE_VERSION",
-        "reason": "no completed release on production track",
-        "track_releases": [
-            {"name": r.get("name"), "status": r.get("status"), "userFraction": r.get("userFraction")}
-            for r in releases
-        ],
+        "reason": "no completed release on production or beta (open testing) track",
+        "checked_tracks": checked,
     })
     return 2
 
