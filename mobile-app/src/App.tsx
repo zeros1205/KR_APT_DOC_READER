@@ -300,7 +300,8 @@ function App() {
   // 정책(2026-05):
   //   - 메인(home)/상세/인트로/온보딩: 광고 없음 (초기 retention 보호)
   //   - 즐겨찾기 빈 화면(메뉴 진입): mrec-bottom (콘텐츠 적은 자리 채움)
-  //   - 설정 메인: large-bottom (LARGE_BANNER 320x100, 중간 크기)
+  //   - 설정 메인: large-bottom (풀폭 ADAPTIVE_BANNER, BOTTOM_CENTER — 고정 320 배너는
+  //     edge-to-edge 에서 좌우 여백 계산이 어긋나 쏠리므로 풀폭으로 항상 중앙 균형)
   //   - 설정 서브페이지(알림/관심지역/즐겨찾기 관리) + 즐겨찾기 항목 있음:
   //     adaptive (작은 가로 배너)
   const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
