@@ -116,13 +116,16 @@ jobs:
             echo "::error::system-nav-scrim marker found. This is not the current mobile release baseline."
             exit 1
           fi
-          if grep -R "admob-bottom-active\|frontBottomBanner\|play-services-ads\|AptNoteAdsPlugin" \
+          # 과거에 제거한 커스텀 광고 구현(AptNoteAdsPlugin 등)의 재도입을 막는 가드.
+          # play-services-ads 는 종료 다이얼로그용 신규 NativeAdPlugin 이 의도적으로
+          # 사용하므로 가드에서 제외한다. 구 구현 마커는 계속 차단.
+          if grep -R "admob-bottom-active\|frontBottomBanner\|AptNoteAdsPlugin" \
             "$MOBILE_APP_DIR/src" \
             "$MOBILE_APP_DIR/android/app/build.gradle" \
             "$MOBILE_APP_DIR/android/app/src/main/AndroidManifest.xml" \
             "$MOBILE_APP_DIR/android/app/src/main/java" \
             "$MOBILE_APP_DIR/android/app/src/main/res/values" >/dev/null; then
-            echo "::error::AdMob marker found. Ads must stay removed until the Play Store release is ready for AdMob."
+            echo "::error::Legacy custom-ads marker found. The removed AptNoteAdsPlugin implementation must not be reintroduced."
             exit 1
           fi
 

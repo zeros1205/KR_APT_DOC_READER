@@ -30,6 +30,7 @@ import {
   setBannerMode,
   showAppOpen
 } from "./admob";
+import { hideNativeAd, showNativeAdInElement } from "./native-ad";
 import { Preferences } from "@capacitor/preferences";
 import {
   defaultSettings,
@@ -306,7 +307,9 @@ function App() {
   //     adaptive (작은 가로 배너)
   const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
     if (introVisible || onboardingVisible) return "none";
-    if (exitDialogVisible) return "mrec-center";
+    // 종료 다이얼로그는 커스텀 네이티브 광고(NativeAdPlugin)가 슬롯 좌표에 직접 렌더하므로
+    // capacitor-admob 배너는 띄우지 않는다 (ExitDialog 의 useEffect 가 네이티브 광고를 관리).
+    if (exitDialogVisible) return "none";
     if (view === "detail" || view === "home") return "none";
     if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
     if (view === "settings" && settingsPage === "main") return "large-bottom";
@@ -1221,9 +1224,24 @@ function ConfirmDialog({
 }
 
 function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
-  // 본 다이얼로그의 중앙 광고 슬롯은 시각적 placeholder.
-  // 실제 광고는 @capacitor-community/admob 의 Medium Rectangle 배너가
-  // 화면 정중앙 native overlay 로 표시되어 이 자리에 겹친다.
+  // 광고 슬롯은 자리(영역/크기/위치)를 잡는 placeholder 다. 실제 광고는 커스텀
+  // NativeAdPlugin 이 이 슬롯의 화면 좌표를 받아 그 위에 NativeAdView 로 직접 렌더한다.
+  // → 원하는 영역·사이즈·위치에 정확히 노출, SDK 표준 렌더로 추적/정책 준수.
+  const adSlotRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = adSlotRef.current;
+    if (!el) return;
+    // 레이아웃이 확정된 다음 프레임에 측정해야 좌표가 정확하다.
+    const raf = requestAnimationFrame(() => {
+      void showNativeAdInElement(el);
+    });
+    return () => {
+      cancelAnimationFrame(raf);
+      void hideNativeAd();
+    };
+  }, []);
+
   return (
     <div className="exit-dialog-backdrop" role="presentation">
       <section
@@ -1237,7 +1255,7 @@ function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: 
           <h2 id="exit-dialog-title">앱을 종료하시겠어요?</h2>
           <p>분양공고는 매일 새로 업데이트해 둘게요.</p>
         </header>
-        <div className="exit-dialog-ad-slot" aria-hidden="true" />
+        <div className="exit-dialog-ad-slot" ref={adSlotRef} aria-hidden="true" />
         <div className="exit-dialog-actions">
           <button className="exit-dialog-cancel" type="button" onClick={onCancel}>
             돌아가기

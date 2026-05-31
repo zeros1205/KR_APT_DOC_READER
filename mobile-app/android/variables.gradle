@@ -13,4 +13,6 @@ ext {
     androidxJunitVersion = '1.2.1'
     androidxEspressoCoreVersion = '3.6.1'
     cordovaAndroidVersion = '10.1.1'
+    // 커스텀 네이티브 광고 플러그인용. @capacitor-community/admob(7.2.0)와 동일 버전.
+    playServicesAdsVersion = '24.7.+'
 }

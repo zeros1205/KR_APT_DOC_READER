@@ -10,6 +10,8 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 커스텀 네이티브 광고 플러그인 등록 (bridge 초기화 전에 등록).
+        registerPlugin(NativeAdPlugin.class);
         // targetSdk 35 에서는 시스템이 edge-to-edge 를 자동 강제하므로 별도 호출이
         // 필요 없다. EdgeToEdge.enable() 을 호출하면 스플래시 윈도우의 인셋 계산이
         // 깨져 런치 스플래시(중앙 로고)가 화면 상단에 잔류하는 회귀가 발생했다.
