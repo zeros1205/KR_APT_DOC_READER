@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { usePullToRefresh } from "./usePullToRefresh";
 import {
   ArrowLeft,
@@ -41,6 +41,7 @@ import {
   syncDeviceWithBackend
 } from "./storage";
 import type { FavoriteNotice, NoticeCard, PushDataPayload, UserSettings } from "./types";
+import NativeAdSlot from "./native-ad/NativeAdSlot";
 
 const REGIONS = [
   "서울",
@@ -83,6 +84,8 @@ async function openStorePage(): Promise<void> {
   await Browser.open({ url: webUrl });
 }
 const POSTS_PER_PAGE = 12;
+// 카드 N개마다 네이티브 광고 1개 삽입(첫 화면 너무 이르지 않게 6번째 뒤부터).
+const AD_EVERY_N_CARDS = 6;
 const PREFERRED_REGION_KEY = "__preferred__";
 
 // AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰.
@@ -1402,6 +1405,7 @@ function HomeView(props: HomeProps) {
   const filterDockRef = useRef<HTMLDivElement | null>(null);
   const totalPages = Math.max(1, Math.ceil(props.cards.length / POSTS_PER_PAGE));
   const visibleCards = props.cards.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+  const adsSupported = isAdMobSupported();
 
   const suggestions = useMemo(() => {
     const q = props.query.trim().toLowerCase();
@@ -1573,16 +1577,27 @@ function HomeView(props: HomeProps) {
         {!props.error && !props.loading && props.cards.length > 0 && (
           <>
             <div className="cards-grid">
-              {visibleCards.map((card) => (
-                <NoticeCardItem
-                  card={card}
-                  isFavorite={props.favoriteIds.has(card.notice_id)}
-                  key={card.notice_id}
-                  onOpen={props.onOpen}
-                  onShare={props.onShare}
-                  onToggleFavorite={props.onToggleFavorite}
-                />
-              ))}
+              {visibleCards.map((card, index) => {
+                const showAd =
+                  adsSupported &&
+                  index > 0 &&
+                  (index + 1) % AD_EVERY_N_CARDS === 0 &&
+                  index < visibleCards.length - 1;
+                return (
+                  <Fragment key={card.notice_id}>
+                    <NoticeCardItem
+                      card={card}
+                      isFavorite={props.favoriteIds.has(card.notice_id)}
+                      onOpen={props.onOpen}
+                      onShare={props.onShare}
+                      onToggleFavorite={props.onToggleFavorite}
+                    />
+                    {showAd && (
+                      <NativeAdSlot slotId={`feed-ad-p${currentPage}-${index + 1}`} />
+                    )}
+                  </Fragment>
+                );
+              })}
             </div>
             {totalPages > 1 && (
               <Pagination currentPage={currentPage} totalPages={totalPages} onPage={goPage} />

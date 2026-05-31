@@ -1057,6 +1057,17 @@ button {
   margin-top: 0;
 }
 
+/* 네이티브 광고 자리(placeholder).
+   실제 광고는 네이티브 SDK 의 NativeAdView 가 이 위에 오버레이로 그려진다.
+   광고 로드 전/실패 시에는 카드 모양의 옅은 스켈레톤만 보인다. */
+.native-ad-slot {
+  border-radius: 12px;
+  border: 1px solid var(--c-light-gray, #e8e6dc);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.015) 0%, rgba(0, 0, 0, 0.04) 100%),
+    var(--c-surface, #ffffff);
+}
+
 .pagination {
   display: flex;
   align-items: center;

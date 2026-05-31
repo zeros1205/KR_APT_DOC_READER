@@ -11,6 +11,9 @@ const GOOGLE_TEST_INTERSTITIAL_IOS = "ca-app-pub-3940256099942544/4411468910";
 // Google 공개 테스트 — App Open
 const GOOGLE_TEST_APP_OPEN_ANDROID = "ca-app-pub-3940256099942544/9257395921";
 const GOOGLE_TEST_APP_OPEN_IOS = "ca-app-pub-3940256099942544/5575463023";
+// Google 공개 테스트 — Native Advanced (네이티브 고급형)
+const GOOGLE_TEST_NATIVE_ANDROID = "ca-app-pub-3940256099942544/2247696110";
+const GOOGLE_TEST_NATIVE_IOS = "ca-app-pub-3940256099942544/3986624511";
 
 // 프로덕션 광고 단위 ID. 환경변수 미설정 시 폴백으로 사용.
 // 변경 필요 시 AdMob 콘솔에서 발급받은 ID 로 교체.
@@ -22,6 +25,10 @@ const PRODUCTION_INTERSTITIAL_IOS = "ca-app-pub-8234120897033274/3304820769";
 const PRODUCTION_INTERSTITIAL_ANDROID = "ca-app-pub-8234120897033274/9024935783";
 const PRODUCTION_APP_OPEN_IOS = "ca-app-pub-8234120897033274/6142737093";
 const PRODUCTION_APP_OPEN_ANDROID = "ca-app-pub-8234120897033274/7987186287";
+// 네이티브 고급형(Native Advanced) — 메인 카드 그리드 인피드 광고용.
+// AdMob 콘솔에서 발급한 단일 단위. 플랫폼별 분리 발급 시 .env 로 덮어쓰기.
+const PRODUCTION_NATIVE_IOS = "ca-app-pub-8234120897033274/6818939220";
+const PRODUCTION_NATIVE_ANDROID = "ca-app-pub-8234120897033274/6818939220";
 
 const USE_TEST_ADS =
   String(import.meta.env.VITE_ADMOB_USE_TEST || "").toLowerCase() === "true" || !import.meta.env.PROD;
@@ -304,6 +311,26 @@ export async function showAppOpen(): Promise<boolean> {
     appOpenReady = false;
     return false;
   }
+}
+
+function resolveNativeAdId(): string {
+  const isIos = Capacitor.getPlatform() === "ios";
+  if (USE_TEST_ADS) {
+    return isIos ? GOOGLE_TEST_NATIVE_IOS : GOOGLE_TEST_NATIVE_ANDROID;
+  }
+  const configured = isIos
+    ? import.meta.env.VITE_ADMOB_NATIVE_ID_IOS
+    : import.meta.env.VITE_ADMOB_NATIVE_ID_ANDROID;
+  if (configured && String(configured).startsWith("ca-app-pub-")) return String(configured);
+  const production = isIos ? PRODUCTION_NATIVE_IOS : PRODUCTION_NATIVE_ANDROID;
+  if (production && production.startsWith("ca-app-pub-")) return production;
+  return isIos ? GOOGLE_TEST_NATIVE_IOS : GOOGLE_TEST_NATIVE_ANDROID;
+}
+
+// 카드 그리드 인피드 네이티브 광고가 사용할 설정. NativeAdSlot 컴포넌트가 호출.
+// 광고 단위 ID 와 개인맞춤(npa) 여부를 한 번에 제공한다.
+export function getNativeAdConfig(): { adId: string; npa: boolean; isTesting: boolean } {
+  return { adId: resolveNativeAdId(), npa: nonPersonalizedOnly, isTesting: USE_TEST_ADS };
 }
 
 export function isAdMobSupported(): boolean {

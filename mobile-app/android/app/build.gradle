@@ -89,6 +89,10 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation platform("com.google.firebase:firebase-bom:34.12.0")
     implementation "com.google.firebase:firebase-messaging"
+    // 네이티브 고급형 광고(NativeAdPlugin) 컴파일용. @capacitor-community/admob 는
+    // 이 의존성을 자체 모듈에서만 노출하므로(app 컴파일 클래스패스에 비노출),
+    // com.google.android.gms.ads.nativead.* 사용을 위해 app 모듈에 명시적으로 추가.
+    implementation "com.google.android.gms:play-services-ads:23.6.0"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

@@ -28,6 +28,9 @@ target 'App' do
   # 'Firebase/Messaging' umbrella subspec 대신 modular pod 을 사용해 잠재적인
   # Analytics 등 부수 모듈 끌어오기를 차단하고, 정적 링크 시 사이즈 절감을 극대화.
   pod 'FirebaseMessaging'
+  # 네이티브 고급형 광고(NativeAdPlugin.swift) 용 Google Mobile Ads SDK.
+  # App 타깃에서 `import GoogleMobileAds` 가 가능하도록 명시적으로 추가.
+  pod 'Google-Mobile-Ads-SDK'
 end
 
 post_install do |installer|
