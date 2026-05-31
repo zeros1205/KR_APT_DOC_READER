@@ -1430,21 +1430,31 @@ function HomeView(props: HomeProps) {
     setCurrentPage(1);
   }, [props.activeRegion, props.query, props.cards.length]);
 
+  // 페이지 전환 시 카드 그리드 상단으로 스크롤.
+  // scrollTo 를 setCurrentPage 직후 단일 rAF 에서 호출하면, 새 페이지 DOM 이 교체되며
+  // 부드러운 스크롤이 중단되어 페이지네이션 위치에 멈추는 문제가 있었다. 그래서 새 페이지가
+  // 커밋·페인트된 뒤(currentPage 변경 effect) 스크롤한다.
+  const pendingPageScrollRef = useRef(false);
+  useEffect(() => {
+    if (!pendingPageScrollRef.current) return;
+    pendingPageScrollRef.current = false;
+    const grid = gridRef.current;
+    if (!grid) return;
+    // 카드 그리드는 sticky 가 아니므로 rect.top + scrollY 가 항상 정확한 문서 위치다.
+    // (sticky 인 #filter-dock 의 rect.top 은 고정되어 현재 위치를 그대로 반환 → 스크롤 안 됨)
+    const headerHeight = document.querySelector(".site-header-v3")?.getBoundingClientRect().height || 0;
+    const dockHeight = filterDockRef.current?.offsetHeight || 0;
+    const gridDocTop = grid.getBoundingClientRect().top + window.scrollY;
+    // 그리드 첫 카드가 헤더+필터독 바로 아래에 오도록 약간의 여백을 둔다.
+    const targetTop = gridDocTop - headerHeight - dockHeight - 12;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+  }, [currentPage]);
+
   function goPage(page: number) {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
+    if (nextPage === currentPage) return;
+    pendingPageScrollRef.current = true;
     setCurrentPage(nextPage);
-    window.requestAnimationFrame(() => {
-      // 카드 그리드는 sticky 가 아니므로 rect.top + scrollY 가 항상 정확한 문서 위치다.
-      // (sticky 인 #filter-dock 의 rect.top 은 고정되어 현재 위치를 그대로 반환 → 스크롤 안 됨)
-      const grid = gridRef.current;
-      if (!grid) return;
-      const headerHeight = document.querySelector(".site-header-v3")?.getBoundingClientRect().height || 0;
-      const dockHeight = filterDockRef.current?.offsetHeight || 0;
-      const gridDocTop = grid.getBoundingClientRect().top + window.scrollY;
-      // 그리드 첫 카드가 헤더+필터독 바로 아래에 오도록 약간의 여백을 둔다.
-      const targetTop = gridDocTop - headerHeight - dockHeight - 12;
-      window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
-    });
   }
 
   return (
