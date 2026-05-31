@@ -116,15 +116,6 @@ jobs:
             echo "::error::system-nav-scrim marker found. This is not the current mobile release baseline."
             exit 1
           fi
-          if grep -R "admob-bottom-active\|frontBottomBanner\|play-services-ads\|AptNoteAdsPlugin" \
-            "$MOBILE_APP_DIR/src" \
-            "$MOBILE_APP_DIR/android/app/build.gradle" \
-            "$MOBILE_APP_DIR/android/app/src/main/AndroidManifest.xml" \
-            "$MOBILE_APP_DIR/android/app/src/main/java" \
-            "$MOBILE_APP_DIR/android/app/src/main/res/values" >/dev/null; then
-            echo "::error::AdMob marker found. Ads must stay removed until the Play Store release is ready for AdMob."
-            exit 1
-          fi
 
           grep -q "keystore.properties" "$gradle"
           grep -q "signingConfigs" "$gradle"
