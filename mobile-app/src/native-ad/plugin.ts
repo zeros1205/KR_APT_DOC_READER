@@ -29,6 +29,16 @@ export interface NativeAdGeometry {
   width: number;
   /** placeholder 높이 (CSS px) */
   height: number;
+  /**
+   * 뷰포트 고정(modal) 모드.
+   *
+   * - false/미지정(기본): 문서 흐름 슬롯. `docTop` 은 문서 절대 Y(rect.top + scrollY)이고
+   *   네이티브가 스크롤(scrollY/contentOffset)을 빼서 위치를 계산해 콘텐츠와 함께 움직인다.
+   * - true: 종료 다이얼로그처럼 `position:fixed` 인 모달 안의 슬롯. 이 경우 `docTop` 은
+   *   뷰포트 기준 Y(rect.top, scrollY 미포함)이며 네이티브는 스크롤을 빼지 않고 그대로
+   *   뷰포트 좌표로 배치한다 → 배경 스크롤이 변해도 광고가 모달 슬롯에 고정된다.
+   */
+  fixed?: boolean;
 }
 
 export interface NativeAdLoadOptions extends NativeAdGeometry {

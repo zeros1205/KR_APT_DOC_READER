@@ -39,7 +39,10 @@ class NativeAdPlugin : Plugin() {
         var docTopCss: Float,
         var xCss: Float,
         var widthCss: Float,
-        var heightCss: Float
+        var heightCss: Float,
+        // 뷰포트 고정(modal) 슬롯이면 true → reposition 에서 scrollY 를 빼지 않는다.
+        // 이때 docTopCss 는 문서 절대 Y 가 아니라 뷰포트 기준 Y(rect.top) 이다.
+        var fixed: Boolean
     )
 
     private val slots = HashMap<String, Slot>()
@@ -65,6 +68,7 @@ class NativeAdPlugin : Plugin() {
         val slotId = call.getString("slotId") ?: run { call.reject("slotId required"); return }
         val adId = call.getString("adId") ?: run { call.reject("adId required"); return }
         val npa = call.getBoolean("npa", false) ?: false
+        val fixed = call.getBoolean("fixed", false) ?: false
         val docTop = call.getFloat("docTop") ?: 0f
         val x = call.getFloat("x") ?: 0f
         val width = call.getFloat("width") ?: 0f
@@ -78,7 +82,7 @@ class NativeAdPlugin : Plugin() {
             val adView = inflater.inflate(R.layout.native_ad_card, null, false) as NativeAdView
             adView.visibility = View.GONE
 
-            val slot = Slot(adView, null, docTop, x, width, height)
+            val slot = Slot(adView, null, docTop, x, width, height, fixed)
             slots[slotId] = slot
 
             val parent = overlayParent()
@@ -143,6 +147,7 @@ class NativeAdPlugin : Plugin() {
             slot.xCss = call.getFloat("x") ?: slot.xCss
             slot.widthCss = call.getFloat("width") ?: slot.widthCss
             slot.heightCss = call.getFloat("height") ?: slot.heightCss
+            slot.fixed = call.getBoolean("fixed", slot.fixed) ?: slot.fixed
             // 크기 변경 반영.
             (slot.adView.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
                 lp.width = (slot.widthCss * density).toInt()
@@ -203,7 +208,8 @@ class NativeAdPlugin : Plugin() {
 
     private fun reposition(slotId: String, slot: Slot) {
         val wv = webView()
-        val topPx = slot.docTopCss * density - wv.scrollY
+        // fixed 슬롯은 뷰포트 고정 → 스크롤을 빼지 않는다(docTopCss 가 이미 뷰포트 기준).
+        val topPx = if (slot.fixed) slot.docTopCss * density else slot.docTopCss * density - wv.scrollY
         val leftPx = slot.xCss * density
         val heightPx = slot.heightCss * density
 

@@ -307,14 +307,17 @@ function App() {
   //     edge-to-edge 에서 좌우 여백 계산이 어긋나 쏠리므로 풀폭으로 항상 중앙 균형)
   //   - 설정 서브페이지(알림/관심지역/즐겨찾기 관리) + 즐겨찾기 항목 있음:
   //     adaptive (작은 가로 배너)
-  const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" | "mrec-center" = useMemo(() => {
+  // 종료 다이얼로그(exitDialogVisible)는 더 이상 MREC 배너를 쓰지 않는다.
+  // 다이얼로그 내부에 NativeAd(고정 모드) 카드를 직접 렌더하므로(ExitDialog 참고),
+  // 여기서는 별도 분기 없이 그대로 두어 하단 배너와 중복 노출되지 않게 한다.
+  // (종료 다이얼로그는 home 뷰에서만 뜨므로 자연히 "none" 으로 떨어진다.)
+  const bannerMode: "none" | "adaptive" | "large-bottom" | "mrec-bottom" = useMemo(() => {
     if (introVisible || onboardingVisible) return "none";
-    if (exitDialogVisible) return "mrec-center";
     if (view === "detail" || view === "home") return "none";
     if (view === "favorites" && favorites.length === 0) return "mrec-bottom";
     if (view === "settings" && settingsPage === "main") return "large-bottom";
     return "adaptive";
-  }, [introVisible, onboardingVisible, exitDialogVisible, view, favorites.length, settingsPage]);
+  }, [introVisible, onboardingVisible, view, favorites.length, settingsPage]);
 
   useEffect(() => {
     if (!isAdMobSupported()) return;
@@ -1224,9 +1227,12 @@ function ConfirmDialog({
 }
 
 function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
-  // 본 다이얼로그의 중앙 광고 슬롯은 시각적 placeholder.
-  // 실제 광고는 @capacitor-community/admob 의 Medium Rectangle 배너가
-  // 화면 정중앙 native overlay 로 표시되어 이 자리에 겹친다.
+  // 다이얼로그 광고는 AdMob 네이티브 고급형(NativeAd) 카드로 표시한다.
+  // NativeAdSlot 이 placeholder(.exit-dialog-ad-slot) 위치를 측정해 보고하면,
+  // 네이티브 SDK 의 NativeAdView 가 그 자리에 오버레이로 겹쳐 그린다.
+  // 다이얼로그는 position:fixed 모달이므로 fixed 모드로 두어(스크롤 미추적)
+  // 배경 스크롤과 무관하게 슬롯에 정확히 고정되게 한다.
+  // 네이티브 미지원(웹) 환경에서는 옅은 placeholder 박스만 남는다.
   return (
     <div className="exit-dialog-backdrop" role="presentation">
       <section
@@ -1240,7 +1246,12 @@ function ExitDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: 
           <h2 id="exit-dialog-title">앱을 종료하시겠어요?</h2>
           <p>분양공고는 매일 새로 업데이트해 둘게요.</p>
         </header>
-        <div className="exit-dialog-ad-slot" aria-hidden="true" />
+        <NativeAdSlot
+          slotId="exit-dialog-native-ad"
+          fixed
+          className="exit-dialog-ad-slot"
+          height={260}
+        />
         <div className="exit-dialog-actions">
           <button className="exit-dialog-cancel" type="button" onClick={onCancel}>
             돌아가기
