@@ -16,6 +16,8 @@ public class MainActivity extends BridgeActivity {
         // Play Console 의 edge-to-edge 권장 조치는 (1) targetSdk 35 타겟,
         // (2) deprecated 한 setStatusBarColor/setNavigationBarColor 미사용 으로
         // 이미 충족된다.
+        // 커스텀 네이티브 광고 플러그인 등록(super.onCreate 이전에 호출해야 브리지에 반영됨).
+        registerPlugin(NativeAdPlugin.class);
         super.onCreate(savedInstanceState);
         applyLightSystemBars();
     }

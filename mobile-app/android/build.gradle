@@ -9,6 +9,12 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
         classpath 'com.google.gms:google-services:4.4.4'
+        // 커스텀 네이티브 광고 플러그인(NativeAdPlugin.kt)이 Kotlin 으로 작성돼 있어
+        // app 모듈에서 'kotlin-android' 를 적용하려면 루트 buildscript 클래스패스에
+        // Kotlin Gradle 플러그인이 필요하다. @capacitor-community/admob 가 Kotlin 2.1.20 /
+        // kotlin-stdlib 2.1.x 로 빌드되므로 컴파일러도 2.1.20 으로 맞춰야 stdlib 메타데이터
+        // 충돌(metadata 2.1.0 vs compiler 1.9)이 없다. variables.gradle 의 kotlin_version 과 일치.
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

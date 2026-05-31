@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CTA 버튼 배경 — 웹 .card-cta 와 동일한 회색(#6F746F) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#6F746F" />
+</shape>

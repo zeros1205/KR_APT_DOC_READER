@@ -13,4 +13,8 @@ ext {
     androidxJunitVersion = '1.2.1'
     androidxEspressoCoreVersion = '3.6.1'
     cordovaAndroidVersion = '10.1.1'
+    // 전 서브프로젝트(capacitor 코어/community-admob/우리 NativeAdPlugin)가 공유할 Kotlin 버전.
+    // @capacitor-community/admob 가 2.1.20 + kotlin-stdlib 2.1.x 를 쓰므로 그에 맞춰 통일한다.
+    // (이 값을 낮추면 admob 의 stdlib 2.1.0 메타데이터를 옛 컴파일러가 못 읽어 빌드가 깨진다.)
+    kotlin_version = '2.1.20'
 }
