@@ -17,6 +17,14 @@ type Props = {
   slotId: string;
   /** 광고 카드 높이(px). 일반 카드 높이와 비슷하게 잡아 그리드 리듬을 유지. */
   height?: number;
+  /**
+   * 뷰포트 고정(modal) 슬롯 여부. 종료 다이얼로그처럼 `position:fixed` 컨테이너
+   * 안에 둘 때 true. 이때 좌표는 뷰포트 기준(rect.top, scrollY 미포함)으로 보고하고
+   * 네이티브도 스크롤을 빼지 않아 배경 스크롤과 무관하게 모달에 고정된다.
+   */
+  fixed?: boolean;
+  /** placeholder 의 CSS 클래스(기본 `native-ad-slot`). 다이얼로그 전용 스타일 주입용. */
+  className?: string;
 };
 
 const DEFAULT_HEIGHT = 312;
@@ -31,11 +39,18 @@ function checkSupported(): Promise<boolean> {
   return supportPromise;
 }
 
-export default function NativeAdSlot({ slotId, height = DEFAULT_HEIGHT }: Props) {
+export default function NativeAdSlot({
+  slotId,
+  height = DEFAULT_HEIGHT,
+  fixed = false,
+  className = "native-ad-slot"
+}: Props) {
   const elRef = useRef<HTMLDivElement | null>(null);
   const loadedRef = useRef(false);
 
-  // 현재 placeholder 의 문서 좌표/크기를 측정.
+  // 현재 placeholder 의 좌표/크기를 측정.
+  // - 일반(문서 흐름) 슬롯: docTop 은 문서 절대 Y(rect.top + scrollY). 네이티브가 스크롤을 빼서 배치.
+  // - fixed(모달) 슬롯: docTop 은 뷰포트 Y(rect.top). 네이티브가 스크롤을 빼지 않고 그대로 배치.
   function measure() {
     const el = elRef.current;
     if (!el) return null;
@@ -43,9 +58,10 @@ export default function NativeAdSlot({ slotId, height = DEFAULT_HEIGHT }: Props)
     return {
       slotId,
       x: Math.round(rect.left),
-      docTop: Math.round(rect.top + window.scrollY),
+      docTop: Math.round(fixed ? rect.top : rect.top + window.scrollY),
       width: Math.round(rect.width),
-      height: Math.round(rect.height)
+      height: Math.round(rect.height),
+      fixed
     };
   }
 
@@ -117,7 +133,7 @@ export default function NativeAdSlot({ slotId, height = DEFAULT_HEIGHT }: Props)
   return (
     <div
       ref={elRef}
-      className="native-ad-slot"
+      className={className}
       data-slot-id={slotId}
       style={{ minHeight: height }}
       aria-label="광고"

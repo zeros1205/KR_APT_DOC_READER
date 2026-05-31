@@ -635,8 +635,9 @@ button {
   color: var(--c-mid);
 }
 
-/* AdMob Medium Rectangle 가 화면 정중앙(BannerAdPosition.CENTER)에 native overlay 로
-   표시되므로, JSX 측 슬롯은 자리 차지용 placeholder 만 둠. */
+/* 종료 다이얼로그 광고 자리(placeholder). 실제 광고는 NativeAd(고정 모드) 의
+   NativeAdView 가 이 위치에 오버레이로 겹쳐 그려진다(App.tsx ExitDialog 참고).
+   네이티브 미지원(웹) 환경에서는 이 옅은 박스만 남는다. */
 .exit-dialog-ad-slot {
   width: 100%;
   min-height: 250px;

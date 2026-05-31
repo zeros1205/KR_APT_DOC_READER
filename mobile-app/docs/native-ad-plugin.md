@@ -61,6 +61,33 @@ WebView 안의 React 카드 그리드에 SDK 네이티브 뷰를 직접 인라�
 - 앱 ID(이미 설정됨): Android `…~3125849648`(Manifest), iOS `…~4486344416`(Info.plist)
 - `.env`: `VITE_ADMOB_NATIVE_ID_ANDROID`, `VITE_ADMOB_NATIVE_ID_IOS`
 
+## 종료 다이얼로그(모달) 광고 — `fixed` 모드
+
+종료 팝업(`App.tsx` 의 `ExitDialog`)은 과거 `@capacitor-community/admob` 의
+MREC(300x250) 배너를 화면 중앙 오버레이로 띄웠으나, 이제 같은 `NativeAd` 플러그인의
+**고정(`fixed`) 모드** 카드로 대체했다.
+
+핵심 차이는 좌표 기준이다.
+
+- **그리드(기본) 슬롯**: 문서 흐름에 속하므로 `docTop = rect.top + scrollY`(문서 절대 Y)를
+  보고하고, 네이티브가 `scrollY`(Android) / `contentOffset`(iOS)를 빼서 콘텐츠와 함께
+  스크롤되도록 위치를 잡는다.
+- **모달(`fixed`) 슬롯**: `ExitDialog` 는 `position:fixed` 중앙 모달이다. 이 경우
+  `NativeAdSlot fixed` 로 두면 `docTop = rect.top`(뷰포트 기준 Y, `scrollY` 미포함)을
+  보고하고, 네이티브는 스크롤을 빼지 않고 그대로 뷰포트 좌표에 배치한다. 따라서 배경
+  그리드가 스크롤돼도 광고가 모달의 슬롯에 정확히 고정된다(스크롤-락에 의존하지 않음).
+
+사용 예:
+
+```tsx
+<NativeAdSlot slotId="exit-dialog-native-ad" fixed className="exit-dialog-ad-slot" height={260} />
+```
+
+`fixed` 플래그는 JS(`NativeAdGeometry.fixed`) → `loadSlot`/`updateGeometry` 로 전달되어
+`NativeAdPlugin.kt`(`Slot.fixed`, `reposition` 분기) / `NativeAdPlugin.swift`(동일)에서
+해석된다. 다이얼로그가 닫히면 `NativeAdSlot` 언마운트 → `removeSlot` 으로 오버레이가 제거된다.
+광고 카드는 광고 영역만 덮으므로 "돌아가기/앱 종료하기" 버튼은 그대로 탭 가능하다.
+
 ## 빌드/검증 절차 (⚠️ 실기기 필요)
 
 웹/React/TS 레이어는 CI에서 검증되지만(타입체크·vite build 통과), **네이티브 코드는

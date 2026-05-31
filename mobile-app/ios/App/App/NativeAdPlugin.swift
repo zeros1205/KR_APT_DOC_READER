@@ -35,9 +35,12 @@ public class NativeAdPlugin: CAPPlugin, CAPBridgedPlugin {
         var x: CGFloat
         var width: CGFloat
         var height: CGFloat
-        init(container: NativeAdView, docTop: CGFloat, x: CGFloat, width: CGFloat, height: CGFloat) {
+        // 뷰포트 고정(modal) 슬롯이면 true → reposition 에서 contentOffset 을 빼지 않는다.
+        // 이때 docTop 은 문서 절대 Y 가 아니라 뷰포트 기준 Y(rect.top) 이다.
+        var fixed: Bool
+        init(container: NativeAdView, docTop: CGFloat, x: CGFloat, width: CGFloat, height: CGFloat, fixed: Bool) {
             self.container = container
-            self.docTop = docTop; self.x = x; self.width = width; self.height = height
+            self.docTop = docTop; self.x = x; self.width = width; self.height = height; self.fixed = fixed
         }
     }
 
@@ -57,6 +60,7 @@ public class NativeAdPlugin: CAPPlugin, CAPBridgedPlugin {
             call.reject("slotId/adId required"); return
         }
         let npa = call.getBool("npa") ?? false
+        let fixed = call.getBool("fixed") ?? false
         let docTop = CGFloat(call.getDouble("docTop") ?? 0)
         let x = CGFloat(call.getDouble("x") ?? 0)
         let width = CGFloat(call.getDouble("width") ?? 0)
@@ -72,7 +76,7 @@ public class NativeAdPlugin: CAPPlugin, CAPBridgedPlugin {
             adView.isHidden = true
             host.addSubview(adView)
 
-            let slot = Slot(container: adView, docTop: docTop, x: x, width: width, height: height)
+            let slot = Slot(container: adView, docTop: docTop, x: x, width: width, height: height, fixed: fixed)
             self.slots[slotId] = slot
             self.ensureScrollObserver()
 
@@ -119,6 +123,7 @@ public class NativeAdPlugin: CAPPlugin, CAPBridgedPlugin {
             slot.x = CGFloat(call.getDouble("x") ?? Double(slot.x))
             slot.width = CGFloat(call.getDouble("width") ?? Double(slot.width))
             slot.height = CGFloat(call.getDouble("height") ?? Double(slot.height))
+            slot.fixed = call.getBool("fixed") ?? slot.fixed
             self.reposition(slot)
             call.resolve()
         }
@@ -166,7 +171,8 @@ public class NativeAdPlugin: CAPPlugin, CAPBridgedPlugin {
     private func reposition(_ slot: Slot) {
         guard let wv = webView else { return }
         let offsetY = wv.scrollView.contentOffset.y
-        let topInWebView = slot.docTop - offsetY
+        // fixed 슬롯은 뷰포트 고정 → contentOffset 을 빼지 않는다(docTop 이 이미 뷰포트 기준).
+        let topInWebView = slot.fixed ? slot.docTop : slot.docTop - offsetY
         let originX = wv.frame.minX + slot.x
         let originY = wv.frame.minY + topInWebView
 
