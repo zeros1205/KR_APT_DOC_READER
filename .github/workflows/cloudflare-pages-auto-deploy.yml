@@ -16,6 +16,12 @@ on:
       - main
     paths:
       - "output/**"
+  # 수동 실행 — 봇 커밋(GITHUB_TOKEN push)은 다른 워크플로우를 트리거하지 않으므로,
+  # app-version.json 발행 등으로 밀린 배포를 즉시 반영할 수 있는 탈출구.
+  workflow_dispatch:
+  # 안전망 — push 트리거가 누락돼도 하루 1회 최신 output/ 을 배포(매일 KST 09:20).
+  schedule:
+    - cron: "20 0 * * *"
 
 concurrency:
   # codex-generate-pages.yml 의 deploy 스텝과 동일 그룹.
@@ -59,7 +65,10 @@ jobs:
 
           KST_TIME="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           JOB_STATUS="${{ job.status }}"
-          SHORT_MSG="$(echo '${{ github.event.head_commit.message }}' | head -1 | cut -c1-60)"
+          # head_commit 은 push 에만 존재. 수동/스케줄 실행은 트리거명으로 대체.
+          # 셸 인젝션·따옴표 깨짐 방지를 위해 env 로 안전하게 주입 후 가공.
+          SHORT_MSG="$(printf '%s' "$RAW_COMMIT_MSG" | head -1 | cut -c1-60)"
+          if [ -z "$SHORT_MSG" ]; then SHORT_MSG="${GITHUB_EVENT_NAME} 배포"; fi
           if [ "$JOB_STATUS" = "success" ]; then ICON="🚀"; else ICON="❌"; fi
           MSG="${ICON} Cloudflare Pages ${JOB_STATUS} (${KST_TIME}) | ${SHORT_MSG} | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
@@ -68,3 +77,4 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RAW_COMMIT_MSG: ${{ github.event.head_commit.message }}
