@@ -19,6 +19,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -94,16 +95,19 @@ def current_live_ios() -> int:
         return _fail(f"no App Store Connect app with bundleId {BUNDLE_ID}")
     app_resource_id = data[0]["id"]
 
-    # Ask ASC for versions in the live state, newest first. Apple returns at
-    # most one READY_FOR_SALE iOS version per app at any given moment, but
-    # we still scan defensively and take the newest by versionString.
+    # Ask ASC for iOS versions, then pick the live one in code.
+    #
+    # NOTE: Apple deprecated the `appStoreState` attribute/filter on
+    # appStoreVersions (replaced by `appVersionState`). Sending
+    # `filter[appStoreState]` now returns HTTP 400 PARAMETER_ERROR.ILLEGAL,
+    # which is exactly what broke this step. So we no longer filter by state
+    # server-side; we request both the new and legacy state attributes and
+    # decide liveness locally (whichever field the API returns).
     versions_url = (
         f"https://api.appstoreconnect.apple.com/v1/apps/{urllib.parse.quote(app_resource_id)}/appStoreVersions"
-        "?filter[appStoreState]=READY_FOR_SALE"
-        "&filter[platform]=IOS"
-        "&fields[appStoreVersions]=versionString,appStoreState,platform,createdDate"
-        "&sort=-createdDate"
-        "&limit=5"
+        "?filter[platform]=IOS"
+        "&fields[appStoreVersions]=versionString,appVersionState,appStoreState,platform,createdDate"
+        "&limit=20"
     )
     try:
         versions_resp = _http_get(versions_url, headers)
@@ -112,17 +116,35 @@ def current_live_ios() -> int:
     except urllib.error.URLError as exc:
         return _fail(f"versions network error: {exc}")
 
+    # Live ("on sale") states. New API field appVersionState uses
+    # READY_FOR_DISTRIBUTION; the legacy appStoreState used READY_FOR_SALE.
+    # Accept either so the check is robust across the API transition.
+    live_states = {"READY_FOR_DISTRIBUTION", "READY_FOR_SALE"}
+
+    def _ver_key(v: str) -> tuple[int, ...]:
+        try:
+            return tuple(int(p) for p in v.split("."))
+        except ValueError:
+            return (0,)
+
     entries = versions_resp.get("data") or []
+    live: list[tuple[tuple[int, ...], str, str]] = []
     for entry in entries:
         attrs = entry.get("attributes") or {}
         version = attrs.get("versionString")
-        if version:
-            _emit({"live": True, "state": "READY_FOR_SALE", "version": version})
-            return 0
+        state = attrs.get("appVersionState") or attrs.get("appStoreState") or ""
+        if version and state in live_states:
+            live.append((_ver_key(version), version, state))
+
+    if live:
+        live.sort(reverse=True)  # newest versionString first
+        _, version, state = live[0]
+        _emit({"live": True, "state": state, "version": version})
+        return 0
     _emit({
         "live": False,
         "state": "NO_LIVE_VERSION",
-        "reason": "no iOS appStoreVersion in READY_FOR_SALE",
+        "reason": "no live iOS appStoreVersion (READY_FOR_DISTRIBUTION/READY_FOR_SALE)",
     })
     return 2
 
@@ -130,6 +152,30 @@ def current_live_ios() -> int:
 # ---------------------------------------------------------------------------
 # Android — Google Play Developer API
 # ---------------------------------------------------------------------------
+
+def _version_name_from_release(name: str | None) -> str:
+    """Extract a bare semver versionName from a Play release name.
+
+    Play release names default to "<versionCode> (<versionName>)", e.g.
+    "19 (1.0.2)". The app (mobile-app/src/version.ts) only understands a
+    bare semver string like "1.0.2" and treats anything else as malformed
+    (no update shown), so we must publish just the versionName. We prefer a
+    dotted version inside parentheses, then any dotted version in the name,
+    and finally fall back to the raw name so a value is never silently lost.
+    """
+    if not name:
+        return ""
+    semver = r"\d+\.\d+(?:\.\d+)?(?:-[0-9A-Za-z.-]+)?"
+    paren = re.search(r"\(([^)]*)\)", name)
+    if paren:
+        inner = re.search(semver, paren.group(1))
+        if inner:
+            return inner.group(0)
+    whole = re.search(semver, name)
+    if whole:
+        return whole.group(0)
+    return name.strip()
+
 
 def current_live_android() -> int:
     raw = os.environ.get("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON", "").strip()
@@ -172,10 +218,10 @@ def current_live_android() -> int:
                 # halted/draft entry at the top never wins.
                 for release in releases:
                     if release.get("status") == "completed":
-                        name = release.get("name")
-                        if name:
+                        version = _version_name_from_release(release.get("name"))
+                        if version:
                             _emit({"live": True, "state": "completed",
-                                   "version": name, "track": track_name})
+                                   "version": version, "track": track_name})
                             return 0
                 checked.append({
                     "track": track_name,
