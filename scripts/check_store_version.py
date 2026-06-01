@@ -19,6 +19,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -152,6 +153,30 @@ def current_live_ios() -> int:
 # Android — Google Play Developer API
 # ---------------------------------------------------------------------------
 
+def _version_name_from_release(name: str | None) -> str:
+    """Extract a bare semver versionName from a Play release name.
+
+    Play release names default to "<versionCode> (<versionName>)", e.g.
+    "19 (1.0.2)". The app (mobile-app/src/version.ts) only understands a
+    bare semver string like "1.0.2" and treats anything else as malformed
+    (no update shown), so we must publish just the versionName. We prefer a
+    dotted version inside parentheses, then any dotted version in the name,
+    and finally fall back to the raw name so a value is never silently lost.
+    """
+    if not name:
+        return ""
+    semver = r"\d+\.\d+(?:\.\d+)?(?:-[0-9A-Za-z.-]+)?"
+    paren = re.search(r"\(([^)]*)\)", name)
+    if paren:
+        inner = re.search(semver, paren.group(1))
+        if inner:
+            return inner.group(0)
+    whole = re.search(semver, name)
+    if whole:
+        return whole.group(0)
+    return name.strip()
+
+
 def current_live_android() -> int:
     raw = os.environ.get("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON", "").strip()
     if not raw:
@@ -193,10 +218,10 @@ def current_live_android() -> int:
                 # halted/draft entry at the top never wins.
                 for release in releases:
                     if release.get("status") == "completed":
-                        name = release.get("name")
-                        if name:
+                        version = _version_name_from_release(release.get("name"))
+                        if version:
                             _emit({"live": True, "state": "completed",
-                                   "version": name, "track": track_name})
+                                   "version": version, "track": track_name})
                             return 0
                 checked.append({
                     "track": track_name,
