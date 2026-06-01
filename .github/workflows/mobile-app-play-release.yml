@@ -25,6 +25,11 @@ on:
         required: true
         type: boolean
         default: false
+      use_test_ads:
+        description: "Force Google TEST ads (no real AdMob serving). Keep true for internal/alpha/beta tracks; set false only for the production release build."
+        required: true
+        type: boolean
+        default: true
       play_track:
         description: "Which Play test track to upload to (only used when upload_to_play=true). Production rollout is intentionally not available here."
         required: true
@@ -207,6 +212,9 @@ jobs:
         env:
           VITE_APP_VERSION: ${{ env.RELEASE_VERSION_NAME }}
           VITE_WORKER_ORIGIN: ${{ secrets.WORKER_ORIGIN }}
+          # 실광고는 production 출시 빌드에서만. 수동 실행에서 use_test_ads=false 로 끄지 않는 한,
+          # 그리고 push/PR 트리거(입력 없음)에서는 항상 테스트 광고로 강제(테스터 무효클릭 방지).
+          VITE_ADMOB_USE_TEST: ${{ (github.event_name == 'workflow_dispatch' && inputs.use_test_ads == false) && 'false' || 'true' }}
         run: npm run build
 
       - name: Write Google Services config
