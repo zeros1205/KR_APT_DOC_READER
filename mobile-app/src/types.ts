@@ -29,6 +29,7 @@ export type UserSettings = {
   pushPromptDismissed?: boolean;
   onboardingCompletedAt?: string;
   quietHoursEnabled: boolean;
+  crashReportingEnabled: boolean;
   updatedAt?: string;
 };
 

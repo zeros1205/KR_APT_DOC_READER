@@ -11,6 +11,7 @@ Capacitor 기반 iOS/Android 앱 shell 초안입니다. 웹 콘텐츠는 `https:
 - 관심지역 저장
 - 푸시 알림 ON/OFF 설정 진입
 - 조용한 시간 기본 ON
+- 진단 데이터(크래시 리포트) 수집 ON/OFF (기본 ON, 옵트아웃 가능)
 - 개인정보 보호정책/이용약관 열기
 - 웹 URL 공유
 
@@ -93,6 +94,21 @@ cd ios/App && pod install
 npx cap open ios        # Xcode 에서 archive
 ```
 
+## 크래시 리포팅 (Firebase Crashlytics)
+
+`src/crash.ts` 가 `@capacitor-firebase/crashlytics` 를 동적 import 로 감싸 치명적 크래시 +
+비치명적(non-fatal) JS 오류를 수집합니다. FCM 푸시와 **동일한 Firebase 프로젝트·설정 파일**
+(`google-services.json` / `GoogleService-Info.plist`)을 재사용하므로 별도 시크릿이 없습니다.
+
+- **네이티브에서만** 동작 (웹은 전부 no-op), Firebase 설정 파일이 없는 빌드에서는 조용히 무시
+- `window.onerror` / `unhandledrejection` / React `ErrorBoundary`(`src/ErrorBoundary.tsx`)에서
+  잡힌 오류를 비치명적으로 보고
+- 설정 화면 **"진단 데이터 보내기"** 토글로 사용자가 끌 수 있음 (`UserSettings.crashReportingEnabled`, 기본 ON)
+- Android: `firebase-crashlytics-gradle` 플러그인을 `google-services` 와 함께 **조건부** apply
+- iOS: Podfile 에 `CapacitorFirebaseCrashlytics` pod (podspec 이 `FirebaseCrashlytics ~> 11.7` 동반)
+
+> 출시 전 운영자 작업(개인정보 고지, iOS dSYM 업로드 등)과 검증 절차는 **`docs/crash-reporting.md`** 참고.
+
 ## 출시 버전 게시 흐름 (app-version.json)
 
 설정 화면의 "현재 X · 최신 Y · 업데이트" 표기에서 **최신 Y**는 `https://apt-note.com/app-version.json` 한 파일이 결정합니다. 이 파일은 **사용자가 실제로 스토어에서 받을 수 있는 버전**만 가리켜야 합니다. 빌드만 끝났거나 심사 중인 버전을 가리키면 사용자에게 "받을 수 없는 업데이트" 가 보이고, 다운그레이드 광고로도 이어집니다.
@@ -128,7 +144,7 @@ App.tsx 의 비교는 semver(`compareVersions`)로 처리하므로, 잘못된 �
 
 ## 다음 구현 지점
 
-- Firebase 프로젝트 연결 및 FCM/APNs 토큰 등록
+- ~~Firebase 프로젝트 연결 및 FCM/APNs 토큰 등록~~ (완료 — FCM + Crashlytics)
 - GitHub Actions 신규 공고 감지 워크플로우와 푸시 발송 서버 구성
 - 앱 아이콘/스플래시 자산 연결
 - iOS Bundle ID와 Android Package Name 확정

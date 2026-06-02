@@ -9,6 +9,10 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
         classpath 'com.google.gms:google-services:4.4.4'
+        // Firebase Crashlytics Gradle 플러그인 — 릴리스 빌드 시 mapping/네이티브 심볼을
+        // 업로드해 스택트레이스 심볼리케이션을 돕는다. app/build.gradle 에서 google-services
+        // 가 적용될 때(= google-services.json 존재 시)에만 함께 apply 한다.
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
         // 커스텀 네이티브 광고 플러그인(NativeAdPlugin.kt)이 Kotlin 으로 작성돼 있어
         // app 모듈에서 'kotlin-android' 를 적용하려면 루트 buildscript 클래스패스에
         // Kotlin Gradle 플러그인이 필요하다. @capacitor-community/admob 가 Kotlin 2.1.20 /

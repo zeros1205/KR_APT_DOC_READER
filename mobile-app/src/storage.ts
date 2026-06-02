@@ -9,7 +9,9 @@ const SETTINGS_KEY = "apt-note:settings";
 export const defaultSettings: UserSettings = {
   regions: [],
   pushEnabled: false,
-  quietHoursEnabled: true
+  quietHoursEnabled: true,
+  // 진단 데이터(크래시 리포트) 수집 기본값. 설정에서 옵트아웃 가능.
+  crashReportingEnabled: true
 };
 
 async function readJson<T>(key: string, fallback: T): Promise<T> {
