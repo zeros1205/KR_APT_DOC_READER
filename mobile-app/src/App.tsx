@@ -22,6 +22,7 @@ import { PushNotifications } from "@capacitor/push-notifications";
 import { Share } from "@capacitor/share";
 import { absolutePostUrl, extractPriceRange, fetchLatestVersion, fetchPostHtml, fetchPostsIndex, SITE_ORIGIN } from "./api";
 import { isUpdateAvailable } from "./version";
+import { initCrashReporting, setCrashCollectionEnabled } from "./crash";
 import {
   initializeAdMob,
   isAdMobSupported,
@@ -254,6 +255,8 @@ function App() {
       setFavorites(savedFavorites);
       setSettings(savedSettings);
       settingsLoadedRef.current = true;
+      // 기존 사용자(필드 미존재)는 기본 ON 으로 간주. 명시적 false 일 때만 수집 비활성화.
+      void initCrashReporting(savedSettings.crashReportingEnabled !== false);
     });
     void refreshPosts();
     void fetchLatestVersion(Capacitor.getPlatform()).then((version) => {
@@ -972,6 +975,10 @@ function App() {
           onPage={setSettingsPage}
           onPush={enablePush}
           onQuietHours={(enabled) => void updateSettings({ ...settings, quietHoursEnabled: enabled })}
+          onCrashReporting={(enabled) => {
+            void setCrashCollectionEnabled(enabled);
+            void updateSettings({ ...settings, crashReportingEnabled: enabled });
+          }}
           onRegion={toggleRegion}
           onRemoveFavorite={(noticeId) =>
             void persistFavorites(favorites.filter((favorite) => favorite.notice_id !== noticeId))
@@ -1770,6 +1777,7 @@ function SettingsView({
   onPage,
   onPush,
   onQuietHours,
+  onCrashReporting,
   onRegion,
   onRemoveFavorite,
   onShare,
@@ -1785,6 +1793,7 @@ function SettingsView({
   onPage: (page: SettingsPage) => void;
   onPush: () => Promise<void>;
   onQuietHours: (enabled: boolean) => void;
+  onCrashReporting: (enabled: boolean) => void;
   onRegion: (region: string) => Promise<void>;
   onRemoveFavorite: (noticeId: string) => void;
   onShare: (card: NoticeCard) => Promise<void>;
@@ -1971,6 +1980,19 @@ function SettingsView({
           <span>개인정보 처리방침</span>
           <ChevronRight size={18} />
         </button>
+        <div className="settings-row">
+          <div>
+            <strong>진단 데이터 보내기</strong>
+            <span>{settings.crashReportingEnabled !== false ? "앱 안정성 개선에 도움을 줍니다" : "크래시 리포트 수집 꺼짐"}</span>
+          </div>
+          <button
+            className={settings.crashReportingEnabled !== false ? "switch on" : "switch"}
+            aria-label="진단 데이터 보내기"
+            onClick={() => onCrashReporting(settings.crashReportingEnabled === false)}
+          >
+            <span />
+          </button>
+        </div>
         <div className="settings-row version-row">
           <div>
             <strong>앱 정보</strong>

@@ -95,6 +95,9 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation platform("com.google.firebase:firebase-bom:34.12.0")
     implementation "com.google.firebase:firebase-messaging"
+    // 크래시 리포팅. @capacitor-firebase/crashlytics 모듈도 동일 의존성을 가져오지만,
+    // firebase-messaging 과 마찬가지로 BOM 버전 고정을 위해 app 모듈에 명시한다.
+    implementation "com.google.firebase:firebase-crashlytics"
     // 네이티브 고급형 광고(NativeAdPlugin) 컴파일용. @capacitor-community/admob 는
     // 이 의존성을 자체 모듈에서만 노출하므로(app 컴파일 클래스패스에 비노출),
     // com.google.android.gms.ads.nativead.* 사용을 위해 app 모듈에 명시적으로 추가.
@@ -119,9 +122,13 @@ try {
     }
     if (googleServicesMatchesAppId) {
         apply plugin: 'com.google.gms.google-services'
+        // Crashlytics Gradle 플러그인은 google-services(= Firebase 설정)가 있을 때만 적용한다.
+        // google-services.json 이 없는 로컬/CI 빌드에서 mapping 업로드 태스크가 빌드를
+        // 실패시키지 않도록 conditional apply 로 google-services 와 수명을 맞춘다.
+        apply plugin: 'com.google.firebase.crashlytics'
     } else {
-        logger.info("google-services.json has no client for ${android.defaultConfig.applicationId}; google-services plugin not applied")
+        logger.info("google-services.json has no client for ${android.defaultConfig.applicationId}; google-services + crashlytics plugins not applied")
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found, google-services + crashlytics plugins not applied. Push Notifications & Crashlytics won't work")
 }
