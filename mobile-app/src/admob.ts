@@ -29,6 +29,10 @@ let adMobModulePromise: Promise<AdMobModule | null> | null = null;
 let initialized = false;
 type ActiveBanner = "none" | "adaptive" | "large-bottom" | "mrec-bottom";
 let activeBanner: ActiveBanner = "none";
+let desiredBanner: ActiveBanner = "none";
+// 배너 show/remove 를 직렬화하는 큐. 빠른 화면 전환(설정→홈 등) 시 show 와 remove 가
+// 겹쳐 네이티브 배너가 webview 밖 오버레이로 고아처럼 남는 회귀를 막는다.
+let bannerOpChain: Promise<void> = Promise.resolve();
 let nonPersonalizedOnly = false;
 let interstitialReady = false;
 let interstitialLoading = false;
@@ -122,22 +126,54 @@ export async function requestTrackingConsent(): Promise<void> {
 //       한쪽으로 쏠리는 회귀가 있었다. 풀폭 ADAPTIVE 는 여백 계산이 필요 없어 항상 균형.
 //   "mrec-bottom"   : 즐겨찾기 빈 화면 하단      — 배너 단위 ID, MEDIUM_RECTANGLE (300x250), BOTTOM_CENTER
 // (종료 다이얼로그용 "mrec-center" 는 NativeAd 카드로 대체되어 제거됨)
-export async function setBannerMode(target: ActiveBanner): Promise<void> {
-  if (activeBanner === target) return;
+export function setBannerMode(target: ActiveBanner): Promise<void> {
+  desiredBanner = target;
+  // 모든 배너 작업을 하나의 체인에 직렬화한다. 각 reconcile 는 실행 시점의 최신
+  // desiredBanner 로 수렴하므로, 연속 호출이 겹쳐도 마지막 의도가 항상 적용된다.
+  // (성공/실패 모두 다음 reconcile 로 이어 큐가 막히지 않게 한다.)
+  bannerOpChain = bannerOpChain.then(reconcileBanner, reconcileBanner);
+  return bannerOpChain;
+}
+
+// 현재 떠있는 배너(activeBanner)를 목표 상태(desiredBanner)로 맞춘다.
+// 안전장치:
+//  - remove 실패 시 activeBanner 를 "none" 으로 낙관 표기하지 않는다. 표시된 배너를
+//    "제거됨"으로 오인해 영구히 못 지우는 회귀(홈에 고아 배너 잔존)를 막기 위함.
+//  - 목표가 "none" 이면 추적 상태와 무관하게 removeBanner 를 한 번 시도해, 홈 화면에
+//    배너가 절대 남지 않도록 보강한다(표시된 배너가 없을 때의 reject 는 정상 무시).
+async function reconcileBanner(): Promise<void> {
+  if (!isSupportedPlatform()) return;
   const mod = await loadAdMob();
   if (!mod) return;
   if (!initialized) {
     await initializeAdMob();
     if (!initialized) return;
   }
-  try {
-    if (activeBanner !== "none") {
-      await mod.AdMob.removeBanner().catch(() => undefined);
-      activeBanner = "none";
+
+  // 1) 떠있는 배너가 목표와 다르거나 목표가 "none" 이면 제거.
+  if (activeBanner !== desiredBanner || desiredBanner === "none") {
+    if (activeBanner !== "none" || desiredBanner === "none") {
+      try {
+        await mod.AdMob.removeBanner();
+        activeBanner = "none";
+      } catch (error) {
+        // 표시된 배너가 없을 때의 reject 는 정상(보강 호출). 실제 배너 제거 실패만
+        // 상태를 유지해 다음 reconcile 에서 재시도하도록 둔다.
+        if (activeBanner !== "none") {
+          console.warn("[admob] removeBanner failed", error);
+          return;
+        }
+      }
     }
-    if (target === "none") return;
-    // 모든 모드가 배너 단위 ID 를 쓰며, mrec-bottom 만 MEDIUM_RECTANGLE 사이즈로 키운다.
-    // 위치는 전부 하단 중앙(BOTTOM_CENTER).
+  }
+
+  // 2) 목표 배너 표시. 제거를 await 하는 동안 desiredBanner 가 또 바뀌었으면
+  //    그 변경이 큐에 쌓아둔 다음 reconcile 가 처리하므로 여기선 최신값만 따른다.
+  const target = desiredBanner;
+  if (target === "none" || activeBanner === target) return;
+  // 모든 모드가 배너 단위 ID 를 쓰며, mrec-bottom 만 MEDIUM_RECTANGLE 사이즈로 키운다.
+  // 위치는 전부 하단 중앙(BOTTOM_CENTER).
+  try {
     const adId = resolveBannerAdId();
     const adSize =
       target === "mrec-bottom" ? mod.BannerAdSize.MEDIUM_RECTANGLE : mod.BannerAdSize.ADAPTIVE_BANNER;
@@ -161,7 +197,7 @@ export function showBanner(): Promise<void> {
   return setBannerMode("adaptive");
 }
 export function hideBanner(): Promise<void> {
-  return activeBanner === "adaptive" ? setBannerMode("none") : Promise.resolve();
+  return desiredBanner === "adaptive" ? setBannerMode("none") : Promise.resolve();
 }
 
 // Interstitial — 상세 페이지 10회 진입 + 직전 표시로부터 30분 이상 경과한 경우에만 노출.
