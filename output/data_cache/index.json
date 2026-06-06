@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-30T09:09:52+09:00",
-  "count": 227,
-  "ready_count": 227,
+  "generated_at": "2026-06-06T09:06:16+09:00",
+  "count": 234,
+  "ready_count": 234,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1377,6 +1377,13 @@
       "cache_path": "output/data_cache/notices/2026000147.json"
     },
     {
+      "notice_id": "2026000148",
+      "apt_name": "알티에로 광안",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000148.json"
+    },
+    {
       "notice_id": "2026000149",
       "apt_name": "엘리프 성성호수공원 1BL",
       "requires_manual_input": false,
@@ -1566,11 +1573,53 @@
       "cache_path": "output/data_cache/notices/2026000219.json"
     },
     {
+      "notice_id": "2026000225",
+      "apt_name": "백석시그니처자이 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000225.json"
+    },
+    {
+      "notice_id": "2026000226",
+      "apt_name": "백석시그니처자이 2단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000226.json"
+    },
+    {
       "notice_id": "2026000230",
       "apt_name": "화성동탄2지구 C-27블록 공공분양주택",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000230.json"
+    },
+    {
+      "notice_id": "2026000237",
+      "apt_name": "평택 고덕 우미 린 프레스티지(Abc-36BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000237.json"
+    },
+    {
+      "notice_id": "2026000242",
+      "apt_name": "호반써밋 첨단3지구(A7BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000242.json"
+    },
+    {
+      "notice_id": "2026000243",
+      "apt_name": "호반써밋 첨단3지구(A8BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000243.json"
+    },
+    {
+      "notice_id": "2026000259",
+      "apt_name": "상무 양우내안에 퍼스트힐(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000259.json"
     },
     {
       "notice_id": "2026820002",
