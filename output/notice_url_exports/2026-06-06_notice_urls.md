@@ -1,7 +1,7 @@
 # 청약홈 상세페이지 URL · 수동 입력 시트
 
 - 생성일: 2026-06-06
-- 대상 공고: 7건  (입력 완료 0건 / 대기 7건)
+- 대상 공고: 0건  (입력 완료 0건 / 대기 0건)
 - PDF 업로드 폴더: `input/pdfs/`
 
 ## 입력 안내
@@ -20,10 +20,3 @@
 
 | 공고번호 | 단지명 | 모집공고일 | 당첨자 발표일 | 청약홈 링크 | 권장 PDF 파일명 | 규제지역 | 재당첨 | 전매 | 거주의무 | 분양가상한제 | 계약금 | 중도금 | 잔금 | 상태 |
 |---|---|---:|---:|---|---|---|---|---|---|---|---:|---:|---:|:-:|
-| 2026000148 | 알티에로 광안 | 2026-06-05 | 2026-06-23 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000148&pblancNo=2026000148 | `2026000148 알티에로 광안 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000225 | 백석시그니처자이 1단지 | 2026-06-05 | 2026-06-23 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000225&pblancNo=2026000225 | `2026000225 백석시그니처자이 1단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000226 | 백석시그니처자이 2단지 | 2026-06-05 | 2026-06-24 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000226&pblancNo=2026000226 | `2026000226 백석시그니처자이 2단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000237 | 평택 고덕 우미 린 프레스티지(Abc-36BL) | 2026-06-05 | 2026-06-23 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000237&pblancNo=2026000237 | `2026000237 평택 고덕 우미 린 프레스티지(Abc-36BL) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000242 | 호반써밋 첨단3지구(A7BL) | 2026-06-05 | 2026-06-25 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000242&pblancNo=2026000242 | `2026000242 호반써밋 첨단3지구(A7BL) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000243 | 호반써밋 첨단3지구(A8BL) | 2026-06-05 | 2026-06-24 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000243&pblancNo=2026000243 | `2026000243 호반써밋 첨단3지구(A8BL) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000259 | 상무 양우내안에 퍼스트힐(조합원 취소분) | 2026-06-05 | 2026-06-23 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000259&pblancNo=2026000259 | `2026000259 상무 양우내안에 퍼스트힐(조합원 취소분) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
