@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9914 타입 | 전용 78.9423㎡ | 일반 24세대 | 특별 26세대 | 분양가 40840만원\n063.9705 타입 | 전용 84.3515㎡ | 일반 15세대 | 특별 12세대 | 분양가 43520만원\n074.9682 타입 | 전용 97.9727㎡ | 일반 91세대 | 특별 105세대 | 분양가 48210만원\n084.9915A타입 | 전용 110.2730㎡ | 일반 97세대 | 특별 114세대 | 분양가 58390만원\n084.9668B타입 | 전용 111.0677㎡ | 일반 84세대 | 특별 98세대 | 분양가 58390만원\n084.9918C타입 | 전용 110.1923㎡ | 일반 50세대 | 특별 56세대 | 분양가 58390만원\n099.3915 타입 | 전용 129.2619㎡ | 일반 69세대 | 특별 9세대 | 분양가 67600만원\n115.9599 타입 | 전용 151.9408㎡ | 일반 4세대 | 특별 0세대 | 분양가 94010만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-06T00:06:13.753187"
+    "collected_at": "2026-06-06T00:06:13.753187",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "주식회사 하나자산신탁",
@@ -262,5 +267,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-06T09:30:05+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "40",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-06T09:30:05+09:00"
+  }
 }

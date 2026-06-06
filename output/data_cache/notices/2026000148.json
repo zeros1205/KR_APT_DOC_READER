@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n151.7340 타입 | 전용 192.6536㎡ | 일반 62세대 | 특별 10세대 | 분양가 286000만원\n151.7340P타입 | 전용 192.6536㎡ | 일반 3세대 | 특별 0세대 | 분양가 310200만원\n153.2934 타입 | 전용 193.0118㎡ | 일반 57세대 | 특별 9세대 | 분양가 289500만원\n153.2934P타입 | 전용 193.0118㎡ | 일반 3세대 | 특별 0세대 | 분양가 314200만원\n154.8504 타입 | 전용 195.9041㎡ | 일반 79세대 | 특별 13세대 | 분양가 315200만원\n154.8504P타입 | 전용 195.9041㎡ | 일반 4세대 | 특별 0세대 | 분양가 340200만원\n160.2818 타입 | 전용 204.7623㎡ | 일반 82세대 | 특별 13세대 | 분양가 319700만원\n160.2818P타입 | 전용 204.7623㎡ | 일반 4세대 | 특별 0세대 | 분양가 347100만원\n191.4609 타입 | 전용 241.0371㎡ | 일반 22세대 | 특별 4세대 | 분양가 365900만원\n191.4609P타입 | 전용 241.0371㎡ | 일반 1세대 | 특별 0세대 | 분양가 393400만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-06T00:06:14.922597"
+    "collected_at": "2026-06-06T00:06:14.922597",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)하이아트이앤씨",
@@ -300,5 +305,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-06T09:30:04+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-06T09:30:04+09:00"
+  }
 }

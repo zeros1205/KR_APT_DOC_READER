@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9343A타입 | 전용 109.8768㎡ | 일반 122세대 | 특별 221세대 | 분양가 58730만원\n084.9075B타입 | 전용 110.2499㎡ | 일반 30세대 | 특별 54세대 | 분양가 58730만원\n084.8505D타입 | 전용 110.7552㎡ | 일반 18세대 | 특별 27세대 | 분양가 57520만원\n094.3143A타입 | 전용 121.1791㎡ | 일반 20세대 | 특별 3세대 | 분양가 57680만원\n094.2875B타입 | 전용 121.5522㎡ | 일반 8세대 | 특별 0세대 | 분양가 57680만원\n094.3805D타입 | 전용 122.2382㎡ | 일반 24세대 | 특별 3세대 | 분양가 59990만원\n101.8311A타입 | 전용 130.6625㎡ | 일반 150세대 | 특별 22세대 | 분양가 67800만원\n111.5911A타입 | 전용 142.4227㎡ | 일반 36세대 | 특별 5세대 | 분양가 69170만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-06T00:06:11.094766"
+    "collected_at": "2026-06-06T00:06:11.094766",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "우미건설(주),지에스건설(주),이에스아이(주)",
@@ -262,5 +267,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-06T09:30:05+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-06T09:30:05+09:00"
+  }
 }
