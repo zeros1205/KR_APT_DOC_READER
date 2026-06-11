@@ -26,12 +26,9 @@ import { initCrashReporting, setCrashCollectionEnabled } from "./crash";
 import {
   initializeAdMob,
   isAdMobSupported,
-  prepareAppOpen,
   requestTrackingConsent,
-  setBannerMode,
-  showAppOpen
+  setBannerMode
 } from "./admob";
-import { Preferences } from "@capacitor/preferences";
 import {
   defaultSettings,
   loadFavorites,
@@ -88,38 +85,6 @@ const POSTS_PER_PAGE = 12;
 // 카드 N개마다 네이티브 광고 1개 삽입(첫 화면 너무 이르지 않게 6번째 뒤부터).
 const AD_EVERY_N_CARDS = 6;
 const PREFERRED_REGION_KEY = "__preferred__";
-
-// AdMob 빈도 제어 — App Open 은 직전 표시로부터 4 시간 룰.
-const APP_OPEN_LAST_KEY = "apt-note:last_app_open_at";
-const APP_OPEN_MIN_GAP_MS = 4 * 60 * 60 * 1000;
-
-async function readNumberPref(key: string): Promise<number> {
-  try {
-    const raw = (await Preferences.get({ key })).value;
-    if (!raw) return 0;
-    const num = Number(raw);
-    return Number.isFinite(num) ? num : 0;
-  } catch {
-    return 0;
-  }
-}
-
-async function writeNumberPref(key: string, value: number): Promise<void> {
-  try {
-    await Preferences.set({ key, value: String(value) });
-  } catch {
-    // ignore
-  }
-}
-
-async function maybeShowAppOpenAd(): Promise<void> {
-  if (!isAdMobSupported()) return;
-  const lastTs = await readNumberPref(APP_OPEN_LAST_KEY);
-  const now = Date.now();
-  if (now - lastTs < APP_OPEN_MIN_GAP_MS) return;
-  const shown = await showAppOpen();
-  if (shown) await writeNumberPref(APP_OPEN_LAST_KEY, now);
-}
 
 type View = "home" | "favorites" | "settings" | "detail";
 type FavoriteSort = "nameAsc" | "nameDesc" | "newest" | "oldest";
@@ -284,23 +249,9 @@ function App() {
       await initializeAdMob();
       // Interstitial 은 정책상 비활성화(상세 진입 시 출력 안 함). prepare 도 호출하지 않아
       // SDK 가 광고를 미리 로드하지도 않게 둠. 재활성화 시 prepareInterstitial() 추가.
-      void prepareAppOpen();
+      // App Open 광고는 제거됨.
     })();
   }, []);
-
-  // 콜드 스타트 시 App Open 광고 트리거. 인트로 사라진 후, 온보딩이 떠있지 않을 때 1 회만.
-  const appOpenColdStartTriggeredRef = useRef(false);
-  useEffect(() => {
-    if (appOpenColdStartTriggeredRef.current) return;
-    if (!isAdMobSupported()) return;
-    if (loading || introVisible) return;
-    if (!settingsLoadedRef.current) return;
-    if (shouldShowOnboarding(settings)) return;
-    appOpenColdStartTriggeredRef.current = true;
-    // 광고 로드 시간 확보 위해 약간 지연.
-    const timer = window.setTimeout(() => void maybeShowAppOpenAd(), 800);
-    return () => window.clearTimeout(timer);
-  }, [loading, introVisible, settings]);
 
   // 광고 모드를 한 곳에서 계산. native SDK 호출 + main 컨테이너 className 양쪽에서 활용.
   // 정책(2026-05):
@@ -377,8 +328,6 @@ function App() {
     const handle = CapacitorApp.addListener("appStateChange", ({ isActive }) => {
       if (isActive) {
         void refreshPosts();
-        // foreground 복귀 시 App Open 광고. 4 시간 룰 충족 시에만 표시.
-        void maybeShowAppOpenAd();
       }
     });
     return () => {
