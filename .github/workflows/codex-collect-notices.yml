@@ -19,6 +19,10 @@ on:
         description: "최대 수집 건수, 0은 제한 없음"
         required: false
         default: "0"
+      notice_id:
+        description: "공고번호(PBLANC_NO) 직접 조회, 콤마로 여러 건. 비우면 날짜 범위 사용"
+        required: false
+        default: ""
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -61,12 +65,22 @@ jobs:
           DAYS="${{ github.event.inputs.days || '7' }}"
           START_DATE="${{ github.event.inputs.start_date || '' }}"
           LIMIT="${{ github.event.inputs.limit || '0' }}"
+          NOTICE_ID="${{ github.event.inputs.notice_id || '' }}"
 
           # eval 제거 — 사용자 입력의 셸 메타문자가 명령으로 해석되지 않도록
           # 인자 배열로 직접 호출 (location-v3-active-posts.yml 와 같은 패턴).
           ARGS=(--days "$DAYS" --limit "$LIMIT")
           if [ -n "$START_DATE" ]; then
             ARGS+=(--start-date "$START_DATE")
+          fi
+          # 공고번호 직접 조회 (콤마 구분). 지정 시 스크립트가 날짜 범위 대신
+          # PBLANC_NO::EQ 단건 조회 경로를 사용한다.
+          if [ -n "$NOTICE_ID" ]; then
+            IFS=',' read -ra NIDS <<< "$NOTICE_ID"
+            for nid in "${NIDS[@]}"; do
+              nid_trimmed="$(echo "$nid" | tr -d '[:space:]')"
+              [ -n "$nid_trimmed" ] && ARGS+=(--notice-id "$nid_trimmed")
+            done
           fi
 
           echo "python collect_notices_weekly.py ${ARGS[*]}"
