@@ -1,7 +1,7 @@
 # 청약홈 상세페이지 URL · 수동 입력 시트
 
 - 생성일: 2026-06-13
-- 대상 공고: 6건  (입력 완료 0건 / 대기 6건)
+- 대상 공고: 0건  (입력 완료 0건 / 대기 0건)
 - PDF 업로드 폴더: `input/pdfs/`
 
 ## 입력 안내
@@ -20,9 +20,3 @@
 
 | 공고번호 | 단지명 | 모집공고일 | 당첨자 발표일 | 청약홈 링크 | 권장 PDF 파일명 | 규제지역 | 재당첨 | 전매 | 거주의무 | 분양가상한제 | 계약금 | 중도금 | 잔금 | 상태 |
 |---|---|---:|---:|---|---|---|---|---|---|---|---:|---:|---:|:-:|
-| 2026000194 | 더샵 검단레이크파크(AB22BL) | 2026-06-12 | 2026-07-02 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000194&pblancNo=2026000194 | `2026000194 더샵 검단레이크파크(AB22BL) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000195 | 더샵 검단레이크파크(AB23BL) | 2026-06-12 | 2026-07-03 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000195&pblancNo=2026000195 | `2026000195 더샵 검단레이크파크(AB23BL) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000223 | 힐스테이트 양산더스카이 1단지 | 2026-06-12 | 2026-06-30 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000223&pblancNo=2026000223 | `2026000223 힐스테이트 양산더스카이 1단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000224 | 힐스테이트 양산더스카이 2단지 | 2026-06-12 | 2026-07-01 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000224&pblancNo=2026000224 | `2026000224 힐스테이트 양산더스카이 2단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000235 | 북서울자이 폴라리스(보류지) | 2026-06-12 | 2026-06-30 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000235&pblancNo=2026000235 | `2026000235 북서울자이 폴라리스(보류지) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000248 | 북오산자이 드포레 | 2026-06-12 | 2026-06-30 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000248&pblancNo=2026000248 | `2026000248 북오산자이 드포레 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
