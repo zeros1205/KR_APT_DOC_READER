@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n068.9608A타입 | 전용 92.8367㎡ | 일반 32세대 | 특별 40세대 | 분양가 44670만원\n084.9836A타입 | 전용 109.0446㎡ | 일반 83세대 | 특별 104세대 | 분양가 52950만원\n084.9478B타입 | 전용 109.0032㎡ | 일반 17세대 | 특별 22세대 | 분양가 50860만원\n159.9969P타입 | 전용 206.9135㎡ | 일반 1세대 | 특별 0세대 | 분양가 113300만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-13T00:20:13.665935"
+    "collected_at": "2026-06-13T00:20:13.665935",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "(주)무궁화신탁",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-13T09:36:22+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-13T09:36:22+09:00"
+  }
 }

@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9928A타입 | 전용 79.4711㎡ | 일반 70세대 | 특별 79세대 | 분양가 50370만원\n059.9984B타입 | 전용 79.3870㎡ | 일반 40세대 | 특별 44세대 | 분양가 51750만원\n074.9590A타입 | 전용 97.1014㎡ | 일반 91세대 | 특별 105세대 | 분양가 60460만원\n074.9810B타입 | 전용 97.0533㎡ | 일반 16세대 | 특별 12세대 | 분양가 61510만원\n074.9604C타입 | 전용 97.6033㎡ | 일반 39세대 | 특별 44세대 | 분양가 61120만원\n084.9121A타입 | 전용 109.5940㎡ | 일반 254세대 | 특별 306세대 | 분양가 67200만원\n084.9102B타입 | 전용 109.4914㎡ | 일반 52세대 | 특별 60세대 | 분양가 68310만원\n084.9695C타입 | 전용 110.3467㎡ | 일반 40세대 | 특별 44세대 | 분양가 67050만원\n099.3455A타입 | 전용 127.7937㎡ | 일반 143세대 | 특별 20세대 | 분양가 75860만원\n099.3436B타입 | 전용 127.6849㎡ | 일반 49세대 | 특별 6세대 | 분양가 77050만원\n124.4008P타입 | 전용 163.3796㎡ | 일반 2세대 | 특별 0세대 | 분양가 148640만원\n125.2247P타입 | 전용 164.7747㎡ | 일반 1세대 | 특별 0세대 | 분양가 149430만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-13T00:20:08.611592"
+    "collected_at": "2026-06-13T00:20:08.611592",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한국투자부동산신탁 주식회사",
@@ -338,5 +343,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-13T09:36:22+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-13T09:36:22+09:00"
+  }
 }

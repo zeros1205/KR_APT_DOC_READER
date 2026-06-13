@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.9497A타입 | 전용 80.7560㎡ | 일반 126세대 | 특별 228세대 | 분양가 49010만원\n059.8301B타입 | 전용 81.0950㎡ | 일반 118세대 | 특별 208세대 | 분양가 48240만원\n084.5181A타입 | 전용 111.7074㎡ | 일반 156세대 | 특별 285세대 | 분양가 65330만원\n084.0342B타입 | 전용 112.2416㎡ | 일반 65세대 | 특별 112세대 | 분양가 64660만원\n084.1796C타입 | 전용 111.1017㎡ | 일반 58세대 | 특별 98세대 | 분양가 63680만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-13T00:20:16.984555"
+    "collected_at": "2026-06-13T00:20:16.984555",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "한국자산신탁(주)",
@@ -205,5 +210,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "3년",
+    "price_cap": "적용",
+    "is_price_cap": "Y",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-13T09:36:21+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-13T09:36:21+09:00"
+  }
 }
