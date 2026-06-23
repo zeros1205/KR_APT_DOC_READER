@@ -24,7 +24,7 @@ load_dotenv(BASE_DIR / ".env")
 
 from agents.collector import NoticeDocument
 from agents.pdf_finance import extract_finance_from_pdf, find_local_pdf_in_dirs
-from agents.pdf_policy import extract_policy_from_pdf
+from agents.pdf_policy import extract_policy_from_pdf, pdf_is_text_extractable
 from check_ui_freeze import check_ui_freeze
 from orchestrator import run_pipeline_from_doc
 from pipeline.index_renderer import build_front_index
@@ -38,6 +38,18 @@ DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.jso
 PDF_POLICY_MUST_CONFIRM_KEYS = (
     "resale_restriction",
 )
+
+
+class ImagePdfSkip(Exception):
+    """텍스트 레이어가 없는 스캔(이미지) PDF — hard-fail 대신 수기입력 필요로 graceful skip한다."""
+
+    def __init__(self, notice_id: str, apt_name: str, pdf_name: str) -> None:
+        self.notice_id = notice_id
+        self.apt_name = apt_name
+        self.pdf_name = pdf_name
+        super().__init__(
+            f"{notice_id} {apt_name} ({pdf_name}) — 텍스트 레이어 없는 이미지 PDF(규제·납부 표 추출 불가)"
+        )
 
 
 def _load_json(path: Path) -> Any:
@@ -125,9 +137,13 @@ def _doc_from_payload(payload: dict[str, Any], *, require_pdf_policy: bool = Fal
             )
         )
         if require_pdf_policy and not is_public_notice_data(data) and (missing_must_confirm_keys or not has_policy_override):
+            apt_name = payload.get("apt_name") or data.get("apt_name") or ""
+            # 스캔 이미지 PDF는 텍스트·표 자체가 없어 추출이 원천 불가 → hard-fail 대신 graceful skip.
+            if not pdf_is_text_extractable(local_pdf):
+                raise ImagePdfSkip(notice_id, apt_name, local_pdf.name)
             raise ValueError(
                 "PDF 정책 추출 실패: "
-                f"{notice_id} {payload.get('apt_name') or data.get('apt_name') or ''} "
+                f"{notice_id} {apt_name} "
                 f"({local_pdf.name}). 공고문 전매제한/재당첨제한/거주의무/분양가상한제 항목을 "
                 "읽지 못했으므로 manual_regulation을 입력하거나 PDF 추출 로직을 보강하세요."
             )
@@ -288,7 +304,13 @@ async def main() -> None:
 
     results: list[Path] = []
     failed: list[str] = []
+    skipped: list[str] = []
     for _, payload in selected:
+        # 실패/스킵 보고는 payload 식별자로 고정한다. _doc_from_payload가 예외를 던지면
+        # doc이 직전 반복 값을 가리켜 엉뚱한 단지로 오보고되던 버그를 방지한다.
+        data = payload.get("document") or {}
+        p_notice_id = str(payload.get("notice_id") or data.get("notice_id") or "")
+        p_apt_name = payload.get("apt_name") or data.get("apt_name") or p_notice_id
         try:
             doc = _doc_from_payload(payload, require_pdf_policy=args.require_pdf)
             print(f"\n[generate] {doc.notice_id} {doc.apt_name}")
@@ -302,9 +324,12 @@ async def main() -> None:
                 processed_ids.add(doc.notice_id)
                 print(f"  - saved: {saved}")
             else:
-                failed.append(doc.apt_name or doc.notice_id)
+                failed.append(p_apt_name)
+        except ImagePdfSkip as skip:
+            skipped.append(p_apt_name)
+            print(f"  - skip(이미지 PDF·수기입력 필요): {skip}")
         except Exception as e:
-            failed.append(doc.apt_name or doc.notice_id)
+            failed.append(p_apt_name)
             print(f"  - failed: {e}")
 
     if results or selected:
@@ -314,9 +339,12 @@ async def main() -> None:
     if not args.no_build_index:
         build_front_index(render_shell=args.build_index_shell)
 
-    print(f"[generate] success={len(results)} failed={len(failed)}")
+    print(f"[generate] success={len(results)} failed={len(failed)} skipped={len(skipped)}")
     if failed:
         print("[generate] failed notices: " + ", ".join(failed))
+    if skipped:
+        # 접두사를 "[generate] "로 시작하지 않게 해 알림 파서가 생성 단지로 오인하지 않도록 한다.
+        print("[skip] image-pdf notices (수기입력 필요): " + ", ".join(skipped))
 
 
 if __name__ == "__main__":
