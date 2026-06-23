@@ -96,6 +96,29 @@ def parse_md(path: Path) -> dict[str, dict[str, str]]:
     return out
 
 
+def _ratio_int(value: str) -> int | None:
+    v = (value or "").strip().rstrip("%").strip()
+    try:
+        return int(round(float(v)))
+    except (TypeError, ValueError):
+        return None
+
+
+def normalize_no_midterm(meta: dict[str, str]) -> None:
+    """중도금 없는 구조(계약금+잔금≈100)에서 빈 midterm_ratio 를 '0' 으로 채운다.
+
+    사용자가 '중도금 없음'을 표현하려고 중도금 칸을 비워두면 validate 가
+    미입력으로 잡아 행 전체가 patch 에서 누락되던 문제를 방지한다. 단순히
+    깜빡한 경우(계약금+잔금≠100)는 그대로 빈 값으로 두어 미완료로 잡히게 한다.
+    """
+    if meta.get("midterm_ratio"):
+        return
+    contract = _ratio_int(meta.get("contract_ratio", ""))
+    balance = _ratio_int(meta.get("balance_ratio", ""))
+    if contract is not None and balance is not None and 99 <= contract + balance <= 101:
+        meta["midterm_ratio"] = "0"
+
+
 def validate(parsed: dict[str, dict[str, str]]) -> dict[str, list[str]]:
     """notice_id 별 누락 키 리스트 반환. 빈 리스트면 완전 입력."""
     missing: dict[str, list[str]] = {}
