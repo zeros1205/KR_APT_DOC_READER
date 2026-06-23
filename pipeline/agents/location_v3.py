@@ -133,6 +133,31 @@ DEFAULT_MODEL_V3 = os.getenv("LOCATION_V3_MODEL", "gemini-3.1-pro-preview")
 DEFAULT_TEMPERATURE_V3 = float(os.getenv("LOCATION_V3_TEMPERATURE", "0.4"))
 
 
+def _loads_lenient(raw: str) -> dict:
+    """LLM JSON 응답을 관대하게 파싱한다.
+
+    strict=False 로 문자열 내 제어문자를 허용하고, 그래도 실패하면 첫 ``{...}``
+    블록만 추출해 재시도하며, 최후에는 제어문자를 공백으로 치환해 복구한다.
+    어떤 경우에도 예외를 던지지 않는다(파싱 실패가 구버전 폴백으로 이어지지
+    않도록 보장).
+    """
+    for candidate in (raw, None):
+        text = candidate
+        if text is None:
+            match = re.search(r"\{.*\}", raw, re.DOTALL)
+            text = match.group() if match else None
+        if not text:
+            continue
+        try:
+            return json.loads(text, strict=False)
+        except json.JSONDecodeError:
+            try:
+                return json.loads(re.sub(r"[\x00-\x1f]", " ", text))
+            except json.JSONDecodeError:
+                continue
+    return {}
+
+
 async def generate_v3(apt_name: str, address: str, *, model: str | None = None) -> dict:
     """단지명·주소만 입력. Gemini Grounding + thinking high 로 5섹션 분석 생성."""
     api_key = os.getenv("GEMINI_API_KEY", "")
@@ -199,11 +224,11 @@ async def generate_v3(apt_name: str, address: str, *, model: str | None = None) 
             "_meta": {"model": used_model, "prompt_version": "v3-readable", "grounding": False, "thinking": False},
         }
 
-    try:
-        result = json.loads(raw)
-    except json.JSONDecodeError:
-        m = re.search(r"\{.*\}", raw, re.DOTALL)
-        result = json.loads(m.group()) if m else {}
+    # Gemini 응답 JSON 파싱.
+    # 모델이 body_md 안에 원시 제어문자(리터럴 \n·\t 등)를 담아 보내는 경우가 있어
+    # strict=False 로 허용한다(기본 strict=True 는 제어문자를 거부 → 'Invalid control
+    # character' 예외 → 과거 v3 패치가 실패하고 구버전 본문으로 폴백됨).
+    result = _loads_lenient(raw)
 
     return {
         "headline": (result.get("headline") or "").strip(),
