@@ -3,12 +3,12 @@
 
 notice_id: "2026000272"
 
-regulated_zone: ""
-readmission_limit: ""
-resale_restriction: ""
-live_requirement: ""
-price_cap: ""
+regulated_zone: "비규제지역"
+readmission_limit: "없음"
+resale_restriction: "없음"
+live_requirement: "없음"
+price_cap: "미적용"
 
-contract_ratio: ""
-midterm_ratio: ""
-balance_ratio: ""
+contract_ratio: "10%"
+midterm_ratio: "60%"
+balance_ratio: "30%"
