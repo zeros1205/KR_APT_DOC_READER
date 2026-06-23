@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.6389B타입 | 전용 79.6556㎡ | 일반 1세대 | 특별 0세대 | 분양가 92500만원\n084.8654B타입 | 전용 110.9236㎡ | 일반 3세대 | 특별 0세대 | 분양가 115400만원\n112.9104 타입 | 전용 148.3303㎡ | 일반 2세대 | 특별 0세대 | 분양가 137000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-13T00:20:10.384000"
+    "collected_at": "2026-06-13T00:20:10.384000",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "투기과열지구/청약과열지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "미아제3구역주택재개발정비사업조합",
@@ -167,5 +172,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구/청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T10:32:42+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "0",
+    "balance_ratio": "90",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T10:32:43+09:00"
+  }
 }
