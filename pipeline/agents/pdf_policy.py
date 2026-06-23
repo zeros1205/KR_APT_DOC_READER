@@ -64,6 +64,29 @@ def find_local_pdf(pdf_dir: Path, notice_id: str = "", apt_name: str = "") -> Pa
     return None
 
 
+def pdf_is_text_extractable(pdf_path: Path, *, max_pages: int = 2, min_chars: int = 50) -> bool:
+    """공고문 앞부분에서 의미 있는 텍스트가 추출되는지 확인한다.
+
+    스캔 이미지 PDF(텍스트 레이어 없음)는 규제·납부 표를 텍스트/표로 읽을 수
+    없으므로 False를 반환한다. 판단이 불가능한 경우(pdfplumber 부재·열기 실패)는
+    기존 동작을 유지하도록 True를 반환한다.
+    """
+    try:
+        import pdfplumber
+    except Exception:
+        return True
+    try:
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            chars = 0
+            for page in pdf.pages[: max(1, max_pages)]:
+                chars += len((page.extract_text() or "").strip())
+                if chars >= min_chars:
+                    return True
+    except Exception:
+        return True
+    return False
+
+
 def _clean_value(value: str) -> str:
     value = re.sub(r"\s+", " ", value or "").strip(" \t\r\n.·")
     return value
