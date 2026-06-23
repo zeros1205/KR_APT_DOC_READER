@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.4626 타입 | 전용 113.9993㎡ | 일반 20세대 | 특별 26세대 | 분양가 47800만원\n113.7696A타입 | 전용 151.9037㎡ | 일반 20세대 | 특별 3세대 | 분양가 60700만원\n113.4850B타입 | 전용 151.1850㎡ | 일반 20세대 | 특별 3세대 | 분양가 64100만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:05:50.002895"
+    "collected_at": "2026-06-23T00:05:50.002895",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "비에이치아이건설(주)",
@@ -167,5 +172,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }

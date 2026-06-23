@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.7419A타입 | 전용 109.5257㎡ | 일반 411세대 | 특별 505세대 | 분양가 55170만원\n084.8435B타입 | 전용 110.8749㎡ | 일반 101세대 | 특별 123세대 | 분양가 56270만원\n113.7613 타입 | 전용 140.2267㎡ | 일반 165세대 | 특별 26세대 | 분양가 67820만원\n128.8099 타입 | 전용 155.1783㎡ | 일반 42세대 | 특별 6세대 | 분양가 70430만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:05:55.370821"
+    "collected_at": "2026-06-23T00:05:55.370821",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "교보자산신탁(주)",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }

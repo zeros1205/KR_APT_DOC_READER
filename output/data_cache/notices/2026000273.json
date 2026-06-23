@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.8315A타입 | 전용 113.9000㎡ | 일반 108세대 | 특별 127세대 | 분양가 69100만원\n084.9186B타입 | 전용 113.2098㎡ | 일반 104세대 | 특별 131세대 | 분양가 69930만원\n115.5495A타입 | 전용 152.6652㎡ | 일반 286세대 | 특별 43세대 | 분양가 88730만원\n115.5735B타입 | 전용 153.5486㎡ | 일반 122세대 | 특별 19세대 | 분양가 89940만원\n123.7307A타입 | 전용 163.6066㎡ | 일반 117세대 | 특별 18세대 | 분양가 98890만원\n123.3693B타입 | 전용 163.4123㎡ | 일반 118세대 | 특별 18세대 | 분양가 102810만원\n132.9336A타입 | 전용 172.4037㎡ | 일반 99세대 | 특별 14세대 | 분양가 107360만원\n137.5630B타입 | 전용 181.0645㎡ | 일반 78세대 | 특별 12세대 | 분양가 119750만원\n137.8565C타입 | 전용 181.3047㎡ | 일반 160세대 | 특별 24세대 | 분양가 119910만원\n152.3788A타입 | 전용 198.7251㎡ | 일반 51세대 | 특별 6세대 | 분양가 134830만원\n152.3629B타입 | 전용 198.4418㎡ | 일반 51세대 | 특별 6세대 | 분양가 135980만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:05:53.551758"
+    "collected_at": "2026-06-23T00:05:53.551758",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "아이에스동서(주)",
@@ -319,5 +324,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60^",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }

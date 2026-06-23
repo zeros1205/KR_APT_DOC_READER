@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n059.8902A타입 | 전용 89.9361㎡ | 일반 10세대 | 특별 11세대 | 분양가 224000만원\n059.9055B타입 | 전용 90.1096㎡ | 일반 10세대 | 특별 7세대 | 분양가 226200만원\n074.9117A타입 | 전용 111.3802㎡ | 일반 11세대 | 특별 12세대 | 분양가 249000만원\n084.8554A타입 | 전용 126.8837㎡ | 일반 5세대 | 특별 0세대 | 분양가 263000만원\n084.0000B타입 | 전용 126.2619㎡ | 일반 24세대 | 특별 32세대 | 분양가 276000만원\n084.0000C타입 | 전용 124.7641㎡ | 일반 15세대 | 특별 22세대 | 분양가 273200만원\n109.8652A타입 | 전용 162.5899㎡ | 일반 10세대 | 특별 2세대 | 분양가 306000만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:06:01.794784"
+    "collected_at": "2026-06-23T00:06:01.794784",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "투기과열지구/청약과열지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "노량진2재정비촉진구역재개발정비사업조합",
@@ -243,5 +248,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "투기과열지구/청약과열지역",
+    "is_hot_zone": "Y",
+    "is_regulated_zone": "Y",
+    "readmission_limit": "10년",
+    "resale_restriction": "3년",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "10",
+    "midterm_ratio": "60",
+    "balance_ratio": "30",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }

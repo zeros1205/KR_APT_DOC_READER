@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.9800A타입 | 전용 118.6263㎡ | 일반 3세대 | 특별 0세대 | 분양가 65460만원\n084.9800B타입 | 전용 119.9563㎡ | 일반 4세대 | 특별 0세대 | 분양가 61720만원\n084.9900C타입 | 전용 120.0892㎡ | 일반 1세대 | 특별 0세대 | 분양가 63050만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:05:46.822561"
+    "collected_at": "2026-06-23T00:05:46.822561",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "안흥동 지역주택조합",
@@ -167,5 +172,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "6개월",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }

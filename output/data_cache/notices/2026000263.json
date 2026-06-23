@@ -51,7 +51,12 @@
     "raw_text": "[주택형별 정보]\n084.8659A타입 | 전용 110.1874㎡ | 일반 129세대 | 특별 154세대 | 분양가 49930만원\n084.8215B타입 | 전용 111.2173㎡ | 일반 39세대 | 특별 47세대 | 분양가 49890만원\n135.2181 타입 | 전용 180.0646㎡ | 일반 1세대 | 특별 1세대 | 분양가 105990만원\n147.5507 타입 | 전용 196.6855㎡ | 일반 2세대 | 특별 2세대 | 분양가 115770만원",
     "tables": [],
     "pdf_path": null,
-    "collected_at": "2026-06-23T00:05:57.002997"
+    "collected_at": "2026-06-23T00:05:57.002997",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "regulated_zone": "비규제지역"
   },
   "detail_raw": {
     "BSNS_MBY_NM": "신영부동산신탁 주식회사",
@@ -186,5 +191,28 @@
   "retry_attempts": [],
   "missing_fields": [],
   "requires_manual_input": false,
-  "manual_status": "none"
+  "manual_status": "none",
+  "manual_regulation": {
+    "regulated_zone": "비규제지역",
+    "is_hot_zone": "N",
+    "is_regulated_zone": "N",
+    "readmission_limit": "없음",
+    "resale_restriction": "없음",
+    "live_requirement": "없음",
+    "price_cap": "미적용",
+    "is_price_cap": "N",
+    "source": "md_input_sheet",
+    "query": "auto-applied from notice_urls.md",
+    "evidence_urls": [],
+    "evidence_notes": [],
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  },
+  "manual_finance": {
+    "contract_ratio": "5",
+    "midterm_ratio": "60",
+    "balance_ratio": "35",
+    "source_pdf": "md_input_sheet",
+    "source_page": "user-input",
+    "checked_at": "2026-06-23T09:33:16+09:00"
+  }
 }
