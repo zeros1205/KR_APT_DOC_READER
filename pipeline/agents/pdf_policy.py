@@ -296,8 +296,85 @@ def extract_policy_from_pdf_text(pdf_text: str) -> dict[str, str]:
     return result
 
 
+_POLICY_HEADER_MAP = {
+    "재당첨제한": "readmission_limit",
+    "전매제한": "resale_restriction",
+    "거주의무기간": "live_requirement",
+    "분양가상한제": "price_cap",
+    "택지유형": "land_type",
+}
+
+
+def _norm_cell(cell: str) -> str:
+    return re.sub(r"\s+", " ", (cell or "").replace("\n", " ")).strip()
+
+
+def _value_below(rows: list[list[str]], ri: int, ci: int) -> str:
+    """(ri, ci) 머리 셀 바로 아래 행의 같은 열 값을 읽는다."""
+    if ri + 1 < len(rows) and ci < len(rows[ri + 1]):
+        return rows[ri + 1][ci]
+    return ""
+
+
+def _normalize_zone_value(raw: str) -> tuple[str, str]:
+    """규제지역 여부 셀 값을 표준 라벨/(Y·N)으로 정규화한다."""
+    compact = (raw or "").replace(" ", "")
+    if not compact:
+        return "", ""
+    if "비규제" in compact:
+        return "비규제지역", "N"
+    zones: list[str] = []
+    if "투기과열지구" in compact:
+        zones.append("투기과열지구")
+    if "조정대상지역" in compact:
+        zones.append("조정대상지역")
+    if "청약과열지역" in compact:
+        zones.append("청약과열지역")
+    if zones:
+        return ", ".join(dict.fromkeys(zones)), "Y"
+    return "", ""
+
+
+def extract_policy_from_tables(pages) -> dict[str, str]:
+    """pdfplumber 표 추출로 규제 5종 + 규제지역 여부를 읽는다(1순위).
+
+    공고문 1~2페이지 단지정보 표는 머리 셀(재당첨제한/전매제한/거주의무기간/
+    분양가상한제/택지유형, 규제지역여부) 바로 아래 행에 값이 위치한다.
+    """
+    result: dict[str, str] = {key: "" for key in _POLICY_KEYS}
+    for page in pages:
+        try:
+            tables = page.extract_tables()
+        except Exception:
+            continue
+        for table in tables:
+            rows = [[_norm_cell(cell) for cell in row] for row in table]
+            for ri, row in enumerate(rows):
+                for ci, cell in enumerate(row):
+                    compact = cell.replace(" ", "")
+                    key = _POLICY_HEADER_MAP.get(compact)
+                    if key and not result[key]:
+                        result[key] = _value_below(rows, ri, ci)
+                    if "규제지역여부" in compact and not result["regulated_zone"]:
+                        result["regulated_zone"] = _value_below(rows, ri, ci)
+
+    result["readmission_limit"] = _clean_policy_period(result["readmission_limit"])
+    result["resale_restriction"] = _clean_policy_period(result["resale_restriction"])
+    result["live_requirement"] = _clean_policy_period(result["live_requirement"])
+    result["price_cap"] = _clean_price_cap(result["price_cap"])
+    result["land_type"] = _clean_value(result["land_type"])
+    zone, is_hot = _normalize_zone_value(result["regulated_zone"])
+    result["regulated_zone"] = zone
+    result["is_hot_zone"] = is_hot
+    return result
+
+
 def extract_policy_from_pdf(pdf_path: Path, *, max_pages: int = 2) -> dict[str, str]:
-    """로컬 PDF 파일에서 규제 정보를 직접 추출한다."""
+    """로컬 PDF 파일에서 규제 정보를 직접 추출한다.
+
+    1순위로 표(table) 셀 매핑을, 2순위로 기존 텍스트 정규식 추출을 사용하고
+    표 기반 결과가 비어 있는 항목만 텍스트 결과로 보완한다.
+    """
     try:
         import pdfplumber
     except Exception:
@@ -305,11 +382,20 @@ def extract_policy_from_pdf(pdf_path: Path, *, max_pages: int = 2) -> dict[str, 
 
     try:
         with pdfplumber.open(str(pdf_path)) as pdf:
-            texts = [
-                page.extract_text() or ""
-                for page in pdf.pages[:max(1, max_pages)]
-            ]
+            pages = pdf.pages[:max(1, max_pages)]
+            texts = [page.extract_text() or "" for page in pages]
+            table_result = extract_policy_from_tables(pages)
     except Exception:
         return {key: "" for key in _POLICY_KEYS}
 
-    return extract_policy_from_pdf_text("\n".join(texts))
+    text_result = extract_policy_from_pdf_text("\n".join(texts))
+
+    merged = dict(text_result)
+    for key, value in table_result.items():
+        if value:
+            merged[key] = value
+
+    for key, value in list(merged.items()):
+        if value in _NULLISH:
+            merged[key] = ""
+    return merged
