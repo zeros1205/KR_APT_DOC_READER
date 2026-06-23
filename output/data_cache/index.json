@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-23T09:06:05+09:00",
-  "count": 252,
-  "ready_count": 252,
+  "generated_at": "2026-06-24T08:57:08+09:00",
+  "count": 254,
+  "ready_count": 254,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1746,6 +1746,20 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000281.json"
+    },
+    {
+      "notice_id": "2026000288",
+      "apt_name": "신제주 동문디이스트 시그니처원Ⅰ",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000288.json"
+    },
+    {
+      "notice_id": "2026000289",
+      "apt_name": "신제주 동문디이스트 시그니처원Ⅱ",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000289.json"
     },
     {
       "notice_id": "2026820002",
