@@ -28,7 +28,7 @@ EXPORT_DIR = ROOT / "output" / "notice_url_exports"
 NOTICE_CACHE_DIR = ROOT / "output" / "data_cache" / "notices"
 
 sys.path.insert(0, str(ROOT / "tools"))
-from parse_notice_meta_md import REQUIRED_KEYS, parse_md, validate  # noqa: E402
+from parse_notice_meta_md import REQUIRED_KEYS, normalize_no_midterm, parse_md, validate  # noqa: E402
 
 try:
     import parse_notice_meta_yml as _yml_mod  # noqa: E402
@@ -127,6 +127,11 @@ def main() -> int:
     if not parsed:
         print("[apply] 입력된 행이 없습니다.")
         return 0
+
+    # 중도금 없는 구조(계약금+잔금≈100)는 빈 중도금을 '0' 으로 정규화해
+    # validate 가 미입력으로 잡아 행 전체를 누락시키지 않도록 한다.
+    for meta in parsed.values():
+        normalize_no_midterm(meta)
 
     missing = validate(parsed)
     if missing:
