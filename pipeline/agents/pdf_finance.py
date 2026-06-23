@@ -20,6 +20,11 @@ CONTRACT = "\uacc4\uc57d\uae08"
 MIDTERM = "\uc911\ub3c4\uae08"
 BALANCE = "\uc794\uae08"
 
+# \uc140 \uc548\uc758 \uad04\ud638 \ube44\uc728: "\uacc4\uc57d\uae08(10%)" / "\uacc4\uc57d\uae08 (10 %)" \ub4f1.
+_RATIO_RE = re.compile(r"\(\s*(\d+(?:\.\d+)?)\s*%\s*\)")
+# \uc911\ub3c4\uae08 \ubd84\ub0a9 \ud45c\uae30: "1\ud68c(10%)" / "2 \ucc28" \ub4f1.
+_INSTALLMENT_RE = re.compile(r"\d+\s*(?:\ud68c|\ucc28)")
+
 
 @dataclass
 class FinanceExtraction:
@@ -365,10 +370,118 @@ def _is_payment_table_anchor(line: str) -> bool:
     return False
 
 
+def _ratio_in_cell(cell: str, keyword: str) -> str | None:
+    """셀이 keyword로 시작하고 괄호 안 비율이 있으면 정수 비율 문자열을 반환한다.
+
+    공고문 납부일정 표의 머리 셀은 "계약금(10%)" / "중도금 (60%)" / "잔금(30%)"
+    형태로 비율이 같은 셀 안에 들어 있다. 이 패턴을 그대로 읽어낸다.
+    """
+    if not cell:
+        return None
+    if keyword not in cell.replace(" ", ""):
+        return None
+    # keyword가 셀 머리에 와야 한다(예: "계약금(10%)"). 금액 열의 "계약 시" 등은 제외.
+    head = cell.replace(" ", "")
+    if not head.startswith(keyword):
+        return None
+    match = _RATIO_RE.search(cell)
+    if not match:
+        return None
+    value = match.group(1)
+    if value.endswith(".0"):
+        value = value[:-2]
+    return value
+
+
+def _count_installment_cells(row: list[str], start_idx: int, end_idx: int | None) -> str:
+    """중도금 열~잔금 열 사이 행에서 'N회/N차' 분납 셀 수를 센다."""
+    end = end_idx if (end_idx is not None and end_idx > start_idx) else len(row)
+    count = 0
+    for cell in row[start_idx:end]:
+        if cell and _INSTALLMENT_RE.search(cell):
+            count += 1
+    return str(count) if count else ""
+
+
+def _finance_from_table_rows(rows: list[list[str]]) -> FinanceExtraction | None:
+    """단일 표에서 계약금/중도금/잔금 비율 행을 찾아 추출한다."""
+    norm_rows = [[(cell or "").replace("\n", " ").strip() for cell in row] for row in rows]
+    for ri, cells in enumerate(norm_rows):
+        c_idx = m_idx = b_idx = None
+        contract = midterm = balance = None
+        for i, cell in enumerate(cells):
+            if c_idx is None:
+                value = _ratio_in_cell(cell, CONTRACT)
+                if value is not None:
+                    c_idx, contract = i, value
+                    continue
+            if m_idx is None:
+                value = _ratio_in_cell(cell, MIDTERM)
+                if value is not None:
+                    m_idx, midterm = i, value
+                    continue
+            if b_idx is None:
+                value = _ratio_in_cell(cell, BALANCE)
+                if value is not None:
+                    b_idx, balance = i, value
+
+        # 사용자가 설명한 핵심 패턴: 같은 행에 계약금/잔금이 인접 셀로 존재.
+        if contract is None or balance is None:
+            continue
+
+        result = FinanceExtraction(evidence=[" | ".join(c for c in cells if c)[:300]])
+        result.contract_ratio = contract
+        result.balance_ratio = balance
+        if midterm is not None:
+            result.midterm_ratio = midterm
+        else:
+            # 중도금 셀이 없으면 100 - 계약금 - 잔금 으로 보정(0이면 중도금 없음).
+            try:
+                inferred = 100 - int(contract) - int(balance)
+            except ValueError:
+                inferred = None
+            if inferred is not None and 0 <= inferred <= 100:
+                result.midterm_ratio = str(inferred)
+
+        # 분납 횟수: 중도금 열(머리 셀) 아래 행의 'N회/N차' 셀 수.
+        if m_idx is not None and result.midterm_ratio not in ("", "0"):
+            for nxt in norm_rows[ri + 1 : ri + 3]:
+                count = _count_installment_cells(nxt, m_idx, b_idx)
+                if count:
+                    result.midterm_count = count
+                    break
+        return result
+    return None
+
+
+def extract_finance_from_tables(pdf, max_pages: int = 30) -> FinanceExtraction | None:
+    """pdfplumber 표 추출로 계약금/중도금/잔금 비율을 읽는다(1순위)."""
+    for page_no, page in enumerate(pdf.pages, 1):
+        if page_no > max_pages:
+            break
+        try:
+            tables = page.extract_tables()
+        except Exception:
+            continue
+        for table in tables:
+            parsed = _finance_from_table_rows(table)
+            if parsed and parsed.has_core_ratios:
+                parsed.source_page = page_no
+                return parsed
+    return None
+
+
 def extract_finance_from_pdf(path: Path) -> FinanceExtraction:
     result = FinanceExtraction(source_pdf=path.name, evidence=[])
     try:
         with pdfplumber.open(path) as pdf:
+            # 1순위: 표(table) 기반 추출 — "계약금(10%) | 중도금(60%) | 잔금(30%)" 패턴.
+            table_result = extract_finance_from_tables(pdf)
+            if table_result and table_result.has_core_ratios:
+                table_result.source_pdf = path.name
+                return table_result
+
+            # 2순위: 기존 텍스트 라인 기반 폴백.
             for page_no, page in enumerate(pdf.pages, 1):
                 if page_no > 25:
                     break
