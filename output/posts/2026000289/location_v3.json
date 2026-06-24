@@ -1,0 +1,15 @@
+{
+  "headline": "",
+  "body_md": "",
+  "grounded_facts_used": [],
+  "_meta": {
+    "model": "gemini-3.1-pro-preview",
+    "prompt_version": "v3-readable",
+    "grounding": true,
+    "thinking": true,
+    "input": {
+      "apt_name": "신제주 동문디이스트 시그니처원Ⅱ",
+      "address": "제주특별자치도 제주시 연동 274-25번지외 5필지"
+    }
+  }
+}
