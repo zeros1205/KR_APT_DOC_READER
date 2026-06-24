@@ -127,6 +127,19 @@ jobs:
             echo "No post changes (checkpoint 으로 이미 push 됐거나 변경 없음)."
           fi
 
+      - name: Deploy to Cloudflare Pages
+        # 봇(GITHUB_TOKEN) 푸시는 cloudflare-pages-auto-deploy 의 push 트리거를
+        # 발동시키지 않으므로(GitHub 정책), v3 재패치 결과가 라이브에 반영되지
+        # 않던 갭을 막기 위해 여기서 직접 배포한다. codex-generate-pages 와 동일 방식.
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          npx --yes wrangler@3.90.0 pages deploy output \
+            --project-name kr-apt-doc-reader \
+            --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Notify Telegram
         if: always()
         run: |
