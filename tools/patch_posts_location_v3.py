@@ -254,12 +254,20 @@ async def _run_v3(apt_name: str, address: str, *, max_attempts: int = DEFAULT_RE
         except Exception as exc:  # 예외 자체는 generate_v3 가 dict 로 감싸지만 안전망.
             result = {"_error": f"v3 호출 예외: {exc}"}
         err = str(result.get("_error") or "") if isinstance(result, dict) else ""
-        if not err:
+        body = (result.get("body_md") or "").strip() if isinstance(result, dict) else ""
+        # 에러도 없고 본문도 있으면 성공.
+        if not err and body:
             return result
         last = result
-        if attempt >= max_attempts or not _is_transient_error(err):
+        if attempt >= max_attempts:
             break
-        print(f"  ⏳ transient 오류 → {delay:.0f}s 후 재시도 (attempt {attempt}/{max_attempts}): {err[:120]}")
+        # 비-일시적 에러는 재시도해도 동일하므로 중단. 단, 에러 없이 본문만 빈
+        # 경우(Gemini 가 빈 body_md 반환)는 일시적 응답으로 보고 재호출한다 —
+        # 한 번 비었다고 구버전(v1)으로 폴백되지 않도록.
+        if err and not _is_transient_error(err):
+            break
+        reason = err[:120] if err else "본문(body_md) 비어 있음"
+        print(f"  ⏳ {delay:.0f}s 후 재시도 (attempt {attempt}/{max_attempts}): {reason}")
         await asyncio.sleep(delay)
         delay *= 3
     return last
