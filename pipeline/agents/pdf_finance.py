@@ -50,8 +50,13 @@ class FinanceExtraction:
 def find_local_pdf(pdf_dir: Path, notice_id: str) -> Path | None:
     if not notice_id or not pdf_dir.exists():
         return None
-    matches = sorted(pdf_dir.glob(f"{notice_id}*.pdf"))
-    return matches[0] if matches else None
+    # 공고번호로 시작하는 파일을 우선하되, "(2026.06.22 정정공고) 2026000270 …"
+    # 처럼 접두사가 붙어 번호가 파일명 중간에 오는 경우도 찾는다(pdf_policy 와 동일).
+    for pattern in (f"{notice_id}*.pdf", f"*{notice_id}*.pdf"):
+        matches = sorted(pdf_dir.glob(pattern))
+        if matches:
+            return matches[0]
+    return None
 
 
 def find_local_pdf_in_dirs(pdf_dirs: list[Path] | tuple[Path, ...], notice_id: str) -> Path | None:
