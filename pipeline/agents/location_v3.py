@@ -21,6 +21,18 @@ import re
 import sys
 from pathlib import Path
 
+# 입지분석 전문 용어 사전. 의존성 없는 순수 데이터 모듈.
+# 패키지(`pipeline.agents...`)·sys.path(`agents...`/`pipeline...`) 양쪽 실행
+# 경로에서 모두 임포트되도록 폴백을 둔다.
+try:  # 패키지 컨텍스트
+    from pipeline.location_keywords import format_keyword_guide
+except ImportError:  # sys.path 에 pipeline/ 이 직접 추가된 컨텍스트
+    try:
+        from location_keywords import format_keyword_guide
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from location_keywords import format_keyword_guide
+
 
 # Gemini 가 추천한 마스터 프롬프트(원문 골격) + 가독성 가이드(rev 2)
 # + Hallucination Guard (rev 3, 운영자 피드백 — 계약금/전매 등 정량 정보 hallucinate 사례 발견).
@@ -32,12 +44,21 @@ LOCATION_ANALYSIS_PROMPT_V3 = """# Role
 1. **데이터 기반 통찰**: 단순 나열이 아닌, 데이터 간의 상관관계를 분석하십시오.
    (예: "초등학교가 가깝다" → "안심 통학권 확보로 인한 초품아 프리미엄 및
    학령기 자녀 가구의 탄탄한 실수요 확보")
-2. **전문 용어의 적절한 사용**: 직주근접·슬세권·하방 경직성·앵커시설·병세권·
-   공세권·숲세권·초품아·CBD/YBD/GBD 등 전문 용어를 활용하여 신뢰도를 높이십시오.
+2. **전문 용어의 적절한 사용**: 아래 `# 입지 키워드 사전` 의 용어를 활용해
+   신뢰도를 높이십시오. 단지의 실제 입지 특성과 **관련 있는 키워드만 골라**
+   본문에 자연스럽게 녹여 쓰고, 모든 단어를 나열하듯 욱여넣지 마십시오.
 3. **입체적 공간 분석**:
    - 교통: 주요 업무지구까지의 소요 시간과 환승 편의성 위주로 서술.
    - 학군: 단순 거리 외에 주변 학원가 형성 수준과 학업 성취도를 추론하여 포함.
    - 환경: 녹지 공간(공세권·숲세권) 이 주거 쾌적성과 자산 가치에 미치는 영향 분석.
+
+# 입지 키워드 사전 (Vocabulary — 관련 있을 때만 활용)
+한국 부동산 입지분석에서 통용되는 전문 용어 풀입니다. 단지의 실제 특성과
+**관련 있는 항목만** 골라 쓰고, 억지로 끼워 맞추거나 전부 나열하지 마십시오.
+아래 어휘를 쓰더라도 `# Hallucination Guard` 가 항상 우선합니다 — 검증되지
+않은 사실(역명·시설명·노선 등)을 키워드로 지어내지 마십시오.
+
+{keyword_guide}
 
 # Hallucination Guard (Must Apply — 절대 금지 사항)
 입지 분석의 역할은 교통·학군·인프라·환경·미래 가치 등 **입지 본연의 가치**에
@@ -126,6 +147,7 @@ def build_prompt_v3(apt_name: str, address: str) -> str:
     return LOCATION_ANALYSIS_PROMPT_V3.format(
         apt_name=apt_name or "(미상)",
         address=address or "(미상)",
+        keyword_guide=format_keyword_guide(),
     )
 
 
