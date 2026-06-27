@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-25T09:13:01+09:00",
-  "count": 255,
-  "ready_count": 255,
+  "generated_at": "2026-06-27T09:06:43+09:00",
+  "count": 258,
+  "ready_count": 258,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1713,6 +1713,13 @@
       "cache_path": "output/data_cache/notices/2026000270.json"
     },
     {
+      "notice_id": "2026000271",
+      "apt_name": "트리븐 김해",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000271.json"
+    },
+    {
       "notice_id": "2026000272",
       "apt_name": "함안가야 휴니온아르떼",
       "requires_manual_input": false,
@@ -1769,6 +1776,13 @@
       "cache_path": "output/data_cache/notices/2026000289.json"
     },
     {
+      "notice_id": "2026000300",
+      "apt_name": "천안 아이파크 시티 1단지(2회차)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000300.json"
+    },
+    {
       "notice_id": "2026820002",
       "apt_name": "시흥하중지구 A1블록 신혼희망타운(공공분양)(본청약)",
       "requires_manual_input": false,
@@ -1788,6 +1802,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026820004.json"
+    },
+    {
+      "notice_id": "2026820005",
+      "apt_name": "역곡지구 하우스토리(부천역곡지구 A-2BL) 신혼희망타운(공공분양)(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026820005.json"
     }
   ]
 }
