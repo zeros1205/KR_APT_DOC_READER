@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-01T09:04:58+09:00",
-  "count": 261,
-  "ready_count": 261,
+  "generated_at": "2026-07-03T09:05:15+09:00",
+  "count": 263,
+  "ready_count": 263,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1405,6 +1405,13 @@
       "cache_path": "output/data_cache/notices/2026000152.json"
     },
     {
+      "notice_id": "2026000153",
+      "apt_name": "동작 센트럴 동문 디 이스트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000153.json"
+    },
+    {
       "notice_id": "2026000154",
       "apt_name": "고덕국제신도시 수자인풍경채 1단지",
       "requires_manual_input": false,
@@ -1774,6 +1781,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000289.json"
+    },
+    {
+      "notice_id": "2026000290",
+      "apt_name": "야목역 서희스타힐스 그랜드힐(조합원 취소분)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000290.json"
     },
     {
       "notice_id": "2026000300",
