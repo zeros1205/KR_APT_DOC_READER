@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://apt-note.com/</loc><lastmod>2026-07-07</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://apt-note.com/</loc><lastmod>2026-07-08</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
 <url><loc>https://apt-note.com/about.html</loc><lastmod>2026-07-07</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 <url><loc>https://apt-note.com/editorial-policy.html</loc><lastmod>2026-07-07</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 <url><loc>https://apt-note.com/privacy.html</loc><lastmod>2026-07-07</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 <url><loc>https://apt-note.com/terms.html</loc><lastmod>2026-07-07</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+<url><loc>https://apt-note.com/posts/2026000253/post.html</loc><lastmod>2026-07-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000328/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000290/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000153/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
@@ -41,5 +42,4 @@
 <url><loc>https://apt-note.com/posts/2026000205/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000173/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000122/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://apt-note.com/posts/2026000138/post.html</loc><lastmod>2026-07-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
