@@ -111,6 +111,12 @@ def _clean_policy_period(value: str) -> str:
     )
     if any(re.search(pattern, value) for pattern in valid_patterns):
         return re.sub(r"\s+", " ", value)
+    # 기간 값 뒤에 괄호 단서가 붙은 셀("3년 (단, 소유권이전등기를 완료한 때까지)")은
+    # 선행 기간 토큰만 취해 배지·본문에 일관된 짧은 값으로 정규화한다.
+    # (재당첨·거주의무 필드가 "10년"/"3년"으로 저장되는 것과 동일한 형식)
+    lead = re.match(r"^\s*(\d+)\s*(년|개월)", value)
+    if lead:
+        return f"{lead.group(1)}{lead.group(2)}"
     return ""
 
 
