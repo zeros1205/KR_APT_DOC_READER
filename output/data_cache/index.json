@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-08T08:57:09+09:00",
-  "count": 265,
-  "ready_count": 265,
+  "generated_at": "2026-07-10T09:04:39+09:00",
+  "count": 268,
+  "ready_count": 268,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1811,6 +1811,13 @@
       "cache_path": "output/data_cache/notices/2026000307.json"
     },
     {
+      "notice_id": "2026000310",
+      "apt_name": "남양주 진접 서한이다음(S1BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000310.json"
+    },
+    {
       "notice_id": "2026000313",
       "apt_name": "고양창릉지구 S-3블록 이익공유형 분양주택(본청약)",
       "requires_manual_input": false,
@@ -1830,6 +1837,20 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000328.json"
+    },
+    {
+      "notice_id": "2026000329",
+      "apt_name": "호반써밋 풍무Ⅲ",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000329.json"
+    },
+    {
+      "notice_id": "2026000336",
+      "apt_name": "평택역 더센트럴45",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000336.json"
     },
     {
       "notice_id": "2026820002",
