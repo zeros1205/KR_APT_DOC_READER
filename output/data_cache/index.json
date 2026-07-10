@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-10T09:04:39+09:00",
-  "count": 268,
-  "ready_count": 268,
+  "generated_at": "2026-07-11T08:57:18+09:00",
+  "count": 274,
+  "ready_count": 274,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1762,6 +1762,13 @@
       "cache_path": "output/data_cache/notices/2026000275.json"
     },
     {
+      "notice_id": "2026000276",
+      "apt_name": "업성 푸르지오 레이크시티 2단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000276.json"
+    },
+    {
       "notice_id": "2026000278",
       "apt_name": "양주 회천지구 A-8BL 로제비앙 엘가",
       "requires_manual_input": false,
@@ -1804,11 +1811,25 @@
       "cache_path": "output/data_cache/notices/2026000300.json"
     },
     {
+      "notice_id": "2026000301",
+      "apt_name": "의왕역 SK VIEW",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000301.json"
+    },
+    {
       "notice_id": "2026000307",
       "apt_name": "군포대야미지구 A-1블록 6년 분양전환공공임대주택(본청약)",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000307.json"
+    },
+    {
+      "notice_id": "2026000308",
+      "apt_name": "부산 장안지구 B-2블록 중흥S-클래스(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000308.json"
     },
     {
       "notice_id": "2026000310",
@@ -1818,11 +1839,32 @@
       "cache_path": "output/data_cache/notices/2026000310.json"
     },
     {
+      "notice_id": "2026000312",
+      "apt_name": "춘천 리버뷰 아이파크",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000312.json"
+    },
+    {
       "notice_id": "2026000313",
       "apt_name": "고양창릉지구 S-3블록 이익공유형 분양주택(본청약)",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000313.json"
+    },
+    {
+      "notice_id": "2026000315",
+      "apt_name": "오산헤리티지자이 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000315.json"
+    },
+    {
+      "notice_id": "2026000316",
+      "apt_name": "오산헤리티지자이 2단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000316.json"
     },
     {
       "notice_id": "2026000320",
