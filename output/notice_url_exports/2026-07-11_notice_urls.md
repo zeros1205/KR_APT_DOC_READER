@@ -1,7 +1,7 @@
 # 청약홈 상세페이지 URL · 수동 입력 시트
 
 - 생성일: 2026-07-11
-- 대상 공고: 6건  (입력 완료 0건 / 대기 6건)
+- 대상 공고: 0건  (입력 완료 0건 / 대기 0건)
 - PDF 업로드 폴더: `input/pdfs/`
 
 ## 입력 안내
@@ -20,9 +20,3 @@
 
 | 공고번호 | 단지명 | 모집공고일 | 당첨자 발표일 | 청약홈 링크 | 권장 PDF 파일명 | 규제지역 | 재당첨 | 전매 | 거주의무 | 분양가상한제 | 계약금 | 중도금 | 잔금 | 상태 |
 |---|---|---:|---:|---|---|---|---|---|---|---|---:|---:|---:|:-:|
-| 2026000276 | 업성 푸르지오 레이크시티 2단지 | 2026-07-10 | 2026-07-28 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000276&pblancNo=2026000276 | `2026000276 업성 푸르지오 레이크시티 2단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000301 | 의왕역 SK VIEW | 2026-07-10 | 2026-07-29 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000301&pblancNo=2026000301 | `2026000301 의왕역 SK VIEW 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000308 | 부산 장안지구 B-2블록 중흥S-클래스(본청약) | 2026-07-10 | 2026-07-28 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000308&pblancNo=2026000308 | `2026000308 부산 장안지구 B-2블록 중흥S-클래스(본청약) 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000312 | 춘천 리버뷰 아이파크 | 2026-07-10 | 2026-07-29 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000312&pblancNo=2026000312 | `2026000312 춘천 리버뷰 아이파크 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000315 | 오산헤리티지자이 1단지 | 2026-07-10 | 2026-07-28 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000315&pblancNo=2026000315 | `2026000315 오산헤리티지자이 1단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
-| 2026000316 | 오산헤리티지자이 2단지 | 2026-07-10 | 2026-07-28 | https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000316&pblancNo=2026000316 | `2026000316 오산헤리티지자이 2단지 입주자모집공고문.pdf` | _ | _ | _ | _ | _ | _ | _ | _ | ☐ |
