@@ -34,12 +34,47 @@ env:
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
 jobs:
+  # 선행 collect 워크플로우가 신규 공고를 실제로 수집했는지 판별하는 게이트.
+  # 신규 0건이면 아래 export-notice-urls 잡을 skip 시켜 관련 워크플로우가
+  # 사실상 돌지 않도록 한다. 수동 dispatch 는 항상 통과.
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      has_new: ${{ steps.decide.outputs.has_new }}
+    steps:
+      - name: Download new-notice flag from collect run
+        if: ${{ github.event_name == 'workflow_run' }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: collect-has-new
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Decide whether to proceed
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "workflow_run" ]; then
+            # 사람이 수동 실행한 경우는 항상 진행.
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
+          elif [ -f has_new_flag.txt ] && [ "$(cat has_new_flag.txt | tr -d '[:space:]')" = "true" ]; then
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_new=false" >> "$GITHUB_OUTPUT"
+            echo "신규 공고 0건 — export 잡을 건너뜁니다."
+          fi
+
   export-notice-urls:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # workflow_run 으로 자동 진입한 경우엔 선행 워크플로우 성공만 처리.
-    # 사람이 수동 dispatch 한 경우엔 항상 실행.
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    needs: gate
+    # 신규 공고가 있을 때만(또는 수동 dispatch) 실행.
+    if: ${{ needs.gate.outputs.has_new == 'true' }}
     permissions:
       contents: write
 

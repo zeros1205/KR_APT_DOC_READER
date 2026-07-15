@@ -140,8 +140,25 @@ jobs:
             echo "[index-refresh] No diff after rebase — skip commit"
           fi
 
-      - name: Notify Telegram when notice collection is complete
+      - name: Save new-notice flag for downstream gating
         if: always()
+        run: |
+          # workflow_run 으로 이어지는 codex-export-notice-urls 가 이 값을 읽어
+          # 신규 0건일 때는 아예 실행되지 않도록 게이팅한다.
+          echo "${{ steps.cache_changes.outputs.has_new }}" > has_new_flag.txt
+
+      - name: Upload new-notice flag
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collect-has-new
+          path: has_new_flag.txt
+          retention-days: 1
+
+      # 신규 공고가 있을 때(성공)만 알림을 보내고, 실패 시에는 오류 알림을 보낸다.
+      # 신규 0건 정상 완료는 알림을 보내지 않는다 (회색 처리 스텝은 매번 조용히 실행).
+      - name: Notify Telegram on new notices or failure
+        if: ${{ steps.cache_changes.outputs.has_new == 'true' || failure() }}
         run: |
           if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets are not configured. Skipping notification."
@@ -149,7 +166,19 @@ jobs:
           fi
 
           KST_TIME="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
-          if [ "${{ steps.cache_changes.outputs.has_new }}" = "true" ]; then
+
+          if [ "${{ job.status }}" != "success" ]; then
+            MESSAGE="❌ 공고 수집 워크플로우 실패 (${KST_TIME})
+          실행 로그: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+            RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+              --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+              --data-urlencode "text=${MESSAGE}")"
+            echo "Telegram API response: ${RESPONSE}"
+            exit 0
+          fi
+
+          if true; then
             NOTICE_DETAILS="$(python - <<'PY'
           import json
           import subprocess
@@ -191,14 +220,6 @@ jobs:
           ${NOTICE_DETAILS}
 
           입력 시트 자동 갱신이 이어서 진행됩니다. (workflow_run)"
-
-            RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-              --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-              --data-urlencode "text=${MESSAGE}")"
-          else
-            MESSAGE="✅ 공고 수집 완료 (${KST_TIME})
-
-          신규 공고 0건"
 
             RESPONSE="$(curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
               --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
