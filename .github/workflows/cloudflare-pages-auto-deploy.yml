@@ -55,8 +55,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Notify Telegram on deploy
-        if: always()
+      - name: Notify Telegram on deploy failure
+        # 배포 실패 시에만 알림. 성공 배포는 조용히 넘어간다.
+        if: failure()
         run: |
           if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets not configured. Skipping."
@@ -64,13 +65,11 @@ jobs:
           fi
 
           KST_TIME="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
-          JOB_STATUS="${{ job.status }}"
           # head_commit 은 push 에만 존재. 수동/스케줄 실행은 트리거명으로 대체.
           # 셸 인젝션·따옴표 깨짐 방지를 위해 env 로 안전하게 주입 후 가공.
           SHORT_MSG="$(printf '%s' "$RAW_COMMIT_MSG" | head -1 | cut -c1-60)"
           if [ -z "$SHORT_MSG" ]; then SHORT_MSG="${GITHUB_EVENT_NAME} 배포"; fi
-          if [ "$JOB_STATUS" = "success" ]; then ICON="🚀"; else ICON="❌"; fi
-          MSG="${ICON} Cloudflare Pages ${JOB_STATUS} (${KST_TIME}) | ${SHORT_MSG} | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          MSG="❌ Cloudflare Pages 배포 실패 (${KST_TIME}) | ${SHORT_MSG} | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
             --data-urlencode "text=${MSG}" > /dev/null
