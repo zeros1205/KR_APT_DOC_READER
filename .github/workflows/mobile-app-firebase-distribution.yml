@@ -1,0 +1,277 @@
+name: Distribute Mobile App (Firebase App Distribution)
+
+# 서명 릴리스 APK 를 빌드해 Firebase App Distribution 으로 테스터에게 배포한다.
+# Play 내부 트랙(mobile-app-play-release.yml)보다 빠른 QA 배포 채널.
+# 빌드 파이프라인(웹 셸 → cap sync → gradle assembleRelease)은 Play 워크플로우와
+# 동일한 서명 방식을 재사용하되, AAB/Play 업로드 대신 APK + FAD 업로드만 수행한다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Git ref to build. Keep on the known-good mobile app baseline unless intentionally changing it."
+        required: true
+        default: "main"
+      version_code:
+        description: "Android versionCode integer to apply to the signed release build."
+        required: true
+        default: "1"
+      version_name:
+        description: "App versionName (e.g. 1.0.9). Shown to testers in the App Distribution release list."
+        required: true
+        default: "0.1.0"
+      groups:
+        description: "Firebase App Distribution tester group alias(es), comma-separated. Empty = create release without distributing."
+        required: false
+        default: ""
+      testers:
+        description: "Individual tester emails, comma-separated. Optional; combined with groups."
+        required: false
+        default: ""
+      release_notes:
+        description: "Release notes shown to testers. Empty = auto (version + commit subject)."
+        required: false
+        default: ""
+      use_test_ads:
+        description: "Force Google TEST ads (no real AdMob serving). Keep true for tester builds to avoid invalid clicks."
+        required: true
+        type: boolean
+        default: true
+
+concurrency:
+  group: mobile-app-firebase-distribution-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  MOBILE_APP_DIR: mobile-app
+
+jobs:
+  distribute-android:
+    name: Build & distribute Android release (FAD)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 || secrets.ANDROID_KEYSTORE_BASE64 }}
+      KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD || secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
+      KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS || secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
+      KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
+      GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 || secrets.GOOGLE_SERVICES_JSON_B64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 || secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 || secrets.FIREBASE_GOOGLE_SERVICES_JSON_B64 }}
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON || secrets.ANDROID_GOOGLE_SERVICES_JSON || secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
+      # Firebase App Distribution 인증 — 서비스 계정 JSON(권장) 또는 CLI 토큰(레거시).
+      # 전용 secret 이 없으면 같은 Firebase 프로젝트의 FCM_SERVICE_ACCOUNT_JSON 을 재사용한다.
+      # (그 서비스 계정에 'Firebase App Distribution Admin' 권한이 있어야 업로드 성공.)
+      FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON || secrets.FIREBASE_SERVICE_ACCOUNT || secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON || secrets.FCM_SERVICE_ACCOUNT_JSON }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      # 앱 ID — 명시 secret 이 있으면 우선, 없으면 google-services.json 에서 자동 추출.
+      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID || secrets.FIREBASE_ANDROID_APP_ID }}
+      RELEASE_VERSION_CODE: ${{ inputs.version_code }}
+      RELEASE_VERSION_NAME: ${{ inputs.version_name }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Show build source
+        run: |
+          set -euo pipefail
+          echo "ref=${GITHUB_REF}"
+          echo "sha=$(git rev-parse HEAD)"
+          git log -1 --date=iso --pretty='commit=%H%ncommit_date=%cd%nsubject=%s'
+
+      - name: Validate signing secrets
+        run: |
+          set -euo pipefail
+          test -n "${KEYSTORE_BASE64:-}" || { echo "::error::Missing KEYSTORE_BASE64 or ANDROID_KEYSTORE_BASE64 secret"; exit 1; }
+          test -n "${KEYSTORE_STORE_PASSWORD:-}" || { echo "::error::Missing KEYSTORE_STORE_PASSWORD or ANDROID_KEYSTORE_STORE_PASSWORD secret"; exit 1; }
+          test -n "${KEYSTORE_KEY_ALIAS:-}" || { echo "::error::Missing KEYSTORE_KEY_ALIAS or ANDROID_KEYSTORE_KEY_ALIAS secret"; exit 1; }
+          test -n "${KEYSTORE_KEY_PASSWORD:-}" || { echo "::error::Missing KEYSTORE_KEY_PASSWORD or ANDROID_KEYSTORE_KEY_PASSWORD secret"; exit 1; }
+
+      - name: Validate Firebase secrets
+        run: |
+          set -euo pipefail
+          if [ -z "${FIREBASE_SERVICE_ACCOUNT_JSON:-}" ] && [ -z "${FIREBASE_TOKEN:-}" ]; then
+            echo "::error::Missing Firebase auth. Set FIREBASE_SERVICE_ACCOUNT_JSON (service account with 'Firebase App Distribution Admin' role) or FIREBASE_TOKEN."
+            exit 1
+          fi
+          if [ -z "${FIREBASE_APP_ID:-}" ] && [ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ] && [ -z "${GOOGLE_SERVICES_JSON:-}" ]; then
+            echo "::error::Cannot resolve Firebase App ID. Set FIREBASE_APP_ID secret, or provide google-services.json via GOOGLE_SERVICES_JSON(_BASE64) so it can be auto-extracted."
+            exit 1
+          fi
+
+      - name: Validate Android version inputs
+        run: |
+          set -euo pipefail
+          if ! [[ "$RELEASE_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::version_code must be a positive integer. Received: $RELEASE_VERSION_CODE"
+            exit 1
+          fi
+          if ! [[ "$RELEASE_VERSION_NAME" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?([+-][A-Za-z0-9.]+)?$ ]]; then
+            echo "::error::version_name must look like 1.2 or 1.2.3 (optional +meta or -pre). Received: $RELEASE_VERSION_NAME"
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        working-directory: mobile-app
+        run: npm ci
+
+      - name: Build web shell
+        working-directory: mobile-app
+        env:
+          VITE_APP_VERSION: ${{ env.RELEASE_VERSION_NAME }}
+          VITE_WORKER_ORIGIN: ${{ secrets.WORKER_ORIGIN }}
+          # 테스터 빌드는 무효클릭 방지를 위해 기본 테스트 광고. use_test_ads=false 로만 실광고.
+          VITE_ADMOB_USE_TEST: ${{ inputs.use_test_ads == false && 'false' || 'true' }}
+        run: npm run build
+
+      - name: Write Google Services config
+        working-directory: mobile-app/android/app
+        run: |
+          set -euo pipefail
+          if [ -n "${GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > google-services.json
+          elif [ -n "${GOOGLE_SERVICES_JSON:-}" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > google-services.json
+          else
+            echo "Google Services config not provided; skipping Firebase config file."
+            exit 0
+          fi
+          test -s google-services.json
+
+      - name: Write release keystore
+        working-directory: mobile-app/android
+        run: |
+          set -euo pipefail
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > aptnote-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=aptnote-release.jks
+          storePassword=${KEYSTORE_STORE_PASSWORD}
+          keyAlias=${KEYSTORE_KEY_ALIAS}
+          keyPassword=${KEYSTORE_KEY_PASSWORD}
+          EOF
+          test -s aptnote-release.jks
+          test -s keystore.properties
+
+      - name: Sync Capacitor Android project
+        working-directory: mobile-app
+        run: npx cap sync android
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x mobile-app/android/gradlew
+
+      - name: Build signed release APK
+        working-directory: mobile-app/android
+        run: ./gradlew clean assembleRelease -PandroidVersionCode="$RELEASE_VERSION_CODE" -PandroidVersionName="$RELEASE_VERSION_NAME" --no-daemon --stacktrace
+
+      - name: Verify signed APK
+        run: |
+          set -euo pipefail
+          APK="mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          SDK_BT_DIR=$(ls -d "$ANDROID_SDK_ROOT"/build-tools/* | sort -V | tail -n 1)
+          "$SDK_BT_DIR/apksigner" verify --verbose --print-certs "$APK" > apk-signature-verify.txt
+          echo "APK signature verified."
+
+      - name: Resolve Firebase App ID
+        id: fad
+        run: |
+          set -euo pipefail
+          APP_ID="${FIREBASE_APP_ID:-}"
+          GS="mobile-app/android/app/google-services.json"
+          if [ -z "$APP_ID" ] && [ -s "$GS" ]; then
+            # app.aptnote.mobile 패키지의 mobilesdk_app_id 를 추출.
+            APP_ID="$(jq -r '.client[] | select(.client_info.android_client_info.package_name=="app.aptnote.mobile") | .client_info.mobilesdk_app_id' "$GS" | head -n1)"
+          fi
+          if [ -z "$APP_ID" ] || [ "$APP_ID" = "null" ]; then
+            echo "::error::Could not resolve Firebase App ID (package app.aptnote.mobile) from secret or google-services.json."
+            exit 1
+          fi
+          echo "Resolved Firebase App ID: $APP_ID"
+          echo "app_id=$APP_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Write Firebase service account (if provided)
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        run: |
+          set -euo pipefail
+          # base64 로 들어와도, raw JSON 으로 들어와도 처리.
+          if printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" | base64 --decode 2>/dev/null | head -c1 | grep -q '{'; then
+            printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" | base64 --decode > firebase-sa.json
+          else
+            printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > firebase-sa.json
+          fi
+          test -s firebase-sa.json
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@13
+
+      - name: Distribute APK to Firebase App Distribution
+        env:
+          APP_ID: ${{ steps.fad.outputs.app_id }}
+          GROUPS: ${{ inputs.groups }}
+          TESTERS: ${{ inputs.testers }}
+          NOTES_INPUT: ${{ inputs.release_notes }}
+        run: |
+          set -euo pipefail
+          APK="mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+
+          NOTES="$NOTES_INPUT"
+          if [ -z "$NOTES" ]; then
+            SUBJECT="$(git log -1 --pretty='%s')"
+            NOTES="v${RELEASE_VERSION_NAME} (${RELEASE_VERSION_CODE}) — ${SUBJECT}"
+          fi
+
+          ARGS=(appdistribution:distribute "$APK" --app "$APP_ID" --release-notes "$NOTES")
+          if [ -n "$GROUPS" ]; then
+            ARGS+=(--groups "$GROUPS")
+          fi
+          if [ -n "$TESTERS" ]; then
+            ARGS+=(--testers "$TESTERS")
+          fi
+
+          if [ -f firebase-sa.json ]; then
+            export GOOGLE_APPLICATION_CREDENTIALS="$PWD/firebase-sa.json"
+            echo "Authenticating with service account."
+            firebase "${ARGS[@]}"
+          else
+            echo "Authenticating with FIREBASE_TOKEN."
+            firebase "${ARGS[@]}" --token "$FIREBASE_TOKEN"
+          fi
+          echo "Firebase App Distribution upload complete."
+
+      - name: Remove Firebase service account file
+        if: always()
+        run: rm -f firebase-sa.json
+
+      - name: Create versioned APK artifact
+        run: |
+          set -euo pipefail
+          APK_DIR="mobile-app/android/app/build/outputs/apk/release"
+          cp "$APK_DIR/app-release.apk" "$APK_DIR/app-release-${RELEASE_VERSION_NAME}.apk"
+
+      - name: Upload signed release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: aptnote-fad-release-${{ env.RELEASE_VERSION_NAME }}-${{ github.run_number }}.apk
+          path: mobile-app/android/app/build/outputs/apk/release/app-release-${{ env.RELEASE_VERSION_NAME }}.apk
+          retention-days: 30
