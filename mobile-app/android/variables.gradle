@@ -1,7 +1,9 @@
 ext {
     minSdkVersion = 23
-    compileSdkVersion = 35
-    targetSdkVersion = 35
+    // Android 16(API 36) 타깃 — Google Play 대상 API 요구사항(2026-08-31 시행) 충족.
+    // targetSdk 를 올리려면 그 이상으로 컴파일해야 하므로 compileSdk 도 함께 36.
+    compileSdkVersion = 36
+    targetSdkVersion = 36
     androidxActivityVersion = '1.9.2'
     androidxAppCompatVersion = '1.7.0'
     androidxCoordinatorLayoutVersion = '1.2.0'
