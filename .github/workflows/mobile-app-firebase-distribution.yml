@@ -12,10 +12,6 @@ on:
         description: "Git ref to build. Keep on the known-good mobile app baseline unless intentionally changing it."
         required: true
         default: "main"
-      version_code:
-        description: "Android versionCode integer to apply to the signed release build."
-        required: true
-        default: "1"
       version_name:
         description: "App versionName (e.g. 1.0.9). Shown to testers in the App Distribution release list."
         required: true
@@ -67,7 +63,9 @@ jobs:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       # 앱 ID — 명시 secret 이 있으면 우선, 없으면 google-services.json 에서 자동 추출.
       FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID || secrets.FIREBASE_ANDROID_APP_ID }}
-      RELEASE_VERSION_CODE: ${{ inputs.version_code }}
+      # FAD 는 Play 처럼 고유·증가 versionCode 를 요구하지 않는다. 사용자에게 묻지 않고
+      # 워크플로우 실행 번호로 자동 채번 — 매 실행마다 유니크해 테스터가 빌드를 구분 가능.
+      RELEASE_VERSION_CODE: ${{ github.run_number }}
       RELEASE_VERSION_NAME: ${{ inputs.version_name }}
 
     steps:
@@ -103,17 +101,14 @@ jobs:
             exit 1
           fi
 
-      - name: Validate Android version inputs
+      - name: Validate version name (versionCode is auto from run_number)
         run: |
           set -euo pipefail
-          if ! [[ "$RELEASE_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
-            echo "::error::version_code must be a positive integer. Received: $RELEASE_VERSION_CODE"
-            exit 1
-          fi
           if ! [[ "$RELEASE_VERSION_NAME" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?([+-][A-Za-z0-9.]+)?$ ]]; then
             echo "::error::version_name must look like 1.2 or 1.2.3 (optional +meta or -pre). Received: $RELEASE_VERSION_NAME"
             exit 1
           fi
+          echo "versionName=$RELEASE_VERSION_NAME  versionCode(auto)=$RELEASE_VERSION_CODE"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
