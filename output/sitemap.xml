@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://apt-note.com/</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://apt-note.com/</loc><lastmod>2026-07-24</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
 <url><loc>https://apt-note.com/about.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 <url><loc>https://apt-note.com/editorial-policy.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 <url><loc>https://apt-note.com/privacy.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
@@ -42,7 +42,5 @@
 <url><loc>https://apt-note.com/posts/2026000195/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000194/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000258/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://apt-note.com/posts/2026000243/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 <url><loc>https://apt-note.com/posts/2026000242/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://apt-note.com/posts/2026000226/post.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
