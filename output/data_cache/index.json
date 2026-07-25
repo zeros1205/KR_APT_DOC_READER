@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-24T09:00:07+09:00",
-  "count": 279,
-  "ready_count": 279,
+  "generated_at": "2026-07-25T09:03:28+09:00",
+  "count": 282,
+  "ready_count": 282,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1818,6 +1818,13 @@
       "cache_path": "output/data_cache/notices/2026000291.json"
     },
     {
+      "notice_id": "2026000293",
+      "apt_name": "리쉐스302",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000293.json"
+    },
+    {
       "notice_id": "2026000300",
       "apt_name": "천안 아이파크 시티 1단지(2회차)",
       "requires_manual_input": false,
@@ -1881,6 +1888,13 @@
       "cache_path": "output/data_cache/notices/2026000316.json"
     },
     {
+      "notice_id": "2026000318",
+      "apt_name": "더샵 트리센트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000318.json"
+    },
+    {
       "notice_id": "2026000320",
       "apt_name": "고양창릉 S-4블록 공공분양주택(본청약)",
       "requires_manual_input": false,
@@ -1907,6 +1921,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000329.json"
+    },
+    {
+      "notice_id": "2026000331",
+      "apt_name": "센트레빌 아스테리움 거제",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000331.json"
     },
     {
       "notice_id": "2026000336",
