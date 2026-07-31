@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-28T09:01:44+09:00",
-  "count": 283,
-  "ready_count": 283,
+  "generated_at": "2026-07-31T09:01:02+09:00",
+  "count": 285,
+  "ready_count": 285,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1949,6 +1949,20 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000355.json"
+    },
+    {
+      "notice_id": "2026000356",
+      "apt_name": "두산위브더제니스 대연",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000356.json"
+    },
+    {
+      "notice_id": "2026000367",
+      "apt_name": "한강 푸르지오 리버프론트",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000367.json"
     },
     {
       "notice_id": "2026820002",
