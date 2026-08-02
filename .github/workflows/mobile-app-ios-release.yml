@@ -302,8 +302,14 @@ jobs:
           cat "$RUNNER_TEMP/ios-checksums.txt"
 
       - name: Report IPA size breakdown
+        # 순수 진단(용량 리포트) 스텝. 여기서 실패해도 TestFlight 업로드/아티팩트
+        # 업로드를 막지 않도록 continue-on-error 로 격리한다. (과거 run 에서 이 스텝의
+        # `sort | head` / `find | head` 파이프가 SIGPIPE 로 죽으며 릴리즈 전체가 실패함)
+        continue-on-error: true
         run: |
-          set -euo pipefail
+          # 진단용이므로 pipefail/-e 는 쓰지 않는다: head 조기 종료로 인한 SIGPIPE 가
+          # 리포트 생성을 중단시키지 않도록 -u 만 유지.
+          set -u
           REPORT="$RUNNER_TEMP/ios-size-report.txt"
           {
             echo "=== IPA file size ==="

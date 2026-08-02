@@ -8,18 +8,33 @@
 
 ### 1. 코드 서명 인증서 (Distribution Certificate)
 
-#### `IOS_CERTIFICATE_P12_BASE64`
-Apple Developer에서 iOS Distribution Certificate를 내보낸 `.p12` 파일 base64 인코딩 값.
+> ⚠️ **방식 변경 안내**: 예전 `IOS_CERTIFICATE_P12_BASE64`(단일 `.p12`) 방식은 더 이상 사용하지 않습니다.
+> Windows에서 생성한 `.p12`가 macOS 러너 Keychain import 시 "MAC verification failed"로 실패하는 문제 때문에,
+> 워크플로우(`mobile-app-ios-release.yml`)가 `.cer` + `private.key`를 받아 러너에서 직접 `.p12`를 생성하는 방식으로 바뀌었습니다.
+> 아래 두 개의 시크릿(`IOS_CERTIFICATE_CER_BASE64`, `IOS_PRIVATE_KEY_BASE64`)을 등록하세요.
+> 인증서 발급 상세 절차는 `docs/iOS_BUILD_HANDOVER.md`를 참고하세요.
+
+#### `IOS_CERTIFICATE_CER_BASE64`
+Apple Developer에서 발급한 iOS Distribution Certificate(`.cer`, DER 포맷) base64 인코딩 값.
 
 ```bash
-# Keychain Access → 인증서 오른쪽 클릭 → 내보내기 → .p12 저장
-# 이후 터미널에서:
-base64 -i Certificates.p12 | pbcopy
-# 클립보드에 복사됨 → GitHub Secret에 붙여넣기
+# Apple Developer → Certificates → Apple Distribution 발급 → distribution.cer 다운로드
+base64 -w 0 -i distribution.cer | clip   # (Windows Git Bash)
+# macOS: base64 -i distribution.cer | pbcopy
+```
+
+#### `IOS_PRIVATE_KEY_BASE64`
+CSR 생성 시 함께 만든 개인키(`private.key`, 암호 없는 PEM) base64 인코딩 값.
+
+```bash
+# CSR 생성 시: openssl req -new -newkey rsa:2048 -nodes \
+#   -out CertificateSigningRequest.certSigningRequest -keyout private.key
+base64 -w 0 -i private.key | clip        # (Windows Git Bash)
 ```
 
 #### `IOS_CERTIFICATE_PASSWORD`
-`.p12` 파일 내보낼 때 설정한 비밀번호.
+러너가 `.cer` + `.key`로 `.p12`를 생성·import할 때 내부적으로 사용하는 export 비밀번호.
+Apple에서 받은 값이 아니라 **운영자가 임의로 정하는 비밀번호**이며, 비어 있지 않기만 하면 됩니다.
 
 ---
 
@@ -105,8 +120,9 @@ base64 -i GoogleService-Info.plist | pbcopy
 
 | Secret 이름 | 필수 여부 | 설명 |
 |------------|---------|------|
-| `IOS_CERTIFICATE_P12_BASE64` | ✅ 필수 | Distribution Certificate (.p12) |
-| `IOS_CERTIFICATE_PASSWORD` | ✅ 필수 | .p12 비밀번호 |
+| `IOS_CERTIFICATE_CER_BASE64` | ✅ 필수 | Distribution Certificate (.cer, DER) |
+| `IOS_PRIVATE_KEY_BASE64` | ✅ 필수 | CSR 생성 시 만든 private.key (PEM) |
+| `IOS_CERTIFICATE_PASSWORD` | ✅ 필수 | 러너 내부 .p12 export 비밀번호 (운영자 임의 지정) |
 | `IOS_PROVISIONING_PROFILE_BASE64` | ✅ 필수 | App Store 프로비저닝 프로파일 |
 | `IOS_PROVISIONING_PROFILE_NAME` | ✅ 필수 | 프로파일 이름 |
 | `IOS_TEAM_ID` | ✅ 필수 | Apple Developer Team ID |
@@ -161,7 +177,7 @@ npx cap open ios
 
 ## 주의사항
 
-- `IOS_CERTIFICATE_P12_BASE64` — Distribution Certificate 사용 (Development 아님)
+- `IOS_CERTIFICATE_CER_BASE64` / `IOS_PRIVATE_KEY_BASE64` — Distribution Certificate 사용 (Development 아님). `.p12` 단일 파일이 아니라 `.cer` + `private.key` 두 개로 등록
 - `APP_STORE_CONNECT_KEY_BASE64` (.p8) — 생성 직후 단 한 번만 다운로드 가능. 분실 시 재생성 필요
 - `build_number` — TestFlight에 올릴 때마다 반드시 증가해야 함 (같은 번호 재업로드 불가)
 - `IOS_PROVISIONING_PROFILE_BASE64` — 인증서 갱신 시 프로파일도 함께 재생성 필요 (1년 유효)
