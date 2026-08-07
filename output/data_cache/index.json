@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-01T09:02:45+09:00",
-  "count": 286,
-  "ready_count": 286,
+  "generated_at": "2026-08-07T10:41:43+09:00",
+  "count": 287,
+  "ready_count": 287,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1970,6 +1970,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000367.json"
+    },
+    {
+      "notice_id": "2026000376",
+      "apt_name": "달서자이 제니크",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000376.json"
     },
     {
       "notice_id": "2026820002",
