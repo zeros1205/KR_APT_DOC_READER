@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-08T08:32:48+09:00",
-  "count": 292,
-  "ready_count": 292,
+  "generated_at": "2026-08-11T08:34:12+09:00",
+  "count": 293,
+  "ready_count": 293,
   "manual_review_count": 0,
   "notices": [
     {
@@ -2047,6 +2047,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026820007.json"
+    },
+    {
+      "notice_id": "2026820008",
+      "apt_name": "성남복정2 A1블록 신혼희망타운(공공분양)(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026820008.json"
     }
   ]
 }
