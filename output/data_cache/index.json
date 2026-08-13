@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-13T08:39:40+09:00",
-  "count": 294,
-  "ready_count": 294,
+  "generated_at": "2026-08-14T08:39:59+09:00",
+  "count": 296,
+  "ready_count": 296,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1979,6 +1979,13 @@
       "cache_path": "output/data_cache/notices/2026000364.json"
     },
     {
+      "notice_id": "2026000365",
+      "apt_name": "오남역 서희스타힐스 여의재 1단지",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000365.json"
+    },
+    {
       "notice_id": "2026000367",
       "apt_name": "한강 푸르지오 리버프론트",
       "requires_manual_input": false,
@@ -2005,6 +2012,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000376.json"
+    },
+    {
+      "notice_id": "2026000377",
+      "apt_name": "의왕역 한신더휴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000377.json"
     },
     {
       "notice_id": "2026000382",
