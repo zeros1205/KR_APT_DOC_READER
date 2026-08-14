@@ -1280,6 +1280,16 @@
     "status": "processed"
   },
   {
+    "notice_id": "2026000342",
+    "apt_name": "제일풍경채 첨단3지구(A6BL)",
+    "status": "pending"
+  },
+  {
+    "notice_id": "2026000354",
+    "apt_name": "상동역 롯데캐슬 시그니처",
+    "status": "pending"
+  },
+  {
     "notice_id": "2026000355",
     "apt_name": "월계 중흥S-클래스 리비에르",
     "status": "processed"
@@ -1302,7 +1312,7 @@
   {
     "notice_id": "2026000365",
     "apt_name": "오남역 서희스타힐스 여의재 1단지",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000367",
@@ -1310,9 +1320,19 @@
     "status": "processed"
   },
   {
+    "notice_id": "2026000368",
+    "apt_name": "아르티엠 라 테라스",
+    "status": "pending"
+  },
+  {
     "notice_id": "2026000371",
     "apt_name": "용인반도체클러스터 동일하이빌 파크밸리(D1-1블록)",
     "status": "processed"
+  },
+  {
+    "notice_id": "2026000372",
+    "apt_name": "쌍용 더 플래티넘 서대문",
+    "status": "pending"
   },
   {
     "notice_id": "2026000374",
@@ -1327,11 +1347,16 @@
   {
     "notice_id": "2026000377",
     "apt_name": "의왕역 한신더휴",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000382",
     "apt_name": "두산위브더제니스 부천",
-    "status": "has_pdf"
+    "status": "processed"
+  },
+  {
+    "notice_id": "2026000383",
+    "apt_name": "포레나힐스테이트 진주",
+    "status": "pending"
   }
 ]
