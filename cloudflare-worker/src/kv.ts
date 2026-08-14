@@ -111,6 +111,47 @@ export async function markSent(
   });
 }
 
+const PDF_PENDING_PREFIX = "pdfpending:";
+
+export interface PendingPdfSelection {
+  fileId: string;
+  fileName: string;
+}
+
+export function pdfPendingKey(token: string): string {
+  return `${PDF_PENDING_PREFIX}${token}`;
+}
+
+// 텔레그램으로 받은 PDF 가 공고번호로 바로 확정되지 않을 때, 사용자가 인라인
+// 버튼으로 공고를 고를 때까지 file_id 를 임시 보관한다. callback_data 는
+// 64바이트 제한이 있어 file_id 를 직접 담지 못하므로 짧은 토큰으로 대신 참조.
+export async function putPendingPdf(
+  env: Env,
+  token: string,
+  value: PendingPdfSelection,
+): Promise<void> {
+  await env.DEVICES_KV.put(pdfPendingKey(token), JSON.stringify(value), {
+    expirationTtl: 60 * 60,
+  });
+}
+
+export async function getPendingPdf(
+  env: Env,
+  token: string,
+): Promise<PendingPdfSelection | null> {
+  const raw = await env.DEVICES_KV.get(pdfPendingKey(token));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as PendingPdfSelection;
+  } catch {
+    return null;
+  }
+}
+
+export async function deletePendingPdf(env: Env, token: string): Promise<void> {
+  await env.DEVICES_KV.delete(pdfPendingKey(token));
+}
+
 export function ymdKST(date: Date = new Date()): string {
   const kstMs = date.getTime() + 9 * 60 * 60 * 1000;
   const kst = new Date(kstMs);

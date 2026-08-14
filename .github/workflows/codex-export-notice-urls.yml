@@ -109,9 +109,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # notice_meta_inputs 도 함께 staging — export_notice_urls.py 가 신규 공고용
-          # YAML 파일을 자동 생성하므로 같은 커밋으로 push 되어야 텔레그램 안내한
-          # YAML 폴더 링크에서 해당 파일을 바로 편집 가능.
-          git add output/notice_url_exports output/notice_meta_inputs
+          # YAML 파일을 자동 생성하므로 같은 커밋으로 push 되어야 편집 가능.
+          # notice_pending.json 은 텔레그램 Worker 가 PDF 첨부를 공고번호로
+          # 자동 매칭할 때 raw.githubusercontent.com 으로 읽는 고정 경로 파일.
+          git add output/notice_url_exports output/notice_meta_inputs output/notice_pending.json
 
           if ! git diff --cached --quiet; then
             git commit -m "chore: export notice urls + meta inputs [$(date +%Y-%m-%d)]"
@@ -182,10 +183,13 @@ jobs:
 
             MESSAGE="🆕 신규 공고 확인 (총 ${TOTAL}건 · 메타 입력완료 ${FILLED} / 대기 ${PENDING})
 
-          ① 공고문 PDF 업로드 (파일명은 '공고번호 단지명 입주자모집공고문.pdf' 형식 유지):
+          이 봇에게 공고문 PDF 를 바로 첨부하면 공고 매칭 → 업로드 → 페이지
+          생성까지 자동으로 진행됩니다. (매칭 안 되면 후보 버튼으로 선택)
+
+          ① 안 되면 GitHub 웹 업로드 (파일명은 '공고번호 단지명 입주자모집공고문.pdf' 형식 유지):
           ${PDF_UPLOAD_URL}
 
-          ② 업로드 후 페이지 생성 실행 (Run workflow):
+          ② 업로드 후 페이지 생성 수동 실행 (Run workflow):
           ${GENERATE_WF_URL}
 
           기본값 그대로 실행하면 PDF 가 올라온 미생성 공고를 건수 제한 없이 모두 발행합니다.

@@ -25,6 +25,7 @@ NOTICE_CACHE_DIR = BASE_DIR / "output" / "data_cache" / "notices"
 PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
 META_INPUTS_DIR = BASE_DIR / "output" / "notice_meta_inputs"
+PENDING_JSON = BASE_DIR / "output" / "notice_pending.json"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR / "output" / "pdfs")
 DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
 
@@ -273,6 +274,26 @@ def _write_md(rows: list[dict[str, str]], filename_date: str) -> Path:
     return md_path
 
 
+def _write_pending_json(rows: list[dict[str, str]]) -> Path:
+    """PDF 없는 공고 목록을 텔레그램 Worker 가 읽는 고정 파일명으로 저장.
+
+    파일명 날짜별 접미사가 붙는 notice_url_exports/*.md 와 달리, 이 파일은
+    항상 같은 경로(output/notice_pending.json)에 덮어써서 Worker 가
+    raw.githubusercontent.com 으로 최신본을 바로 fetch 할 수 있게 한다.
+    """
+    payload = [
+        {
+            "notice_id": r["notice_id"],
+            "apt_name": r["apt_name"],
+            "expected_pdf": r["expected_pdf"],
+        }
+        for r in rows
+    ]
+    PENDING_JSON.parent.mkdir(parents=True, exist_ok=True)
+    PENDING_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return PENDING_JSON
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export cached CheongYakHome notice URLs to Markdown")
     parser.add_argument("--include-processed", action="store_true", help="Include notices already listed in processed_notices.json")
@@ -284,6 +305,16 @@ def main() -> None:
     md_path = _write_md(rows, args.date)
     print(f"[export] {len(rows)} rows")
     print(f"[export] {md_path}")
+
+    # 텔레그램 PDF 첨부 매칭용 목록은 --include-processed/--include-with-pdf
+    # CLI 플래그와 무관하게 항상 "PDF 없는 대기 공고"만 담는다.
+    pending_rows = (
+        rows
+        if not args.include_processed and not args.include_with_pdf
+        else _iter_rows(include_processed=False, include_with_pdf=False)
+    )
+    pending_path = _write_pending_json(pending_rows)
+    print(f"[export] {pending_path} ({len(pending_rows)} notices without local PDF)")
 
     # 공고당 YAML 입력 파일 생성 (이미 있으면 사용자 편집 보존, 신규만 생성)
     new_yml = 0
