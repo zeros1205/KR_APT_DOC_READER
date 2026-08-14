@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-14T08:39:59+09:00",
-  "count": 296,
-  "ready_count": 296,
+  "generated_at": "2026-08-15T08:20:46+09:00",
+  "count": 301,
+  "ready_count": 301,
   "manual_review_count": 0,
   "notices": [
     {
@@ -1951,6 +1951,20 @@
       "cache_path": "output/data_cache/notices/2026000336.json"
     },
     {
+      "notice_id": "2026000342",
+      "apt_name": "제일풍경채 첨단3지구(A6BL)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000342.json"
+    },
+    {
+      "notice_id": "2026000354",
+      "apt_name": "상동역 롯데캐슬 시그니처",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000354.json"
+    },
+    {
       "notice_id": "2026000355",
       "apt_name": "월계 중흥S-클래스 리비에르",
       "requires_manual_input": false,
@@ -1993,11 +2007,25 @@
       "cache_path": "output/data_cache/notices/2026000367.json"
     },
     {
+      "notice_id": "2026000368",
+      "apt_name": "아르티엠 라 테라스",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000368.json"
+    },
+    {
       "notice_id": "2026000371",
       "apt_name": "용인반도체클러스터 동일하이빌 파크밸리(D1-1블록)",
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000371.json"
+    },
+    {
+      "notice_id": "2026000372",
+      "apt_name": "쌍용 더 플래티넘 서대문",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000372.json"
     },
     {
       "notice_id": "2026000374",
@@ -2026,6 +2054,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000382.json"
+    },
+    {
+      "notice_id": "2026000383",
+      "apt_name": "포레나힐스테이트 진주",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000383.json"
     },
     {
       "notice_id": "2026820002",
