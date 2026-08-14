@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       limit:
-        description: "최대 생성 건수, 0은 제한 없음"
+        description: "최대 생성 건수, 0은 제한 없음(기본값)"
         required: false
-        default: "1"
+        default: "0"
       notice_id:
         description: "특정 공고번호, 비우면 캐시 순서대로 생성"
         required: false
@@ -106,7 +106,10 @@ jobs:
 
       - name: Generate posts from cache
         run: |
-          LIMIT="${{ github.event.inputs.limit || '1' }}"
+          # 기본값 0 = 건수 제한 없음. --require-pdf 와 미생성 필터가 이미 대상을
+          # 좁히므로(PDF 있는 공고 중 아직 생성되지 않은 건), 매번 건수를 손으로
+          # 고칠 필요 없이 대기분을 한 번에 발행한다.
+          LIMIT="${{ github.event.inputs.limit || '0' }}"
           NOTICE_ID="${{ github.event.inputs.notice_id || '' }}"
           INCLUDE_MANUAL="${{ github.event.inputs.include_manual || 'false' }}"
           INCLUDE_PROCESSED="${{ github.event.inputs.include_processed || 'false' }}"

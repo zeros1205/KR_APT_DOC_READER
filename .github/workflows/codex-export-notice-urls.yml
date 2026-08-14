@@ -174,21 +174,21 @@ jobs:
 
             REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
             BRANCH="${GITHUB_REF_NAME:-main}"
-            EXPORT_REL="${EXPORT_FILE#./}"
-            MD_URL="${REPO_URL}/edit/${BRANCH}/${EXPORT_REL}"
-            YML_DIR_URL="${REPO_URL}/tree/${BRANCH}/output/notice_meta_inputs"
+            # 알림에는 실제 운영 동선(PDF 업로드 → 페이지 생성 실행)만 담는다.
+            # 입력 시트(MD)·공고별 YAML 링크는 파일로 계속 생성되지만, 메타 값은
+            # 대부분 자동 추출로 prefilled 되므로 알림에서 매번 안내할 필요가 없다.
+            PDF_UPLOAD_URL="${REPO_URL}/upload/${BRANCH}/input/pdfs"
+            GENERATE_WF_URL="${REPO_URL}/actions/workflows/codex-generate-pages.yml"
 
-            MESSAGE="🆕 입력 시트 갱신 완료 (총 ${TOTAL}건 · 입력완료 ${FILLED} / 대기 ${PENDING})
+            MESSAGE="🆕 신규 공고 확인 (총 ${TOTAL}건 · 메타 입력완료 ${FILLED} / 대기 ${PENDING})
 
-          📝 편집 방식 두 가지:
-          ① 공고별 YAML 파일 (모바일 권장 · 한 파일당 8필드만):
-          ${YML_DIR_URL}
+          ① 공고문 PDF 업로드 (파일명은 '공고번호 단지명 입주자모집공고문.pdf' 형식 유지):
+          ${PDF_UPLOAD_URL}
 
-          ② 전체 표 (한눈에 보기용):
-          ${MD_URL}
+          ② 업로드 후 페이지 생성 실행 (Run workflow):
+          ${GENERATE_WF_URL}
 
-          YAML 값이 있으면 표보다 우선 적용됩니다.
-          모든 행이 ✅ 가 되면 codex-페이지 생성 워크플로우로 일괄 발행됩니다.
+          기본값 그대로 실행하면 PDF 가 올라온 미생성 공고를 건수 제한 없이 모두 발행합니다.
           "
             if [ -n "$PENDING_LIST" ]; then
               MESSAGE="${MESSAGE}
