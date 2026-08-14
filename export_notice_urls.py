@@ -26,6 +26,7 @@ PROCESSED_FILE = BASE_DIR / "output" / "processed_notices.json"
 EXPORT_DIR = BASE_DIR / "output" / "notice_url_exports"
 META_INPUTS_DIR = BASE_DIR / "output" / "notice_meta_inputs"
 PENDING_JSON = BASE_DIR / "output" / "notice_pending.json"
+STATUS_INDEX_JSON = BASE_DIR / "output" / "notice_status_index.json"
 PDF_DIRS = (BASE_DIR / "input" / "pdfs", BASE_DIR / "output" / "pdfs")
 DELETED_NOTICES_FILE = BASE_DIR / "output" / "data_cache" / "deleted_notices.json"
 
@@ -294,6 +295,46 @@ def _write_pending_json(rows: list[dict[str, str]]) -> Path:
     return PENDING_JSON
 
 
+def _write_notice_status_index() -> Path:
+    """캐시된 전체 공고의 현재 상태를 notice_id 별로 기록.
+
+    notice_pending.json 은 "대기 중"인 공고만 담아 텔레그램 후보 버튼에
+    쓰이지만, 이 파일은 전체 공고를 담아 텔레그램 Worker 가 "왜 대기
+    목록에 없는지"(이미 발행됨 / 이미 PDF 있음 / 청약홈에서 삭제됨)를
+    구분해서 안내할 수 있게 한다. 이 구분이 없으면 이미 처리된 공고의
+    PDF 를 실수로 재전송했을 때 엉뚱한 다른 대기 공고로 오배정될 수 있다.
+    """
+    processed = _load_processed()
+    deleted_notice_ids = _load_deleted_notice_ids()
+    entries: list[dict[str, str]] = []
+
+    if NOTICE_CACHE_DIR.exists():
+        for path in sorted(NOTICE_CACHE_DIR.glob("*.json")):
+            payload = _load_json(path)
+            doc = payload.get("document") or {}
+            notice_id = str(payload.get("notice_id") or doc.get("notice_id") or path.stem).strip()
+            apt_name = str(payload.get("apt_name") or doc.get("apt_name") or "").strip()
+            if not notice_id or not apt_name:
+                continue
+            if is_public_notice_data(doc):
+                continue
+
+            if notice_id in deleted_notice_ids:
+                status = "deleted"
+            elif notice_id in processed:
+                status = "processed"
+            elif _has_pdf(notice_id):
+                status = "has_pdf"
+            else:
+                status = "pending"
+
+            entries.append({"notice_id": notice_id, "apt_name": apt_name, "status": status})
+
+    STATUS_INDEX_JSON.parent.mkdir(parents=True, exist_ok=True)
+    STATUS_INDEX_JSON.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+    return STATUS_INDEX_JSON
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export cached CheongYakHome notice URLs to Markdown")
     parser.add_argument("--include-processed", action="store_true", help="Include notices already listed in processed_notices.json")
@@ -315,6 +356,9 @@ def main() -> None:
     )
     pending_path = _write_pending_json(pending_rows)
     print(f"[export] {pending_path} ({len(pending_rows)} notices without local PDF)")
+
+    status_path = _write_notice_status_index()
+    print(f"[export] {status_path} (전체 공고 상태 인덱스)")
 
     # 공고당 YAML 입력 파일 생성 (이미 있으면 사용자 편집 보존, 신규만 생성)
     new_yml = 0

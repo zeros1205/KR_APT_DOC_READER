@@ -24,11 +24,20 @@ interface TelegramUpdate {
   };
 }
 
-interface PendingNotice {
+interface NoticeRef {
   notice_id: string;
   apt_name: string;
+}
+
+interface PendingNotice extends NoticeRef {
   expected_pdf: string;
 }
+
+interface NoticeStatusEntry extends NoticeRef {
+  status: "pending" | "has_pdf" | "processed" | "deleted";
+}
+
+type PickerMode = "confirm" | "replace" | "ambiguous" | "unmatched";
 
 const MAX_TELEGRAM_DOWNLOAD_BYTES = 20 * 1024 * 1024;
 
@@ -268,6 +277,23 @@ async function fetchPendingNotices(env: Env): Promise<PendingNotice[]> {
   }
 }
 
+async function fetchNoticeStatusIndex(env: Env): Promise<NoticeStatusEntry[]> {
+  // notice_pending.json 은 "대기 중"인 공고만 담아 후보 버튼용으로 쓰이는 반면,
+  // 이 목록은 전체 공고의 상태(대기/PDF있음/발행완료/삭제)를 담아 "왜 대기
+  // 목록에 없는지"를 설명하는 데만 쓰인다 — 흔한 경로가 아니라서 필요할 때만
+  // (파일명에 공고번호가 있는데 대기 목록엔 없을 때) 지연 fetch 한다.
+  const url = `https://raw.githubusercontent.com/${env.GITHUB_REPO}/main/output/notice_status_index.json`;
+  try {
+    const res = await fetch(url, { cf: { cacheTtl: 0 } });
+    if (!res.ok) return [];
+    const data = (await res.json()) as NoticeStatusEntry[];
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error("fetchNoticeStatusIndex error:", e);
+    return [];
+  }
+}
+
 function normalizeForMatch(text: string): string {
   return text
     .replace(/\.[a-zA-Z0-9]+$/, "")
@@ -275,21 +301,7 @@ function normalizeForMatch(text: string): string {
     .toLowerCase();
 }
 
-function matchNotice(
-  fileName: string,
-  caption: string | undefined,
-  pending: PendingNotice[],
-): PendingNotice[] {
-  const haystack = normalizeForMatch(`${fileName} ${caption || ""}`);
-
-  // 1. 파일명/캡션에 공고번호(9~10자리 숫자)가 그대로 있으면 최우선 확정.
-  const idCandidates = haystack.match(/\d{9,10}/g) || [];
-  for (const id of idCandidates) {
-    const hit = pending.find((p) => p.notice_id === id);
-    if (hit) return [hit];
-  }
-
-  // 2. 단지명 부분일치 (양방향 — 캡션이 축약된 이름일 수 있음).
+function matchByName(haystack: string, pending: PendingNotice[]): PendingNotice[] {
   return pending.filter((p) => {
     const name = normalizeForMatch(p.apt_name);
     return name.length >= 2 && (haystack.includes(name) || name.includes(haystack));
@@ -329,16 +341,72 @@ async function handleDocument(
     return;
   }
 
-  const matches = matchNotice(fileName, caption, pending);
+  const haystack = normalizeForMatch(`${fileName} ${caption || ""}`);
+  const idCandidates = haystack.match(/\d{9,10}/g) || [];
+
+  // 1. 파일명/캡션에 공고번호가 그대로 있고 대기 목록에도 있으면 최우선·즉시 확정.
+  //    9~10자리 숫자가 실제 대기 공고 번호와 정확히 일치해야 하므로 오탐 위험이
+  //    사실상 없다 — 이 경우에만 확인 버튼 없이 바로 처리한다.
+  for (const id of idCandidates) {
+    const pendingHit = pending.find((p) => p.notice_id === id);
+    if (pendingHit) {
+      await confirmAndIngest(env, chatId, pendingHit, document.file_id, fileName);
+      return;
+    }
+  }
+
+  // 2. 공고번호는 있는데 대기 목록엔 없는 경우 — 왜 없는지 먼저 설명한다.
+  //    (이미 발행됨 / 이미 PDF 있음(재업로드 확인) / 청약홈에서 삭제됨).
+  //    이 확인을 건너뛰면 "이미 처리된 공고를 재전송" 시 엉뚱한 다른 대기
+  //    공고 후보 목록이 뜨고, 사용자가 실수로 하나를 고르면 그 PDF가 전혀
+  //    다른 공고에 잘못 배정되는 사고로 이어질 수 있다.
+  if (idCandidates.length > 0) {
+    const statusIndex = await fetchNoticeStatusIndex(env);
+    for (const id of idCandidates) {
+      const statusHit = statusIndex.find((n) => n.notice_id === id);
+      if (!statusHit) continue; // 인덱스에도 없는 번호 — 이름 매칭으로 폴백.
+
+      if (statusHit.status === "deleted") {
+        await sendMessage(
+          env,
+          chatId,
+          `🗑️ 청약홈에서 취소/삭제된 공고예요: ${statusHit.apt_name} (${statusHit.notice_id})\n업로드하지 않았습니다.`,
+        );
+        return;
+      }
+      if (statusHit.status === "processed") {
+        await sendMessage(
+          env,
+          chatId,
+          `ℹ️ 이미 발행된 공고예요: ${statusHit.apt_name} (${statusHit.notice_id})\n` +
+            "실수로 다시 보내신 거면 무시하셔도 됩니다. 내용을 고쳐 재발행하려면 " +
+            `GitHub Actions 에서 codex-페이지 생성을 notice_id=${statusHit.notice_id}, ` +
+            "include_processed=true 로 직접 실행해주세요.",
+        );
+        return;
+      }
+      if (statusHit.status === "has_pdf") {
+        await askUserToPick(env, chatId, [statusHit], document.file_id, fileName, "replace");
+        return;
+      }
+      // status === "pending" 인데 방금 fetch 한 대기 목록엔 없었다면 두 파일이
+      // 갱신 중 순간적으로 어긋난 것 — 아래 이름 매칭으로 폴백.
+    }
+  }
+
+  // 3. 단지명 부분일치. 이름 기반 매칭은 "정과장 청약노트 A1BL/A2BL"처럼
+  //    비슷한 이름의 다른 공고로 오배정될 위험이 있어, 후보가 정확히 1건이어도
+  //    바로 처리하지 않고 사용자 확인을 한 번 거친다 (공고번호 매칭만 즉시 처리).
+  const matches = matchByName(haystack, pending);
 
   if (matches.length === 1) {
-    await confirmAndIngest(env, chatId, matches[0], document.file_id, fileName);
+    await askUserToPick(env, chatId, matches, document.file_id, fileName, "confirm");
     return;
   }
 
-  const isAmbiguous = matches.length > 1;
-  const candidates = isAmbiguous ? matches : pending;
-  await askUserToPick(env, chatId, candidates, document.file_id, fileName, isAmbiguous);
+  const mode: PickerMode = matches.length > 1 ? "ambiguous" : "unmatched";
+  const candidates = matches.length > 1 ? matches : pending;
+  await askUserToPick(env, chatId, candidates, document.file_id, fileName, mode);
 }
 
 async function confirmAndIngest(
@@ -370,10 +438,10 @@ async function confirmAndIngest(
 async function askUserToPick(
   env: Env,
   chatId: number,
-  candidates: PendingNotice[],
+  candidates: NoticeRef[],
   fileId: string,
   fileName: string,
-  isAmbiguous: boolean,
+  mode: PickerMode,
 ): Promise<void> {
   const token = crypto.randomUUID().replace(/-/g, "").slice(0, 10);
   await putPendingPdf(env, token, { fileId, fileName });
@@ -387,11 +455,16 @@ async function askUserToPick(
   ]);
   rows.push([{ text: "❌ 무시", callback_data: `pdfselignore:${token}` }]);
 
-  const intro = isAmbiguous
-    ? `🤔 "${fileName}" 파일명으로 후보가 여러 건 매칭됐어요. 해당 공고를 선택해주세요:`
-    : `🤔 "${fileName}" 파일명에서 공고를 자동으로 찾지 못했어요. 대기 중인 공고 중에서 선택해주세요:`;
+  const intros: Record<PickerMode, string> = {
+    confirm: `🤔 "${fileName}" → ${top[0].apt_name} (${top[0].notice_id}) 맞나요? 확인해주세요:`,
+    replace:
+      `⚠️ 이미 PDF 가 등록된 공고예요 (아직 페이지 생성 전): ` +
+      `${top[0].apt_name} (${top[0].notice_id})\n새 PDF 로 교체할까요?`,
+    ambiguous: `🤔 "${fileName}" 파일명으로 후보가 여러 건 매칭됐어요. 해당 공고를 선택해주세요:`,
+    unmatched: `🤔 "${fileName}" 파일명에서 공고를 자동으로 찾지 못했어요. 대기 중인 공고 중에서 선택해주세요:`,
+  };
 
-  await sendMessage(env, chatId, intro, { inline_keyboard: rows });
+  await sendMessage(env, chatId, intros[mode], { inline_keyboard: rows });
 }
 
 async function dispatchWorkflow(

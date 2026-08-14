@@ -23,13 +23,22 @@ Telegram (버튼 클릭 / 명령 / PDF 첨부) → Cloudflare Worker → GitHub 
    `output/notice_pending.json`(PDF 없는 대기 공고 목록, `export_notice_urls.py`
    가 매 실행마다 커밋)을 raw.githubusercontent.com 으로 읽어 파일명·캡션의
    공고번호(9~10자리) 또는 단지명으로 공고를 매칭한다.
-3. 정확히 한 건으로 좁혀지면 바로 `codex-ingest-telegram-pdf.yml` 을
-   dispatch. 매칭이 안 되거나 여러 건이면 인라인 버튼으로 후보를 보여주고
-   사용자가 직접 고른다 (선택 대기 중인 `file_id` 는 KV 에 1시간 TTL 로 임시 보관).
-4. `codex-ingest-telegram-pdf.yml` (Actions 러너, CPU/메모리 제약 없음) 이
+3. 공고번호(9~10자리)가 파일명/캡션에 그대로 있고 **대기 목록에도 있으면**
+   확인 없이 바로 `codex-ingest-telegram-pdf.yml` 을 dispatch. 단지명 부분
+   일치로만 좁혀진 경우(후보 정확히 1건이어도)는 이름 매칭의 오배정 위험
+   때문에 **"맞나요?" 확인 버튼**을 한 번 거친다. 후보가 여러 건이거나
+   전혀 못 찾으면 대기 공고 목록을 인라인 버튼으로 보여주고 직접 고르게 한다
+   (선택 대기 중인 `file_id` 는 KV 에 1시간 TTL 로 임시 보관).
+4. 공고번호는 있는데 대기 목록엔 없는 경우, `output/notice_status_index.json`
+   (전체 공고 상태 인덱스, `export_notice_urls.py` 가 함께 커밋)으로 이유를
+   구분해서 안내한다 — 이미 발행됨 / 이미 PDF 있음(교체 확인) / 청약홈에서
+   삭제됨. 이 구분이 없으면 이미 처리된 공고의 PDF 를 실수로 재전송했을 때
+   대기 목록에서 빠져 있으니 엉뚱한 다른 공고 후보가 뜨고, 잘못 고르면 그
+   PDF 가 다른 공고에 잘못 배정될 수 있다.
+5. `codex-ingest-telegram-pdf.yml` (Actions 러너, CPU/메모리 제약 없음) 이
    텔레그램에서 PDF 를 실제로 내려받아 `input/pdfs/` 에 커밋하고, 이어서
    `codex-generate-pages.yml` 을 `notice_id` 지정 + `limit=0` 으로 dispatch한다.
-5. 20MB 를 넘는 파일은 텔레그램 봇 다운로드 상한(`getFile`)에 걸려 처리할
+6. 20MB 를 넘는 파일은 텔레그램 봇 다운로드 상한(`getFile`)에 걸려 처리할
    수 없다 — Worker 가 이 경우 GitHub 웹 업로드 링크로 안내한다.
 
 **사전 준비**: 저장소 Settings → Actions → General → Workflow permissions
