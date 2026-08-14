@@ -138,3 +138,14 @@ python test_pipeline.py --step 6  # RAG 연동 전체 테스트
 **실행 브랜치**: main
 **수동 실행**: workflow_dispatch (Actions 탭 → Daily workflow → Run workflow)
 **기본값**: `--days 7 --limit 3` (지난 7일, 최대 3개)
+
+#### 🧹 오래된 PDF 정리
+**파일**: `.github/workflows/codex-cleanup-old-pdfs.yml`
+**실행 주기**: 매일 UTC 06:00 (KST 15:00), 수동 dispatch 가능
+**대상**: `input/pdfs/` 중 `processed_notices.json` 에 있는(=이미 발행된)
+공고의 PDF 만, 업로드 커밋일로부터 **7일 경과** 시 삭제. 아직 페이지 생성이
+안 된 공고의 PDF 는 절대 삭제하지 않는다 (`tools/cleanup_old_pdfs.py`).
+**알림**: 삭제 건수만 텔레그램으로 짧게 발송 (`🧹 PDF 정리: N건 삭제`).
+**주의**: 업로드 날짜를 git 커밋 이력으로 판단하므로 이 워크플로우의
+checkout 은 `fetch-depth: 0`(전체 이력)이어야 한다 — 다른 워크플로우처럼
+shallow clone 을 쓰면 항상 최신 커밋만 보여 날짜를 구분할 수 없다.

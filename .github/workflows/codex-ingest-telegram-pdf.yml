@@ -54,6 +54,38 @@ jobs:
             exit 0
           fi
 
+          # 정상 경로는 Worker 가 매칭 단계에서 이미 걸러내지만, 이 워크플로우는
+          # workflow_dispatch 로 누구나 수동 실행할 수도 있으므로 방어적으로
+          # 한 번 더 확인한다 — 청약홈에서 취소/삭제된 공고는 업로드하지 않는다.
+          IS_DELETED="$(python - "$NOTICE_ID" <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          notice_id = sys.argv[1]
+          path = Path("output/data_cache/deleted_notices.json")
+          if not path.exists():
+              print("false")
+              raise SystemExit(0)
+          try:
+              data = json.loads(path.read_text(encoding="utf-8-sig"))
+          except Exception:
+              print("false")
+              raise SystemExit(0)
+          ids = set()
+          if isinstance(data, list):
+              for item in data:
+                  ids.add(str(item.get("notice_id")) if isinstance(item, dict) else str(item))
+          elif isinstance(data, dict):
+              ids.update(str(x) for x in data.get("notice_ids", []))
+          print("true" if notice_id in ids else "false")
+          PY
+          )"
+          if [ "$IS_DELETED" = "true" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "reason=청약홈에서 취소/삭제된 공고입니다 (${NOTICE_ID})." >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           APT_NAME="$(python - "$CACHE_FILE" <<'PY'
           import json, sys
           data = json.load(open(sys.argv[1], encoding="utf-8-sig"))
