@@ -1358,5 +1358,10 @@
     "notice_id": "2026000383",
     "apt_name": "포레나힐스테이트 진주",
     "status": "pending"
+  },
+  {
+    "notice_id": "2026000388",
+    "apt_name": "시티오씨엘 9단지 오션파크뷰",
+    "status": "pending"
   }
 ]
