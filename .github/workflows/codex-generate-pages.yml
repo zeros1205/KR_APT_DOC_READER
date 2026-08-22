@@ -302,6 +302,12 @@ jobs:
                       apt_names.append(rest[1])
 
           parts = [f"성공 {success}건 / 실패 {failed}건"]
+          if success == 0 and failed == 0:
+              parts.append(
+                  "\n처리할 PDF 가 없어 아무 것도 생성하지 않았습니다. "
+                  "input/pdfs 에 새 PDF 가 실제로 커밋됐는지, notice_id 를 지정했다면 "
+                  "값이 맞는지 확인해주세요."
+              )
           if apt_names:
               parts.append("")
               parts.append("생성:")

@@ -1,6 +1,6 @@
 # apt-note Telegram Bot (Cloudflare Worker)
 
-텔레그램에서 ✅/❌ 버튼, `/gen all` 명령, 또는 PDF 첨부로 GitHub Actions 워크플로우를 트리거하는 웹훅.
+텔레그램에서 ✅/❌ 버튼, `/generate` 명령, 또는 PDF 첨부로 GitHub Actions 워크플로우를 트리거하는 웹훅.
 
 ## 흐름
 
@@ -11,8 +11,21 @@ Telegram (버튼 클릭 / 명령 / PDF 첨부) → Cloudflare Worker → GitHub 
 | 입력 | 트리거되는 워크플로우 |
 |------|----------------------|
 | 수집 알림에서 ✅ 진행 버튼 (`callback_data=export_notice_urls`) | `codex-export-notice-urls.yml` |
-| `/gen all` 메시지 | `codex-generate-pages.yml` |
+| `/generate` (또는 `/gen all`) 메시지 | `codex-generate-pages.yml` — 대기 전체 |
+| `/generate <공고번호>` | `codex-generate-pages.yml` — 해당 공고만 (`notice_id` 지정) |
+| `/generate <공고번호> force` | 위와 동일 + `include_processed=true` (이미 발행된 공고도 재생성) |
 | PDF 파일 첨부 (공고와 자동/수동 매칭 후) | `codex-ingest-telegram-pdf.yml` → 내부에서 `codex-generate-pages.yml` 연쇄 실행 |
+
+**운영 방식**: PDF 는 GitHub 웹 업로드(`input/pdfs/`)로 직접 올리고, 페이지
+생성은 `/generate` 명령으로 실행하는 조합을 기본 흐름으로 가정한다. PDF
+첨부 자동 매칭(아래)은 그대로 켜져 있지만 필수 경로는 아니다 — 안 써도 된다.
+
+**주의**: `/generate`(공고번호 없이)는 `input/pdfs/` 에 실제로 커밋된 PDF가
+있는 미발행 공고만 생성한다. 웹 업로드가 "Commit changes" 까지 완료되지
+않았거나 경로가 다르면(`input/pdfs/` 가 아니거나 브랜치가 `main` 이
+아니면) 아무것도 처리되지 않고 "성공 0건 / 실패 0건" 으로 끝난다 — 오류가
+아니라 "처리할 PDF 없음"을 정확히 보고한 것이다. 업로드 자체가 됐는지
+`github.com/<repo>/tree/main/input/pdfs` 에서 먼저 확인할 것.
 
 ### PDF 첨부 자동 업로드
 
@@ -99,9 +112,11 @@ curl https://api.telegram.org/bot<TELEGRAM_TOKEN>/getWebhookInfo
 ## 동작 검증
 
 1. 텔레그램에서 봇과 대화 시작 → `/help` 입력 → 사용 가이드 응답 수신
-2. `/gen all` 입력 → "🚀 페이지 생성 워크플로우 시작" 응답 + GitHub Actions 실행 확인
-3. `codex-collect-notices.yml` 수동 실행 → 신규 공고 ≥1건이면 ✅/❌ 버튼 메시지 수신 → ✅ 클릭 → export 워크플로우 자동 시작 확인
-4. 대기 중인 공고의 PDF 를 봇과의 채팅에 첨부 → "🔄 처리 중" 또는 후보 선택
+2. `/generate` 입력 → "🚀 페이지 생성 워크플로우 시작" 응답 + GitHub Actions 실행 확인
+3. GitHub 웹으로 `input/pdfs/` 에 PDF 하나를 올린 뒤 `/generate <그 공고번호>`
+   입력 → 해당 공고만 생성됐는지 Actions 로그로 확인
+4. `codex-collect-notices.yml` 수동 실행 → 신규 공고 ≥1건이면 ✅/❌ 버튼 메시지 수신 → ✅ 클릭 → export 워크플로우 자동 시작 확인
+5. (선택) 대기 중인 공고의 PDF 를 봇과의 채팅에 첨부 → "🔄 처리 중" 또는 후보 선택
    버튼 메시지 수신 확인 → `codex-ingest-telegram-pdf.yml` 실행 및
    `input/pdfs/` 커밋 확인 → 이어서 `codex-generate-pages.yml` 자동 실행 확인
 
