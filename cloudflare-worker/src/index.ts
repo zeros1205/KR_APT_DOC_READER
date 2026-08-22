@@ -235,7 +235,7 @@ async function handleMessage(
   chatId: number,
   text: string,
 ): Promise<void> {
-  if (text === "/gen all") {
+  if (text === "/gen all" || text === "/generate") {
     await sendMessage(env, chatId, "🔄 명령 받음. 페이지 생성을 요청합니다...");
     const ok = await dispatchWorkflow(env, "codex-generate-pages.yml");
     await sendMessage(
@@ -245,16 +245,65 @@ async function handleMessage(
         ? "🚀 워크플로우 실행 시작! 완료되면 결과를 보내드릴게요."
         : "❌ 워크플로우 실행 실패",
     );
-  } else if (text === "/start" || text === "/help") {
+    return;
+  }
+
+  // /generate <공고번호> [force] — GitHub 에 직접 업로드한 PDF 를 대상으로
+  // codex-페이지 생성을 특정 공고 하나만 지정해 실행. force 를 붙이면
+  // include_processed=true 로 이미 발행된 공고도 재생성한다.
+  const generateMatch = text.match(/^\/generate\s+(\d{9,10})(?:\s+(force))?\s*$/i);
+  if (generateMatch) {
+    const [, noticeId, forceFlag] = generateMatch;
+    const inputs: Record<string, string> = { notice_id: noticeId };
+    if (forceFlag) {
+      inputs.include_processed = "true";
+    }
+    await sendMessage(
+      env,
+      chatId,
+      forceFlag
+        ? `🔄 ${noticeId} 재생성(이미 발행된 공고 포함)을 요청합니다...`
+        : `🔄 ${noticeId} 페이지 생성을 요청합니다...`,
+    );
+    const ok = await dispatchWorkflow(env, "codex-generate-pages.yml", inputs);
+    await sendMessage(
+      env,
+      chatId,
+      ok
+        ? "🚀 워크플로우 실행 시작! 완료되면 결과를 보내드릴게요."
+        : "❌ 워크플로우 실행 실패",
+    );
+    return;
+  }
+
+  if (text.startsWith("/generate")) {
+    await sendMessage(
+      env,
+      chatId,
+      [
+        "⚠️ 사용법을 확인해주세요:",
+        "/generate — GitHub 에 업로드된 PDF 중 미발행 공고를 전부 생성",
+        "/generate <공고번호> — 해당 공고만 생성 (예: /generate 2026000365)",
+        "/generate <공고번호> force — 이미 발행된 공고도 강제 재생성",
+      ].join("\n"),
+    );
+    return;
+  }
+
+  if (text === "/start" || text === "/help") {
     await sendMessage(
       env,
       chatId,
       [
         "📋 사용 가능한 명령:",
         "",
+        "/generate — GitHub 에 업로드된 PDF 중 미발행 공고를 전부 생성",
+        "/generate <공고번호> — 해당 공고만 생성 (예: /generate 2026000365)",
+        "/generate <공고번호> force — 이미 발행된 공고도 강제 재생성",
+        "/gen all — /generate 와 동일 (예전 명령, 계속 지원)",
+        "",
         "PDF 파일 첨부 — 공고문 PDF 를 보내면 대기 중인 공고와 자동 매칭 후",
         "input/pdfs 업로드 → 페이지 생성까지 이어서 진행합니다.",
-        "/gen all — 캐시된 신규 공고로 포스팅 일괄 생성",
         "",
         "공고 수집 알림에서 ✅ 진행 버튼을 누르면 청약홈 URL 목록을 생성합니다.",
       ].join("\n"),
