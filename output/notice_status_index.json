@@ -1282,12 +1282,12 @@
   {
     "notice_id": "2026000342",
     "apt_name": "제일풍경채 첨단3지구(A6BL)",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000354",
     "apt_name": "상동역 롯데캐슬 시그니처",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000355",
@@ -1322,7 +1322,7 @@
   {
     "notice_id": "2026000368",
     "apt_name": "아르티엠 라 테라스",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000371",
@@ -1332,7 +1332,7 @@
   {
     "notice_id": "2026000372",
     "apt_name": "쌍용 더 플래티넘 서대문",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000374",
@@ -1357,11 +1357,11 @@
   {
     "notice_id": "2026000383",
     "apt_name": "포레나힐스테이트 진주",
-    "status": "pending"
+    "status": "processed"
   },
   {
     "notice_id": "2026000388",
     "apt_name": "시티오씨엘 9단지 오션파크뷰",
-    "status": "pending"
+    "status": "processed"
   }
 ]
