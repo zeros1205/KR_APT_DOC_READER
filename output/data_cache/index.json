@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-22T08:22:17+09:00",
-  "count": 303,
-  "ready_count": 303,
+  "generated_at": "2026-08-27T13:15:54+09:00",
+  "count": 304,
+  "ready_count": 304,
   "manual_review_count": 0,
   "notices": [
     {
@@ -2075,6 +2075,13 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000404.json"
+    },
+    {
+      "notice_id": "2026000409",
+      "apt_name": "의정부우정 A2블록 공공분양주택(본청약)",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000409.json"
     },
     {
       "notice_id": "2026820002",
