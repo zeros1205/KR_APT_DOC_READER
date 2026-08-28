@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-28T02:33:18+09:00",
-  "count": 305,
-  "ready_count": 305,
+  "generated_at": "2026-08-29T03:30:03+09:00",
+  "count": 307,
+  "ready_count": 307,
   "manual_review_count": 0,
   "notices": [
     {
@@ -2068,6 +2068,20 @@
       "requires_manual_input": false,
       "missing_fields": [],
       "cache_path": "output/data_cache/notices/2026000388.json"
+    },
+    {
+      "notice_id": "2026000399",
+      "apt_name": "브라운스톤 월곡 센트럴",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000399.json"
+    },
+    {
+      "notice_id": "2026000401",
+      "apt_name": "문수데시앙2단지 공가세대 일반공급",
+      "requires_manual_input": false,
+      "missing_fields": [],
+      "cache_path": "output/data_cache/notices/2026000401.json"
     },
     {
       "notice_id": "2026000404",
