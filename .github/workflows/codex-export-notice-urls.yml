@@ -1,14 +1,8 @@
 name: codex-청약홈 링크 목록 만들기
 
+# [운영 종료 2026-09-01] 자동 트리거 제거 — 수동 실행(workflow_dispatch)만 남김.
+# 되살리려면 이 커밋을 revert 하면 원래 트리거가 복구된다.
 on:
-  # 신규 공고 수집 워크플로우가 끝나면 자동으로 이어서 실행.
-  # 이전에는 텔레그램 '✅ 진행' 클릭이 필요했으나, 메타 입력 자동화 흐름에서는
-  # 입력 시트(MD)를 즉시 만들어 사용자가 한 번에 편집하도록 단순화.
-  workflow_run:
-    workflows:
-      - "codex-분양공고 데이터 가져오기"
-    types:
-      - completed
   workflow_dispatch:
     inputs:
       include_processed:

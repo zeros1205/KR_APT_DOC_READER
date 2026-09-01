@@ -1,10 +1,8 @@
 name: codex-분양공고 데이터 가져오기
 
+# [운영 종료 2026-09-01] 자동 트리거 제거 — 수동 실행(workflow_dispatch)만 남김.
+# 되살리려면 이 커밋을 revert 하면 원래 트리거가 복구된다.
 on:
-  schedule:
-    - cron: "0 23 * * *"  # 08:00 KST (전일 23:00 UTC)
-    - cron: "0 2 * * *"   # 11:00 KST (당일 02:00 UTC)
-    - cron: "0 6 * * *"   # 15:00 KST (당일 06:00 UTC)
   workflow_dispatch:
     inputs:
       days:

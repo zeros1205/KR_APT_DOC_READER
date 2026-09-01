@@ -1,3 +1,5 @@
+# [운영 종료 2026-09-01] 자동 트리거 제거 — 수동 실행(workflow_dispatch)만 남김.
+# 되살리려면 이 커밋을 revert 하면 원래 트리거가 복구된다.
 name: Setup iOS Platform
 
 on:
@@ -7,11 +9,6 @@ on:
         description: "Target branch for iOS setup (default: main)"
         required: false
         default: "main"
-  pull_request:
-    paths:
-      - "mobile-app/package.json"
-      - "mobile-app/capacitor.config.ts"
-      - ".github/workflows/setup-ios-platform.yml"
 
 concurrency:
   group: setup-ios-platform-${{ github.ref }}

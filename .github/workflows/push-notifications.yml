@@ -1,9 +1,8 @@
 name: FCM 푸시 알림 발송
 
+# [운영 종료 2026-09-01] 자동 트리거 제거 — 수동 실행(workflow_dispatch)만 남김.
+# 되살리려면 이 커밋을 revert 하면 원래 트리거가 복구된다.
 on:
-  schedule:
-    - cron: "0 1 * * *"   # KST 10:00 (UTC 01:00) — morning window
-    - cron: "0 8 * * *"   # KST 17:00 (UTC 08:00) — afternoon window
   workflow_dispatch:
     inputs:
       window:

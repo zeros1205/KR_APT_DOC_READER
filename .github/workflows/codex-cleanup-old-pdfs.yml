@@ -4,9 +4,9 @@ name: codex-오래된 PDF 정리
 # 7일이 지난 파일을 input/pdfs 에서 삭제한다. 아직 페이지 생성이 안 된
 # 공고의 PDF는 절대 건드리지 않는다 — tools/cleanup_old_pdfs.py 참고.
 
+# [운영 종료 2026-09-01] 자동 트리거 제거 — 수동 실행(workflow_dispatch)만 남김.
+# 되살리려면 이 커밋을 revert 하면 원래 트리거가 복구된다.
 on:
-  schedule:
-    - cron: "0 6 * * *"  # 15:00 KST
   workflow_dispatch: {}
 
 env:
