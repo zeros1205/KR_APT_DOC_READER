@@ -6,12 +6,12 @@ workers_dev = true
 [vars]
 GITHUB_REPO = "zeros1205/KR_APT_DOC_READER"
 
-[triggers]
-crons = [
-  "0 23 * * *",
-  "0 2 * * *",
-  "0 6 * * *"
-]
+# [운영 종료 2026-09-03] Worker 자체 cron 제거.
+# 이 crons 가 하루 3회 scheduled() 를 깨워 GitHub API 로
+# codex-collect-notices.yml 을 workflow_dispatch 했다. 워크플로 YAML 에서
+# schedule: 을 지워도 이 경로는 살아 있었다.
+# 주의: 이 파일 수정만으로는 "이미 배포된" Worker 가 멈추지 않는다.
+# Cloudflare 대시보드에서 Worker(apt-note-tg-bot) 를 삭제해야 실제로 멈춘다.
 
 # DEVICES_KV: 푸시 토큰·관심지역·발송이력 저장
 # Cloudflare Dashboard → Workers & Pages → KV 에서 생성한 namespace.
