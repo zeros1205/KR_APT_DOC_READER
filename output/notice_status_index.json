@@ -1363,5 +1363,20 @@
     "notice_id": "2026000388",
     "apt_name": "시티오씨엘 9단지 오션파크뷰",
     "status": "processed"
+  },
+  {
+    "notice_id": "2026000399",
+    "apt_name": "브라운스톤 월곡 센트럴",
+    "status": "has_pdf"
+  },
+  {
+    "notice_id": "2026000403",
+    "apt_name": "그랑라크 에일린의 뜰",
+    "status": "pending"
+  },
+  {
+    "notice_id": "2026000419",
+    "apt_name": "올 뉴 챔피언스시티 1차",
+    "status": "pending"
   }
 ]
